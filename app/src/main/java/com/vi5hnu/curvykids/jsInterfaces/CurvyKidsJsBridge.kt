@@ -35,6 +35,11 @@ class CurvyKidsJsBridge(private val context: Context,private val webView: WebVie
     }
 
     @JavascriptInterface
+    fun vibrate() {
+        this.vibrate(200);
+    }
+
+    @JavascriptInterface
     fun recognizeDrawing(jsonStrokes: String) {
 
         CoroutineScope(Dispatchers.Main).launch {
@@ -69,5 +74,18 @@ class CurvyKidsJsBridge(private val context: Context,private val webView: WebVie
         }
         return builder.build()
     }
+
+//    @JavascriptInterface
+//    fun playSound(soundName: String) {
+//        // For simplicity, use raw resource files like R.raw.success, R.raw.fail, etc.
+//        val soundId = when (soundName) {
+//            "success" -> R.raw.success
+//            "fail" -> R.raw.fail
+//            else -> return
+//        }
+//        val mediaPlayer = MediaPlayer.create(context, soundId)
+//        mediaPlayer.setOnCompletionListener { it.release() }
+//        mediaPlayer.start()
+//    }
 
 }
