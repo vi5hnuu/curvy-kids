@@ -4,6 +4,7 @@ import android.graphics.Bitmap
 import android.os.Bundle
 import android.util.Log
 import android.view.View
+import android.view.ViewGroup
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
@@ -13,6 +14,7 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
@@ -27,6 +29,8 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.consumeAllChanges
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.mlkit.vision.digitalink.DigitalInkRecognitionModelIdentifier
@@ -42,7 +46,7 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private lateinit var inkRecognitionHelper: InkRecognitionHelper;
     private val activityScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-
+    private var isMlKitModelLoading by mutableStateOf(true) // Initialize as true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -51,9 +55,9 @@ class MainActivity : ComponentActivity() {
 
         // **CRUCIAL**: Start the recognizer initialization on a background thread
         activityScope.launch(Dispatchers.IO) { // Launch on IO dispatcher for model download
-            val initialized = inkRecognitionHelper.initializeModel(
+            isMlKitModelLoading = !inkRecognitionHelper.initializeModel(
                 DigitalInkRecognitionModelIdentifier.EN_US)
-            if (initialized) {
+            if (isMlKitModelLoading) {
                 Log.d("MLKIT", "Ink Recognizer initialized successfully.")
             } else {
                 Log.e("MLKIT", "Failed to initialize Ink Recognizer.")
@@ -61,8 +65,8 @@ class MainActivity : ComponentActivity() {
         }
         setContent {
             CurvyKidsTheme {
-                Scaffold(modifier = Modifier) { innerPadding->
-                    WebViewScreen(url = "http://192.168.176.77:4600", modifier = Modifier.fillMaxSize().padding(innerPadding),inkRecognitionHelper)
+                Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding->
+                    WebViewScreen(url = "http://192.168.176.77:4600",modelLoading=isMlKitModelLoading, modifier = Modifier.fillMaxSize().padding(innerPadding),inkRecognitionHelper)
                 }
             }
         }
@@ -92,12 +96,20 @@ fun GreetingPreview() {
 }
 
 @Composable
-fun WebViewScreen(url: String, modifier: Modifier = Modifier,inkRecognitionHelper: InkRecognitionHelper) {
+fun WebViewScreen(url: String, modelLoading: Boolean=false, modifier: Modifier = Modifier, inkRecognitionHelper: InkRecognitionHelper) {
     var isLoading by remember { mutableStateOf(true) }
+    val showLoader = isLoading || modelLoading
+
+    // Determine if touch events should be blocked
+    val shouldBlockTouch = showLoader // Block touches when the loader is visible
 
     Box(modifier = modifier) {
         AndroidView(factory = { context ->
             WebView(context).apply {
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
+                )
                 setLayerType(View.LAYER_TYPE_HARDWARE, null)
 
                 setLayerType(View.LAYER_TYPE_HARDWARE, null) // Enable HW acceleration on WebView
@@ -148,11 +160,18 @@ fun WebViewScreen(url: String, modifier: Modifier = Modifier,inkRecognitionHelpe
             }
         })
 
-        if (isLoading) {
+        if (isLoading || modelLoading) {
             // Show your loader composable here
             Box(
                 Modifier
                     .fillMaxSize()
+                    .pointerInput(Unit) {
+                        awaitPointerEventScope {
+                            while (true) {
+                                awaitPointerEvent() // Don't do anything, just consume
+                            }
+                        }
+                    }
                     .background(Color.White.copy(alpha = 0.8f)),
                 contentAlignment = Alignment.Center
             ) {
