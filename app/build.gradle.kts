@@ -59,4 +59,10 @@ dependencies {
 //
     //google ink recognization
     implementation(libs.digital.ink.recognition)
+
+    implementation(libs.kotlinx.coroutines.play.services)
+
+    implementation(libs.moshi)
+    implementation(libs.moshi.kotlin)
+
 }
