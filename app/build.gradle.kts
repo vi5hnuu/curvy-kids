@@ -65,4 +65,6 @@ dependencies {
     implementation(libs.moshi)
     implementation(libs.moshi.kotlin)
 
+    //lotti
+    implementation(libs.lottie.compose)
 }

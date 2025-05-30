@@ -2,7 +2,6 @@ package com.vi5hnu.curvykids
 
 import android.graphics.Bitmap
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebResourceError
@@ -14,28 +13,29 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.consumeAllChanges
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.viewinterop.AndroidView
 import com.google.mlkit.vision.digitalink.DigitalInkRecognitionModelIdentifier
 import com.vi5hnu.curvykids.commons.InkRecognitionHelper
+import com.vi5hnu.curvykids.components.LottieViewer
 import com.vi5hnu.curvykids.jsInterfaces.CurvyKidsJsBridge
+import com.vi5hnu.curvykids.models.HttpState
 import com.vi5hnu.curvykids.ui.theme.CurvyKidsTheme
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -46,7 +46,6 @@ import kotlinx.coroutines.launch
 class MainActivity : ComponentActivity() {
     private lateinit var inkRecognitionHelper: InkRecognitionHelper;
     private val activityScope = CoroutineScope(Dispatchers.Main + SupervisorJob())
-    private var isMlKitModelLoading by mutableStateOf(true) // Initialize as true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -55,18 +54,12 @@ class MainActivity : ComponentActivity() {
 
         // **CRUCIAL**: Start the recognizer initialization on a background thread
         activityScope.launch(Dispatchers.IO) { // Launch on IO dispatcher for model download
-            isMlKitModelLoading = !inkRecognitionHelper.initializeModel(
-                DigitalInkRecognitionModelIdentifier.EN_US)
-            if (isMlKitModelLoading) {
-                Log.d("MLKIT", "Ink Recognizer initialized successfully.")
-            } else {
-                Log.e("MLKIT", "Failed to initialize Ink Recognizer.")
-            }
+            !inkRecognitionHelper.initializeModel(DigitalInkRecognitionModelIdentifier.HI)
         }
         setContent {
             CurvyKidsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding->
-                    WebViewScreen(url = "http://192.168.176.77:4600",modelLoading=isMlKitModelLoading, modifier = Modifier.fillMaxSize().padding(innerPadding),inkRecognitionHelper)
+                    WebViewScreen(url = "http://192.168.176.77:4600", modifier = Modifier.fillMaxSize().padding(innerPadding),inkRecognitionHelper)
                 }
             }
         }
@@ -96,12 +89,9 @@ fun GreetingPreview() {
 }
 
 @Composable
-fun WebViewScreen(url: String, modelLoading: Boolean=false, modifier: Modifier = Modifier, inkRecognitionHelper: InkRecognitionHelper) {
-    var isLoading by remember { mutableStateOf(true) }
-    val showLoader = isLoading || modelLoading
-
-    // Determine if touch events should be blocked
-    val shouldBlockTouch = showLoader // Block touches when the loader is visible
+fun WebViewScreen(url: String, modifier: Modifier = Modifier, inkRecognitionHelper: InkRecognitionHelper) {
+    var isWebViewLoading by remember { mutableStateOf(true) }
+    val recognizerState by inkRecognitionHelper.isRecognizerReady.collectAsState()
 
     Box(modifier = modifier) {
         AndroidView(factory = { context ->
@@ -116,12 +106,12 @@ fun WebViewScreen(url: String, modelLoading: Boolean=false, modifier: Modifier =
                 webViewClient = object : WebViewClient() {
                     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                         super.onPageStarted(view,url,favicon);
-                        isLoading = true
+                        isWebViewLoading = true
                     }
 
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view,url);
-                        isLoading = false
+                        isWebViewLoading = false
                     }
 
                     override fun onReceivedError(
@@ -160,23 +150,28 @@ fun WebViewScreen(url: String, modelLoading: Boolean=false, modifier: Modifier =
             }
         })
 
-        if (isLoading || modelLoading) {
             // Show your loader composable here
-            Box(
-                Modifier
-                    .fillMaxSize()
-                    .pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                awaitPointerEvent() // Don't do anything, just consume
+            if(recognizerState?.success!=true || isWebViewLoading){
+                Box(
+                    Modifier
+                        .fillMaxSize()
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    awaitPointerEvent() // Don't do anything, just consume
+                                }
                             }
                         }
+                        .background(Color.White.copy(alpha = 0.9f)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    if (isWebViewLoading || recognizerState?.loading==true) {
+                        LottieViewer(assetName = "baby-loading.lottie")
+                    }else if(recognizerState?.error!=null){
+                        LottieViewer(assetName = "baby-bottom.lottie")
                     }
-                    .background(Color.White.copy(alpha = 0.8f)),
-                contentAlignment = Alignment.Center
-            ) {
-                CircularProgressIndicator(color = Color.Gray)
+
+                }
             }
-        }
     }
 }
