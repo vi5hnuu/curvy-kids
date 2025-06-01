@@ -42,7 +42,7 @@ class CurvyKidsJsBridge(private val context: Context,private val webView: WebVie
     @JavascriptInterface
     fun recognizeDrawing(jsonStrokes: String) {
 
-        CoroutineScope(Dispatchers.Main).launch {
+        CoroutineScope(Dispatchers.IO).launch {
             val ink = parseJsonToInk(jsonStrokes)
             var result=recodnizer.recognize(ink,);
             Log.d("MLKITRESULT",result?.candidates.toString());

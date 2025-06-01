@@ -6,6 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.webkit.WebResourceError
 import android.webkit.WebResourceRequest
+import android.webkit.WebResourceResponse
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -54,7 +55,7 @@ class MainActivity : ComponentActivity() {
 
         // **CRUCIAL**: Start the recognizer initialization on a background thread
         activityScope.launch(Dispatchers.IO) { // Launch on IO dispatcher for model download
-            !inkRecognitionHelper.initializeModel(DigitalInkRecognitionModelIdentifier.HI)
+            inkRecognitionHelper.initializeModel(DigitalInkRecognitionModelIdentifier.EN_US)
         }
         setContent {
             CurvyKidsTheme {
@@ -90,7 +91,7 @@ fun GreetingPreview() {
 
 @Composable
 fun WebViewScreen(url: String, modifier: Modifier = Modifier, inkRecognitionHelper: InkRecognitionHelper) {
-    var isWebViewLoading by remember { mutableStateOf(true) }
+    var webviewHttpState by remember { mutableStateOf(HttpState.loading()) }
     val recognizerState by inkRecognitionHelper.isRecognizerReady.collectAsState()
 
     Box(modifier = modifier) {
@@ -106,12 +107,14 @@ fun WebViewScreen(url: String, modifier: Modifier = Modifier, inkRecognitionHelp
                 webViewClient = object : WebViewClient() {
                     override fun onPageStarted(view: WebView?, url: String?, favicon: Bitmap?) {
                         super.onPageStarted(view,url,favicon);
-                        isWebViewLoading = true
+                        webviewHttpState= HttpState.loading();
                     }
 
                     override fun onPageFinished(view: WebView?, url: String?) {
                         super.onPageFinished(view,url);
-                        isWebViewLoading = false
+                        if(webviewHttpState.error==null){
+                            webviewHttpState= HttpState.success();
+                        }
                     }
 
                     override fun onReceivedError(
@@ -119,12 +122,28 @@ fun WebViewScreen(url: String, modifier: Modifier = Modifier, inkRecognitionHelp
                         request: WebResourceRequest,
                         error: WebResourceError
                     ) {
+                        super.onReceivedError(view, request, error);
                         if (request.isForMainFrame) {
-                            loadData(
-                                "<html><body><h2>Something went Wrong ${error.description}</h2></body></html>",
-                                "text/html",
-                                "UTF-8"
-                            )
+                            webviewHttpState= HttpState.error("Failed to load");
+                            view.also {
+                                stopLoading();
+                                visibility= View.GONE;
+                            }
+                        }
+                    }
+
+                    override fun onReceivedHttpError(
+                        view: WebView?,
+                        request: WebResourceRequest?,
+                        errorResponse: WebResourceResponse?
+                    ) {
+                        super.onReceivedHttpError(view, request, errorResponse);
+                        if (request?.isForMainFrame==true) {
+                            webviewHttpState= HttpState.error("Failed to load");
+                            view.also {
+                                stopLoading();
+                                visibility= View.GONE;
+                            }
                         }
                     }
                 }
@@ -151,7 +170,7 @@ fun WebViewScreen(url: String, modifier: Modifier = Modifier, inkRecognitionHelp
         })
 
             // Show your loader composable here
-            if(recognizerState?.success!=true || isWebViewLoading){
+            if(recognizerState?.success!=true || webviewHttpState.success!=true){
                 Box(
                     Modifier
                         .fillMaxSize()
@@ -165,7 +184,9 @@ fun WebViewScreen(url: String, modifier: Modifier = Modifier, inkRecognitionHelp
                         .background(Color.White.copy(alpha = 0.9f)),
                     contentAlignment = Alignment.Center
                 ) {
-                    if (isWebViewLoading || recognizerState?.loading==true) {
+                    if(webviewHttpState.error!=null){
+                        LottieViewer(assetName = "something-wrong.lottie")
+                    }else if (webviewHttpState.loading==true || recognizerState?.loading==true) {
                         LottieViewer(assetName = "baby-loading.lottie")
                     }else if(recognizerState?.error!=null){
                         LottieViewer(assetName = "baby-bottom.lottie")

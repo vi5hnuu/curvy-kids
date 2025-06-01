@@ -57,7 +57,7 @@ class InkRecognitionHelper(private val context: Context, private val scope: Coro
     suspend fun recognize(ink: Ink): RecognitionResult? {
         // Wait until the recognizer is ready
         val isRecognizerReady=isRecognizerReady.value;
-        if (isRecognizerReady?.success!=null &&  isRecognizerReady.success== true) {
+        if (isRecognizerReady?.success!= true) {
             Log.e(TAG, "Recognizer is not ready. Cannot perform recognition.")
             return null
         }
