@@ -60,7 +60,7 @@ class MainActivity : ComponentActivity() {
         setContent {
             CurvyKidsTheme {
                 Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding->
-                    WebViewScreen(url = "http://192.168.176.77:4600", modifier = Modifier.fillMaxSize().padding(innerPadding),inkRecognitionHelper)
+                    WebViewScreen(url = "https://curvy-kids.laxmi.solutions", modifier = Modifier.fillMaxSize().padding(innerPadding),inkRecognitionHelper)
                 }
             }
         }
