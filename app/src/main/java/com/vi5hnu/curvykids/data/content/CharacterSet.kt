@@ -6,11 +6,12 @@ enum class Level(val label: String) {
     LOWERCASE("abc"),
     NUMBERS("123");
 
-    /** Ordered characters that make up this level. */
-    val characters: List<String>
-        get() = when (this) {
+    /** Ordered characters that make up this level. Computed once per enum instance. */
+    val characters: List<String> by lazy {
+        when (this) {
             UPPERCASE -> ('A'..'Z').map(Char::toString)
             LOWERCASE -> ('a'..'z').map(Char::toString)
             NUMBERS -> ('0'..'9').map(Char::toString)
         }
+    }
 }

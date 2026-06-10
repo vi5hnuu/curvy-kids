@@ -46,7 +46,12 @@ class DrawingController {
 
     val hasDrawing: Boolean get() = strokes.isNotEmpty()
 
+    /** True while the child's finger is down — lets the UI hide overlays during drawing. */
+    var isDrawing by mutableStateOf(false)
+        private set
+
     fun startStroke(x: Float, y: Float) {
+        isDrawing = true
         current = mutableListOf(Point(x, y, now()))
         strokes.add(Stroke(current.toList()))
     }
@@ -57,6 +62,7 @@ class DrawingController {
     }
 
     fun endStroke() {
+        isDrawing = false
         if (current.isEmpty()) return
         if (strokes.isNotEmpty()) strokes[strokes.lastIndex] = Stroke(current.toList())
         current = mutableListOf()
@@ -66,6 +72,7 @@ class DrawingController {
     fun snapshot(): List<Stroke> = strokes.map { Stroke(it.points.toList()) }
 
     fun clear() {
+        isDrawing = false
         strokes.clear()
         current = mutableListOf()
     }
