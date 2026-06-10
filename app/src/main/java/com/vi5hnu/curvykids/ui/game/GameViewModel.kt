@@ -73,23 +73,40 @@ class GameViewModel(
             if (matched) {
                 sound.playCorrect()
                 speakPraise()
-                // Persist mastery and add to UI state so the progress map updates instantly.
                 viewModelScope.launch { progress.markMastered(state.level, state.character) }
+                val newMastered = state.masteredCharacters + state.character
+                // Only trigger the completion overlay when the level is mastered for the first
+                // time — not on repeat correct answers after full completion.
+                val levelComplete = state.masteredCharacters.size < state.level.characters.size &&
+                    newMastered.size == state.level.characters.size
                 _uiState.update {
                     it.copy(
                         isChecking = false,
                         lastResult = AnswerResult.CORRECT,
                         score = it.score + 1,
-                        masteredCharacters = it.masteredCharacters + state.character,
+                        masteredCharacters = newMastered,
+                        levelJustCompleted = levelComplete,
                     )
                 }
-                delay(CORRECT_ADVANCE_DELAY_MS) // let the child see confetti before moving on
-                next()
+                if (!levelComplete) {
+                    delay(CORRECT_ADVANCE_DELAY_MS)
+                    next()
+                }
+                // If levelComplete, the overlay handles navigation via dismissLevelComplete().
             } else {
                 sound.playWrong()
                 haptics.vibrate()
-                speakTryAgain(sawNothing = candidates.isEmpty())
-                _uiState.update { it.copy(isChecking = false, lastResult = AnswerResult.WRONG) }
+                val newAttempts = state.wrongAttempts + 1
+                _uiState.update {
+                    it.copy(isChecking = false, lastResult = AnswerResult.WRONG, wrongAttempts = newAttempts)
+                }
+                if (newAttempts >= MAX_WRONG_ATTEMPTS) {
+                    speakGiveUp()
+                    delay(GIVE_UP_DELAY_MS)
+                    next()
+                } else {
+                    speakTryAgain(sawNothing = candidates.isEmpty())
+                }
             }
         }
     }
@@ -127,6 +144,12 @@ class GameViewModel(
         _uiState.update { it.copy(lastResult = null) }
     }
 
+    /** Called when the child taps/dismisses the level-complete overlay; advances to next level. */
+    fun dismissLevelComplete() {
+        _uiState.update { it.copy(levelJustCompleted = false) }
+        nextLevel()
+    }
+
     /** Re-speaks the current character's phonics (the "hear it" 🔊 button). */
     fun speakCurrent() {
         phonics.speak(Phonics.phraseFor(_uiState.value.character))
@@ -145,6 +168,12 @@ class GameViewModel(
         phonics.speak(PRAISE.random())
     }
 
+    /** Spoken when the child has used all attempts — gentle, not discouraging. */
+    private fun speakGiveUp() {
+        val state = _uiState.value
+        phonics.speak("That's OK! Keep practicing. ${Phonics.phraseFor(state.character)}. Moving on!")
+    }
+
     /** Encourages another attempt; gives a clearer hint when nothing was recognised. */
     private fun speakTryAgain(sawNothing: Boolean) {
         val state = _uiState.value
@@ -159,10 +188,31 @@ class GameViewModel(
 
     private fun goTo(level: Level, index: Int, mastered: Set<String> = _uiState.value.masteredCharacters) {
         _uiState.update {
-            it.copy(level = level, index = index, lastResult = null, isChecking = false, masteredCharacters = mastered)
+            it.copy(
+                level = level,
+                index = index,
+                lastResult = null,
+                isChecking = false,
+                masteredCharacters = mastered,
+                wrongAttempts = 0,
+                levelJustCompleted = false,
+            )
         }
         viewModelScope.launch { progress.save(level, index) }
         speakPrompt()
+    }
+
+    /** Advances to the next level in order: UPPERCASE → LOWERCASE → NUMBERS → UPPERCASE. */
+    private fun nextLevel() {
+        val next = when (_uiState.value.level) {
+            Level.UPPERCASE -> Level.LOWERCASE
+            Level.LOWERCASE -> Level.NUMBERS
+            Level.NUMBERS -> Level.UPPERCASE
+        }
+        viewModelScope.launch {
+            val mastered = progress.masteredSet(next)
+            goTo(next, progress.loadIndex(next), mastered)
+        }
     }
 
     override fun onCleared() {
@@ -175,6 +225,8 @@ class GameViewModel(
         private const val TAG = "CurvyKidsVM"
         private const val CORRECT_ADVANCE_DELAY_MS = 1200L
         private const val RECOGNIZE_TIMEOUT_MS = 8000L
+        private const val MAX_WRONG_ATTEMPTS = 3
+        private const val GIVE_UP_DELAY_MS = 2000L
         private val PRAISE = listOf("Yay! Great job!", "Awesome!", "Well done!", "Perfect!", "You did it!")
 
         /** Builds a ViewModel with concrete platform-backed dependencies. */

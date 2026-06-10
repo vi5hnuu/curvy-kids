@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -55,6 +54,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.R
 import com.vi5hnu.curvykids.components.LottieViewer
+import com.vi5hnu.curvykids.data.content.Level
 import com.vi5hnu.curvykids.recognition.WritingArea
 import com.vi5hnu.curvykids.ui.game.components.CelebrationOverlay
 import com.vi5hnu.curvykids.ui.game.components.DrawingCanvas
@@ -77,7 +77,6 @@ private val CRAYON_COLORS = listOf(
     Color(0xFF8E24AA), // purple
 )
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsState()
@@ -168,14 +167,17 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
                             .fillMaxSize()
                             .onSizeChanged { canvasSize = it },
                     )
-                    // Crayon colour picker — bottom-centre overlay so it uses no extra height.
-                    InkColorPicker(
-                        selected = inkColor,
-                        onSelect = { inkColor = it },
-                        modifier = Modifier
-                            .align(Alignment.BottomCenter)
-                            .padding(bottom = 10.dp),
-                    )
+                    // Hidden while drawing: the picker can't intercept touch events in the
+                    // lower canvas area, and appears again as soon as the stroke lifts.
+                    if (!controller.isDrawing) {
+                        InkColorPicker(
+                            selected = inkColor,
+                            onSelect = { inkColor = it },
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 10.dp),
+                        )
+                    }
                     RoundIconButton(
                         emoji = "🧽",
                         onClick = { controller.clear(); viewModel.clearFeedback() },
@@ -266,6 +268,13 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
             masteredCharacters = uiState.masteredCharacters,
             onCharacterSelect = viewModel::jumpToIndex,
             onDismiss = { showProgressMap = false },
+        )
+    }
+
+    if (uiState.levelJustCompleted) {
+        LevelCompleteOverlay(
+            level = uiState.level,
+            onDismiss = viewModel::dismissLevelComplete,
         )
     }
 }
@@ -368,6 +377,58 @@ private fun RoundIconButton(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
     ) {
         Text(emoji, fontSize = 20.sp)
+    }
+}
+
+/**
+ * Full-screen overlay shown when the child masters every character in a level.
+ * Auto-dismisses after 4 s; tapping it also dismisses. The ViewModel then moves
+ * to the next level via [onDismiss].
+ */
+@Composable
+private fun LevelCompleteOverlay(level: Level, onDismiss: () -> Unit) {
+    LaunchedEffect(Unit) {
+        delay(4000)
+        onDismiss()
+    }
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(Color(0xCC1A237E)) // deep indigo semi-transparent
+            .clickable { onDismiss() },
+        contentAlignment = Alignment.Center,
+    ) {
+        // Confetti behind the text.
+        CelebrationOverlay()
+
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+        ) {
+            Text("🏆", fontSize = 90.sp)
+            Spacer(Modifier.height(12.dp))
+            Text(
+                text = "Amazing!",
+                fontSize = 42.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFFFFD600),
+            )
+            Spacer(Modifier.height(8.dp))
+            Text(
+                text = "You mastered all\n${level.characters.size} ${level.label}!",
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold,
+                color = Color.White,
+                textAlign = TextAlign.Center,
+            )
+            Spacer(Modifier.height(24.dp))
+            Text(
+                text = "Tap to keep going ▶",
+                fontSize = 16.sp,
+                color = Color.White.copy(alpha = 0.75f),
+            )
+        }
     }
 }
 
