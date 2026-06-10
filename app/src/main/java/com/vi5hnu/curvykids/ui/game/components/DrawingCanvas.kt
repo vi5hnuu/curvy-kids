@@ -143,25 +143,17 @@ fun DrawingCanvas(
             )
         }
 
-        // --- Layer 2: Animated trail + dot ---
+        // --- Layer 2: Animated trail + dot (spans ALL glyph contours) ---
         if (tracingAnimProgress > 0f) {
             glyphData?.let { data ->
-                val totalLength = data.measure.length
-                val travelled = totalLength * tracingAnimProgress.coerceIn(0f, 1f)
-
-                // Bright partial path tracing over the guide so far.
-                val trailPath = AndroidPath()
-                data.measure.getSegment(0f, travelled, trailPath, true)
+                // Trail covers all contours up to the current progress fraction.
                 drawPath(
-                    path = trailPath.asComposePath(),
+                    path = data.trailPathAt(tracingAnimProgress).asComposePath(),
                     color = TRAIL_COLOR,
                     style = DrawStroke(width = TRAIL_WIDTH, cap = StrokeCap.Round, join = StrokeJoin.Round),
                 )
-
                 // Glowing dot at the leading edge.
-                val pos = FloatArray(2)
-                if (data.measure.getPosTan(travelled, pos, null)) {
-                    val centre = Offset(pos[0], pos[1])
+                data.positionAt(tracingAnimProgress)?.let { centre ->
                     drawCircle(DOT_COLOR.copy(alpha = 0.25f), radius = DOT_RADIUS * 2f, center = centre)
                     drawCircle(DOT_COLOR, radius = DOT_RADIUS, center = centre)
                 }
