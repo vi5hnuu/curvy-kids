@@ -30,4 +30,14 @@ object Phonics {
             else -> character
         }
     }
+
+    /** The example/spoken word alone (e.g. "Apple", "Five"), or null if unmapped. */
+    fun wordFor(character: String): String? {
+        val c = character.singleOrNull() ?: return null
+        return when {
+            c.isLetter() -> letterWords[c.lowercaseChar()]
+            c.isDigit() -> numberWords[c]
+            else -> null
+        }
+    }
 }

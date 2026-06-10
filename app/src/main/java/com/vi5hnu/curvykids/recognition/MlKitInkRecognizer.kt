@@ -77,24 +77,34 @@ class MlKitInkRecognizer(
         }
         if (strokes.isEmpty()) return emptyList()
 
-        return try {
-            val ink = strokes.toInk()
-            val context = buildContext(writingArea, preContext)
-            // The (ink, context) overload requires a non-null context; fall back otherwise.
-            val task = if (context != null) client.recognize(ink, context) else client.recognize(ink)
-            val result = task.await()
-            // Return whatever candidates ML Kit gives — never index a fixed position
-            // (the old bridge read candidates[1]/[2] and could crash).
-            val candidates = result.candidates.map { it.text }
-            Log.d(TAG, "Recognized candidates: $candidates")
-            candidates
-        } catch (e: MlKitException) {
-            Log.e(TAG, "Recognition failed: ${e.message}", e)
-            emptyList()
-        } catch (e: Exception) {
-            Log.e(TAG, "General recognition error: ${e.message}", e)
-            emptyList()
-        }
+        val ink = strokes.toInk()
+        val context = buildContext(writingArea, preContext)
+
+        // Try with the writing-area hint first. The hint usually improves single-character
+        // accuracy, but on some devices/models it can misbehave (throw or return nothing),
+        // so fall back to plain recognition rather than failing the child's answer.
+        runCatching { recognizeWith(client, ink, context) }
+            .onSuccess { candidates ->
+                Log.d(TAG, "Recognized (context=${context != null}): $candidates")
+                if (candidates.isNotEmpty() || context == null) return candidates
+            }
+            .onFailure { Log.e(TAG, "Recognition with context failed: ${it.message}", it) }
+
+        if (context == null) return emptyList()
+        return runCatching { recognizeWith(client, ink, null) }
+            .onSuccess { Log.d(TAG, "Recognized (fallback, no context): $it") }
+            .getOrDefault(emptyList())
+    }
+
+    /** Runs a single recognition pass; [context] may be null to use the plain overload. */
+    private suspend fun recognizeWith(
+        client: DigitalInkRecognizer,
+        ink: Ink,
+        context: RecognitionContext?,
+    ): List<String> {
+        val task = if (context != null) client.recognize(ink, context) else client.recognize(ink)
+        // Never index a fixed candidate position (the old bridge read [1]/[2] and could crash).
+        return task.await().candidates.map { it.text }
     }
 
     override fun release() {
