@@ -17,8 +17,10 @@ import androidx.compose.ui.input.pointer.pointerInput
 import com.vi5hnu.curvykids.recognition.Point
 import com.vi5hnu.curvykids.recognition.Stroke
 
-private val INK_COLOR = Color(0xFFA9BD3E) // matches the original web app stroke colour
-private const val INK_WIDTH = 20f
+private val INK_COLOR = Color(0xFF5C6BC0)  // friendly crayon blue, easy for kids to see
+private val GUIDE_COLOR = Color(0xFFFFB3C1) // soft pink dashed tracing guide
+private const val INK_WIDTH = 30f
+private const val GUIDE_WIDTH = 10f
 
 /**
  * Holds the strokes drawn on the [DrawingCanvas]. Hoisted so the screen can read the
@@ -96,10 +98,11 @@ fun DrawingCanvas(
             val glyph = buildGlyphPath(tracingCharacter, size.width, size.height)
             drawPath(
                 path = glyph,
-                color = Color(0xFFBDBDBD),
+                color = GUIDE_COLOR,
                 style = DrawStroke(
-                    width = 6f,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(20f, 20f)),
+                    width = GUIDE_WIDTH,
+                    cap = StrokeCap.Round,
+                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(28f, 26f)),
                 ),
             )
         }

@@ -85,7 +85,9 @@ class MlKitInkRecognizer(
             val result = task.await()
             // Return whatever candidates ML Kit gives — never index a fixed position
             // (the old bridge read candidates[1]/[2] and could crash).
-            result.candidates.map { it.text }
+            val candidates = result.candidates.map { it.text }
+            Log.d(TAG, "Recognized candidates: $candidates")
+            candidates
         } catch (e: MlKitException) {
             Log.e(TAG, "Recognition failed: ${e.message}", e)
             emptyList()
