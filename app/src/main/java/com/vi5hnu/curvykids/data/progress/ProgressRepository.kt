@@ -6,6 +6,7 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
+import androidx.datastore.preferences.core.stringSetPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.vi5hnu.curvykids.data.content.Level
 import kotlinx.coroutines.flow.first
@@ -46,7 +47,20 @@ class ProgressRepository(context: Context) {
         }
     }
 
+    /** Records [character] as mastered for [level] (idempotent — safe to call repeatedly). */
+    suspend fun markMastered(level: Level, character: String) {
+        store.edit { prefs ->
+            val current = prefs[masteredKey(level)] ?: emptySet()
+            prefs[masteredKey(level)] = current + character
+        }
+    }
+
+    /** Returns the set of characters the child has mastered at least once for [level]. */
+    suspend fun masteredSet(level: Level): Set<String> =
+        store.data.first()[masteredKey(level)] ?: emptySet()
+
     private fun indexKey(level: Level) = intPreferencesKey("index_${level.name}")
+    private fun masteredKey(level: Level) = stringSetPreferencesKey("mastered_${level.name}")
 
     private companion object {
         val KEY_LEVEL = stringPreferencesKey("current_level")

@@ -48,7 +48,8 @@ class GameViewModel(
     init {
         viewModelScope.launch {
             val saved = progress.load()
-            _uiState.update { it.copy(level = saved.level, index = saved.index) }
+            val mastered = progress.masteredSet(saved.level)
+            _uiState.update { it.copy(level = saved.level, index = saved.index, masteredCharacters = mastered) }
             speakPrompt()
         }
         viewModelScope.launch { recognizer.prepare() }
@@ -72,8 +73,15 @@ class GameViewModel(
             if (matched) {
                 sound.playCorrect()
                 speakPraise()
+                // Persist mastery and add to UI state so the progress map updates instantly.
+                viewModelScope.launch { progress.markMastered(state.level, state.character) }
                 _uiState.update {
-                    it.copy(isChecking = false, lastResult = AnswerResult.CORRECT, score = it.score + 1)
+                    it.copy(
+                        isChecking = false,
+                        lastResult = AnswerResult.CORRECT,
+                        score = it.score + 1,
+                        masteredCharacters = it.masteredCharacters + state.character,
+                    )
                 }
                 delay(CORRECT_ADVANCE_DELAY_MS) // let the child see confetti before moving on
                 next()
@@ -102,7 +110,16 @@ class GameViewModel(
     /** Switches track, resuming at that level's last saved character. */
     fun selectLevel(level: Level) {
         if (level == _uiState.value.level) return
-        viewModelScope.launch { goTo(level, progress.loadIndex(level)) }
+        viewModelScope.launch {
+            val mastered = progress.masteredSet(level)
+            goTo(level, progress.loadIndex(level), mastered)
+        }
+    }
+
+    /** Jumps directly to a character by [index] — used by the progress map. */
+    fun jumpToIndex(index: Int) {
+        val state = _uiState.value
+        goTo(state.level, index.coerceIn(0, state.level.characters.lastIndex))
     }
 
     /** Clears the last answer result so the feedback badge disappears (e.g. after erasing). */
@@ -140,9 +157,9 @@ class GameViewModel(
         phonics.speak("$lead$hint")
     }
 
-    private fun goTo(level: Level, index: Int) {
+    private fun goTo(level: Level, index: Int, mastered: Set<String> = _uiState.value.masteredCharacters) {
         _uiState.update {
-            it.copy(level = level, index = index, lastResult = null, isChecking = false)
+            it.copy(level = level, index = index, lastResult = null, isChecking = false, masteredCharacters = mastered)
         }
         viewModelScope.launch { progress.save(level, index) }
         speakPrompt()

@@ -8,6 +8,8 @@ import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -56,6 +59,7 @@ import com.vi5hnu.curvykids.recognition.WritingArea
 import com.vi5hnu.curvykids.ui.game.components.CelebrationOverlay
 import com.vi5hnu.curvykids.ui.game.components.DrawingCanvas
 import com.vi5hnu.curvykids.ui.game.components.LevelSelector
+import com.vi5hnu.curvykids.ui.game.components.ProgressMapSheet
 import com.vi5hnu.curvykids.ui.game.components.ReferenceImage
 import com.vi5hnu.curvykids.ui.game.components.rememberDrawingController
 
@@ -64,6 +68,16 @@ private val SKY_BOTTOM = Color(0xFFBDE7FF)
 private val CHECK_GREEN = Color(0xFF66BB6A)
 private val GLYPH_PURPLE = Color(0xFF7E57C2)
 
+/** Crayon colour palette — first entry is the default ink colour. */
+private val CRAYON_COLORS = listOf(
+    Color(0xFF5C6BC0), // indigo (default)
+    Color(0xFFE53935), // red
+    Color(0xFF43A047), // green
+    Color(0xFFFF8F00), // amber
+    Color(0xFF8E24AA), // purple
+)
+
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
     val uiState by viewModel.uiState.collectAsState()
@@ -73,6 +87,8 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
     val tracingAnim = remember { Animatable(0f) }
     val scope = rememberCoroutineScope()
+    var inkColor by remember { mutableStateOf(CRAYON_COLORS.first()) }
+    var showProgressMap by remember { mutableStateOf(false) }
 
     // On every new character: clear the canvas then auto-play the tracing animation once
     // so the child sees how the letter looks before drawing. Touching the canvas cancels it.
@@ -96,7 +112,7 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
                 .padding(horizontal = 16.dp, vertical = 12.dp),
             verticalArrangement = Arrangement.spacedBy(12.dp),
         ) {
-            HeaderBar(score = uiState.score)
+            HeaderBar(score = uiState.score, onProgressClick = { showProgressMap = true })
 
             LevelSelector(selected = uiState.level, onSelect = viewModel::selectLevel)
 
@@ -142,6 +158,7 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
                     DrawingCanvas(
                         controller = controller,
                         tracingCharacter = uiState.character,
+                        inkColor = inkColor,
                         tracingAnimProgress = tracingAnim.value,
                         onDrawStart = {
                             // Cancel animation the moment the child starts drawing.
@@ -150,6 +167,14 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
                         modifier = Modifier
                             .fillMaxSize()
                             .onSizeChanged { canvasSize = it },
+                    )
+                    // Crayon colour picker — bottom-centre overlay so it uses no extra height.
+                    InkColorPicker(
+                        selected = inkColor,
+                        onSelect = { inkColor = it },
+                        modifier = Modifier
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 10.dp),
                     )
                     RoundIconButton(
                         emoji = "🧽",
@@ -233,10 +258,20 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
             RecognizerOverlay(isError = recognizerState?.error != null)
         }
     }
+
+    if (showProgressMap) {
+        ProgressMapSheet(
+            level = uiState.level,
+            currentIndex = uiState.index,
+            masteredCharacters = uiState.masteredCharacters,
+            onCharacterSelect = viewModel::jumpToIndex,
+            onDismiss = { showProgressMap = false },
+        )
+    }
 }
 
 @Composable
-private fun HeaderBar(score: Int) {
+private fun HeaderBar(score: Int, onProgressClick: () -> Unit) {
     Row(
         modifier = Modifier.fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -248,6 +283,13 @@ private fun HeaderBar(score: Int) {
             color = Color(0xFF3F51B5),
         )
         Spacer(Modifier.weight(1f))
+        RoundIconButton(
+            emoji = "📊",
+            onClick = onProgressClick,
+            container = Color(0xFFE3F2FD),
+            size = 40.dp,
+        )
+        Spacer(Modifier.size(8.dp))
         Card(
             shape = RoundedCornerShape(50),
             colors = CardDefaults.cardColors(containerColor = Color(0xFFFFF3D6)),
@@ -326,6 +368,40 @@ private fun RoundIconButton(
         elevation = ButtonDefaults.buttonElevation(defaultElevation = 2.dp),
     ) {
         Text(emoji, fontSize = 20.sp)
+    }
+}
+
+/**
+ * A row of crayon colour circles. The selected colour gets a 3dp white ring.
+ * Lives at the bottom of the drawing card as an overlay — uses no extra screen height.
+ */
+@Composable
+private fun InkColorPicker(
+    selected: Color,
+    onSelect: (Color) -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Row(
+        modifier = modifier
+            .background(Color.Black.copy(alpha = 0.10f), RoundedCornerShape(50))
+            .padding(horizontal = 10.dp, vertical = 6.dp),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically,
+    ) {
+        CRAYON_COLORS.forEach { color ->
+            val isSelected = color == selected
+            Box(
+                modifier = Modifier
+                    .padding(horizontal = 5.dp)
+                    .size(30.dp)
+                    // White ring around the active colour
+                    .border(if (isSelected) 3.dp else 0.dp, Color.White, CircleShape)
+                    .padding(if (isSelected) 3.dp else 0.dp)
+                    .clip(CircleShape)
+                    .background(color)
+                    .clickable { onSelect(color) },
+            )
+        }
     }
 }
 

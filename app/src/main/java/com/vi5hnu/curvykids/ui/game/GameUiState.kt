@@ -12,6 +12,8 @@ data class GameUiState(
     val score: Int = 0,
     val isChecking: Boolean = false,
     val lastResult: AnswerResult? = null,
+    /** Characters the child has answered correctly at least once in this level. */
+    val masteredCharacters: Set<String> = emptySet(),
 ) {
     /** The character the child is currently asked to draw. */
     val character: String get() = level.characters[index]

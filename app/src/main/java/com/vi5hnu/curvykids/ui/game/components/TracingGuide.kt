@@ -29,6 +29,7 @@ data class GlyphData(
  * Builds [GlyphData] for [character] scaled and centred inside [width] × [height] px.
  * Returns null when the character produces an empty outline (shouldn't happen for A–Z / 0–9).
  */
+@Suppress("DEPRECATION") // computeBounds(RectF, Boolean) deprecated in API 35; minSdk = 29
 fun buildGlyphData(
     character: String,
     width: Float,

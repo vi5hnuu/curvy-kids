@@ -90,6 +90,7 @@ fun DrawingCanvas(
     controller: DrawingController,
     tracingCharacter: String,
     modifier: Modifier = Modifier,
+    inkColor: Color = INK_COLOR,
     tracingAnimProgress: Float = 0f,
     onDrawStart: () -> Unit = {},
 ) {
@@ -172,7 +173,7 @@ fun DrawingCanvas(
             val path = stroke.points.toSmoothedPath()
             drawPath(
                 path = path,
-                color = INK_COLOR,
+                color = inkColor,
                 style = DrawStroke(width = INK_WIDTH, cap = StrokeCap.Round, join = StrokeJoin.Round),
             )
         }
