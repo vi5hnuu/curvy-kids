@@ -26,7 +26,7 @@ fun CelebrationOverlay(modifier: Modifier = Modifier) {
                 damping = 0.9f,
                 spread = 360,
                 colors = CONFETTI_COLORS,
-                emitter = Emitter(duration = 120, TimeUnit.MILLISECONDS).max(120),
+                emitter = Emitter(duration = 600, TimeUnit.MILLISECONDS).max(200),
                 position = Position.Relative(0.5, 0.35),
             )
         ),
