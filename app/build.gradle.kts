@@ -37,6 +37,14 @@ android {
     buildFeatures {
         compose = true
     }
+
+    packaging {
+        jniLibs {
+            // Store .so files uncompressed so the OS can memory-map them at 16 KB page
+            // boundaries — required for Android 15+ 16 KB page-size support (API 35 target).
+            useLegacyPackaging = false
+        }
+    }
 }
 
 dependencies {
