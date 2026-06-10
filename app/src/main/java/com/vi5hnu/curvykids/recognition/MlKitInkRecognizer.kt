@@ -78,7 +78,8 @@ class MlKitInkRecognizer(
         if (strokes.isEmpty()) return emptyList()
 
         val ink = strokes.toInk()
-        val context = buildContext(writingArea, preContext)
+        // Building the context must never crash recognition; fall back to no hint on failure.
+        val context = runCatching { buildContext(writingArea, preContext) }.getOrNull()
 
         // Try with the writing-area hint first. The hint usually improves single-character
         // accuracy, but on some devices/models it can misbehave (throw or return nothing),
@@ -119,11 +120,11 @@ class MlKitInkRecognizer(
         preContext: String?,
     ): RecognitionContext? {
         if (writingArea == null && preContext.isNullOrEmpty()) return null
+        // ML Kit's builder REQUIRES preContext to be set, even if empty — omitting it makes
+        // build() throw "Missing required properties: preContext".
         return RecognitionContext.builder()
-            .apply {
-                writingArea?.let { setWritingArea(MlKitWritingArea(it.width, it.height)) }
-                if (!preContext.isNullOrEmpty()) setPreContext(preContext)
-            }
+            .setPreContext(preContext ?: "")
+            .apply { writingArea?.let { setWritingArea(MlKitWritingArea(it.width, it.height)) } }
             .build()
     }
 
