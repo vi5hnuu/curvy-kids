@@ -134,7 +134,7 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
                     )
                     RoundIconButton(
                         emoji = "🧽",
-                        onClick = { controller.clear() },
+                        onClick = { controller.clear(); viewModel.clearFeedback() },
                         container = Color(0xFFFFE0E6),
                         modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
                     )
@@ -161,7 +161,7 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
                     size = 56.dp,
                 )
 
-                val canCheck = controller.strokes.isNotEmpty() && !uiState.isChecking
+                val canCheck = controller.hasDrawing && !uiState.isChecking
                 Button(
                     onClick = {
                         viewModel.check(

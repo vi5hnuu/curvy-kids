@@ -105,6 +105,11 @@ class GameViewModel(
         viewModelScope.launch { goTo(level, progress.loadIndex(level)) }
     }
 
+    /** Clears the last answer result so the feedback badge disappears (e.g. after erasing). */
+    fun clearFeedback() {
+        _uiState.update { it.copy(lastResult = null) }
+    }
+
     /** Re-speaks the current character's phonics (the "hear it" 🔊 button). */
     fun speakCurrent() {
         phonics.speak(Phonics.phraseFor(_uiState.value.character))
