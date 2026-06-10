@@ -1,6 +1,7 @@
 package com.vi5hnu.curvykids.ui.game.components
 
 import android.graphics.Paint
+import android.graphics.PathMeasure
 import android.graphics.RectF
 import android.graphics.Typeface
 import androidx.compose.ui.graphics.Path
@@ -9,24 +10,36 @@ import kotlin.math.min
 import android.graphics.Path as AndroidPath
 
 /**
- * Builds a centred, scaled glyph outline for [character] that can be drawn on the canvas as
- * a dashed tracing guide. The shape is derived from the font at runtime (no image assets).
+ * All shape data derived from a single glyph. Built once per character/size change and
+ * reused across animation frames so we pay the [Paint.getTextPath] + [PathMeasure] cost
+ * at most once per character transition.
  *
- * @param width  target canvas width in px.
- * @param height target canvas height in px.
- * @param fillRatio fraction of the canvas the glyph should occupy.
+ * @param androidPath the raw (Android) glyph outline after scaling/centering.
+ * @param measure     [PathMeasure] on [androidPath]; [getPosTan]/[getSegment] are safe to
+ *                    call repeatedly because they do not advance the internal contour cursor.
+ * @param composePath Compose equivalent of [androidPath] used for static dashed rendering.
  */
-fun buildGlyphPath(
+data class GlyphData(
+    val androidPath: AndroidPath,
+    val measure: PathMeasure,
+    val composePath: Path,
+)
+
+/**
+ * Builds [GlyphData] for [character] scaled and centred inside [width] × [height] px.
+ * Returns null when the character produces an empty outline (shouldn't happen for A–Z / 0–9).
+ */
+fun buildGlyphData(
     character: String,
     width: Float,
     height: Float,
     fillRatio: Float = 0.7f,
-): Path {
-    if (character.isEmpty() || width <= 0f || height <= 0f) return Path()
+): GlyphData? {
+    if (character.isEmpty() || width <= 0f || height <= 0f) return null
 
     val paint = Paint(Paint.ANTI_ALIAS_FLAG).apply {
         typeface = Typeface.create(Typeface.SANS_SERIF, Typeface.BOLD)
-        textSize = height // arbitrary base size; we rescale to fit below
+        textSize = height // arbitrary base; rescaled below
     }
 
     val path = AndroidPath()
@@ -34,14 +47,26 @@ fun buildGlyphPath(
 
     val bounds = RectF()
     path.computeBounds(bounds, true)
-    if (bounds.width() <= 0f || bounds.height() <= 0f) return Path()
+    if (bounds.width() <= 0f || bounds.height() <= 0f) return null
 
     val scale = min(width * fillRatio / bounds.width(), height * fillRatio / bounds.height())
-    val matrix = android.graphics.Matrix().apply {
+    android.graphics.Matrix().apply {
         postTranslate(-bounds.centerX(), -bounds.centerY()) // origin at glyph centre
         postScale(scale, scale)
         postTranslate(width / 2f, height / 2f)              // move to canvas centre
-    }
-    path.transform(matrix)
-    return path.asComposePath()
+    }.let { path.transform(it) }
+
+    return GlyphData(
+        androidPath = path,
+        measure = PathMeasure(path, false),
+        composePath = path.asComposePath(),
+    )
 }
+
+/** Convenience wrapper — returns only the Compose path for callers that don't animate. */
+fun buildGlyphPath(
+    character: String,
+    width: Float,
+    height: Float,
+    fillRatio: Float = 0.7f,
+): Path = buildGlyphData(character, width, height, fillRatio)?.composePath ?: Path()

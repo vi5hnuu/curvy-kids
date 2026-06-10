@@ -1,6 +1,9 @@
 package com.vi5hnu.curvykids.ui.game
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.LinearEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.Image
@@ -29,7 +32,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -65,9 +71,17 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
 
     val controller = rememberDrawingController()
     var canvasSize by remember { mutableStateOf(IntSize.Zero) }
+    val tracingAnim = remember { Animatable(0f) }
+    val scope = rememberCoroutineScope()
 
-    // Clear the canvas whenever we move to a new character.
-    LaunchedEffect(uiState.level, uiState.index) { controller.clear() }
+    // On every new character: clear the canvas then auto-play the tracing animation once
+    // so the child sees how the letter looks before drawing. Touching the canvas cancels it.
+    LaunchedEffect(uiState.level, uiState.index) {
+        controller.clear()
+        tracingAnim.snapTo(0f)
+        delay(350) // brief pause so the child reads the reference image first
+        tracingAnim.animateTo(1f, animationSpec = tween(durationMillis = 2000, easing = LinearEasing))
+    }
 
     Box(
         modifier = modifier
@@ -128,6 +142,11 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
                     DrawingCanvas(
                         controller = controller,
                         tracingCharacter = uiState.character,
+                        tracingAnimProgress = tracingAnim.value,
+                        onDrawStart = {
+                            // Cancel animation the moment the child starts drawing.
+                            scope.launch { tracingAnim.snapTo(0f) }
+                        },
                         modifier = Modifier
                             .fillMaxSize()
                             .onSizeChanged { canvasSize = it },
@@ -137,6 +156,21 @@ fun AlphabetScreen(viewModel: GameViewModel, modifier: Modifier = Modifier) {
                         onClick = { controller.clear(); viewModel.clearFeedback() },
                         container = Color(0xFFFFE0E6),
                         modifier = Modifier.align(Alignment.TopStart).padding(8.dp),
+                    )
+                    // Replay the tracing animation so the child can watch it again.
+                    RoundIconButton(
+                        emoji = "👆",
+                        onClick = {
+                            scope.launch {
+                                tracingAnim.snapTo(0f)
+                                tracingAnim.animateTo(
+                                    1f,
+                                    animationSpec = tween(durationMillis = 2000, easing = LinearEasing),
+                                )
+                            }
+                        },
+                        container = Color(0xFFE8F5E9),
+                        modifier = Modifier.align(Alignment.TopEnd).padding(8.dp),
                     )
                     FeedbackBadge(
                         result = uiState.lastResult,
