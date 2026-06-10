@@ -21,12 +21,19 @@ class PhonicsSpeaker(context: Context) {
     @Volatile
     private var ready = false
 
+    // Holds the first speak() call that arrives before TTS is ready, so the initial
+    // "Draw the letter A" prompt isn't silently dropped due to the async init race.
+    @Volatile
+    private var pendingText: String? = null
+
     private val tts: TextToSpeech = TextToSpeech(context.applicationContext) { status ->
         if (status == TextToSpeech.SUCCESS) {
             tts.language = Locale.US
             // Slower rate is easier for young children to follow.
             tts.setSpeechRate(0.85f)
             ready = true
+            pendingText?.let { speak(it) }
+            pendingText = null
         } else {
             Log.e(TAG, "TextToSpeech init failed: $status")
         }
@@ -34,7 +41,11 @@ class PhonicsSpeaker(context: Context) {
 
     /** Speaks the given phrase, replacing anything currently being spoken. */
     fun speak(text: String) {
-        if (!ready || text.isBlank()) return
+        if (text.isBlank()) return
+        if (!ready) {
+            pendingText = text  // will fire once TTS is initialised
+            return
+        }
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, text)
     }
 
