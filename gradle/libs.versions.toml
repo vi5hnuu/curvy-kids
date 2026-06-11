@@ -14,6 +14,7 @@ lottieCompose = "6.1.0"
 datastorePreferences = "1.1.1"
 konfetti = "2.0.4"
 lifecycleViewmodelCompose = "2.9.0"
+navigationCompose = "2.8.9"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -36,6 +37,7 @@ lottie-compose = { module = "com.airbnb.android:lottie-compose", version.ref = "
 androidx-datastore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "datastorePreferences" }
 androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-viewmodel-compose", version.ref = "lifecycleViewmodelCompose" }
 konfetti-compose = { module = "nl.dionsegijn:konfetti-compose", version.ref = "konfetti" }
+androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

@@ -79,4 +79,7 @@ dependencies {
 
     //lotti
     implementation(libs.lottie.compose)
+
+    // Navigation between tabs and activity screens
+    implementation(libs.androidx.navigation.compose)
 }
