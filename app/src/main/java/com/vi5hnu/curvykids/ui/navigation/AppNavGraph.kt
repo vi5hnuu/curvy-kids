@@ -58,6 +58,7 @@ fun AppNavGraph(
 ) {
     val navController = rememberNavController()
     val appState by appViewModel.uiState.collectAsState()
+    val appSettings by appViewModel.settings.collectAsState()
 
     // Gradient background applied to the full screen at all times
     val bgGradient = Brush.verticalGradient(listOf(BgTop, BgBottom))
@@ -135,7 +136,14 @@ fun AppNavGraph(
                 }
 
                 if (showZone) {
-                    ParentZone(appState = appState, onDismiss = { showZone = false })
+                    ParentZone(
+                        appState = appState,
+                        settings = appSettings,
+                        onSoundEffects = appViewModel::setSoundEffects,
+                        onBackgroundMusic = appViewModel::setBackgroundMusic,
+                        onPlayReminder = appViewModel::setPlayReminder,
+                        onDismiss = { showZone = false },
+                    )
                 }
             }
 
@@ -185,6 +193,7 @@ fun AppNavGraph(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
+                        onAddBadge = appViewModel::addBadge,
                     )
 
                     TopicKind.COUNT -> CountScreen(

@@ -12,6 +12,13 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
+/** Persisted parent-facing settings (sound, music, reminder). */
+data class AppSettings(
+    val soundEffects: Boolean = true,
+    val backgroundMusic: Boolean = false,
+    val playReminder: Boolean = true,
+)
+
 /**
  * Shared ViewModel that holds global app state — stars, streak, mastered items, badges,
  * lastTopicId. Owned at the Activity level so all screens share the same instance.
@@ -20,6 +27,9 @@ class AppViewModel(private val repo: AppRepository) : ViewModel() {
 
     private val _uiState = MutableStateFlow(AppUiState())
     val uiState: StateFlow<AppUiState> = _uiState.asStateFlow()
+
+    private val _settings = MutableStateFlow(AppSettings())
+    val settings: StateFlow<AppSettings> = _settings.asStateFlow()
 
     init {
         viewModelScope.launch {
@@ -38,6 +48,15 @@ class AppViewModel(private val repo: AppRepository) : ViewModel() {
                     lastTopicId = lastTopic,
                 )
             }.collect { _uiState.value = it }
+        }
+        viewModelScope.launch {
+            combine(
+                repo.soundEffectsFlow,
+                repo.backgroundMusicFlow,
+                repo.playReminderFlow,
+            ) { sound, music, reminder ->
+                AppSettings(soundEffects = sound, backgroundMusic = music, playReminder = reminder)
+            }.collect { _settings.value = it }
         }
     }
 
@@ -62,6 +81,18 @@ class AppViewModel(private val repo: AppRepository) : ViewModel() {
     /** Remember which topic the child played last (for the "Continue" card). */
     fun setLastTopic(topicId: String) {
         viewModelScope.launch { repo.setLastTopic(topicId) }
+    }
+
+    fun setSoundEffects(enabled: Boolean) {
+        viewModelScope.launch { repo.setSoundEffects(enabled) }
+    }
+
+    fun setBackgroundMusic(enabled: Boolean) {
+        viewModelScope.launch { repo.setBackgroundMusic(enabled) }
+    }
+
+    fun setPlayReminder(enabled: Boolean) {
+        viewModelScope.launch { repo.setPlayReminder(enabled) }
     }
 
     companion object {

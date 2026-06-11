@@ -17,16 +17,13 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vi5hnu.curvykids.ui.app.AppSettings
 import com.vi5hnu.curvykids.ui.app.AppUiState
 import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.theme.Coral
@@ -39,11 +36,17 @@ import com.vi5hnu.curvykids.ui.theme.TintTeal
 
 /**
  * ParentZone bottom sheet — shows stars earned, items mastered, and setting toggles.
+ * Toggle states are persisted via [settings] / [onSoundEffects] / [onBackgroundMusic] /
+ * [onPlayReminder] so they survive sheet dismissals and app restarts.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ParentZone(
     appState: AppUiState,
+    settings: AppSettings,
+    onSoundEffects: (Boolean) -> Unit,
+    onBackgroundMusic: (Boolean) -> Unit,
+    onPlayReminder: (Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -88,11 +91,11 @@ fun ParentZone(
             Spacer(Modifier.height(18.dp))
 
             // ── Toggles ───────────────────────────────────────────────────
-            ToggleRow(label = "Sound effects & voice", default = true)
+            ToggleRow(label = "Sound effects & voice", checked = settings.soundEffects, onChange = onSoundEffects)
             HorizontalDivider(color = InkFaint.copy(alpha = 0.3f))
-            ToggleRow(label = "Background music", default = false)
+            ToggleRow(label = "Background music", checked = settings.backgroundMusic, onChange = onBackgroundMusic)
             HorizontalDivider(color = InkFaint.copy(alpha = 0.3f))
-            ToggleRow(label = "Daily play reminder", default = true)
+            ToggleRow(label = "Daily play reminder", checked = settings.playReminder, onChange = onPlayReminder)
 
             Spacer(Modifier.height(8.dp))
 
@@ -149,8 +152,7 @@ private fun StatTile(
 }
 
 @Composable
-private fun ToggleRow(label: String, default: Boolean) {
-    var on by remember { mutableStateOf(default) }
+private fun ToggleRow(label: String, checked: Boolean, onChange: (Boolean) -> Unit) {
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -166,8 +168,8 @@ private fun ToggleRow(label: String, default: Boolean) {
             modifier = Modifier.weight(1f),
         )
         Switch(
-            checked = on,
-            onCheckedChange = { on = it },
+            checked = checked,
+            onCheckedChange = onChange,
             colors = SwitchDefaults.colors(
                 checkedThumbColor = Color.White,
                 checkedTrackColor = Teal,
