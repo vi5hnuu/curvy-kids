@@ -4,12 +4,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -113,8 +115,9 @@ fun AppNavGraph(
 
             // ── Parent tab ─────────────────────────────────────────────────
             composable(Screen.Parent.route) {
-                var showGate by remember { mutableStateOf(false) }
-                var showZone by remember { mutableStateOf(false) }
+                // rememberSaveable so config changes (rotation) don't dismiss an open sheet
+                var showGate by rememberSaveable { mutableStateOf(false) }
+                var showZone by rememberSaveable { mutableStateOf(false) }
 
                 ParentTab(
                     onUnlock = { showGate = true },
@@ -146,13 +149,30 @@ fun AppNavGraph(
 
                 when (topic.kind) {
                     TopicKind.TRACE -> {
-                        // Switch the shared GameViewModel to the correct level
+                        // Schedule the level switch; GameViewModel.selectLevel is async
+                        // (loads masteredSet from DataStore before calling goTo).
                         LaunchedEffect(topicId) { gameViewModel.selectLevel(topic.set!!) }
-                        TraceScreen(
-                            viewModel = gameViewModel,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                        )
+
+                        val gameState by gameViewModel.uiState.collectAsState()
+
+                        // Don't render TraceScreen until the correct level is loaded —
+                        // prevents one or more frames of wrong-character content being shown
+                        // or recognised against the previous level's character.
+                        if (gameState.level == topic.set) {
+                            TraceScreen(
+                                viewModel = gameViewModel,
+                                onBack = { navController.popBackStack() },
+                                onReward = appViewModel::reward,
+                                onMarkMastered = appViewModel::markMastered,
+                            )
+                        } else {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center,
+                            ) {
+                                CircularProgressIndicator(color = topic.color)
+                            }
+                        }
                     }
 
                     TopicKind.SHAPES -> ShapesScreen(

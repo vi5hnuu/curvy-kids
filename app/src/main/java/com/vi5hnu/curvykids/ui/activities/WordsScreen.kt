@@ -66,6 +66,7 @@ fun WordsScreen(
 
     LaunchedEffect(wordIndex) {
         filled = 0
+        wrong = null   // clear any red-tile state from the previous word
         speaker?.speak(word.word)
     }
 
@@ -156,6 +157,8 @@ fun WordsScreen(
                 shuffled.forEach { ch ->
                     CandyButton(
                         onClick = {
+                            // Guard: ignore taps after word is complete or celebrate is showing
+                            if (filled >= letters.size || showCelebrate) return@CandyButton
                             if (ch == letters[filled]) {
                                 val nf = filled + 1
                                 filled = nf

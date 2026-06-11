@@ -78,14 +78,15 @@ fun CharStrip(
             // 5-column grid
             val rows = chars.chunked(5)
             Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                rows.forEach { row ->
+                rows.forEachIndexed { chunkIdx, row ->
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(10.dp),
                         modifier = Modifier.fillMaxWidth(),
                     ) {
-                        row.forEachIndexed { rowIdx, _ ->
-                            val globalIdx = chars.indexOf(row[rowIdx])
-                            val ch = row[rowIdx]
+                        row.forEachIndexed { rowIdx, ch ->
+                            // Use positional index (chunk * 5 + offset) rather than indexOf()
+                            // so duplicate characters (if any) navigate to the correct slot.
+                            val globalIdx = chunkIdx * 5 + rowIdx
                             val isCurrent = globalIdx == currentIndex
                             val isMastered = mastered.contains(ch)
 

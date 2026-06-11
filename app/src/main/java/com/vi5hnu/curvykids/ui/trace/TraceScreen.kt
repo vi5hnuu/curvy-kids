@@ -31,6 +31,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -67,15 +68,17 @@ import kotlinx.coroutines.launch
  * Redesigned tracing screen matching trace.jsx design.
  * Keeps all ML Kit recognition logic from GameViewModel unchanged.
  *
- * @param viewModel  The game/trace ViewModel.
- * @param onBack     Called when the back button is tapped.
- * @param onReward   Called with star amount when a correct answer is given.
+ * @param viewModel       The game/trace ViewModel.
+ * @param onBack          Called when the back button is tapped.
+ * @param onReward        Called with star amount when a correct answer is given.
+ * @param onMarkMastered  Called with (set, char) to sync mastery into AppRepository.
  */
 @Composable
 fun TraceScreen(
     viewModel: GameViewModel,
     onBack: () -> Unit,
     onReward: (Int) -> Unit = {},
+    onMarkMastered: (set: String, char: String) -> Unit = { _, _ -> },
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val recognizerState by viewModel.recognizerReady.collectAsState()
@@ -105,11 +108,18 @@ fun TraceScreen(
         tracingAnim.animateTo(1f, animationSpec = tween(durationMillis = 2000, easing = LinearEasing))
     }
 
-    // Give reward + advance after correct answer
+    // Clear lastResult when leaving so re-entry doesn't double-fire reward.
+    DisposableEffect(Unit) {
+        onDispose { viewModel.clearFeedback() }
+    }
+
+    // Give reward + sync mastery when a correct answer is accepted.
+    // Topic id ("upper"/"lower"/"numbers") maps to the set prefix in AppRepository.
     LaunchedEffect(uiState.lastResult) {
         if (uiState.lastResult == AnswerResult.CORRECT) {
             val alreadyMastered = uiState.masteredCharacters.contains(ch)
             onReward(if (alreadyMastered) 1 else 5)
+            onMarkMastered(topic.id, ch)
         }
     }
 
@@ -337,7 +347,10 @@ fun TraceScreen(
                             title = "Perfect!",
                             sub = Phonics.phraseFor(ch),
                             stars = if (uiState.masteredCharacters.contains(ch)) 1 else 3,
-                            onDone = { /* next() already scheduled via delay in VM */ },
+                            // For levelComplete, dismissLevelComplete() clears lastResult and
+                            // advances to the next level. For normal correct answers, GameViewModel
+                            // already calls next() after 1200ms which clears lastResult via goTo().
+                            onDone = { if (uiState.levelJustCompleted) viewModel.dismissLevelComplete() },
                         )
                     }
                 }

@@ -211,6 +211,9 @@ fun CountScreen(
                         newRound()
                     }
                 } else {
+                    // Reset both answer and tapped so the child can re-count from scratch.
+                    // Without this, all emoji stay locked (isTapped=true) while answer==null.
+                    tapped = listOf()
                     answer = null
                 }
             }
