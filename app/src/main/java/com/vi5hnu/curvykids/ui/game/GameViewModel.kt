@@ -45,12 +45,16 @@ class GameViewModel(
     /** Recognizer readiness, surfaced for the loading/error overlay. */
     val recognizerReady: StateFlow<HttpState?> = recognizer.ready
 
+    /** Shared TTS instance — exposed so activity screens can speak names without a second TTS. */
+    val speaker: PhonicsSpeaker get() = phonics
+
     init {
         viewModelScope.launch {
             val saved = progress.load()
             val mastered = progress.masteredSet(saved.level)
+            // Restore saved level/index without speaking — the prompt fires when the user
+            // actually opens the TraceScreen (via goTo() inside selectLevel()).
             _uiState.update { it.copy(level = saved.level, index = saved.index, masteredCharacters = mastered) }
-            speakPrompt()
         }
         viewModelScope.launch { recognizer.prepare() }
     }

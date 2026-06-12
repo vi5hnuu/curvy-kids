@@ -1,8 +1,5 @@
 package com.vi5hnu.curvykids.ui.trace
 
-import androidx.compose.animation.core.Animatable
-import androidx.compose.animation.core.LinearEasing
-import androidx.compose.animation.core.tween
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,8 +15,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.ArrowForward
+import androidx.compose.material.icons.automirrored.rounded.ArrowBack
+import androidx.compose.material.icons.automirrored.rounded.ArrowForward
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -29,7 +26,6 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.ui.Alignment
@@ -38,13 +34,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.IntSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.components.LottieViewer
 import com.vi5hnu.curvykids.data.content.Phonics
 import com.vi5hnu.curvykids.data.content.TOPICS
-import com.vi5hnu.curvykids.recognition.WritingArea
 import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Chip
@@ -61,8 +55,6 @@ import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.data.content.CRAYON_COLORS
 import com.vi5hnu.curvykids.ui.trace.components.CharStrip
 import com.vi5hnu.curvykids.ui.trace.components.DemoWipe
-import kotlinx.coroutines.delay
-import kotlinx.coroutines.launch
 
 /**
  * Redesigned tracing screen matching trace.jsx design.
@@ -84,9 +76,6 @@ fun TraceScreen(
     val recognizerState by viewModel.recognizerReady.collectAsState()
 
     val controller = rememberDrawingController()
-    val scope = rememberCoroutineScope()
-    var canvasSize by remember { mutableStateOf(IntSize.Zero) }
-    val tracingAnim = remember { Animatable(0f) }
     var demoKey by remember { mutableStateOf(0) }
     var inkColor by remember { mutableStateOf(CRAYON_COLORS.first()) }
     var showCharStrip by remember { mutableStateOf(false) }
@@ -99,13 +88,10 @@ fun TraceScreen(
     val word = Phonics.wordFor(ch)
     val emoji = Phonics.emojiFor(ch)
 
-    // Clear canvas + restart demo on every new character
+    // Clear canvas + restart DemoWipe on every new character
     LaunchedEffect(uiState.level, uiState.index) {
         controller.clear()
         demoKey++
-        tracingAnim.snapTo(0f)
-        delay(300)
-        tracingAnim.animateTo(1f, animationSpec = tween(durationMillis = 2000, easing = LinearEasing))
     }
 
     // Clear lastResult when leaving so re-entry doesn't double-fire reward.
@@ -250,18 +236,11 @@ fun TraceScreen(
                         demoKey = demoKey,
                     )
 
-                    // Drawing canvas (on top)
+                    // Drawing canvas (on top) — pure ink layer, guidance handled by ghost letter + DemoWipe
                     DrawingCanvas(
                         controller = controller,
-                        tracingCharacter = ch,
                         inkColor = inkColor,
-                        tracingAnimProgress = tracingAnim.value,
-                        onDrawStart = {
-                            scope.launch { tracingAnim.snapTo(0f) }
-                        },
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .onSizeChanged { canvasSize = it },
+                        modifier = Modifier.fillMaxSize(),
                     )
 
                     // Erase chip (top-left)
@@ -370,7 +349,7 @@ fun TraceScreen(
                     contentColor = InkFaint,
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
                         contentDescription = "Previous",
                         modifier = Modifier.size(26.dp),
                     )
@@ -381,9 +360,7 @@ fun TraceScreen(
                     onClick = {
                         viewModel.check(
                             strokes = controller.snapshot(),
-                            writingArea = canvasSize
-                                .takeIf { it != IntSize.Zero }
-                                ?.let { WritingArea(it.width.toFloat(), it.height.toFloat()) },
+                            writingArea = null,
                         )
                     },
                     enabled = canCheck,
@@ -413,7 +390,7 @@ fun TraceScreen(
                     contentColor = InkFaint,
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.ArrowForward,
+                        imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
                         contentDescription = "Next",
                         modifier = Modifier.size(26.dp),
                     )

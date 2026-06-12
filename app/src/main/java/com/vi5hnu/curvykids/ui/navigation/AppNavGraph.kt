@@ -194,36 +194,42 @@ fun AppNavGraph(
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
                         onAddBadge = appViewModel::addBadge,
+                        speaker = gameViewModel.speaker,
                     )
 
                     TopicKind.COUNT -> CountScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
+                        speaker = gameViewModel.speaker,
                     )
 
                     TopicKind.WORDS -> WordsScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
+                        speaker = gameViewModel.speaker,
                     )
 
                     TopicKind.ANIMALS -> AnimalsScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
+                        speaker = gameViewModel.speaker,
                     )
 
                     TopicKind.BODY -> BodyScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
+                        speaker = gameViewModel.speaker,
                     )
 
                     TopicKind.DAYS -> DaysScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
+                        speaker = gameViewModel.speaker,
                     )
 
                     TopicKind.DRAW -> DrawScreen(
