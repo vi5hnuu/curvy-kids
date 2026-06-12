@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -35,9 +34,9 @@ import com.vi5hnu.curvykids.ui.theme.TintSun
 import com.vi5hnu.curvykids.ui.theme.TintTeal
 
 /**
- * ParentZone bottom sheet — shows stars earned, items mastered, and setting toggles.
- * Toggle states are persisted via [settings] / [onSoundEffects] / [onBackgroundMusic] /
- * [onPlayReminder] so they survive sheet dismissals and app restarts.
+ * ParentZone bottom sheet — shows stars earned, items mastered, and the sound toggle.
+ * The toggle state is persisted via [settings] / [onSoundEffects] so it survives sheet
+ * dismissals and app restarts.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -45,8 +44,6 @@ fun ParentZone(
     appState: AppUiState,
     settings: AppSettings,
     onSoundEffects: (Boolean) -> Unit,
-    onBackgroundMusic: (Boolean) -> Unit,
-    onPlayReminder: (Boolean) -> Unit,
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
@@ -90,12 +87,8 @@ fun ParentZone(
 
             Spacer(Modifier.height(18.dp))
 
-            // ── Toggles ───────────────────────────────────────────────────
+            // ── Toggle ────────────────────────────────────────────────────
             ToggleRow(label = "Sound effects & voice", checked = settings.soundEffects, onChange = onSoundEffects)
-            HorizontalDivider(color = InkFaint.copy(alpha = 0.3f))
-            ToggleRow(label = "Background music", checked = settings.backgroundMusic, onChange = onBackgroundMusic)
-            HorizontalDivider(color = InkFaint.copy(alpha = 0.3f))
-            ToggleRow(label = "Daily play reminder", checked = settings.playReminder, onChange = onPlayReminder)
 
             Spacer(Modifier.height(8.dp))
 

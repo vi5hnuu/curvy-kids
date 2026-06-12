@@ -12,11 +12,9 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 
-/** Persisted parent-facing settings (sound, music, reminder). */
+/** Persisted parent-facing settings. */
 data class AppSettings(
     val soundEffects: Boolean = true,
-    val backgroundMusic: Boolean = false,
-    val playReminder: Boolean = true,
 )
 
 /**
@@ -50,13 +48,9 @@ class AppViewModel(private val repo: AppRepository) : ViewModel() {
             }.collect { _uiState.value = it }
         }
         viewModelScope.launch {
-            combine(
-                repo.soundEffectsFlow,
-                repo.backgroundMusicFlow,
-                repo.playReminderFlow,
-            ) { sound, music, reminder ->
-                AppSettings(soundEffects = sound, backgroundMusic = music, playReminder = reminder)
-            }.collect { _settings.value = it }
+            repo.soundEffectsFlow.collect { sound ->
+                _settings.value = AppSettings(soundEffects = sound)
+            }
         }
     }
 
@@ -85,14 +79,6 @@ class AppViewModel(private val repo: AppRepository) : ViewModel() {
 
     fun setSoundEffects(enabled: Boolean) {
         viewModelScope.launch { repo.setSoundEffects(enabled) }
-    }
-
-    fun setBackgroundMusic(enabled: Boolean) {
-        viewModelScope.launch { repo.setBackgroundMusic(enabled) }
-    }
-
-    fun setPlayReminder(enabled: Boolean) {
-        viewModelScope.launch { repo.setPlayReminder(enabled) }
     }
 
     companion object {

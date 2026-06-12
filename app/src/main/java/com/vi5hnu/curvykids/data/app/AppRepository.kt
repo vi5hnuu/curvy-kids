@@ -24,8 +24,6 @@ class AppRepository(private val context: Context) {
     private val BADGES            = stringSetPreferencesKey("badges")
     private val LAST_TOPIC        = stringPreferencesKey("last_topic")
     private val SOUND_EFFECTS     = booleanPreferencesKey("sound_effects")
-    private val BACKGROUND_MUSIC  = booleanPreferencesKey("background_music")
-    private val PLAY_REMINDER     = booleanPreferencesKey("play_reminder")
 
     val starsFlow: Flow<Int> = context.dataStore.data.map { it[STARS] ?: 0 }
     val streakFlow: Flow<Int> = context.dataStore.data.map { it[STREAK] ?: 1 }
@@ -37,8 +35,6 @@ class AppRepository(private val context: Context) {
     }
     val lastTopicFlow: Flow<String?> = context.dataStore.data.map { it[LAST_TOPIC] }
     val soundEffectsFlow: Flow<Boolean> = context.dataStore.data.map { it[SOUND_EFFECTS] ?: true }
-    val backgroundMusicFlow: Flow<Boolean> = context.dataStore.data.map { it[BACKGROUND_MUSIC] ?: false }
-    val playReminderFlow: Flow<Boolean> = context.dataStore.data.map { it[PLAY_REMINDER] ?: true }
 
     suspend fun addStars(amount: Int) {
         context.dataStore.edit { prefs ->
@@ -68,13 +64,5 @@ class AppRepository(private val context: Context) {
 
     suspend fun setSoundEffects(enabled: Boolean) {
         context.dataStore.edit { it[SOUND_EFFECTS] = enabled }
-    }
-
-    suspend fun setBackgroundMusic(enabled: Boolean) {
-        context.dataStore.edit { it[BACKGROUND_MUSIC] = enabled }
-    }
-
-    suspend fun setPlayReminder(enabled: Boolean) {
-        context.dataStore.edit { it[PLAY_REMINDER] = enabled }
     }
 }

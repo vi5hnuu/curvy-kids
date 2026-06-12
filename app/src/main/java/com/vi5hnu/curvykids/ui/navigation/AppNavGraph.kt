@@ -146,8 +146,6 @@ fun AppNavGraph(
                         appState = appState,
                         settings = appSettings,
                         onSoundEffects = appViewModel::setSoundEffects,
-                        onBackgroundMusic = appViewModel::setBackgroundMusic,
-                        onPlayReminder = appViewModel::setPlayReminder,
                         onDismiss = { showZone = false },
                     )
                 }
