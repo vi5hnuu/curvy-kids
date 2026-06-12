@@ -95,6 +95,7 @@ fun TraceScreen(
     }
 
     // Clear lastResult when leaving so re-entry doesn't double-fire reward.
+    // (Voice is silenced centrally by the Topic composable's DisposableEffect.)
     DisposableEffect(Unit) {
         onDispose { viewModel.clearFeedback() }
     }

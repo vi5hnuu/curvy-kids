@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -154,6 +155,12 @@ fun AppNavGraph(
             ) { entry ->
                 val topicId = entry.arguments?.getString("topicId") ?: return@composable
                 val topic = TOPICS.find { it.id == topicId } ?: return@composable
+
+                // Silence the shared voice when leaving ANY topic screen, so a prompt that was
+                // mid-sentence ("Find the red…") doesn't keep talking on the tab screens.
+                DisposableEffect(topicId) {
+                    onDispose { gameViewModel.speaker.stop() }
+                }
 
                 when (topic.kind) {
                     TopicKind.TRACE -> {

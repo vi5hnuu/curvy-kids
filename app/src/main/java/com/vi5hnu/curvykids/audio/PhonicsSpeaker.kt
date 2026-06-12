@@ -49,6 +49,16 @@ class PhonicsSpeaker(context: Context) {
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, text)
     }
 
+    /**
+     * Immediately silences any in-progress or queued speech without shutting the engine
+     * down (unlike [release]). Call this when leaving a screen so a long prompt doesn't keep
+     * talking after the child has navigated away. Also drops a not-yet-spoken [pendingText].
+     */
+    fun stop() {
+        pendingText = null
+        if (ready) tts.stop()
+    }
+
     fun release() {
         tts.stop()
         tts.shutdown()
