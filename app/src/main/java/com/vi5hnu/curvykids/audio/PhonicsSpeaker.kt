@@ -21,6 +21,14 @@ class PhonicsSpeaker(context: Context) {
     @Volatile
     private var ready = false
 
+    /** When true, [speak] is a no-op and any in-progress speech is halted (parent sound toggle). */
+    @Volatile
+    var muted: Boolean = false
+        set(value) {
+            field = value
+            if (value) stop()
+        }
+
     // Holds the first speak() call that arrives before TTS is ready, so the initial
     // "Draw the letter A" prompt isn't silently dropped due to the async init race.
     @Volatile
@@ -41,7 +49,7 @@ class PhonicsSpeaker(context: Context) {
 
     /** Speaks the given phrase, replacing anything currently being spoken. */
     fun speak(text: String) {
-        if (text.isBlank()) return
+        if (text.isBlank() || muted) return
         if (!ready) {
             pendingText = text  // will fire once TTS is initialised
             return

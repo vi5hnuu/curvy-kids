@@ -48,6 +48,15 @@ class GameViewModel(
     /** Shared TTS instance — exposed so activity screens can speak names without a second TTS. */
     val speaker: PhonicsSpeaker get() = phonics
 
+    /**
+     * Enables/disables all game audio (voice + sound effects), driven by the parent zone's
+     * "Sound effects & voice" toggle. Muting also halts any in-progress speech.
+     */
+    fun setAudioEnabled(enabled: Boolean) {
+        phonics.muted = !enabled
+        sound.muted = !enabled
+    }
+
     init {
         viewModelScope.launch {
             val saved = progress.load()

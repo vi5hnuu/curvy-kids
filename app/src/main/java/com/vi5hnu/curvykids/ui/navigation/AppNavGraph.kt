@@ -61,6 +61,11 @@ fun AppNavGraph(
     val appState by appViewModel.uiState.collectAsState()
     val appSettings by appViewModel.settings.collectAsState()
 
+    // Apply the parent "Sound effects & voice" toggle to the shared audio engines.
+    LaunchedEffect(appSettings.soundEffects) {
+        gameViewModel.setAudioEnabled(appSettings.soundEffects)
+    }
+
     // Gradient background applied to the full screen at all times
     val bgGradient = Brush.verticalGradient(listOf(BgTop, BgBottom))
 
@@ -194,6 +199,7 @@ fun AppNavGraph(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
+                        speaker = gameViewModel.speaker,
                     )
 
                     TopicKind.COLORS -> ColorsScreen(

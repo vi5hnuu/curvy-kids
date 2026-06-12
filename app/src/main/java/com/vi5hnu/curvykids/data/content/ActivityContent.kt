@@ -7,12 +7,16 @@ import androidx.compose.ui.graphics.Color
 data class Shape(val id: String, val name: String, val color: Color)
 
 val SHAPES = listOf(
-    Shape("circle",   "Circle",   Color(0xFF46A6F0)),
-    Shape("square",   "Square",   Color(0xFFFF8B6B)),
-    Shape("triangle", "Triangle", Color(0xFF4FCB94)),
-    Shape("star",     "Star",     Color(0xFFFFC24A)),
-    Shape("heart",    "Heart",    Color(0xFFFF8FB6)),
-    Shape("diamond",  "Diamond",  Color(0xFFA88BF6)),
+    Shape("circle",    "Circle",    Color(0xFF46A6F0)),
+    Shape("square",    "Square",    Color(0xFFFF8B6B)),
+    Shape("triangle",  "Triangle",  Color(0xFF4FCB94)),
+    Shape("star",      "Star",      Color(0xFFFFC24A)),
+    Shape("heart",     "Heart",     Color(0xFFFF8FB6)),
+    Shape("diamond",   "Diamond",   Color(0xFFA88BF6)),
+    Shape("rectangle", "Rectangle", Color(0xFF1FC2AE)),
+    Shape("oval",      "Oval",      Color(0xFFFF5A52)),
+    Shape("pentagon",  "Pentagon",  Color(0xFF38CFE0)),
+    Shape("hexagon",   "Hexagon",   Color(0xFFFF9F1C)),
 )
 
 // ── Colors ────────────────────────────────────────────────────────────────────
@@ -41,7 +45,9 @@ data class WordEntry(val word: String, val emoji: String)
 val WORD_LIST = listOf(
     WordEntry("CAT", "🐱"), WordEntry("DOG", "🐶"), WordEntry("SUN", "☀️"),
     WordEntry("BUS", "🚌"), WordEntry("HAT", "🎩"), WordEntry("COW", "🐮"),
-    WordEntry("PIG", "🐷"), WordEntry("BEE", "🐝"),
+    WordEntry("PIG", "🐷"), WordEntry("BEE", "🐝"), WordEntry("FOX", "🦊"),
+    WordEntry("OWL", "🦉"), WordEntry("BAT", "🦇"), WordEntry("HEN", "🐔"),
+    WordEntry("CUP", "🥤"), WordEntry("BED", "🛏️"), WordEntry("CAR", "🚗"),
 )
 
 // ── Animals ───────────────────────────────────────────────────────────────────
@@ -49,10 +55,12 @@ val WORD_LIST = listOf(
 data class Animal(val name: String, val emoji: String, val sound: String)
 
 val ANIMALS = listOf(
-    Animal("Lion",  "🦁", "Roar!"),  Animal("Dog",   "🐶", "Woof!"),
-    Animal("Cat",   "🐱", "Meow!"),  Animal("Cow",   "🐮", "Moo!"),
-    Animal("Duck",  "🦆", "Quack!"), Animal("Frog",  "🐸", "Ribbit!"),
-    Animal("Sheep", "🐑", "Baa!"),   Animal("Horse", "🐴", "Neigh!"),
+    Animal("Lion",     "🦁", "Roar!"),     Animal("Dog",   "🐶", "Woof!"),
+    Animal("Cat",      "🐱", "Meow!"),     Animal("Cow",   "🐮", "Moo!"),
+    Animal("Duck",     "🦆", "Quack!"),    Animal("Frog",  "🐸", "Ribbit!"),
+    Animal("Sheep",    "🐑", "Baa!"),      Animal("Horse", "🐴", "Neigh!"),
+    Animal("Pig",      "🐷", "Oink!"),     Animal("Bee",   "🐝", "Buzz!"),
+    Animal("Bird",     "🐦", "Tweet!"),    Animal("Elephant", "🐘", "Trumpet!"),
 )
 
 // ── Body Parts ────────────────────────────────────────────────────────────────
@@ -63,6 +71,8 @@ val BODY_PARTS = listOf(
     BodyPart("Hand",  "✋"), BodyPart("Eye",   "👁️"),
     BodyPart("Ear",   "👂"), BodyPart("Nose",  "👃"),
     BodyPart("Foot",  "🦶"), BodyPart("Mouth", "👄"),
+    BodyPart("Hair",  "💇"), BodyPart("Tooth", "🦷"),
+    BodyPart("Leg",   "🦵"), BodyPart("Tongue","👅"),
 )
 
 // ── Days of the Week ──────────────────────────────────────────────────────────

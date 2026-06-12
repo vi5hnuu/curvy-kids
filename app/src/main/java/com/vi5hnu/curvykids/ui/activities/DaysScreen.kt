@@ -10,10 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,14 +30,19 @@ import com.vi5hnu.curvykids.audio.PhonicsSpeaker
 import com.vi5hnu.curvykids.data.content.DAY_COLORS
 import com.vi5hnu.curvykids.data.content.DAYS
 import com.vi5hnu.curvykids.data.content.Topic
-import com.vi5hnu.curvykids.ui.components.CardSurface
-import com.vi5hnu.curvykids.ui.components.ScreenHeader
+import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Grape
 import com.vi5hnu.curvykids.ui.theme.Ink
 import java.util.Calendar
 
-/** Days of the Week — vertical list with today highlighted. */
+/** Day before [day] in the week, wrapping Sunday→Saturday. */
+private fun dayBefore(day: String): String {
+    val i = DAYS.indexOf(day)
+    return DAYS[(i - 1 + DAYS.size) % DAYS.size]
+}
+
+/** Days of the Week — Learn (today + full week) + Play ("What comes next?" quiz). */
 @Composable
 fun DaysScreen(
     topic: Topic,
@@ -47,18 +50,48 @@ fun DaysScreen(
     onReward: (Int) -> Unit,
     speaker: PhonicsSpeaker? = null,
 ) {
+    DiscoverActivity(
+        topic = topic,
+        onBack = onBack,
+        quizItems = DAYS,
+        quizPromptLabel = "WHAT COMES AFTER…",
+        keyOf = { it },
+        speakFor = { "What comes after ${dayBefore(it)}?" },
+        onReward = onReward,
+        speaker = speaker,
+        celebrateTitle = "Day Star!",
+        learnContent = { DaysLearnList(onReward = onReward, speaker = speaker) },
+        quizPrompt = { target ->
+            Text(
+                text = dayBefore(target),
+                fontFamily = FontDisplay,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 32.sp,
+                color = topic.color,
+            )
+        },
+        quizOption = { day ->
+            Text(
+                text = day,
+                fontFamily = FontDisplay,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 18.sp,
+                color = Ink,
+            )
+        },
+    )
+}
+
+/** Original explore content — "Today is" card + the week list (tap a day to hear it). */
+@Composable
+private fun DaysLearnList(
+    onReward: (Int) -> Unit,
+    speaker: PhonicsSpeaker?,
+) {
     val todayIdx = Calendar.getInstance().get(Calendar.DAY_OF_WEEK) - 1 // 0 = Sunday
     var seen by remember { mutableStateOf(setOf<Int>()) }
 
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 18.dp, vertical = 18.dp)
-            .padding(bottom = 24.dp),
-    ) {
-        ScreenHeader(title = topic.title, color = topic.color, onBack = onBack)
-        Spacer(Modifier.height(16.dp))
-
+    Column {
         // "Today is" card
         Surface(
             shape = RoundedCornerShape(26.dp),
@@ -116,7 +149,6 @@ fun DaysScreen(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(horizontal = 18.dp, vertical = 16.dp),
                     ) {
-                        // Initial circle
                         Surface(
                             shape = CircleShape,
                             color = if (isToday) Color.White.copy(alpha = 0.3f) else dayColor,

@@ -26,10 +26,15 @@ class SoundEffects(context: Context) {
     private val correctId = soundPool.load(context, R.raw.correct, 1)
     private val wrongId = soundPool.load(context, R.raw.wrong, 1)
 
+    /** When true, [playCorrect]/[playWrong] are no-ops — driven by the parent's sound toggle. */
+    @Volatile
+    var muted: Boolean = false
+
     fun playCorrect() = play(correctId)
     fun playWrong() = play(wrongId)
 
     private fun play(soundId: Int) {
+        if (muted) return
         soundPool.play(soundId, 1f, 1f, 1, 0, 1f)
     }
 
