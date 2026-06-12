@@ -2,8 +2,12 @@ package com.vi5hnu.curvykids.ui.navigation
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
@@ -87,7 +91,11 @@ fun AppNavGraph(
         NavHost(
             navController = navController,
             startDestination = Screen.Home.route,
-            modifier = Modifier.fillMaxSize(),
+            // Keep the gradient full-bleed behind the bars, but inset content below the
+            // status bar (top) and above the gesture/navigation bar (bottom).
+            modifier = Modifier
+                .fillMaxSize()
+                .windowInsetsPadding(WindowInsets.systemBars),
         ) {
             // ── Home tab ───────────────────────────────────────────────────
             composable(Screen.Home.route) {
@@ -265,6 +273,7 @@ fun AppNavGraph(
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)
+                    .navigationBarsPadding()
                     .padding(bottom = 12.dp),
             )
         }
