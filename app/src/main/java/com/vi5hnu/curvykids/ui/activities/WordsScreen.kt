@@ -4,6 +4,7 @@ import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -38,10 +39,9 @@ import com.vi5hnu.curvykids.ui.components.Chip
 import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
-import com.vi5hnu.curvykids.ui.theme.InkFaint
 import kotlinx.coroutines.delay
 
-private val EXTRA_LETTERS = "ABCDEFGHIJKLMNOPRSTUWY".toList()
+private val EXTRA_LETTERS = "ABCDEFGHIJKLMNOPRSTUVWY".toList()
 
 /** First Words — tap letters in the correct order to spell the word. */
 @Composable
@@ -51,20 +51,34 @@ fun WordsScreen(
     onReward: (Int) -> Unit,
     speaker: PhonicsSpeaker? = null,
 ) {
-    var wordIndex by remember { mutableIntStateOf(0) }
+    // Shuffle the word order once so every session feels fresh but each word still appears once.
+    val order = remember { WORD_LIST.indices.shuffled() }
+    var pos by remember { mutableIntStateOf(0) }
     var filled by remember { mutableIntStateOf(0) }
     var wrong by remember { mutableStateOf<Char?>(null) }
     var showCelebrate by remember { mutableStateOf(false) }
 
-    val word = WORD_LIST[wordIndex]
+    val word = WORD_LIST[order[pos]]
     val letters = word.word.toList()
 
-    val shuffled = remember(wordIndex) {
-        val extras = EXTRA_LETTERS.filter { it !in letters }.shuffled().take(1)
+    val shuffled = remember(pos) {
+        val extras = EXTRA_LETTERS.filter { it !in letters }.shuffled().take(2)
         (letters + extras).shuffled()
     }
 
-    LaunchedEffect(wordIndex) {
+    // Tile/slot sizing shrinks for longer words so 6+ tiles still fit.
+    val tileSize = when {
+        letters.size <= 3 -> 58.dp
+        letters.size == 4 -> 52.dp
+        else -> 44.dp
+    }
+    val tileFont = when {
+        letters.size <= 3 -> 32.sp
+        letters.size == 4 -> 28.sp
+        else -> 24.sp
+    }
+
+    LaunchedEffect(pos) {
         filled = 0
         wrong = null   // clear any red-tile state from the previous word
         speaker?.speak(word.word)
@@ -87,7 +101,7 @@ fun WordsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("${wordIndex + 1}/${WORD_LIST.size}", fontFamily = FontDisplay, fontSize = 16.sp, color = topic.color)
+                            Text("${pos + 1}/${WORD_LIST.size}", fontFamily = FontDisplay, fontSize = 16.sp, color = topic.color)
                         }
                     }
                 },
@@ -116,19 +130,20 @@ fun WordsScreen(
             Spacer(Modifier.height(18.dp))
 
             // Letter slots
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 letters.forEachIndexed { i, ch ->
                     Surface(
-                        shape = RoundedCornerShape(18.dp),
+                        shape = RoundedCornerShape(16.dp),
                         color = if (i < filled) topic.color else Color.White,
                         shadowElevation = 3.dp,
                         modifier = Modifier
-                            .size(62.dp, 72.dp)
+                            .size(tileSize, tileSize + 10.dp)
                             .then(
-                                if (i == filled) Modifier.border(3.dp, topic.color, RoundedCornerShape(18.dp))
+                                if (i == filled) Modifier.border(3.dp, topic.color, RoundedCornerShape(16.dp))
                                 else Modifier
                             ),
                     ) {
@@ -138,7 +153,7 @@ fun WordsScreen(
                                     text = ch.toString(),
                                     fontFamily = FontDisplay,
                                     fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 40.sp,
+                                    fontSize = tileFont,
                                     color = Color.White,
                                 )
                             }
@@ -150,8 +165,9 @@ fun WordsScreen(
             Spacer(Modifier.height(24.dp))
 
             // Letter tiles
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(12.dp, Alignment.CenterHorizontally),
+            FlowRow(
+                horizontalArrangement = Arrangement.spacedBy(10.dp, Alignment.CenterHorizontally),
+                verticalArrangement = Arrangement.spacedBy(10.dp),
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 shuffled.forEach { ch ->
@@ -172,7 +188,7 @@ fun WordsScreen(
                                 speaker?.speak("Try again")
                             }
                         },
-                        modifier = Modifier.size(62.dp),
+                        modifier = Modifier.size(tileSize),
                         containerColor = if (wrong == ch) Color(0xFFFF6B6B) else Color.White,
                         contentColor = if (wrong == ch) Color.White else Color(0xFF2B3A4A),
                     ) {
@@ -180,7 +196,7 @@ fun WordsScreen(
                             text = ch.toString(),
                             fontFamily = FontDisplay,
                             fontWeight = FontWeight.ExtraBold,
-                            fontSize = 32.sp,
+                            fontSize = tileFont,
                         )
                     }
                 }
@@ -201,7 +217,7 @@ fun WordsScreen(
                 stars = 3,
                 onDone = {
                     showCelebrate = false
-                    wordIndex = (wordIndex + 1) % WORD_LIST.size
+                    pos = (pos + 1) % WORD_LIST.size
                 },
             )
         }

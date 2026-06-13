@@ -42,12 +42,78 @@ val COUNT_ITEMS = listOf("🍎", "🐥", "🎈", "⭐", "🐠", "🍓", "🦋", 
 
 data class WordEntry(val word: String, val emoji: String)
 
+/**
+ * 100+ short words (3–5 letters) covering A–Z, several per letter where possible, each with an
+ * emoji. Kept short so the spell-it tiles stay tappable. Grouped by first letter for easy upkeep.
+ */
 val WORD_LIST = listOf(
-    WordEntry("CAT", "🐱"), WordEntry("DOG", "🐶"), WordEntry("SUN", "☀️"),
-    WordEntry("BUS", "🚌"), WordEntry("HAT", "🎩"), WordEntry("COW", "🐮"),
-    WordEntry("PIG", "🐷"), WordEntry("BEE", "🐝"), WordEntry("FOX", "🦊"),
-    WordEntry("OWL", "🦉"), WordEntry("BAT", "🦇"), WordEntry("HEN", "🐔"),
-    WordEntry("CUP", "🥤"), WordEntry("BED", "🛏️"), WordEntry("CAR", "🚗"),
+    // A
+    WordEntry("ANT", "🐜"), WordEntry("APE", "🦍"), WordEntry("ARM", "💪"),
+    // B
+    WordEntry("BAT", "🦇"), WordEntry("BEE", "🐝"), WordEntry("BUS", "🚌"),
+    WordEntry("BED", "🛏️"), WordEntry("BOW", "🎀"), WordEntry("BALL", "⚽"),
+    WordEntry("BIRD", "🐦"), WordEntry("BOOK", "📚"), WordEntry("BEAR", "🐻"),
+    // C
+    WordEntry("CAT", "🐱"), WordEntry("COW", "🐮"), WordEntry("CAR", "🚗"),
+    WordEntry("CUP", "🥤"), WordEntry("CAKE", "🍰"), WordEntry("CORN", "🌽"),
+    WordEntry("CRAB", "🦀"),
+    // D
+    WordEntry("DOG", "🐶"), WordEntry("DUCK", "🦆"), WordEntry("DOOR", "🚪"),
+    WordEntry("DRUM", "🥁"),
+    // E
+    WordEntry("EGG", "🥚"), WordEntry("EAR", "👂"), WordEntry("EYE", "👁️"),
+    // F
+    WordEntry("FOX", "🦊"), WordEntry("FISH", "🐟"), WordEntry("FROG", "🐸"),
+    WordEntry("FAN", "🪭"), WordEntry("FIRE", "🔥"), WordEntry("FOOT", "🦶"),
+    // G
+    WordEntry("GOAT", "🐐"), WordEntry("GIFT", "🎁"), WordEntry("GRAPE", "🍇"),
+    // H
+    WordEntry("HAT", "🎩"), WordEntry("HEN", "🐔"), WordEntry("HAND", "✋"),
+    WordEntry("HOME", "🏠"), WordEntry("HOOK", "🪝"),
+    // I
+    WordEntry("ICE", "🧊"), WordEntry("INK", "🖋️"),
+    // J
+    WordEntry("JAM", "🍯"), WordEntry("JET", "✈️"), WordEntry("JAR", "🫙"),
+    // K
+    WordEntry("KEY", "🔑"), WordEntry("KITE", "🪁"), WordEntry("KING", "🤴"),
+    WordEntry("KOALA", "🐨"),
+    // L
+    WordEntry("LION", "🦁"), WordEntry("LEAF", "🍃"), WordEntry("LEG", "🦵"),
+    WordEntry("LAMP", "💡"), WordEntry("LOCK", "🔒"),
+    // M
+    WordEntry("MAP", "🗺️"), WordEntry("MOON", "🌙"), WordEntry("MILK", "🥛"),
+    WordEntry("MASK", "🎭"), WordEntry("MOUSE", "🐭"),
+    // N
+    WordEntry("NET", "🥅"), WordEntry("NOSE", "👃"), WordEntry("NUT", "🥜"),
+    // O
+    WordEntry("OWL", "🦉"), WordEntry("OX", "🐂"), WordEntry("ONE", "1️⃣"),
+    // P
+    WordEntry("PIG", "🐷"), WordEntry("PEN", "🖊️"), WordEntry("PIE", "🥧"),
+    WordEntry("PEAR", "🍐"), WordEntry("PLANE", "✈️"),
+    // Q
+    WordEntry("QUEEN", "👑"),
+    // R
+    WordEntry("RAT", "🐀"), WordEntry("RING", "💍"), WordEntry("ROSE", "🌹"),
+    WordEntry("RAIN", "🌧️"), WordEntry("RICE", "🍚"),
+    // S
+    WordEntry("SUN", "☀️"), WordEntry("STAR", "⭐"), WordEntry("SOCK", "🧦"),
+    WordEntry("SHIP", "🚢"), WordEntry("SNAKE", "🐍"), WordEntry("SHOE", "👟"),
+    // T
+    WordEntry("TREE", "🌳"), WordEntry("TENT", "⛺"), WordEntry("TAXI", "🚕"),
+    WordEntry("TRAIN", "🚂"),
+    // U
+    WordEntry("UFO", "🛸"), WordEntry("UP", "⬆️"),
+    // V
+    WordEntry("VAN", "🚐"), WordEntry("VASE", "🏺"),
+    // W
+    WordEntry("WEB", "🕸️"), WordEntry("WOLF", "🐺"), WordEntry("WAVE", "🌊"),
+    WordEntry("WHALE", "🐳"),
+    // X / extra
+    WordEntry("BOX", "📦"), WordEntry("SIX", "6️⃣"),
+    // Y
+    WordEntry("YAK", "🐃"), WordEntry("YARN", "🧶"),
+    // Z
+    WordEntry("ZIP", "🤐"), WordEntry("ZEBRA", "🦓"),
 )
 
 // ── Animals ───────────────────────────────────────────────────────────────────
