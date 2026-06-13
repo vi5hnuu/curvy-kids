@@ -32,6 +32,9 @@ val COLOR_ITEMS = listOf(
     ColorItem("Pink",   0xFFFF8FB6),
     ColorItem("Orange", 0xFFFF8B6B),
     ColorItem("Teal",   0xFF1FC2AE),
+    ColorItem("Brown",  0xFF8B5E3C),
+    ColorItem("Gray",   0xFF9AA7B2),
+    ColorItem("Black",  0xFF2B3A4A),
 )
 
 // ── Counting ──────────────────────────────────────────────────────────────────
