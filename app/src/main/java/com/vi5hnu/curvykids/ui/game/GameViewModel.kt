@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
+import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.audio.SoundEffects
 import com.vi5hnu.curvykids.data.content.Level
 import com.vi5hnu.curvykids.data.content.Phonics
@@ -47,6 +48,9 @@ class GameViewModel(
 
     /** Shared TTS instance — exposed so activity screens can speak names without a second TTS. */
     val speaker: PhonicsSpeaker get() = phonics
+
+    /** Unified voice + sound + haptic feedback for the play/quiz screens. */
+    val feedback: PlayFeedback by lazy { PlayFeedback(phonics, sound, haptics) }
 
     /**
      * Enables/disables all game audio (voice + sound effects), driven by the parent zone's

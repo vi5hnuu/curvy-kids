@@ -22,6 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
+import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.ANIMALS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
@@ -34,7 +35,7 @@ fun AnimalsScreen(
     topic: Topic,
     onBack: () -> Unit,
     onReward: (Int) -> Unit,
-    speaker: PhonicsSpeaker? = null,
+    feedback: PlayFeedback? = null,
 ) {
     DiscoverActivity(
         topic = topic,
@@ -44,9 +45,9 @@ fun AnimalsScreen(
         keyOf = { it.name },
         speakFor = { "Who says ${it.sound}" },
         onReward = onReward,
-        speaker = speaker,
+        feedback = feedback,
         celebrateTitle = "Animal Star!",
-        learnContent = { AnimalsLearnGrid(topic = topic, onReward = onReward, speaker = speaker) },
+        learnContent = { AnimalsLearnGrid(topic = topic, onReward = onReward, speaker = feedback?.speaker) },
         quizPrompt = { target ->
             Text(
                 text = target.sound,

@@ -30,6 +30,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
+import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.SHAPES
 import com.vi5hnu.curvykids.data.content.Shape
 import com.vi5hnu.curvykids.data.content.Topic
@@ -43,7 +44,7 @@ fun ShapesScreen(
     topic: Topic,
     onBack: () -> Unit,
     onReward: (Int) -> Unit,
-    speaker: PhonicsSpeaker? = null,
+    feedback: PlayFeedback? = null,
 ) {
     DiscoverActivity(
         topic = topic,
@@ -53,9 +54,9 @@ fun ShapesScreen(
         keyOf = { it.id },
         speakFor = { "Find the ${it.name}" },
         onReward = onReward,
-        speaker = speaker,
+        feedback = feedback,
         celebrateTitle = "Shape Star!",
-        learnContent = { ShapesLearnGrid(onReward = onReward, speaker = speaker) },
+        learnContent = { ShapesLearnGrid(onReward = onReward, speaker = feedback?.speaker) },
         quizPrompt = { target ->
             Text(
                 text = target.name,

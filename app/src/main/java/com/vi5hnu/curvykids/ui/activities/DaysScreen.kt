@@ -27,6 +27,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
+import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.DAY_COLORS
 import com.vi5hnu.curvykids.data.content.DAYS
 import com.vi5hnu.curvykids.data.content.Topic
@@ -48,7 +49,7 @@ fun DaysScreen(
     topic: Topic,
     onBack: () -> Unit,
     onReward: (Int) -> Unit,
-    speaker: PhonicsSpeaker? = null,
+    feedback: PlayFeedback? = null,
 ) {
     DiscoverActivity(
         topic = topic,
@@ -58,9 +59,9 @@ fun DaysScreen(
         keyOf = { it },
         speakFor = { "What comes after ${dayBefore(it)}?" },
         onReward = onReward,
-        speaker = speaker,
+        feedback = feedback,
         celebrateTitle = "Day Star!",
-        learnContent = { DaysLearnList(onReward = onReward, speaker = speaker) },
+        learnContent = { DaysLearnList(onReward = onReward, speaker = feedback?.speaker) },
         quizPrompt = { target ->
             Text(
                 text = dayBefore(target),

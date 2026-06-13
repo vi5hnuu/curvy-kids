@@ -205,7 +205,7 @@ fun AppNavGraph(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
-                        speaker = gameViewModel.speaker,
+                        feedback = gameViewModel.feedback,
                     )
 
                     TopicKind.COLORS -> ColorsScreen(
@@ -234,21 +234,21 @@ fun AppNavGraph(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
-                        speaker = gameViewModel.speaker,
+                        feedback = gameViewModel.feedback,
                     )
 
                     TopicKind.BODY -> BodyScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
-                        speaker = gameViewModel.speaker,
+                        feedback = gameViewModel.feedback,
                     )
 
                     TopicKind.DAYS -> DaysScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
-                        speaker = gameViewModel.speaker,
+                        feedback = gameViewModel.feedback,
                     )
 
                     TopicKind.DRAW -> DrawScreen(

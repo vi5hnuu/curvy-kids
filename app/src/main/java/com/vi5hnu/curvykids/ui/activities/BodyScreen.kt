@@ -23,6 +23,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
+import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.BODY_PARTS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
@@ -35,7 +36,7 @@ fun BodyScreen(
     topic: Topic,
     onBack: () -> Unit,
     onReward: (Int) -> Unit,
-    speaker: PhonicsSpeaker? = null,
+    feedback: PlayFeedback? = null,
 ) {
     DiscoverActivity(
         topic = topic,
@@ -45,9 +46,9 @@ fun BodyScreen(
         keyOf = { it.name },
         speakFor = { "Find the ${it.name}" },
         onReward = onReward,
-        speaker = speaker,
+        feedback = feedback,
         celebrateTitle = "Body Star!",
-        learnContent = { BodyLearnGrid(onReward = onReward, speaker = speaker) },
+        learnContent = { BodyLearnGrid(onReward = onReward, speaker = feedback?.speaker) },
         quizPrompt = { target ->
             Text(
                 text = target.name,

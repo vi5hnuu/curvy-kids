@@ -30,11 +30,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vi5hnu.curvykids.audio.PhonicsSpeaker
+import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Chip
+import com.vi5hnu.curvykids.ui.components.CurvyMascot
+import com.vi5hnu.curvykids.ui.components.CurvyMood
 import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
@@ -69,7 +71,7 @@ fun <T> DiscoverActivity(
     keyOf: (T) -> String,
     speakFor: (T) -> String,
     onReward: (Int) -> Unit,
-    speaker: PhonicsSpeaker?,
+    feedback: PlayFeedback?,
     learnContent: @Composable () -> Unit,
     quizPrompt: @Composable (target: T) -> Unit,
     quizOption: @Composable (item: T) -> Unit,
@@ -91,12 +93,19 @@ fun <T> DiscoverActivity(
         val next = quizItems.filter { keyOf(it) != keyOf(target) }.randomOrNull() ?: target
         target = next
         options = buildOptions(quizItems, next, keyOf, optionCount)
-        speaker?.speak(speakFor(next))
+        feedback?.speaker?.speak(speakFor(next))
+    }
+
+    // Mascot mood reacts to the latest answer.
+    val mascotMood = when (flash?.second) {
+        true -> CurvyMood.Cheer
+        false -> CurvyMood.Wow
+        null -> CurvyMood.Happy
     }
 
     // Speak the prompt whenever the Play tab is shown.
     LaunchedEffect(mode) {
-        if (mode == 1) speaker?.speak(speakFor(target))
+        if (mode == 1) feedback?.speaker?.speak(speakFor(target))
     }
 
     Box(modifier = Modifier.fillMaxSize()) {
@@ -140,8 +149,10 @@ fun <T> DiscoverActivity(
                 CardSurface(modifier = Modifier.fillMaxWidth()) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(22.dp, 22.dp, 22.dp, 18.dp),
+                        modifier = Modifier.padding(22.dp, 18.dp, 22.dp, 18.dp),
                     ) {
+                        CurvyMascot(size = 52.dp, mood = mascotMood)
+                        Spacer(Modifier.height(8.dp))
                         Text(
                             text = quizPromptLabel,
                             fontFamily = FontDisplay,
@@ -153,7 +164,7 @@ fun <T> DiscoverActivity(
                         quizPrompt(target)
                         Spacer(Modifier.height(12.dp))
                         Chip(
-                            onClick = { speaker?.speak(speakFor(target)) },
+                            onClick = { feedback?.speaker?.speak(speakFor(target)) },
                             modifier = Modifier.size(48.dp),
                         ) {
                             Text("🔊", fontSize = 20.sp)
@@ -183,10 +194,12 @@ fun <T> DiscoverActivity(
                                             flash = key to true
                                             score += 1
                                             onReward(rewardPerCorrect)
-                                            speaker?.speak("Yes!")
+                                            feedback?.correct()
+                                            feedback?.speaker?.speak("Yes!")
                                         } else {
                                             flash = key to false
-                                            speaker?.speak("Try again")
+                                            feedback?.wrong()
+                                            feedback?.speaker?.speak("Try again")
                                         }
                                     },
                                     modifier = Modifier
