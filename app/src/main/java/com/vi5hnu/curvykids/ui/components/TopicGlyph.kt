@@ -166,5 +166,130 @@ private fun DrawScope.drawTopicGlyph(id: String, color: Color) {
             drawCircle(color, s * 0.22f, Offset(cx, cy), style = stroke)
             drawCircle(color, s * 0.07f, Offset(cx, cy))
         }
+
+        // ── World group ────────────────────────────────────────────────────────
+
+        "months" -> {
+            // calendar with ring binders and 4×3 dot grid (12 months)
+            drawLine(color, Offset(w * 0.36f, h * 0.10f), Offset(w * 0.36f, h * 0.26f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.64f, h * 0.10f), Offset(w * 0.64f, h * 0.26f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawRoundRect(color, topLeft = Offset(w * 0.18f, h * 0.20f), size = Size(w * 0.64f, h * 0.68f), cornerRadius = CornerRadius(s * 0.10f), style = stroke)
+            drawLine(color, Offset(w * 0.18f, h * 0.38f), Offset(w * 0.82f, h * 0.38f), strokeWidth = sw)
+            for (r in 0..3) for (c in 0..2)
+                drawCircle(color, s * 0.025f, Offset(w * (0.31f + c * 0.19f), h * (0.50f + r * 0.11f)))
+        }
+
+        "seasons" -> {
+            // top-left: sun circle + 4 rays; bottom-right: snowflake (6-point asterisk)
+            drawCircle(color, s * 0.15f, Offset(w * 0.34f, h * 0.34f), style = stroke)
+            drawLine(color, Offset(w * 0.34f, h * 0.10f), Offset(w * 0.34f, h * 0.16f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.10f, h * 0.34f), Offset(w * 0.16f, h * 0.34f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.16f, h * 0.16f), Offset(w * 0.20f, h * 0.20f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.48f, h * 0.20f), Offset(w * 0.52f, h * 0.16f), strokeWidth = sw, cap = StrokeCap.Round)
+            // snowflake
+            val scx = w * 0.70f; val scy = h * 0.70f; val sr = s * 0.16f
+            drawLine(color, Offset(scx, scy - sr), Offset(scx, scy + sr), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(scx - sr, scy), Offset(scx + sr, scy), strokeWidth = sw, cap = StrokeCap.Round)
+            val d = sr * 0.70f
+            drawLine(color, Offset(scx - d, scy - d), Offset(scx + d, scy + d), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(scx + d, scy - d), Offset(scx - d, scy + d), strokeWidth = sw, cap = StrokeCap.Round)
+        }
+
+        "emotions" -> {
+            // exaggerated smiley with cheek dots (wider smile than "body")
+            drawCircle(color, s * 0.36f, Offset(cx, cy), style = stroke)
+            drawCircle(color, s * 0.042f, Offset(w * 0.38f, h * 0.40f))
+            drawCircle(color, s * 0.042f, Offset(w * 0.62f, h * 0.40f))
+            drawCircle(color, s * 0.055f, Offset(w * 0.28f, h * 0.60f))  // left cheek
+            drawCircle(color, s * 0.055f, Offset(w * 0.72f, h * 0.60f))  // right cheek
+            drawArc(color, startAngle = 12f, sweepAngle = 156f, useCenter = false,
+                topLeft = Offset(w * 0.30f, h * 0.44f), size = Size(w * 0.40f, h * 0.26f), style = stroke)
+        }
+
+        "vehicles" -> {
+            // car outline: hexagonal body + two wheels
+            val car = Path().apply {
+                moveTo(w * 0.16f, h * 0.58f)
+                lineTo(w * 0.84f, h * 0.58f)
+                lineTo(w * 0.84f, h * 0.46f)
+                lineTo(w * 0.70f, h * 0.26f)
+                lineTo(w * 0.36f, h * 0.26f)
+                lineTo(w * 0.16f, h * 0.46f)
+                close()
+            }
+            drawPath(car, color, style = stroke)
+            drawCircle(color, s * 0.11f, Offset(w * 0.30f, h * 0.68f), style = stroke)
+            drawCircle(color, s * 0.11f, Offset(w * 0.70f, h * 0.68f), style = stroke)
+        }
+
+        "fruitsveggies" -> {
+            // apple: stem + curved leaf + circular body
+            drawLine(color, Offset(cx, h * 0.22f), Offset(cx, h * 0.12f), strokeWidth = sw, cap = StrokeCap.Round)
+            val leaf = Path().apply {
+                moveTo(cx, h * 0.20f)
+                cubicTo(w * 0.62f, h * 0.06f, w * 0.80f, h * 0.24f, w * 0.64f, h * 0.34f)
+                close()
+            }
+            drawPath(leaf, color)
+            drawCircle(color, s * 0.30f, Offset(cx, h * 0.58f), style = stroke)
+        }
+
+        // ── Math group ─────────────────────────────────────────────────────────
+
+        "addition" -> {
+            // bold plus sign
+            drawLine(color, Offset(cx, h * 0.18f), Offset(cx, h * 0.82f), strokeWidth = sw * 1.5f, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.18f, cy), Offset(w * 0.82f, cy), strokeWidth = sw * 1.5f, cap = StrokeCap.Round)
+        }
+
+        "subtraction" -> {
+            // 3 dots on top row + bold minus line + crossed-out dot bottom-right
+            drawCircle(color, s * 0.07f, Offset(w * 0.24f, h * 0.32f))
+            drawCircle(color, s * 0.07f, Offset(w * 0.42f, h * 0.32f))
+            drawCircle(color, s * 0.07f, Offset(w * 0.60f, h * 0.32f))
+            drawLine(color, Offset(w * 0.16f, cy), Offset(w * 0.84f, cy), strokeWidth = sw * 1.5f, cap = StrokeCap.Round)
+            drawCircle(color, s * 0.10f, Offset(w * 0.68f, h * 0.72f), style = stroke)
+            drawLine(color, Offset(w * 0.60f, h * 0.64f), Offset(w * 0.76f, h * 0.80f), strokeWidth = sw * 0.9f, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.76f, h * 0.64f), Offset(w * 0.60f, h * 0.80f), strokeWidth = sw * 0.9f, cap = StrokeCap.Round)
+        }
+
+        "patterns" -> {
+            // 2×2 ABAB grid: filled circle (A) / filled rect (B) / filled circle (A) / outlined rect (?)
+            drawCircle(color, s * 0.14f, Offset(w * 0.26f, h * 0.28f))
+            drawRoundRect(color, topLeft = Offset(w * 0.52f, h * 0.14f), size = Size(s * 0.26f, s * 0.26f), cornerRadius = CornerRadius(s * 0.05f))
+            drawCircle(color, s * 0.14f, Offset(w * 0.26f, h * 0.72f))
+            drawRoundRect(color, topLeft = Offset(w * 0.52f, h * 0.58f), size = Size(s * 0.26f, s * 0.26f), cornerRadius = CornerRadius(s * 0.05f), style = stroke)
+        }
+
+        // ── Language group ─────────────────────────────────────────────────────
+
+        "phonics" -> {
+            // letter A (lines) + small sound-wave arcs on the right
+            drawLine(color, Offset(cx, h * 0.14f), Offset(w * 0.24f, h * 0.82f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(cx, h * 0.14f), Offset(w * 0.76f, h * 0.82f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.34f, h * 0.54f), Offset(w * 0.66f, h * 0.54f), strokeWidth = sw, cap = StrokeCap.Round)
+        }
+
+        "opposites" -> {
+            // up arrow (left) + down arrow (right) — classic opposites symbol
+            drawLine(color, Offset(w * 0.28f, h * 0.76f), Offset(w * 0.28f, h * 0.28f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.14f, h * 0.44f), Offset(w * 0.28f, h * 0.28f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.42f, h * 0.44f), Offset(w * 0.28f, h * 0.28f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.72f, h * 0.24f), Offset(w * 0.72f, h * 0.72f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.58f, h * 0.56f), Offset(w * 0.72f, h * 0.72f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.86f, h * 0.56f), Offset(w * 0.72f, h * 0.72f), strokeWidth = sw, cap = StrokeCap.Round)
+        }
+
+        "rhyming" -> {
+            // two connected music notes (beamed eighth notes)
+            // note heads
+            drawCircle(color, s * 0.12f, Offset(w * 0.30f, h * 0.70f))
+            drawCircle(color, s * 0.12f, Offset(w * 0.64f, h * 0.64f))
+            // stems
+            drawLine(color, Offset(w * 0.40f, h * 0.70f), Offset(w * 0.40f, h * 0.24f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.74f, h * 0.64f), Offset(w * 0.74f, h * 0.18f), strokeWidth = sw, cap = StrokeCap.Round)
+            // connecting beam
+            drawLine(color, Offset(w * 0.40f, h * 0.24f), Offset(w * 0.74f, h * 0.18f), strokeWidth = sw * 1.4f, cap = StrokeCap.Round)
+        }
     }
 }
