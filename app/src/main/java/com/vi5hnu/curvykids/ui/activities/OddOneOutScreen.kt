@@ -43,9 +43,75 @@ import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import kotlinx.coroutines.delay
 
-private const val TILES = 4 // 2×2
+// Separate emoji pools used for CATEGORY rounds so kids can spot animal vs food.
+private val ANIMAL_EMOJIS = listOf(
+    "🐶", "🐱", "🦁", "🐮", "🐸", "🦆", "🐷", "🦉", "🐧", "🦊", "🐼", "🐨",
+)
+private val FOOD_EMOJIS = listOf(
+    "🍎", "🍓", "🍌", "🍇", "🍉", "🍊", "🍒", "🥕", "🌽", "🍩",
+)
 
-/** Odd One Out — four items, three the same; tap the different one. */
+private enum class OddType { IDENTITY, CATEGORY, SIZE }
+
+/**
+ * All per-round state computed once.
+ * @param tiles      Four emoji strings (one per card).
+ * @param oddPos     Index of the card that is "different."
+ * @param prompt     Header text and spoken prompt for this round type.
+ * @param oddIsSmall When true (SIZE rounds), the odd card renders at a smaller font.
+ */
+private data class OddState(
+    val tiles: List<String>,
+    val oddPos: Int,
+    val prompt: String,
+    val oddIsSmall: Boolean = false,
+)
+
+private fun buildOddState(round: Int): OddState {
+    return when (OddType.values()[round % 3]) {
+        OddType.IDENTITY -> {
+            // Three cards show the same emoji; one shows a different one.
+            val (majority, odd) = GAME_EMOJIS.shuffled().take(2)
+            val pos = (0 until 4).random()
+            OddState(
+                tiles = List(4) { if (it == pos) odd else majority },
+                oddPos = pos,
+                prompt = "Which one is different?",
+            )
+        }
+        OddType.CATEGORY -> {
+            // Three cards from one category, one card from the other.
+            val animalFirst = listOf(true, false).random()
+            val majorityPool = if (animalFirst) ANIMAL_EMOJIS else FOOD_EMOJIS
+            val oddPool = if (animalFirst) FOOD_EMOJIS else ANIMAL_EMOJIS
+            val majority = majorityPool.shuffled().take(3)
+            val odd = oddPool.random()
+            val pos = (0 until 4).random()
+            val tiles = mutableListOf<String>()
+            var mIdx = 0
+            repeat(4) { i -> if (i == pos) tiles.add(odd) else tiles.add(majority[mIdx++]) }
+            val categoryName = if (animalFirst) "an animal" else "food"
+            OddState(
+                tiles = tiles,
+                oddPos = pos,
+                prompt = "Which is NOT $categoryName?",
+            )
+        }
+        OddType.SIZE -> {
+            // All four cards show the same emoji; the odd one renders much smaller.
+            val emoji = GAME_EMOJIS.random()
+            val pos = (0 until 4).random()
+            OddState(
+                tiles = List(4) { emoji },
+                oddPos = pos,
+                prompt = "Tap the small one!",
+                oddIsSmall = true,
+            )
+        }
+    }
+}
+
+/** Odd One Out — four items; three share something in common, tap the odd one out. */
 @Composable
 fun OddOneOutScreen(
     topic: Topic,
@@ -58,21 +124,13 @@ fun OddOneOutScreen(
     var flash by remember { mutableStateOf<Pair<Int, Boolean>?>(null) } // index → correct?
     var showCelebrate by remember { mutableStateOf(false) }
 
-    val state = remember(round) {
-        val two = GAME_EMOJIS.shuffled().take(2)
-        val majority = two[0]; val odd = two[1]
-        val oddPos = (0 until TILES).random()
-        val tiles = (0 until TILES).map { if (it == oddPos) odd else majority }
-        Triple(tiles, oddPos, odd)
-    }
-    val tiles = state.first
-    val oddPos = state.second
+    val state = remember(round) { buildOddState(round) }
 
-    LaunchedEffect(Unit) { feedback?.speaker?.speak("Which one is different?") }
+    LaunchedEffect(round) { feedback?.speaker?.speak(state.prompt) }
 
     fun choose(i: Int) {
         if (flash != null) return
-        val ok = i == oddPos
+        val ok = i == state.oddPos
         flash = i to ok
         if (ok) {
             score += 1
@@ -125,16 +183,24 @@ fun OddOneOutScreen(
                     modifier = Modifier.padding(20.dp),
                 ) {
                     Text(
-                        text = "FIND THE DIFFERENT ONE",
+                        text = "FIND THE ODD ONE OUT",
                         fontFamily = FontDisplay,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 15.sp,
                         color = topic.color,
                     )
                     Spacer(Modifier.height(4.dp))
-                    Text("Three are the same!", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = InkSoft)
+                    Text(
+                        state.prompt,
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        color = InkSoft,
+                    )
                     Spacer(Modifier.height(10.dp))
-                    Chip(onClick = { feedback?.speaker?.speak("Which one is different?") }, modifier = Modifier.size(46.dp)) {
+                    Chip(
+                        onClick = { feedback?.speaker?.speak(state.prompt) },
+                        modifier = Modifier.size(46.dp),
+                    ) {
                         Text("🔊", fontSize = 20.sp)
                     }
                 }
@@ -142,15 +208,19 @@ fun OddOneOutScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            tiles.chunked(2).forEachIndexed { rowIdx, rowItems ->
+            state.tiles.chunked(2).forEachIndexed { rowIdx, rowItems ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(14.dp),
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 14.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 14.dp),
                 ) {
                     rowItems.forEachIndexed { colIdx, emoji ->
                         val i = rowIdx * 2 + colIdx
                         val flashOk = flash?.first == i && flash?.second == true
                         val flashBad = flash?.first == i && flash?.second == false
+                        // SIZE rounds: the odd tile is rendered small so kids can spot it visually.
+                        val fontSize = if (state.oddIsSmall && i == state.oddPos) 32.sp else 64.sp
                         Surface(
                             onClick = { choose(i) },
                             modifier = Modifier
@@ -168,7 +238,7 @@ fun OddOneOutScreen(
                             shadowElevation = 4.dp,
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Text(emoji, fontSize = 64.sp)
+                                Text(emoji, fontSize = fontSize)
                             }
                         }
                     }
@@ -177,7 +247,12 @@ fun OddOneOutScreen(
         }
 
         if (showCelebrate) {
-            Celebrate(title = "Sharp Eyes!", sub = "$score correct!", stars = 3, onDone = { showCelebrate = false; round++ })
+            Celebrate(
+                title = "Sharp Eyes!",
+                sub = "$score correct!",
+                stars = 3,
+                onDone = { showCelebrate = false; round++ },
+            )
         }
     }
 }

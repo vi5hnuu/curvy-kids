@@ -42,7 +42,55 @@ import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import kotlinx.coroutines.delay
 
-/** Big or Small — two sizes of the same item; tap the bigger (or smaller) one. */
+private enum class BigSmallMode { SIZE, NUMBER }
+
+/**
+ * All state that changes per round, computed once via remember(round).
+ * SIZE mode: two emoji at different display sizes.
+ * NUMBER mode: two different numbers; ask which is bigger/smaller.
+ */
+private data class BigSmallSpec(
+    val mode: BigSmallMode,
+    val askBig: Boolean,
+    /** True if the "bigger" side (emoji OR larger number) is on the left. */
+    val bigOnLeft: Boolean,
+    val emoji: String = "",
+    val numLeft: Int = 0,
+    val numRight: Int = 0,
+) {
+    fun prompt() = if (askBig) {
+        if (mode == BigSmallMode.SIZE) "WHICH IS BIGGER?" else "WHICH NUMBER IS BIGGER?"
+    } else {
+        if (mode == BigSmallMode.SIZE) "WHICH IS SMALLER?" else "WHICH NUMBER IS SMALLER?"
+    }
+
+    fun spokenPrompt() = if (askBig) "Which is bigger?" else "Which is smaller?"
+}
+
+private fun buildSpec(round: Int): BigSmallSpec {
+    val askBig = listOf(true, false).random()
+    // Alternate modes every 2 rounds: SIZE, SIZE, NUMBER, NUMBER, SIZE, SIZE, …
+    return if (round % 4 < 2) {
+        BigSmallSpec(
+            mode = BigSmallMode.SIZE,
+            askBig = askBig,
+            bigOnLeft = listOf(true, false).random(),
+            emoji = GAME_EMOJIS.random(),
+        )
+    } else {
+        val nums = (1..9).toList().shuffled().take(2) // guaranteed distinct
+        val leftNum = nums[0]; val rightNum = nums[1]
+        BigSmallSpec(
+            mode = BigSmallMode.NUMBER,
+            askBig = askBig,
+            bigOnLeft = leftNum > rightNum,
+            numLeft = leftNum,
+            numRight = rightNum,
+        )
+    }
+}
+
+/** Big or Small — compare sizes (emoji) or compare numbers, tap the correct side. */
 @Composable
 fun BigSmallScreen(
     topic: Topic,
@@ -51,25 +99,14 @@ fun BigSmallScreen(
     feedback: PlayFeedback? = null,
 ) {
     var score by remember { mutableIntStateOf(0) }
-    var emoji by remember { mutableStateOf(GAME_EMOJIS.random()) }
-    var bigOnLeft by remember { mutableStateOf(true) }
-    var askBig by remember { mutableStateOf(true) }
-    var flash by remember { mutableStateOf<Pair<Boolean, Boolean>?>(null) } // side(left) → correct?
+    var round by remember { mutableIntStateOf(0) }
+    var flash by remember(round) { mutableStateOf<Pair<Boolean, Boolean>?>(null) }
     var showCelebrate by remember { mutableStateOf(false) }
 
-    fun prompt() = if (askBig) "Tap the BIG one" else "Tap the small one"
+    val spec = remember(round) { buildSpec(round) }
+    val correctLeft = spec.askBig == spec.bigOnLeft
 
-    fun newRound() {
-        emoji = GAME_EMOJIS.random()
-        bigOnLeft = listOf(true, false).random()
-        askBig = listOf(true, false).random()
-        feedback?.speaker?.speak(prompt())
-    }
-
-    LaunchedEffect(Unit) { feedback?.speaker?.speak(prompt()) }
-
-    // correct side is left when (askBig && bigOnLeft) or (!askBig && !bigOnLeft)
-    val correctLeft = askBig == bigOnLeft
+    LaunchedEffect(round) { feedback?.speaker?.speak(spec.spokenPrompt()) }
 
     fun choose(left: Boolean) {
         if (flash != null) return
@@ -90,7 +127,7 @@ fun BigSmallScreen(
         if (flash != null) {
             delay(700)
             if (flash?.second == true) {
-                if (score > 0 && score % 5 == 0) showCelebrate = true else newRound()
+                if (score > 0 && score % 5 == 0) showCelebrate = true else round++
             }
             flash = null
         }
@@ -113,7 +150,12 @@ fun BigSmallScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                            Text(
+                                "⭐ $score",
+                                fontFamily = FontDisplay,
+                                fontSize = 16.sp,
+                                color = Color(0xFFF2A93B),
+                            )
                         }
                     }
                 },
@@ -126,14 +168,17 @@ fun BigSmallScreen(
                     modifier = Modifier.padding(20.dp),
                 ) {
                     Text(
-                        text = if (askBig) "WHICH IS BIGGER?" else "WHICH IS SMALLER?",
+                        text = spec.prompt(),
                         fontFamily = FontDisplay,
                         fontWeight = FontWeight.ExtraBold,
                         fontSize = 16.sp,
                         color = topic.color,
                     )
                     Spacer(Modifier.height(10.dp))
-                    Chip(onClick = { feedback?.speaker?.speak(prompt()) }, modifier = Modifier.size(46.dp)) {
+                    Chip(
+                        onClick = { feedback?.speaker?.speak(spec.spokenPrompt()) },
+                        modifier = Modifier.size(46.dp),
+                    ) {
                         Text("🔊", fontSize = 20.sp)
                     }
                 }
@@ -141,27 +186,68 @@ fun BigSmallScreen(
 
             Spacer(Modifier.height(20.dp))
 
-            Row(horizontalArrangement = Arrangement.spacedBy(14.dp), modifier = Modifier.fillMaxWidth()) {
-                ChoiceCard(emoji, big = bigOnLeft, flashOk = flash?.first == true && flash?.second == true, flashBad = flash?.first == true && flash?.second == false, accent = topic.color, onTap = { choose(true) }, modifier = Modifier.weight(1f))
-                ChoiceCard(emoji, big = !bigOnLeft, flashOk = flash?.first == false && flash?.second == true, flashBad = flash?.first == false && flash?.second == false, accent = topic.color, onTap = { choose(false) }, modifier = Modifier.weight(1f))
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(14.dp),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                ChoiceCard(
+                    flashOk = flash?.first == true && flash?.second == true,
+                    flashBad = flash?.first == true && flash?.second == false,
+                    onTap = { choose(true) },
+                    modifier = Modifier.weight(1f),
+                ) {
+                    if (spec.mode == BigSmallMode.SIZE) {
+                        Text(spec.emoji, fontSize = if (spec.bigOnLeft) 110.sp else 52.sp)
+                    } else {
+                        NumberDisplay(spec.numLeft, topic.color)
+                    }
+                }
+                ChoiceCard(
+                    flashOk = flash?.first == false && flash?.second == true,
+                    flashBad = flash?.first == false && flash?.second == false,
+                    onTap = { choose(false) },
+                    modifier = Modifier.weight(1f),
+                ) {
+                    if (spec.mode == BigSmallMode.SIZE) {
+                        Text(spec.emoji, fontSize = if (!spec.bigOnLeft) 110.sp else 52.sp)
+                    } else {
+                        NumberDisplay(spec.numRight, topic.color)
+                    }
+                }
             }
         }
 
         if (showCelebrate) {
-            Celebrate(title = "Size Star!", sub = "$score correct!", stars = 3, onDone = { showCelebrate = false; newRound() })
+            Celebrate(
+                title = "Size Star!",
+                sub = "$score correct!",
+                stars = 3,
+                onDone = { showCelebrate = false; round++ },
+            )
         }
     }
 }
 
 @Composable
+private fun NumberDisplay(number: Int, color: Color) {
+    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+        Text(
+            "$number",
+            fontFamily = FontDisplay,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 80.sp,
+            color = color,
+        )
+    }
+}
+
+@Composable
 private fun ChoiceCard(
-    emoji: String,
-    big: Boolean,
     flashOk: Boolean,
     flashBad: Boolean,
-    accent: Color,
     onTap: () -> Unit,
     modifier: Modifier = Modifier,
+    content: @Composable () -> Unit,
 ) {
     Surface(
         onClick = onTap,
@@ -179,7 +265,7 @@ private fun ChoiceCard(
         shadowElevation = 4.dp,
     ) {
         Box(contentAlignment = Alignment.Center) {
-            Text(emoji, fontSize = if (big) 110.sp else 52.sp)
+            content()
         }
     }
 }

@@ -38,8 +38,23 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 
-private const val PAIRS = 6        // 12 cards in a 4×3 grid
 private const val COLS = 4
+
+/**
+ * Progressive difficulty: 4 pairs (rounds 0-2) → 6 pairs (rounds 3-5) → 8 pairs (round 6+).
+ * Grid is always 4 columns wide; row count grows with pairs.
+ */
+private fun pairsForRound(round: Int) = when {
+    round < 3 -> 4
+    round < 6 -> 6
+    else -> 8
+}
+
+private fun levelLabel(round: Int) = when {
+    round < 3 -> "★ Easy"
+    round < 6 -> "★★ Medium"
+    else -> "★★★ Hard"
+}
 
 /** Memory Match — flip cards two at a time to find matching pairs. */
 @Composable
@@ -50,14 +65,20 @@ fun MemoryMatchScreen(
     feedback: PlayFeedback? = null,
 ) {
     var round by remember { mutableIntStateOf(0) }
+    val pairs = pairsForRound(round)
+
     val board = remember(round) {
-        val picks = GAME_EMOJIS.shuffled().take(PAIRS)
+        val picks = GAME_EMOJIS.shuffled().take(pairsForRound(round))
         (picks + picks).shuffled()
     }
     val matched = remember(round) { mutableStateListOf<Int>() }
     var first by remember(round) { mutableStateOf<Int?>(null) }
     var second by remember(round) { mutableStateOf<Int?>(null) }
     var showCelebrate by remember { mutableStateOf(false) }
+
+    LaunchedEffect(round) {
+        feedback?.speaker?.speak("Find the pairs!")
+    }
 
     // Evaluate a pair once two cards are face-up.
     LaunchedEffect(first, second) {
@@ -102,17 +123,22 @@ fun MemoryMatchScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("${matched.size / 2}/$PAIRS", fontFamily = FontDisplay, fontSize = 16.sp, color = topic.color)
+                            Text(
+                                "${matched.size / 2}/$pairs",
+                                fontFamily = FontDisplay,
+                                fontSize = 16.sp,
+                                color = topic.color,
+                            )
                         }
                     }
                 },
             )
-            Spacer(Modifier.height(8.dp))
+            Spacer(Modifier.height(4.dp))
             Text(
-                text = "Tap two cards to find a pair!",
+                text = "${levelLabel(round)}  •  Tap two cards to find a pair!",
                 fontFamily = FontDisplay,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 14.sp,
+                fontSize = 13.sp,
                 color = InkSoft,
                 modifier = Modifier.padding(horizontal = 2.dp),
             )
@@ -121,7 +147,9 @@ fun MemoryMatchScreen(
             board.chunked(COLS).forEachIndexed { rowIdx, rowCards ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(10.dp),
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 10.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 10.dp),
                 ) {
                     rowCards.forEachIndexed { colIdx, emoji ->
                         val i = rowIdx * COLS + colIdx
@@ -129,7 +157,9 @@ fun MemoryMatchScreen(
                         val isMatched = matched.contains(i)
                         Surface(
                             onClick = { onCard(i) },
-                            modifier = Modifier.weight(1f).aspectRatio(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f),
                             shape = RoundedCornerShape(18.dp),
                             color = when {
                                 isMatched -> topic.tint
@@ -140,9 +170,15 @@ fun MemoryMatchScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 if (isUp) {
-                                    Text(emoji, fontSize = 32.sp)
+                                    Text(emoji, fontSize = if (pairs <= 4) 36.sp else 28.sp)
                                 } else {
-                                    Text("?", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 30.sp, color = Color.White)
+                                    Text(
+                                        "?",
+                                        fontFamily = FontDisplay,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 28.sp,
+                                        color = Color.White,
+                                    )
                                 }
                             }
                         }
@@ -155,7 +191,7 @@ fun MemoryMatchScreen(
         if (showCelebrate) {
             Celebrate(
                 title = "All matched!",
-                sub = "You found every pair!",
+                sub = "You found every pair! ${levelLabel(round)}",
                 stars = 3,
                 onDone = { showCelebrate = false; round++ },
             )

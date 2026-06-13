@@ -44,7 +44,25 @@ import kotlinx.coroutines.delay
 
 private const val COLS = 3
 
-/** Count & Tap — tap exactly the requested number of items. Reinforces counting. */
+/** Number word labels displayed alongside the digit for early literacy. */
+private val NUMBER_WORDS = listOf(
+    "ZERO", "ONE", "TWO", "THREE", "FOUR",
+    "FIVE", "SIX", "SEVEN", "EIGHT", "NINE",
+)
+
+/**
+ * Score-based difficulty levels:
+ *  Level 0 (score 0-4):  tap 2-4 items
+ *  Level 1 (score 5-9):  tap 3-6 items
+ *  Level 2 (score 10+):  tap 5-9 items
+ */
+private fun targetRangeForLevel(level: Int) = when (level) {
+    0 -> 2..4
+    1 -> 3..6
+    else -> 5..9
+}
+
+/** Count & Tap — tap exactly the requested number of items. Reinforces counting 1-9. */
 @Composable
 fun CountCatchScreen(
     topic: Topic,
@@ -58,9 +76,12 @@ fun CountCatchScreen(
     var solved by remember(round) { mutableStateOf(false) }
     var showCelebrate by remember { mutableStateOf(false) }
 
-    val spec = remember(round) {
-        val target = (2..6).random()
-        val pool = (target + (2..4).random()).coerceAtMost(9)
+    // Level advances every 5 correct answers, capped at 2.
+    val level = (score / 5).coerceAtMost(2)
+    val spec = remember(round, level) {
+        val range = targetRangeForLevel(level)
+        val target = range.random()
+        val pool = (target + (2..3).random()).coerceAtMost(12)
         Triple(target, pool, GAME_EMOJIS.random())
     }
     val target = spec.first
@@ -78,12 +99,11 @@ fun CountCatchScreen(
         if (now.size < target) {
             feedback?.speaker?.speak(now.size.toString())
         } else {
-            // reached the target
             solved = true
             score += 1
             onReward(4)
             feedback?.correct()
-            feedback?.speaker?.speak("Yes! $target")
+            feedback?.speaker?.speak("Yes! ${NUMBER_WORDS[target]}")
         }
     }
 
@@ -111,7 +131,12 @@ fun CountCatchScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                            Text(
+                                "⭐ $score",
+                                fontFamily = FontDisplay,
+                                fontSize = 16.sp,
+                                color = Color(0xFFF2A93B),
+                            )
                         }
                     }
                 },
@@ -121,13 +146,41 @@ fun CountCatchScreen(
             CardSurface(modifier = Modifier.fillMaxWidth()) {
                 Column(
                     horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(20.dp),
+                    modifier = Modifier.padding(vertical = 20.dp, horizontal = 28.dp),
                 ) {
-                    Text("TAP THIS MANY", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 14.sp, color = InkSoft)
-                    Text("$target", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 52.sp, color = topic.color)
-                    Text("Tapped ${tapped.size.coerceAtMost(target)} / $target", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = InkSoft)
+                    Text(
+                        "TAP THIS MANY",
+                        fontFamily = FontDisplay,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 14.sp,
+                        color = InkSoft,
+                    )
+                    Text(
+                        "$target",
+                        fontFamily = FontDisplay,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 60.sp,
+                        color = topic.color,
+                    )
+                    // Number word helps early readers associate digit with name
+                    Text(
+                        NUMBER_WORDS[target],
+                        fontFamily = FontDisplay,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 18.sp,
+                        color = topic.color.copy(alpha = 0.65f),
+                    )
                     Spacer(Modifier.height(8.dp))
-                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(46.dp)) { Text("🔊", fontSize = 20.sp) }
+                    Text(
+                        "Tapped ${tapped.size.coerceAtMost(target)} / $target",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 13.sp,
+                        color = InkSoft,
+                    )
+                    Spacer(Modifier.height(8.dp))
+                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(46.dp)) {
+                        Text("🔊", fontSize = 20.sp)
+                    }
                 }
             }
 
@@ -136,18 +189,25 @@ fun CountCatchScreen(
             (0 until pool).toList().chunked(COLS).forEach { rowItems ->
                 Row(
                     horizontalArrangement = Arrangement.spacedBy(12.dp),
-                    modifier = Modifier.fillMaxWidth().padding(bottom = 12.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 12.dp),
                 ) {
                     rowItems.forEach { i ->
                         val isTapped = tapped.contains(i)
                         Surface(
                             onClick = { onItem(i) },
-                            modifier = Modifier.weight(1f).aspectRatio(1f),
+                            modifier = Modifier
+                                .weight(1f)
+                                .aspectRatio(1f),
                             shape = RoundedCornerShape(20.dp),
                             color = if (isTapped) topic.tint else Color.White,
                             shadowElevation = 3.dp,
                         ) {
-                            Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize(),
+                            ) {
                                 Text(emoji, fontSize = 40.sp)
                                 if (isTapped) {
                                     Surface(
@@ -159,7 +219,12 @@ fun CountCatchScreen(
                                             .size(22.dp),
                                     ) {
                                         Box(contentAlignment = Alignment.Center) {
-                                            Text("✓", fontSize = 13.sp, color = Color.White, fontWeight = FontWeight.ExtraBold)
+                                            Text(
+                                                "✓",
+                                                fontSize = 13.sp,
+                                                color = Color.White,
+                                                fontWeight = FontWeight.ExtraBold,
+                                            )
                                         }
                                     }
                                 }
@@ -172,7 +237,12 @@ fun CountCatchScreen(
         }
 
         if (showCelebrate) {
-            Celebrate(title = "Counting Star!", sub = "$score rounds!", stars = 3, onDone = { showCelebrate = false; round++ })
+            Celebrate(
+                title = "Counting Star!",
+                sub = "$score rounds!",
+                stars = 3,
+                onDone = { showCelebrate = false; round++ },
+            )
         }
     }
 }
