@@ -19,7 +19,10 @@ import com.vi5hnu.curvykids.ui.theme.TintGreen
 import com.vi5hnu.curvykids.ui.theme.TintSun
 
 /** What kind of activity a topic launches. */
-enum class TopicKind { TRACE, SHAPES, COLORS, COUNT, WORDS, ANIMALS, BODY, DAYS, DRAW }
+enum class TopicKind {
+    TRACE, SHAPES, COLORS, COUNT, WORDS, ANIMALS, BODY, DAYS, DRAW,
+    MEMORY, BIGSMALL, ODDONE, CATCH,
+}
 
 /**
  * A single entry in the "Pick an adventure" grid on the Home and Play screens.
@@ -57,4 +60,8 @@ val TOPICS: List<Topic> = listOf(
     Topic("body",    "My Body",       "Point & say", "👋", Coral, TintCoral, TopicKind.BODY),
     Topic("days",    "Days & Time",   "Week & sky",  "🗓️", Grape, TintGrape, TopicKind.DAYS),
     Topic("draw",    "Free Draw",     "Make art!",   "✏️", Teal,  TintTeal,  TopicKind.DRAW),
+    Topic("memory",  "Memory Match",  "Find pairs",  "🧠", Grape, TintGrape, TopicKind.MEMORY),
+    Topic("bigsmall","Big or Small",  "Which is big?","📏", Blue,  TintBlue,  TopicKind.BIGSMALL),
+    Topic("oddone",  "Odd One Out",   "Spot it!",    "🔍", Coral, TintCoral, TopicKind.ODDONE),
+    Topic("catch",   "Count & Tap",   "How many?",   "🎯", Aqua,  TintAqua,  TopicKind.CATCH),
 )

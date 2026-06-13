@@ -155,6 +155,14 @@ val DAY_COLORS = listOf(
     Color(0xFFFF8FB6), // Saturday – pink
 )
 
+// ── Shared emoji pool for the brain games (Memory, Odd-One-Out, Big/Small, Catch) ───────
+
+val GAME_EMOJIS = listOf(
+    "🐶", "🐱", "🦁", "🐮", "🐸", "🦆", "🐷", "🐝", "🦋", "🐠",
+    "🍎", "🍓", "🍌", "🍇", "⭐", "🌸", "🌈", "🚗", "🎈", "🌙",
+    "🐢", "🦄", "🐙", "🦀", "🌻", "🍉", "🚀", "⚽", "🎵", "🦉",
+)
+
 // ── Crayon colors for the drawing canvas ─────────────────────────────────────
 
 val CRAYON_COLORS = listOf(

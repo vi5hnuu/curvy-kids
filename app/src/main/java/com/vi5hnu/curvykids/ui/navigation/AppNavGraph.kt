@@ -31,11 +31,15 @@ import androidx.navigation.navArgument
 import com.vi5hnu.curvykids.data.content.TOPICS
 import com.vi5hnu.curvykids.data.content.TopicKind
 import com.vi5hnu.curvykids.ui.activities.AnimalsScreen
+import com.vi5hnu.curvykids.ui.activities.BigSmallScreen
 import com.vi5hnu.curvykids.ui.activities.BodyScreen
 import com.vi5hnu.curvykids.ui.activities.ColorsScreen
+import com.vi5hnu.curvykids.ui.activities.CountCatchScreen
 import com.vi5hnu.curvykids.ui.activities.CountScreen
 import com.vi5hnu.curvykids.ui.activities.DaysScreen
 import com.vi5hnu.curvykids.ui.activities.DrawScreen
+import com.vi5hnu.curvykids.ui.activities.MemoryMatchScreen
+import com.vi5hnu.curvykids.ui.activities.OddOneOutScreen
 import com.vi5hnu.curvykids.ui.activities.ShapesScreen
 import com.vi5hnu.curvykids.ui.activities.WordsScreen
 import com.vi5hnu.curvykids.ui.app.AppViewModel
@@ -254,6 +258,34 @@ fun AppNavGraph(
                     TopicKind.DRAW -> DrawScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
+                    )
+
+                    TopicKind.MEMORY -> MemoryMatchScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+
+                    TopicKind.BIGSMALL -> BigSmallScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+
+                    TopicKind.ODDONE -> OddOneOutScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+
+                    TopicKind.CATCH -> CountCatchScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
                     )
                 }
             }

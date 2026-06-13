@@ -145,5 +145,26 @@ private fun DrawScope.drawTopicGlyph(id: String, color: Color) {
             }
             drawPath(tip, color)
         }
+        "memory" -> {
+            // two overlapping cards
+            drawRoundRect(color, topLeft = Offset(w * 0.2f, h * 0.26f), size = Size(s * 0.34f, s * 0.46f), cornerRadius = CornerRadius(s * 0.08f), style = stroke)
+            drawRoundRect(color, topLeft = Offset(w * 0.46f, h * 0.26f), size = Size(s * 0.34f, s * 0.46f), cornerRadius = CornerRadius(s * 0.08f), style = stroke)
+        }
+        "bigsmall" -> {
+            // a big circle and a small circle
+            drawCircle(color, s * 0.26f, Offset(w * 0.36f, h * 0.5f), style = stroke)
+            drawCircle(color, s * 0.12f, Offset(w * 0.74f, h * 0.62f), style = stroke)
+        }
+        "oddone" -> {
+            // magnifying glass
+            drawCircle(color, s * 0.24f, Offset(w * 0.42f, h * 0.42f), style = stroke)
+            drawLine(color, Offset(w * 0.6f, h * 0.6f), Offset(w * 0.78f, h * 0.78f), strokeWidth = s * 0.12f, cap = StrokeCap.Round)
+        }
+        "catch" -> {
+            // target with three rings
+            drawCircle(color, s * 0.36f, Offset(cx, cy), style = stroke)
+            drawCircle(color, s * 0.22f, Offset(cx, cy), style = stroke)
+            drawCircle(color, s * 0.07f, Offset(cx, cy))
+        }
     }
 }

@@ -34,6 +34,7 @@ fun PlayScreen(
     val writing  = TOPICS.filter { it.kind == TopicKind.TRACE }
     val discover = TOPICS.filter { it.kind in listOf(TopicKind.SHAPES, TopicKind.COLORS, TopicKind.ANIMALS, TopicKind.BODY, TopicKind.DAYS) }
     val games    = TOPICS.filter { it.kind in listOf(TopicKind.COUNT, TopicKind.WORDS, TopicKind.DRAW) }
+    val brain    = TOPICS.filter { it.kind in listOf(TopicKind.MEMORY, TopicKind.BIGSMALL, TopicKind.ODDONE, TopicKind.CATCH) }
 
     Column(
         modifier = modifier
@@ -57,9 +58,10 @@ fun PlayScreen(
         )
         Spacer(Modifier.height(18.dp))
 
-        ActivityGroup(title = "Writing",  topics = writing,  onOpen = onOpenTopic)
-        ActivityGroup(title = "Discover", topics = discover, onOpen = onOpenTopic)
-        ActivityGroup(title = "Games",    topics = games,    onOpen = onOpenTopic)
+        ActivityGroup(title = "Writing",     topics = writing,  onOpen = onOpenTopic)
+        ActivityGroup(title = "Discover",    topics = discover, onOpen = onOpenTopic)
+        ActivityGroup(title = "Games",       topics = games,    onOpen = onOpenTopic)
+        ActivityGroup(title = "Brain Games", topics = brain,    onOpen = onOpenTopic)
     }
 }
 
