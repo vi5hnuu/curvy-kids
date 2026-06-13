@@ -1,6 +1,6 @@
 [versions]
 agp = "8.10.1"
-digitalInkRecognition = "18.1.0"
+digitalInkRecognition = "19.0.0"
 kotlin = "2.0.21"
 coreKtx = "1.16.0"
 junit = "4.13.2"
