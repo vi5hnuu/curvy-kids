@@ -22,6 +22,12 @@ import com.vi5hnu.curvykids.ui.theme.TintSun
 enum class TopicKind {
     TRACE, SHAPES, COLORS, COUNT, WORDS, ANIMALS, BODY, DAYS, DRAW,
     MEMORY, BIGSMALL, ODDONE, CATCH,
+    // World group
+    MONTHS, SEASONS, EMOTIONS, VEHICLES, FRUITSVEGGIES,
+    // Math group
+    ADDITION, SUBTRACTION, PATTERNS,
+    // Language group
+    PHONICS, OPPOSITES, RHYMING,
 }
 
 /**
@@ -47,21 +53,39 @@ data class Topic(
     val set: Level? = null,
 )
 
-/** Ordered list of all 11 topics — matches the design's TOPICS array. */
+/** Ordered list of all topics — grouped by section for display on Home and Play screens. */
 val TOPICS: List<Topic> = listOf(
-    Topic("upper",   "Big Letters",   "A B C",       "Aa", Coral, TintCoral, TopicKind.TRACE,   Level.UPPERCASE),
-    Topic("lower",   "Small Letters", "a b c",       "bd", Teal,  TintTeal,  TopicKind.TRACE,   Level.LOWERCASE),
-    Topic("numbers", "Numbers",       "1 2 3",       "12", Grape, TintGrape, TopicKind.TRACE,   Level.NUMBERS),
-    Topic("shapes",  "Shapes",        "Tap & learn", "◆",  Blue,  TintBlue,  TopicKind.SHAPES),
-    Topic("colors",  "Colors",        "Match it",    "🎨", Pink,  TintPink,  TopicKind.COLORS),
-    Topic("count",   "Counting",      "1 to 10",     "🍎", Aqua,  TintAqua,  TopicKind.COUNT),
-    Topic("words",   "First Words",   "C-A-T",       "🐱", Green, TintGreen, TopicKind.WORDS),
-    Topic("animals", "Animals",       "Who am I?",   "🦁", Sun,   TintSun,   TopicKind.ANIMALS),
-    Topic("body",    "My Body",       "Point & say", "👋", Coral, TintCoral, TopicKind.BODY),
-    Topic("days",    "Days & Time",   "Week & sky",  "🗓️", Grape, TintGrape, TopicKind.DAYS),
-    Topic("draw",    "Free Draw",     "Make art!",   "✏️", Teal,  TintTeal,  TopicKind.DRAW),
-    Topic("memory",  "Memory Match",  "Find pairs",  "🧠", Grape, TintGrape, TopicKind.MEMORY),
-    Topic("bigsmall","Big or Small",  "Which is big?","📏", Blue,  TintBlue,  TopicKind.BIGSMALL),
-    Topic("oddone",  "Odd One Out",   "Spot it!",    "🔍", Coral, TintCoral, TopicKind.ODDONE),
-    Topic("catch",   "Count & Tap",   "How many?",   "🎯", Aqua,  TintAqua,  TopicKind.CATCH),
+    // Writing
+    Topic("upper",        "Big Letters",    "A B C",        "Aa", Coral, TintCoral, TopicKind.TRACE,       Level.UPPERCASE),
+    Topic("lower",        "Small Letters",  "a b c",        "bd", Teal,  TintTeal,  TopicKind.TRACE,       Level.LOWERCASE),
+    Topic("numbers",      "Numbers",        "1 2 3",        "12", Grape, TintGrape, TopicKind.TRACE,       Level.NUMBERS),
+    // Discover
+    Topic("shapes",       "Shapes",         "Tap & learn",  "◆",  Blue,  TintBlue,  TopicKind.SHAPES),
+    Topic("colors",       "Colors",         "Match it",     "🎨", Pink,  TintPink,  TopicKind.COLORS),
+    Topic("animals",      "Animals",        "Who am I?",    "🦁", Sun,   TintSun,   TopicKind.ANIMALS),
+    Topic("body",         "My Body",        "Point & say",  "👋", Coral, TintCoral, TopicKind.BODY),
+    Topic("days",         "Days & Time",    "Week & sky",   "🗓️", Grape, TintGrape, TopicKind.DAYS),
+    // Games
+    Topic("count",        "Counting",       "1 to 10",      "🍎", Aqua,  TintAqua,  TopicKind.COUNT),
+    Topic("words",        "First Words",    "C-A-T",        "🐱", Green, TintGreen, TopicKind.WORDS),
+    Topic("draw",         "Free Draw",      "Make art!",    "✏️", Teal,  TintTeal,  TopicKind.DRAW),
+    // Brain Games
+    Topic("memory",       "Memory Match",   "Find pairs",   "🧠", Grape, TintGrape, TopicKind.MEMORY),
+    Topic("bigsmall",     "Big or Small",   "Which is big?","📏", Blue,  TintBlue,  TopicKind.BIGSMALL),
+    Topic("oddone",       "Odd One Out",    "Spot it!",     "🔍", Coral, TintCoral, TopicKind.ODDONE),
+    Topic("catch",        "Count & Tap",    "How many?",    "🎯", Aqua,  TintAqua,  TopicKind.CATCH),
+    // World
+    Topic("months",       "Months",         "Jan – Dec",    "🗓️", Blue,  TintBlue,  TopicKind.MONTHS),
+    Topic("seasons",      "Seasons",        "Spring…",      "🌸", Green, TintGreen, TopicKind.SEASONS),
+    Topic("emotions",     "Feelings",       "How I feel",   "😊", Pink,  TintPink,  TopicKind.EMOTIONS),
+    Topic("vehicles",     "Vehicles",       "Vroom!",       "🚗", Coral, TintCoral, TopicKind.VEHICLES),
+    Topic("fruitsveggies","Fruits & Vegs",  "Sort it!",     "🍎", Green, TintGreen, TopicKind.FRUITSVEGGIES),
+    // Math
+    Topic("addition",     "Addition",       "1 + 2 = ?",    "➕", Teal,  TintTeal,  TopicKind.ADDITION),
+    Topic("subtraction",  "Subtraction",    "5 - 2 = ?",    "➖", Grape, TintGrape, TopicKind.SUBTRACTION),
+    Topic("patterns",     "Patterns",       "What's next?", "🔷", Blue,  TintBlue,  TopicKind.PATTERNS),
+    // Language
+    Topic("phonics",      "Letter Sounds",  "A says ahh",   "🔤", Coral, TintCoral, TopicKind.PHONICS),
+    Topic("opposites",    "Opposites",      "Big ↔ Small",  "↔️", Sun,   TintSun,   TopicKind.OPPOSITES),
+    Topic("rhyming",      "Rhyming",        "Cat – Hat!",   "🎵", Pink,  TintPink,  TopicKind.RHYMING),
 )

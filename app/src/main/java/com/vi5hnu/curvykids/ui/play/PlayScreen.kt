@@ -35,6 +35,9 @@ fun PlayScreen(
     val discover = TOPICS.filter { it.kind in listOf(TopicKind.SHAPES, TopicKind.COLORS, TopicKind.ANIMALS, TopicKind.BODY, TopicKind.DAYS) }
     val games    = TOPICS.filter { it.kind in listOf(TopicKind.COUNT, TopicKind.WORDS, TopicKind.DRAW) }
     val brain    = TOPICS.filter { it.kind in listOf(TopicKind.MEMORY, TopicKind.BIGSMALL, TopicKind.ODDONE, TopicKind.CATCH) }
+    val world    = TOPICS.filter { it.kind in listOf(TopicKind.MONTHS, TopicKind.SEASONS, TopicKind.EMOTIONS, TopicKind.VEHICLES, TopicKind.FRUITSVEGGIES) }
+    val math     = TOPICS.filter { it.kind in listOf(TopicKind.ADDITION, TopicKind.SUBTRACTION, TopicKind.PATTERNS) }
+    val language = TOPICS.filter { it.kind in listOf(TopicKind.PHONICS, TopicKind.OPPOSITES, TopicKind.RHYMING) }
 
     Column(
         modifier = modifier
@@ -62,6 +65,9 @@ fun PlayScreen(
         ActivityGroup(title = "Discover",    topics = discover, onOpen = onOpenTopic)
         ActivityGroup(title = "Games",       topics = games,    onOpen = onOpenTopic)
         ActivityGroup(title = "Brain Games", topics = brain,    onOpen = onOpenTopic)
+        ActivityGroup(title = "World",       topics = world,    onOpen = onOpenTopic)
+        ActivityGroup(title = "Math",        topics = math,     onOpen = onOpenTopic)
+        ActivityGroup(title = "Language",    topics = language, onOpen = onOpenTopic)
     }
 }
 

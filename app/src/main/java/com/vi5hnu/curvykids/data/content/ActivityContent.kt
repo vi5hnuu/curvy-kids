@@ -181,3 +181,157 @@ val CRAYON_COLORS = listOf(
     Color(0xFFA855F7), // purple
     Color(0xFF1FC2AE), // teal
 )
+
+// ── Months of the Year ────────────────────────────────────────────────────────
+
+data class Month(val name: String, val emoji: String, val color: Color)
+
+val MONTHS = listOf(
+    Month("January",   "❄️", Color(0xFF46A6F0)),
+    Month("February",  "💝", Color(0xFFFF8FB6)),
+    Month("March",     "🌱", Color(0xFF4FCB94)),
+    Month("April",     "🌸", Color(0xFFFF8FB6)),
+    Month("May",       "🌻", Color(0xFFFFC24A)),
+    Month("June",      "☀️", Color(0xFFFF8B6B)),
+    Month("July",      "🏖️", Color(0xFFFF5A52)),
+    Month("August",    "🍦", Color(0xFFFFC24A)),
+    Month("September", "🍂", Color(0xFFFF9F1C)),
+    Month("October",   "🎃", Color(0xFFFF8B6B)),
+    Month("November",  "🍁", Color(0xFF8B5E3C)),
+    Month("December",  "🎄", Color(0xFF4FCB94)),
+)
+
+// ── Seasons & Weather ─────────────────────────────────────────────────────────
+
+data class SeasonItem(val name: String, val emoji: String, val weather: String, val weatherEmojis: List<String>, val color: Color)
+
+val SEASONS_LIST = listOf(
+    SeasonItem("Spring", "🌸", "warm and rainy",  listOf("🌧️", "🌈", "🌱"), Color(0xFF4FCB94)),
+    SeasonItem("Summer", "☀️", "hot and sunny",   listOf("☀️", "🏖️", "🍦"), Color(0xFFFF8B6B)),
+    SeasonItem("Autumn", "🍂", "cool and windy",  listOf("🍂", "🍁", "🌬️"), Color(0xFFFF9F1C)),
+    SeasonItem("Winter", "❄️", "cold and snowy",  listOf("❄️", "⛄", "🧣"), Color(0xFF46A6F0)),
+)
+
+// ── Emotions / Feelings ───────────────────────────────────────────────────────
+
+data class Emotion(val name: String, val emoji: String, val description: String)
+
+val EMOTIONS = listOf(
+    Emotion("Happy",     "😊", "I feel great!"),
+    Emotion("Sad",       "😢", "I feel upset"),
+    Emotion("Angry",     "😠", "I feel mad"),
+    Emotion("Surprised", "😲", "Wow!"),
+    Emotion("Scared",    "😨", "I feel afraid"),
+    Emotion("Tired",     "😴", "I need sleep"),
+    Emotion("Silly",     "😜", "Hehe!"),
+    Emotion("Excited",   "🤩", "Yay!"),
+)
+
+// ── Vehicles / Transport ──────────────────────────────────────────────────────
+
+data class Vehicle(val name: String, val emoji: String, val sound: String)
+
+val VEHICLES = listOf(
+    Vehicle("Car",        "🚗", "Vroom!"),
+    Vehicle("Bus",        "🚌", "Honk!"),
+    Vehicle("Train",      "🚂", "Choo choo!"),
+    Vehicle("Airplane",   "✈️", "Whoosh!"),
+    Vehicle("Rocket",     "🚀", "Blast off!"),
+    Vehicle("Ship",       "🚢", "Splash!"),
+    Vehicle("Bicycle",    "🚲", "Ring ring!"),
+    Vehicle("Helicopter", "🚁", "Whirr!"),
+    Vehicle("Boat",       "⛵", "Sail away!"),
+    Vehicle("Ambulance",  "🚑", "Wee woo!"),
+)
+
+// ── Fruits & Vegetables ───────────────────────────────────────────────────────
+
+data class FruitItem(val name: String, val emoji: String, val isFruit: Boolean)
+
+val FRUITS_VEGGIES = listOf(
+    FruitItem("Apple",      "🍎", true),
+    FruitItem("Banana",     "🍌", true),
+    FruitItem("Grapes",     "🍇", true),
+    FruitItem("Strawberry", "🍓", true),
+    FruitItem("Watermelon", "🍉", true),
+    FruitItem("Pineapple",  "🍍", true),
+    FruitItem("Mango",      "🥭", true),
+    FruitItem("Orange",     "🍊", true),
+    FruitItem("Carrot",     "🥕", false),
+    FruitItem("Broccoli",   "🥦", false),
+    FruitItem("Corn",       "🌽", false),
+    FruitItem("Potato",     "🥔", false),
+    FruitItem("Tomato",     "🍅", false),
+    FruitItem("Cucumber",   "🥒", false),
+)
+
+// ── Opposites ─────────────────────────────────────────────────────────────────
+
+data class OppositePair(val word1: String, val emoji1: String, val word2: String, val emoji2: String)
+
+val OPPOSITES = listOf(
+    OppositePair("Big",    "🐘", "Small",  "🐭"),
+    OppositePair("Hot",    "🔥", "Cold",   "🧊"),
+    OppositePair("Up",     "⬆️", "Down",   "⬇️"),
+    OppositePair("Fast",   "🚀", "Slow",   "🐢"),
+    OppositePair("Happy",  "😊", "Sad",    "😢"),
+    OppositePair("Day",    "☀️", "Night",  "🌙"),
+    OppositePair("Full",   "🍽️", "Empty",  "🫙"),
+    OppositePair("Open",   "📖", "Closed", "📕"),
+    OppositePair("Loud",   "📣", "Quiet",  "🤫"),
+    OppositePair("Long",   "🐍", "Short",  "🐛"),
+    OppositePair("Clean",  "🧼", "Dirty",  "🪣"),
+    OppositePair("Light",  "🪶", "Heavy",  "🏋️"),
+)
+
+// ── Phonics — Letter Sounds ───────────────────────────────────────────────────
+
+/** Each letter paired with its primary phonetic sound, a starter word, and an emoji. */
+data class LetterPhonic(val letter: String, val sound: String, val example: String, val emoji: String)
+
+val PHONICS_DATA = listOf(
+    LetterPhonic("A", "ahh",  "Apple",     "🍎"),
+    LetterPhonic("B", "buh",  "Ball",      "⚽"),
+    LetterPhonic("C", "kuh",  "Cat",       "🐱"),
+    LetterPhonic("D", "duh",  "Dog",       "🐶"),
+    LetterPhonic("E", "ehh",  "Egg",       "🥚"),
+    LetterPhonic("F", "fuh",  "Fish",      "🐟"),
+    LetterPhonic("G", "guh",  "Goat",      "🐐"),
+    LetterPhonic("H", "huh",  "Hat",       "🎩"),
+    LetterPhonic("I", "ih",   "Igloo",     "🧊"),
+    LetterPhonic("J", "juh",  "Jam",       "🍯"),
+    LetterPhonic("K", "kuh",  "Kite",      "🪁"),
+    LetterPhonic("L", "luh",  "Lion",      "🦁"),
+    LetterPhonic("M", "muh",  "Moon",      "🌙"),
+    LetterPhonic("N", "nuh",  "Nest",      "🪺"),
+    LetterPhonic("O", "ohh",  "Orange",    "🍊"),
+    LetterPhonic("P", "puh",  "Pig",       "🐷"),
+    LetterPhonic("Q", "kwuh", "Queen",     "👑"),
+    LetterPhonic("R", "ruh",  "Rainbow",   "🌈"),
+    LetterPhonic("S", "suh",  "Sun",       "☀️"),
+    LetterPhonic("T", "tuh",  "Tree",      "🌳"),
+    LetterPhonic("U", "uhh",  "Umbrella",  "☂️"),
+    LetterPhonic("V", "vuh",  "Van",       "🚐"),
+    LetterPhonic("W", "wuh",  "Wolf",      "🐺"),
+    LetterPhonic("X", "ksss", "X-ray",     "🦴"),
+    LetterPhonic("Y", "yuh",  "Yarn",      "🧶"),
+    LetterPhonic("Z", "zuh",  "Zebra",     "🦓"),
+)
+
+// ── Rhyming Word Groups ───────────────────────────────────────────────────────
+
+/** A target word with several rhyming alternatives (word + emoji). */
+data class RhymeGroup(val word: String, val emoji: String, val rhymes: List<Pair<String, String>>)
+
+val RHYME_GROUPS = listOf(
+    RhymeGroup("CAT",  "🐱", listOf("BAT" to "🦇", "HAT" to "🎩", "MAT" to "🧹", "RAT" to "🐀")),
+    RhymeGroup("DOG",  "🐶", listOf("LOG" to "🪵", "FROG" to "🐸", "HOG" to "🐷")),
+    RhymeGroup("SUN",  "☀️", listOf("RUN" to "🏃", "FUN" to "🎉", "BUN" to "🍞")),
+    RhymeGroup("CAKE", "🎂", listOf("LAKE" to "🏞️", "MAKE" to "🔨", "BAKE" to "👨‍🍳")),
+    RhymeGroup("TREE", "🌳", listOf("BEE" to "🐝", "SEE" to "👁️", "KEY" to "🔑")),
+    RhymeGroup("STAR", "⭐", listOf("CAR" to "🚗", "JAR" to "🫙", "FAR" to "🔭")),
+    RhymeGroup("FISH", "🐟", listOf("DISH" to "🍽️", "WISH" to "🌠")),
+    RhymeGroup("BALL", "⚽", listOf("TALL" to "🏀", "WALL" to "🧱", "CALL" to "📞")),
+    RhymeGroup("RING", "💍", listOf("KING" to "🤴", "SING" to "🎵", "WING" to "🪶")),
+    RhymeGroup("BEAR", "🐻", listOf("HAIR" to "💇", "CHAIR" to "🪑", "PEAR" to "🍐")),
+)

@@ -30,6 +30,7 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.vi5hnu.curvykids.data.content.TOPICS
 import com.vi5hnu.curvykids.data.content.TopicKind
+import com.vi5hnu.curvykids.ui.activities.AdditionScreen
 import com.vi5hnu.curvykids.ui.activities.AnimalsScreen
 import com.vi5hnu.curvykids.ui.activities.BigSmallScreen
 import com.vi5hnu.curvykids.ui.activities.BodyScreen
@@ -38,9 +39,19 @@ import com.vi5hnu.curvykids.ui.activities.CountCatchScreen
 import com.vi5hnu.curvykids.ui.activities.CountScreen
 import com.vi5hnu.curvykids.ui.activities.DaysScreen
 import com.vi5hnu.curvykids.ui.activities.DrawScreen
+import com.vi5hnu.curvykids.ui.activities.EmotionsScreen
+import com.vi5hnu.curvykids.ui.activities.FruitsVeggiesScreen
 import com.vi5hnu.curvykids.ui.activities.MemoryMatchScreen
+import com.vi5hnu.curvykids.ui.activities.MonthsScreen
 import com.vi5hnu.curvykids.ui.activities.OddOneOutScreen
+import com.vi5hnu.curvykids.ui.activities.OppositeScreen
+import com.vi5hnu.curvykids.ui.activities.PatternsScreen
+import com.vi5hnu.curvykids.ui.activities.PhonicScreen
+import com.vi5hnu.curvykids.ui.activities.RhymingScreen
+import com.vi5hnu.curvykids.ui.activities.SeasonsScreen
 import com.vi5hnu.curvykids.ui.activities.ShapesScreen
+import com.vi5hnu.curvykids.ui.activities.SubtractionScreen
+import com.vi5hnu.curvykids.ui.activities.VehiclesScreen
 import com.vi5hnu.curvykids.ui.activities.WordsScreen
 import com.vi5hnu.curvykids.ui.app.AppViewModel
 import com.vi5hnu.curvykids.ui.game.GameViewModel
@@ -282,6 +293,78 @@ fun AppNavGraph(
                     )
 
                     TopicKind.CATCH -> CountCatchScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+
+                    // ── World ──────────────────────────────────────────────────
+                    TopicKind.MONTHS -> MonthsScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.SEASONS -> SeasonsScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.EMOTIONS -> EmotionsScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.VEHICLES -> VehiclesScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.FRUITSVEGGIES -> FruitsVeggiesScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+
+                    // ── Math ───────────────────────────────────────────────────
+                    TopicKind.ADDITION -> AdditionScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.SUBTRACTION -> SubtractionScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.PATTERNS -> PatternsScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+
+                    // ── Language ───────────────────────────────────────────────
+                    TopicKind.PHONICS -> PhonicScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.OPPOSITES -> OppositeScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.RHYMING -> RhymingScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
