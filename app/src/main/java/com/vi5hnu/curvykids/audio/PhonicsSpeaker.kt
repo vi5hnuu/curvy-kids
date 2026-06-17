@@ -56,13 +56,16 @@ class PhonicsSpeaker(context: Context) {
     }
 
     /**
-     * Speaks the given phrase, replacing anything currently being spoken.
+     * Speaks the given phrase.
      *
-     * @param langTag optional BCP-47 tag (e.g. "hi") to pronounce non-English text. The locale is
+     * @param langTag optional BCP-47 tag (e.g. "hi-IN") to pronounce non-English text. The locale is
      *        switched only when it changes; if the device lacks that voice, it falls back to US so
      *        speech is never silently broken.
+     * @param flush when true (default) interrupts any current speech; when false the phrase is
+     *        QUEUED after whatever is playing — used so a praise/feedback line finishes before the
+     *        next prompt speaks, instead of being cut off mid-word.
      */
-    fun speak(text: String, langTag: String? = null) {
+    fun speak(text: String, langTag: String? = null, flush: Boolean = true) {
         if (text.isBlank() || muted) return
         if (!ready) {
             pendingText = text  // will fire once TTS is initialised
@@ -70,7 +73,17 @@ class PhonicsSpeaker(context: Context) {
             return
         }
         applyLanguage(langTag)
-        tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, text)
+        val mode = if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
+        tts.speak(text, mode, null, text)
+    }
+
+    /**
+     * Whether the engine has a usable voice for [langTag]. Optimistic before init (returns true);
+     * used to decide between speaking Devanagari directly vs a romanized English fallback.
+     */
+    fun supports(langTag: String): Boolean {
+        if (!ready) return true
+        return tts.isLanguageAvailable(Locale.forLanguageTag(langTag)) >= TextToSpeech.LANG_AVAILABLE
     }
 
     /** Switches the TTS voice to [langTag] (default US), with a safe fallback if unsupported. */

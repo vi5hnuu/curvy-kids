@@ -110,7 +110,8 @@ class GameViewModel(
                 }
                 if (!levelComplete) {
                     delay(CORRECT_ADVANCE_DELAY_MS)
-                    next()
+                    // Queue the next prompt so the praise line finishes instead of being cut off.
+                    next(queueSpeech = true)
                 }
                 // If levelComplete, the overlay handles navigation via dismissLevelComplete().
             } else {
@@ -123,7 +124,8 @@ class GameViewModel(
                 if (newAttempts >= MAX_WRONG_ATTEMPTS) {
                     speakGiveUp()
                     delay(GIVE_UP_DELAY_MS)
-                    next()
+                    // Queue so the "keep practicing" line finishes before the next prompt.
+                    next(queueSpeech = true)
                 } else {
                     speakTryAgain(sawNothing = candidates.isEmpty())
                 }
@@ -131,10 +133,10 @@ class GameViewModel(
         }
     }
 
-    fun next() {
+    fun next(queueSpeech: Boolean = false) {
         val state = _uiState.value
         val nextIndex = (state.index + 1) % state.level.characters.size
-        goTo(state.level, nextIndex)
+        goTo(state.level, nextIndex, queueSpeech = queueSpeech)
     }
 
     fun previous() {
@@ -183,29 +185,37 @@ class GameViewModel(
     }
 
     /** Guides the child on what to draw, e.g. "Draw the letter A. A for Apple." */
-    private fun speakPrompt() {
+    private fun speakPrompt(queue: Boolean = false) {
         val state = _uiState.value
         if (state.level.script == Script.DEVANAGARI) {
-            speakHindiLetter(state.character); return
+            speakHindiLetter(state.character, queue); return
         }
         val noun = if (state.level == Level.NUMBERS) "number" else "letter"
         val word = Phonics.wordFor(state.character)
         val suffix = word?.let { " ${Phonics.phraseFor(state.character)}." } ?: ""
-        phonics.speak("Draw the $noun ${state.character}.$suffix")
+        phonics.speak("Draw the $noun ${state.character}.$suffix", flush = !queue)
     }
 
-    /** Speaks a Hindi letter (and its example word) using the Hindi TTS voice. */
-    private fun speakHindiLetter(char: String) {
+    /**
+     * Speaks a Hindi letter naturally ("अ से अनानास" — "A as in Pineapple") in the Hindi voice.
+     * If the device has no Hindi voice, reads the romanized name with the English voice so the
+     * child always hears something instead of silence/garble.
+     */
+    private fun speakHindiLetter(char: String, queue: Boolean = false) {
         val letter = HINDI_BY_CHAR[char]
-        val text = if (letter != null && letter.example.isNotEmpty())
-            "${letter.char}। ${letter.char} से ${letter.example}।"
-        else "$char।"
-        phonics.speak(text, langTag = "hi")
+        if (phonics.supports(HINDI_TTS_TAG)) {
+            val text = if (letter != null && letter.example.isNotEmpty())
+                "$char, $char से ${letter.example}"
+            else char
+            phonics.speak(text, langTag = HINDI_TTS_TAG, flush = !queue)
+        } else {
+            phonics.speak(letter?.romanized ?: char, flush = !queue)
+        }
     }
 
     private fun speakPraise() {
-        if (_uiState.value.level.script == Script.DEVANAGARI) {
-            phonics.speak(HINDI_PRAISE.random(), langTag = "hi"); return
+        if (_uiState.value.level.script == Script.DEVANAGARI && phonics.supports(HINDI_TTS_TAG)) {
+            phonics.speak(HINDI_PRAISE.random(), langTag = HINDI_TTS_TAG); return
         }
         phonics.speak(PRAISE.random())
     }
@@ -213,9 +223,10 @@ class GameViewModel(
     /** Spoken when the child has used all attempts — gentle, not discouraging. */
     private fun speakGiveUp() {
         val state = _uiState.value
-        if (state.level.script == Script.DEVANAGARI) {
-            phonics.speak("कोई बात नहीं! फिर कोशिश करते हैं।", langTag = "hi"); return
+        if (state.level.script == Script.DEVANAGARI && phonics.supports(HINDI_TTS_TAG)) {
+            phonics.speak("कोई बात नहीं! फिर कोशिश करते हैं।", langTag = HINDI_TTS_TAG); return
         }
+        if (state.level.script == Script.DEVANAGARI) { phonics.speak("That's okay! Let's try the next one."); return }
         phonics.speak("That's OK! Keep practicing. ${Phonics.phraseFor(state.character)}. Moving on!")
     }
 
@@ -223,7 +234,11 @@ class GameViewModel(
     private fun speakTryAgain(sawNothing: Boolean) {
         val state = _uiState.value
         if (state.level.script == Script.DEVANAGARI) {
-            phonics.speak("फिर से कोशिश करो। यह ${state.character} है।", langTag = "hi"); return
+            if (phonics.supports(HINDI_TTS_TAG))
+                phonics.speak("फिर से कोशिश करो।", langTag = HINDI_TTS_TAG)
+            else
+                phonics.speak("Try again!")
+            return
         }
         val noun = if (state.level == Level.NUMBERS) "number" else "letter"
         val lead = if (sawNothing) "Hmm, I couldn't see it. Try drawing a bit bigger."
@@ -234,7 +249,12 @@ class GameViewModel(
         phonics.speak("$lead$hint")
     }
 
-    private fun goTo(level: Level, index: Int, mastered: Set<String> = _uiState.value.masteredCharacters) {
+    private fun goTo(
+        level: Level,
+        index: Int,
+        mastered: Set<String> = _uiState.value.masteredCharacters,
+        queueSpeech: Boolean = false,
+    ) {
         _uiState.update {
             it.copy(
                 level = level,
@@ -247,7 +267,7 @@ class GameViewModel(
             )
         }
         viewModelScope.launch { progress.save(level, index) }
-        speakPrompt()
+        speakPrompt(queueSpeech)
     }
 
     /**
@@ -283,6 +303,9 @@ class GameViewModel(
         private const val GIVE_UP_DELAY_MS = 2000L
         private val PRAISE = listOf("Yay! Great job!", "Awesome!", "Well done!", "Perfect!", "You did it!")
         private val HINDI_PRAISE = listOf("शाबाश!", "बहुत बढ़िया!", "वाह! कमाल कर दिया!", "बिलकुल सही!")
+
+        /** BCP-47 tag for the Hindi TTS voice (India), distinct from the recognizer's "hi" model tag. */
+        private const val HINDI_TTS_TAG = "hi-IN"
 
         /** Builds a ViewModel with concrete platform-backed dependencies. */
         fun factory(context: Context): ViewModelProvider.Factory {

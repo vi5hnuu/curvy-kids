@@ -93,7 +93,8 @@ fun <T> DiscoverActivity(
         val next = quizItems.filter { keyOf(it) != keyOf(target) }.randomOrNull() ?: target
         target = next
         options = buildOptions(quizItems, next, keyOf, optionCount)
-        feedback?.speaker?.speak(speakFor(next))
+        // Queue (don't flush) so the "Yes!" praise finishes before the next prompt is spoken.
+        feedback?.speaker?.speak(speakFor(next), flush = false)
     }
 
     // Mascot mood reacts to the latest answer.

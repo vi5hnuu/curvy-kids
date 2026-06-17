@@ -58,6 +58,12 @@ fun BarakhadiScreen(
     var explored by remember { mutableStateOf(setOf<String>()) }
     val consonant = HINDI_CONSONANTS[selected]
 
+    // Speak Devanagari in the Hindi voice, or a romanized read-aloud if no Hindi voice is installed.
+    fun speakHi(devanagari: String, romanized: String) {
+        val sp = feedback?.speaker ?: return
+        if (sp.supports("hi-IN")) sp.speak(devanagari, langTag = "hi-IN") else sp.speak(romanized)
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -89,7 +95,7 @@ fun BarakhadiScreen(
                     Surface(
                         onClick = {
                             selected = i
-                            feedback?.speaker?.speak(c.char, langTag = "hi")
+                            speakHi(c.char, c.romanized)
                         },
                         shape = RoundedCornerShape(16.dp),
                         color = if (isSel) topic.color else topic.tint,
@@ -141,7 +147,7 @@ fun BarakhadiScreen(
                         ) {
                             SurfaceTap(
                                 onTap = {
-                                    feedback?.speaker?.speak(syllable, langTag = "hi")
+                                    speakHi(syllable, consonant.romanized.dropLast(1) + matra.key)
                                     if (!explored.contains(syllable)) {
                                         explored = explored + syllable
                                         onReward(1)
