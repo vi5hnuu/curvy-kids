@@ -41,6 +41,10 @@ fun PlayScreen(
     val world    = TOPICS.filter { it.kind in listOf(TopicKind.MONTHS, TopicKind.SEASONS, TopicKind.EMOTIONS, TopicKind.VEHICLES, TopicKind.FRUITSVEGGIES) }
     val math     = TOPICS.filter { it.kind in listOf(TopicKind.ADDITION, TopicKind.SUBTRACTION, TopicKind.PATTERNS) }
     val language = TOPICS.filter { it.kind in listOf(TopicKind.PHONICS, TopicKind.OPPOSITES, TopicKind.RHYMING) }
+    // Picture topics, grouped by theme (content lives in PICTURE_SPECS).
+    val nature   = TOPICS.filter { it.id in listOf("birds", "sea", "insects", "nature", "weather") }
+    val things   = TOPICS.filter { it.id in listOf("food", "clothes", "toys", "instruments", "home") }
+    val community = TOPICS.filter { it.id in listOf("jobs", "places", "sports") }
 
     Column(
         modifier = modifier
@@ -72,6 +76,9 @@ fun PlayScreen(
         ActivityGroup(title = "World",       topics = world,    onOpen = onOpenTopic)
         ActivityGroup(title = "Math",        topics = math,     onOpen = onOpenTopic)
         ActivityGroup(title = "Language",    topics = language, onOpen = onOpenTopic)
+        ActivityGroup(title = "Nature & Animals", topics = nature,    onOpen = onOpenTopic)
+        ActivityGroup(title = "Things",      topics = things,    onOpen = onOpenTopic)
+        ActivityGroup(title = "Community",   topics = community, onOpen = onOpenTopic)
     }
 }
 

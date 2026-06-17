@@ -28,6 +28,8 @@ enum class TopicKind {
     ADDITION, SUBTRACTION, PATTERNS,
     // Language group
     PHONICS, OPPOSITES, RHYMING,
+    // Generic picture topics (Food, Clothes, Jobs, …) — content keyed by Topic.id in PICTURE_SPECS
+    PICTURE,
 }
 
 /**
@@ -91,4 +93,20 @@ val TOPICS: List<Topic> = listOf(
     // Hindi — trace + recognise Devanagari (reuses the TRACE scaffold via the level's script)
     Topic("hindi_vowels",     "Hindi Vowels",  "स्वर",   "अ", Coral, TintCoral, TopicKind.TRACE, Level.HINDI_VOWELS),
     Topic("hindi_consonants", "Hindi Letters", "व्यंजन", "क", Teal,  TintTeal,  TopicKind.TRACE, Level.HINDI_CONSONANTS),
+    // Nature & Animals (picture topics)
+    Topic("birds",        "Birds",          "Tweet!",       "🐦", Blue,  TintBlue,  TopicKind.PICTURE),
+    Topic("sea",          "Sea Animals",    "Splash!",      "🐬", Aqua,  TintAqua,  TopicKind.PICTURE),
+    Topic("insects",      "Bugs",           "Creepy!",      "🐞", Green, TintGreen, TopicKind.PICTURE),
+    Topic("nature",       "Nature",         "Outdoors",     "🌳", Green, TintGreen, TopicKind.PICTURE),
+    Topic("weather",      "Weather",        "In the sky",   "🌦️", Aqua,  TintAqua,  TopicKind.PICTURE),
+    // Things
+    Topic("food",         "Food",           "Yummy!",       "🍕", Coral, TintCoral, TopicKind.PICTURE),
+    Topic("clothes",      "Clothes",        "Wear it",      "👕", Pink,  TintPink,  TopicKind.PICTURE),
+    Topic("toys",         "Toys & Fun",     "Playtime",     "🧸", Sun,   TintSun,   TopicKind.PICTURE),
+    Topic("instruments",  "Music",          "La la la!",    "🎸", Grape, TintGrape, TopicKind.PICTURE),
+    Topic("home",         "My Home",        "Indoors",      "🛋️", Teal,  TintTeal,  TopicKind.PICTURE),
+    // People & Places
+    Topic("jobs",         "Jobs",           "Who am I?",    "👷", Blue,  TintBlue,  TopicKind.PICTURE),
+    Topic("places",       "Places",         "Where?",       "🏠", Coral, TintCoral, TopicKind.PICTURE),
+    Topic("sports",       "Sports",         "Let's play!",  "⚽", Green, TintGreen, TopicKind.PICTURE),
 )

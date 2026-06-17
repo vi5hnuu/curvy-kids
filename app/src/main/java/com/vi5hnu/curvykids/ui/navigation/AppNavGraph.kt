@@ -47,6 +47,7 @@ import com.vi5hnu.curvykids.ui.activities.OddOneOutScreen
 import com.vi5hnu.curvykids.ui.activities.OppositeScreen
 import com.vi5hnu.curvykids.ui.activities.PatternsScreen
 import com.vi5hnu.curvykids.ui.activities.PhonicScreen
+import com.vi5hnu.curvykids.ui.activities.PictureDiscoverScreen
 import com.vi5hnu.curvykids.ui.activities.RhymingScreen
 import com.vi5hnu.curvykids.ui.activities.SeasonsScreen
 import com.vi5hnu.curvykids.ui.activities.ShapesScreen
@@ -365,6 +366,14 @@ fun AppNavGraph(
                         feedback = gameViewModel.feedback,
                     )
                     TopicKind.RHYMING -> RhymingScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+
+                    // ── Generic picture topics (Food, Clothes, Jobs, Birds, …) ──
+                    TopicKind.PICTURE -> PictureDiscoverScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,
