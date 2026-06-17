@@ -121,27 +121,27 @@ val WORD_LIST = listOf(
 
 // ── Animals ───────────────────────────────────────────────────────────────────
 
-data class Animal(val name: String, val emoji: String, val sound: String)
+data class Animal(val name: String, val emoji: String, val sound: String, val svg: String? = null)
 
 val ANIMALS = listOf(
-    Animal("Lion",     "🦁", "Roar!"),     Animal("Dog",   "🐶", "Woof!"),
-    Animal("Cat",      "🐱", "Meow!"),     Animal("Cow",   "🐮", "Moo!"),
-    Animal("Duck",     "🦆", "Quack!"),    Animal("Frog",  "🐸", "Ribbit!"),
-    Animal("Sheep",    "🐑", "Baa!"),      Animal("Horse", "🐴", "Neigh!"),
-    Animal("Pig",      "🐷", "Oink!"),     Animal("Bee",   "🐝", "Buzz!"),
-    Animal("Bird",     "🐦", "Tweet!"),    Animal("Elephant", "🐘", "Trumpet!"),
+    Animal("Lion",     "🦁", "Roar!",   "kids/animals/animal-lion.svg"),     Animal("Dog",   "🐶", "Woof!",   "kids/animals/animal-dog.svg"),
+    Animal("Cat",      "🐱", "Meow!",   "kids/animals/animal-cat.svg"),      Animal("Cow",   "🐮", "Moo!",    "kids/animals/animal-cow.svg"),
+    Animal("Duck",     "🦆", "Quack!",  "kids/birds/bird-duck.svg"),         Animal("Frog",  "🐸", "Ribbit!", "kids/animals/animal-frog.svg"),
+    Animal("Sheep",    "🐑", "Baa!",    "kids/animals/animal-sheep.svg"),    Animal("Horse", "🐴", "Neigh!",  "kids/animals/animal-horse.svg"),
+    Animal("Pig",      "🐷", "Oink!",   "kids/animals/animal-pig.svg"),      Animal("Bee",   "🐝", "Buzz!",   "kids/insects/insect-bee.svg"),
+    Animal("Bird",     "🐦", "Tweet!",  "kids/birds/bird-bird.svg"),         Animal("Elephant", "🐘", "Trumpet!", "kids/animals/animal-elephant.svg"),
 )
 
 // ── Body Parts ────────────────────────────────────────────────────────────────
 
-data class BodyPart(val name: String, val emoji: String)
+data class BodyPart(val name: String, val emoji: String, val svg: String? = null)
 
 val BODY_PARTS = listOf(
-    BodyPart("Hand",  "✋"), BodyPart("Eye",   "👁️"),
-    BodyPart("Ear",   "👂"), BodyPart("Nose",  "👃"),
-    BodyPart("Foot",  "🦶"), BodyPart("Mouth", "👄"),
-    BodyPart("Hair",  "💇"), BodyPart("Tooth", "🦷"),
-    BodyPart("Leg",   "🦵"), BodyPart("Tongue","👅"),
+    BodyPart("Hand",  "✋",  "kids/body/body-hand.svg"),  BodyPart("Eye",   "👁️", "kids/body/body-eye.svg"),
+    BodyPart("Ear",   "👂",  "kids/body/body-ear.svg"),   BodyPart("Nose",  "👃", "kids/body/body-nose.svg"),
+    BodyPart("Foot",  "🦶",  "kids/body/body-foot.svg"),  BodyPart("Mouth", "👄", "kids/body/body-mouth.svg"),
+    BodyPart("Hair",  "💇"),                              BodyPart("Tooth", "🦷", "kids/body/body-tooth.svg"),
+    BodyPart("Leg",   "🦵",  "kids/body/body-leg.svg"),   BodyPart("Tongue","👅", "kids/body/body-tongue.svg"),
 )
 
 // ── Days of the Week ──────────────────────────────────────────────────────────
@@ -184,21 +184,21 @@ val CRAYON_COLORS = listOf(
 
 // ── Months of the Year ────────────────────────────────────────────────────────
 
-data class Month(val name: String, val emoji: String, val color: Color)
+data class Month(val name: String, val emoji: String, val color: Color, val svg: String? = null)
 
 val MONTHS = listOf(
-    Month("January",   "❄️", Color(0xFF46A6F0)),
-    Month("February",  "💝", Color(0xFFFF8FB6)),
-    Month("March",     "🌱", Color(0xFF4FCB94)),
-    Month("April",     "🌸", Color(0xFFFF8FB6)),
-    Month("May",       "🌻", Color(0xFFFFC24A)),
-    Month("June",      "☀️", Color(0xFFFF8B6B)),
-    Month("July",      "🏖️", Color(0xFFFF5A52)),
-    Month("August",    "🍦", Color(0xFFFFC24A)),
-    Month("September", "🍂", Color(0xFFFF9F1C)),
-    Month("October",   "🎃", Color(0xFFFF8B6B)),
-    Month("November",  "🍁", Color(0xFF8B5E3C)),
-    Month("December",  "🎄", Color(0xFF4FCB94)),
+    Month("January",   "❄️", Color(0xFF46A6F0), "kids/days-months/month-january.svg"),
+    Month("February",  "💝", Color(0xFFFF8FB6), "kids/days-months/month-february.svg"),
+    Month("March",     "🌱", Color(0xFF4FCB94), "kids/days-months/month-march.svg"),
+    Month("April",     "🌸", Color(0xFFFF8FB6), "kids/days-months/month-april.svg"),
+    Month("May",       "🌻", Color(0xFFFFC24A), "kids/days-months/month-may.svg"),
+    Month("June",      "☀️", Color(0xFFFF8B6B), "kids/days-months/month-june.svg"),
+    Month("July",      "🏖️", Color(0xFFFF5A52), "kids/days-months/month-july.svg"),
+    Month("August",    "🍦", Color(0xFFFFC24A), "kids/days-months/month-august.svg"),
+    Month("September", "🍂", Color(0xFFFF9F1C), "kids/days-months/month-september.svg"),
+    Month("October",   "🎃", Color(0xFFFF8B6B), "kids/days-months/month-october.svg"),
+    Month("November",  "🍁", Color(0xFF8B5E3C), "kids/days-months/month-november.svg"),
+    Month("December",  "🎄", Color(0xFF4FCB94), "kids/days-months/month-december.svg"),
 )
 
 // ── Seasons & Weather ─────────────────────────────────────────────────────────
@@ -214,55 +214,55 @@ val SEASONS_LIST = listOf(
 
 // ── Emotions / Feelings ───────────────────────────────────────────────────────
 
-data class Emotion(val name: String, val emoji: String, val description: String)
+data class Emotion(val name: String, val emoji: String, val description: String, val svg: String? = null)
 
 val EMOTIONS = listOf(
-    Emotion("Happy",     "😊", "I feel great!"),
-    Emotion("Sad",       "😢", "I feel upset"),
-    Emotion("Angry",     "😠", "I feel mad"),
-    Emotion("Surprised", "😲", "Wow!"),
-    Emotion("Scared",    "😨", "I feel afraid"),
-    Emotion("Tired",     "😴", "I need sleep"),
-    Emotion("Silly",     "😜", "Hehe!"),
-    Emotion("Excited",   "🤩", "Yay!"),
+    Emotion("Happy",     "😊", "I feel great!", "kids/feelings/feeling-happy.svg"),
+    Emotion("Sad",       "😢", "I feel upset",  "kids/feelings/feeling-sad.svg"),
+    Emotion("Angry",     "😠", "I feel mad",    "kids/feelings/feeling-angry.svg"),
+    Emotion("Surprised", "😲", "Wow!",          "kids/feelings/feeling-surprised.svg"),
+    Emotion("Scared",    "😨", "I feel afraid", "kids/feelings/feeling-scared.svg"),
+    Emotion("Tired",     "😴", "I need sleep",  "kids/feelings/feeling-sleepy.svg"),
+    Emotion("Silly",     "😜", "Hehe!",         "kids/feelings/feeling-silly.svg"),
+    Emotion("Excited",   "🤩", "Yay!",          "kids/feelings/feeling-excited.svg"),
 )
 
 // ── Vehicles / Transport ──────────────────────────────────────────────────────
 
-data class Vehicle(val name: String, val emoji: String, val sound: String)
+data class Vehicle(val name: String, val emoji: String, val sound: String, val svg: String? = null)
 
 val VEHICLES = listOf(
-    Vehicle("Car",        "🚗", "Vroom!"),
-    Vehicle("Bus",        "🚌", "Honk!"),
-    Vehicle("Train",      "🚂", "Choo choo!"),
-    Vehicle("Airplane",   "✈️", "Whoosh!"),
-    Vehicle("Rocket",     "🚀", "Blast off!"),
-    Vehicle("Ship",       "🚢", "Splash!"),
-    Vehicle("Bicycle",    "🚲", "Ring ring!"),
-    Vehicle("Helicopter", "🚁", "Whirr!"),
-    Vehicle("Boat",       "⛵", "Sail away!"),
-    Vehicle("Ambulance",  "🚑", "Wee woo!"),
+    Vehicle("Car",        "🚗", "Vroom!",     "kids/transport/transport-car.svg"),
+    Vehicle("Bus",        "🚌", "Honk!",      "kids/transport/transport-bus.svg"),
+    Vehicle("Train",      "🚂", "Choo choo!", "kids/transport/transport-steam-train.svg"),
+    Vehicle("Airplane",   "✈️", "Whoosh!",    "kids/transport/transport-airplane.svg"),
+    Vehicle("Rocket",     "🚀", "Blast off!", "kids/transport/transport-rocket.svg"),
+    Vehicle("Ship",       "🚢", "Splash!",    "kids/transport/transport-ship.svg"),
+    Vehicle("Bicycle",    "🚲", "Ring ring!", "kids/transport/transport-bicycle.svg"),
+    Vehicle("Helicopter", "🚁", "Whirr!",     "kids/transport/transport-helicopter.svg"),
+    Vehicle("Boat",       "⛵", "Sail away!", "kids/transport/transport-sailboat.svg"),
+    Vehicle("Ambulance",  "🚑", "Wee woo!",   "kids/transport/transport-ambulance.svg"),
 )
 
 // ── Fruits & Vegetables ───────────────────────────────────────────────────────
 
-data class FruitItem(val name: String, val emoji: String, val isFruit: Boolean)
+data class FruitItem(val name: String, val emoji: String, val isFruit: Boolean, val svg: String? = null)
 
 val FRUITS_VEGGIES = listOf(
-    FruitItem("Apple",      "🍎", true),
-    FruitItem("Banana",     "🍌", true),
-    FruitItem("Grapes",     "🍇", true),
-    FruitItem("Strawberry", "🍓", true),
-    FruitItem("Watermelon", "🍉", true),
-    FruitItem("Pineapple",  "🍍", true),
-    FruitItem("Mango",      "🥭", true),
-    FruitItem("Orange",     "🍊", true),
-    FruitItem("Carrot",     "🥕", false),
-    FruitItem("Broccoli",   "🥦", false),
-    FruitItem("Corn",       "🌽", false),
-    FruitItem("Potato",     "🥔", false),
-    FruitItem("Tomato",     "🍅", false),
-    FruitItem("Cucumber",   "🥒", false),
+    FruitItem("Apple",      "🍎", true,  "kids/fruits/fruit-apple.svg"),
+    FruitItem("Banana",     "🍌", true,  "kids/fruits/fruit-banana.svg"),
+    FruitItem("Grapes",     "🍇", true,  "kids/fruits/fruit-grapes.svg"),
+    FruitItem("Strawberry", "🍓", true,  "kids/fruits/fruit-strawberry.svg"),
+    FruitItem("Watermelon", "🍉", true,  "kids/fruits/fruit-watermelon.svg"),
+    FruitItem("Pineapple",  "🍍", true,  "kids/fruits/fruit-pineapple.svg"),
+    FruitItem("Mango",      "🥭", true,  "kids/fruits/fruit-mango.svg"),
+    FruitItem("Orange",     "🍊", true,  "kids/fruits/fruit-orange.svg"),
+    FruitItem("Carrot",     "🥕", false, "kids/vegetables/veg-carrot.svg"),
+    FruitItem("Broccoli",   "🥦", false, "kids/vegetables/veg-broccoli.svg"),
+    FruitItem("Corn",       "🌽", false, "kids/vegetables/veg-corn.svg"),
+    FruitItem("Potato",     "🥔", false, "kids/vegetables/veg-potato.svg"),
+    FruitItem("Tomato",     "🍅", false, "kids/fruits/fruit-tomato.svg"),
+    FruitItem("Cucumber",   "🥒", false, "kids/vegetables/veg-cucumber.svg"),
 )
 
 // ── Opposites ─────────────────────────────────────────────────────────────────

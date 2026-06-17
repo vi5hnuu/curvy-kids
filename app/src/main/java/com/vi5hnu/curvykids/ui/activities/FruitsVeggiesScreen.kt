@@ -38,6 +38,7 @@ import com.vi5hnu.curvykids.ui.activities.components.SegmentedTabs
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Pill
+import com.vi5hnu.curvykids.ui.components.SvgImage
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
@@ -138,7 +139,13 @@ fun FruitsVeggiesScreen(
                     ) {
                         Text("FRUIT OR VEGETABLE?", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 14.sp, color = InkSoft)
                         Spacer(Modifier.height(12.dp))
-                        Text(current.emoji, fontSize = 72.sp)
+                        SvgImage(
+                            asset = current.svg,
+                            fallbackEmoji = current.emoji,
+                            fallbackSize = 72.sp,
+                            contentDescription = current.name,
+                            modifier = Modifier.size(124.dp),
+                        )
                         Spacer(Modifier.height(8.dp))
                         Text(
                             current.name,
@@ -225,13 +232,13 @@ private fun FruitsLearnGrid() {
                             .weight(1f)
                             .padding(4.dp),
                     ) {
-                        Text(item.emoji, fontSize = 32.sp)
-                        Text(
-                            item.name,
-                            fontFamily = FontDisplay,
-                            fontSize = 10.sp,
-                            color = accent,
-                            fontWeight = FontWeight.ExtraBold,
+                        // SVG badge carries the item name already.
+                        SvgImage(
+                            asset = item.svg,
+                            fallbackEmoji = item.emoji,
+                            fallbackSize = 32.sp,
+                            contentDescription = item.name,
+                            modifier = Modifier.size(64.dp),
                         )
                     }
                 }

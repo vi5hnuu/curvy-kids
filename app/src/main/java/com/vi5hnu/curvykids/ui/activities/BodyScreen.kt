@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -27,6 +28,7 @@ import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.BODY_PARTS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
+import com.vi5hnu.curvykids.ui.components.SvgImage
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
 
@@ -59,7 +61,13 @@ fun BodyScreen(
             )
         },
         quizOption = { part ->
-            Text(part.emoji, fontSize = 46.sp)
+            SvgImage(
+                asset = part.svg,
+                fallbackEmoji = part.emoji,
+                fallbackSize = 46.sp,
+                contentDescription = part.name,
+                modifier = Modifier.size(84.dp),
+            )
         },
     )
 }
@@ -98,15 +106,24 @@ private fun BodyLearnGrid(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
-                                Text(part.emoji, fontSize = 40.sp, lineHeight = 44.sp)
-                                Spacer(Modifier.height(6.dp))
-                                Text(
-                                    text = part.name,
-                                    fontFamily = FontDisplay,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 14.sp,
-                                    color = Ink,
+                                SvgImage(
+                                    asset = part.svg,
+                                    fallbackEmoji = part.emoji,
+                                    fallbackSize = 40.sp,
+                                    contentDescription = part.name,
+                                    modifier = Modifier.size(72.dp),
                                 )
+                                // The SVG badge carries the name; only show it for unmapped parts.
+                                if (part.svg == null) {
+                                    Spacer(Modifier.height(6.dp))
+                                    Text(
+                                        text = part.name,
+                                        fontFamily = FontDisplay,
+                                        fontWeight = FontWeight.ExtraBold,
+                                        fontSize = 14.sp,
+                                        color = Ink,
+                                    )
+                                }
                             }
                             if (seen.contains(part.name)) {
                                 Text(

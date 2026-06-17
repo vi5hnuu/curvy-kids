@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +25,7 @@ import com.vi5hnu.curvykids.data.content.Month
 import com.vi5hnu.curvykids.data.content.MONTHS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
+import com.vi5hnu.curvykids.ui.components.SvgImage
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 
 /** Months of the Year — learn and quiz on all 12 months in order. */
@@ -54,28 +56,26 @@ fun MonthsScreen(
             val idx = MONTHS.indexOf(month)
             val prev = MONTHS[(idx - 1 + 12) % 12]
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(prev.emoji, fontSize = 44.sp)
-                Text(
-                    prev.name,
-                    fontFamily = FontDisplay,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 22.sp,
-                    color = prev.color,
+                // SVG badge carries the month name already.
+                SvgImage(
+                    asset = prev.svg,
+                    fallbackEmoji = prev.emoji,
+                    fallbackSize = 44.sp,
+                    contentDescription = prev.name,
+                    modifier = Modifier.size(96.dp),
                 )
+                Spacer(Modifier.height(4.dp))
                 Text("What comes next?", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFF758999))
             }
         },
         quizOption = { month ->
-            Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                Text(month.emoji, fontSize = 32.sp)
-                Text(
-                    month.name,
-                    fontFamily = FontDisplay,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 14.sp,
-                    color = month.color,
-                )
-            }
+            SvgImage(
+                asset = month.svg,
+                fallbackEmoji = month.emoji,
+                fallbackSize = 32.sp,
+                contentDescription = month.name,
+                modifier = Modifier.size(74.dp),
+            )
         },
     )
 }
@@ -98,14 +98,13 @@ private fun MonthsLearnGrid() {
                             .background(month.color.copy(alpha = 0.12f)),
                     ) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(6.dp)) {
-                            Text(month.emoji, fontSize = 24.sp)
-                            Spacer(Modifier.height(2.dp))
-                            Text(
-                                month.name,
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 11.sp,
-                                color = month.color,
+                            // SVG badge carries the month name already.
+                            SvgImage(
+                                asset = month.svg,
+                                fallbackEmoji = month.emoji,
+                                fallbackSize = 24.sp,
+                                contentDescription = month.name,
+                                modifier = Modifier.size(64.dp),
                             )
                         }
                     }

@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -26,8 +27,8 @@ import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.ANIMALS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
+import com.vi5hnu.curvykids.ui.components.SvgImage
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
-import com.vi5hnu.curvykids.ui.theme.Ink
 
 /** Animals — Learn (tap to hear name + sound) + Play ("Who says…?" quiz). */
 @Composable
@@ -58,7 +59,13 @@ fun AnimalsScreen(
             )
         },
         quizOption = { animal ->
-            Text(animal.emoji, fontSize = 52.sp)
+            SvgImage(
+                asset = animal.svg,
+                fallbackEmoji = animal.emoji,
+                fallbackSize = 52.sp,
+                contentDescription = animal.name,
+                modifier = Modifier.size(84.dp),
+            )
         },
     )
 }
@@ -93,20 +100,21 @@ private fun AnimalsLearnGrid(
                         color = topic.tint,
                         shadowElevation = 3.dp,
                     ) {
-                        Box(modifier = Modifier.padding(16.dp, 16.dp, 10.dp, 12.dp)) {
+                        Box(modifier = Modifier.padding(12.dp, 12.dp, 10.dp, 12.dp)) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
                                 modifier = Modifier.fillMaxWidth(),
                             ) {
-                                Text(animal.emoji, fontSize = 54.sp, lineHeight = 58.sp)
-                                Spacer(Modifier.height(6.dp))
-                                Text(
-                                    text = animal.name,
-                                    fontFamily = FontDisplay,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 16.sp,
-                                    color = Ink,
+                                // The SVG badge already carries the colored box + animal name;
+                                // we keep only the sound below it (the SVG has no sound text).
+                                SvgImage(
+                                    asset = animal.svg,
+                                    fallbackEmoji = animal.emoji,
+                                    fallbackSize = 54.sp,
+                                    contentDescription = animal.name,
+                                    modifier = Modifier.size(96.dp),
                                 )
+                                Spacer(Modifier.height(4.dp))
                                 Text(
                                     text = animal.sound,
                                     fontWeight = FontWeight.Bold,
