@@ -416,6 +416,29 @@ val HINDI_CONSONANTS = listOf(
 val HINDI_BY_CHAR: Map<String, HindiLetter> =
     (HINDI_VOWELS + HINDI_CONSONANTS).associateBy { it.char }
 
+// ── Hindi Barakhadi (बारहखड़ी — consonant × the 12 vowel matras) ──────────────────
+
+/**
+ * One vowel matra used to form barakhadi: its filename [key] (matches `barakhadi-<cons><key>.svg`)
+ * and the combining [sign] appended to a consonant to render the syllable (empty for the base form,
+ * which carries the inherent 'a').
+ */
+data class Matra(val key: String, val sign: String)
+
+/** The 12 matras in traditional barakhadi order (क का कि की कु कू के कै को कौ कं कः). */
+val BARAKHADI_MATRAS = listOf(
+    Matra("a", ""),  Matra("aa", "ा"), Matra("i", "ि"), Matra("ii", "ी"),
+    Matra("u", "ु"), Matra("uu", "ू"), Matra("e", "े"), Matra("ai", "ै"),
+    Matra("o", "ो"), Matra("au", "ौ"), Matra("am", "ं"), Matra("ah", "ः"),
+)
+
+/** Asset path of the barakhadi badge for a consonant (by its romanized name) and a [Matra]. */
+fun barakhadiSvg(consonantRomanized: String, matra: Matra): String =
+    "kids/hindi-barakhadi/barakhadi-${consonantRomanized.dropLast(1)}${matra.key}.svg"
+
+/** The Devanagari syllable for a consonant char combined with a [Matra] (e.g. क + ी → की). */
+fun barakhadiSyllable(consonantChar: String, matra: Matra): String = consonantChar + matra.sign
+
 // ── Telling Time (o'clock) ──────────────────────────────────────────────────────
 
 /** A clock face showing a whole hour ([hour] o'clock). */

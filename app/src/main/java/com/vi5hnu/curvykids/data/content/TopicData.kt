@@ -30,6 +30,8 @@ enum class TopicKind {
     PHONICS, OPPOSITES, RHYMING,
     // Generic picture topics (Food, Clothes, Jobs, …) — content keyed by Topic.id in PICTURE_SPECS
     PICTURE,
+    // Hindi barakhadi reference (consonant × vowel matra grid)
+    BARAKHADI,
 }
 
 /**
@@ -95,6 +97,7 @@ val TOPICS: List<Topic> = listOf(
     // Hindi — trace + recognise Devanagari (reuses the TRACE scaffold via the level's script)
     Topic("hindi_vowels",     "Hindi Vowels",  "स्वर",   "अ", Coral, TintCoral, TopicKind.TRACE, Level.HINDI_VOWELS),
     Topic("hindi_consonants", "Hindi Letters", "व्यंजन", "क", Teal,  TintTeal,  TopicKind.TRACE, Level.HINDI_CONSONANTS),
+    Topic("barakhadi",        "Barakhadi",     "क का कि", "क", Grape, TintGrape, TopicKind.BARAKHADI),
     // Nature & Animals (picture topics)
     Topic("birds",        "Birds",          "Tweet!",       "🐦", Blue,  TintBlue,  TopicKind.PICTURE),
     Topic("sea",          "Sea Animals",    "Splash!",      "🐬", Aqua,  TintAqua,  TopicKind.PICTURE),
