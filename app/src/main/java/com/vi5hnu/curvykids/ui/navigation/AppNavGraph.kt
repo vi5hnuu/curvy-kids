@@ -46,9 +46,11 @@ import com.vi5hnu.curvykids.ui.activities.MonthsScreen
 import com.vi5hnu.curvykids.ui.activities.OddOneOutScreen
 import com.vi5hnu.curvykids.ui.activities.OppositeScreen
 import com.vi5hnu.curvykids.ui.activities.PatternsScreen
+import com.vi5hnu.curvykids.ui.activities.FractionsScreen
 import com.vi5hnu.curvykids.ui.activities.PhonicScreen
 import com.vi5hnu.curvykids.ui.activities.PictureDiscoverScreen
 import com.vi5hnu.curvykids.ui.activities.RhymingScreen
+import com.vi5hnu.curvykids.ui.activities.TimeScreen
 import com.vi5hnu.curvykids.ui.activities.SeasonsScreen
 import com.vi5hnu.curvykids.ui.activities.ShapesScreen
 import com.vi5hnu.curvykids.ui.activities.SubtractionScreen
@@ -346,6 +348,18 @@ fun AppNavGraph(
                         feedback = gameViewModel.feedback,
                     )
                     TopicKind.PATTERNS -> PatternsScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.TIME -> TimeScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+                    TopicKind.FRACTIONS -> FractionsScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,

@@ -39,7 +39,7 @@ fun PlayScreen(
     val games    = TOPICS.filter { it.kind in listOf(TopicKind.COUNT, TopicKind.WORDS, TopicKind.DRAW) }
     val brain    = TOPICS.filter { it.kind in listOf(TopicKind.MEMORY, TopicKind.BIGSMALL, TopicKind.ODDONE, TopicKind.CATCH) }
     val world    = TOPICS.filter { it.kind in listOf(TopicKind.MONTHS, TopicKind.SEASONS, TopicKind.EMOTIONS, TopicKind.VEHICLES, TopicKind.FRUITSVEGGIES) }
-    val math     = TOPICS.filter { it.kind in listOf(TopicKind.ADDITION, TopicKind.SUBTRACTION, TopicKind.PATTERNS) }
+    val math     = TOPICS.filter { it.kind in listOf(TopicKind.ADDITION, TopicKind.SUBTRACTION, TopicKind.PATTERNS, TopicKind.TIME, TopicKind.FRACTIONS) }
     val language = TOPICS.filter { it.kind in listOf(TopicKind.PHONICS, TopicKind.OPPOSITES, TopicKind.RHYMING) }
     // Picture topics, grouped by theme (content lives in PICTURE_SPECS).
     val nature   = TOPICS.filter { it.id in listOf("birds", "sea", "insects", "nature", "weather") }

@@ -415,3 +415,28 @@ val HINDI_CONSONANTS = listOf(
 /** Fast lookup of a Hindi letter by its Devanagari character (used by the trace prompt/audio). */
 val HINDI_BY_CHAR: Map<String, HindiLetter> =
     (HINDI_VOWELS + HINDI_CONSONANTS).associateBy { it.char }
+
+// ── Telling Time (o'clock) ──────────────────────────────────────────────────────
+
+/** A clock face showing a whole hour ([hour] o'clock). */
+data class TimeItem(val hour: Int, val label: String, val svg: String)
+
+val TIMES: List<TimeItem> = (1..12).map {
+    TimeItem(it, "$it o'clock", "kids/telling-time/time-$it.svg")
+}
+
+// ── Fractions ───────────────────────────────────────────────────────────────────
+
+/** A shaded pie illustrating a simple fraction (e.g. "1/2"). [spoken] is the read-aloud form. */
+data class FractionItem(val label: String, val spoken: String, val svg: String)
+
+val FRACTIONS = listOf(
+    FractionItem("1/2", "one half",       "kids/fractions/fraction-1-2.svg"),
+    FractionItem("1/3", "one third",      "kids/fractions/fraction-1-3.svg"),
+    FractionItem("1/4", "one quarter",    "kids/fractions/fraction-1-4.svg"),
+    FractionItem("1/5", "one fifth",      "kids/fractions/fraction-1-5.svg"),
+    FractionItem("1/6", "one sixth",      "kids/fractions/fraction-1-6.svg"),
+    FractionItem("1/8", "one eighth",     "kids/fractions/fraction-1-8.svg"),
+    FractionItem("2/3", "two thirds",     "kids/fractions/fraction-2-3.svg"),
+    FractionItem("3/4", "three quarters", "kids/fractions/fraction-3-4.svg"),
+)

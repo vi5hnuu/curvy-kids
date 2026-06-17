@@ -25,7 +25,7 @@ enum class TopicKind {
     // World group
     MONTHS, SEASONS, EMOTIONS, VEHICLES, FRUITSVEGGIES,
     // Math group
-    ADDITION, SUBTRACTION, PATTERNS,
+    ADDITION, SUBTRACTION, PATTERNS, TIME, FRACTIONS,
     // Language group
     PHONICS, OPPOSITES, RHYMING,
     // Generic picture topics (Food, Clothes, Jobs, …) — content keyed by Topic.id in PICTURE_SPECS
@@ -86,6 +86,8 @@ val TOPICS: List<Topic> = listOf(
     Topic("addition",     "Addition",       "1 + 2 = ?",    "➕", Teal,  TintTeal,  TopicKind.ADDITION),
     Topic("subtraction",  "Subtraction",    "5 - 2 = ?",    "➖", Grape, TintGrape, TopicKind.SUBTRACTION),
     Topic("patterns",     "Patterns",       "What's next?", "🔷", Blue,  TintBlue,  TopicKind.PATTERNS),
+    Topic("time",         "Telling Time",   "O'clock",      "🕐", Aqua,  TintAqua,  TopicKind.TIME),
+    Topic("fractions",    "Fractions",      "Half & more",  "🍕", Coral, TintCoral, TopicKind.FRACTIONS),
     // Language
     Topic("phonics",      "Letter Sounds",  "A says ahh",   "🔤", Coral, TintCoral, TopicKind.PHONICS),
     Topic("opposites",    "Opposites",      "Big ↔ Small",  "↔️", Sun,   TintSun,   TopicKind.OPPOSITES),
