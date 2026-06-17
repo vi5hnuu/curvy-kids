@@ -18,8 +18,17 @@ interface Recognizer {
      */
     val ready: StateFlow<HttpState?>
 
-    /** Downloads (if needed) and initialises the recognition model. Safe to call once. */
+    /** Downloads (if needed) and initialises the default recognition model. Safe to call once. */
     suspend fun prepare()
+
+    /**
+     * Makes the model for [languageTag] (a BCP-47 tag, e.g. "en-US" or "hi") the active one,
+     * downloading it on first use. Subsequent [recognize] calls use this model. Updates [ready]
+     * to loading/success/error around the (possibly first-time) download.
+     *
+     * Default no-op so fakes/alternate backends need not implement multi-script support.
+     */
+    suspend fun ensure(languageTag: String) {}
 
     /**
      * Recognises the drawn [strokes] and returns the candidate texts, best-first.

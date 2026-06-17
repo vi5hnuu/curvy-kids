@@ -15,54 +15,87 @@ import com.vi5hnu.curvykids.models.HttpState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.sync.Mutex
+import kotlinx.coroutines.sync.withLock
 import kotlinx.coroutines.tasks.await
 import com.google.mlkit.vision.digitalink.recognition.WritingArea as MlKitWritingArea
 
 /**
  * [Recognizer] backed by Google ML Kit Digital Ink Recognition (fully on-device after the
- * one-time model download). Replaces the old WebView JS-bridge path: strokes are passed as
- * in-memory [Stroke]s (no JSON marshalling) and we feed ML Kit a [RecognitionContext] hint
- * to improve single-character accuracy.
+ * one-time per-language model download).
+ *
+ * Supports multiple scripts: a [DigitalInkRecognizer] is built and cached lazily per BCP-47
+ * language tag (e.g. "en-US" for A-Z/0-9, "hi" for Devanagari). [ensure] switches the active
+ * model — downloading it the first time — so the same recognizer serves both the English and
+ * Hindi tracing tracks. Strokes are passed in-memory (no JSON marshalling) and a
+ * [RecognitionContext] hint improves single-character accuracy.
  */
 class MlKitInkRecognizer(
-    private val modelIdentifier: DigitalInkRecognitionModelIdentifier =
-        DigitalInkRecognitionModelIdentifier.EN_US,
+    private val defaultLanguageTag: String = "en-US",
 ) : Recognizer {
 
     private companion object {
         const val TAG = "MLKIT"
     }
 
-    private var recognizer: DigitalInkRecognizer? = null
+    /** Built recognizers keyed by language tag; reused across level switches. */
+    private val clients = mutableMapOf<String, DigitalInkRecognizer>()
+
+    /** Serialises model download/build so concurrent [ensure] calls don't race on [clients]. */
+    private val mutex = Mutex()
+
+    @Volatile
+    private var activeTag: String = defaultLanguageTag
 
     private val _ready = MutableStateFlow<HttpState?>(null)
     override val ready: StateFlow<HttpState?> = _ready.asStateFlow()
 
     override suspend fun prepare() {
+        ensure(defaultLanguageTag)
+    }
+
+    override suspend fun ensure(languageTag: String) {
+        // Already active and built → nothing to do (keeps level-switches instant once cached).
+        if (languageTag == activeTag && clients[languageTag] != null && _ready.value?.success == true) return
+
         _ready.value = HttpState.loading()
         try {
-            val model = DigitalInkRecognitionModel.builder(modelIdentifier).build()
-            val modelManager = RemoteModelManager.getInstance()
-
-            if (!modelManager.isModelDownloaded(model).await()) {
-                Log.d(TAG, "Model ${modelIdentifier.languageTag} not found, downloading...")
-                modelManager.download(model, DownloadConditions.Builder().build()).await()
-                Log.i(TAG, "Model ${modelIdentifier.languageTag} downloaded.")
-            } else {
-                Log.i(TAG, "Model ${modelIdentifier.languageTag} already downloaded.")
+            val client = mutex.withLock {
+                clients[languageTag] ?: buildClient(languageTag)?.also { clients[languageTag] = it }
             }
-
-            recognizer = DigitalInkRecognition.getClient(
-                DigitalInkRecognizerOptions.builder(model).build()
-            )
-            _ready.value = HttpState.success()
+            if (client != null) {
+                activeTag = languageTag
+                _ready.value = HttpState.success()
+            } else {
+                _ready.value = HttpState.error("Something went wrong")
+            }
         } catch (e: MlKitException) {
-            Log.e(TAG, "ML Kit initialization error: ${e.message}", e)
+            Log.e(TAG, "ML Kit init error for $languageTag: ${e.message}", e)
             _ready.value = HttpState.error("Something went wrong")
         } catch (e: Exception) {
-            Log.e(TAG, "General initialization error: ${e.message}", e)
+            Log.e(TAG, "General init error for $languageTag: ${e.message}", e)
             _ready.value = HttpState.error("Something went wrong")
         }
+    }
+
+    /** Downloads (if needed) and builds the recognizer for [languageTag]. */
+    private suspend fun buildClient(languageTag: String): DigitalInkRecognizer? {
+        val identifier = DigitalInkRecognitionModelIdentifier.fromLanguageTag(languageTag)
+            ?: run {
+                Log.e(TAG, "No Digital Ink model for language tag '$languageTag'")
+                return null
+            }
+        val model = DigitalInkRecognitionModel.builder(identifier).build()
+        val modelManager = RemoteModelManager.getInstance()
+
+        if (!modelManager.isModelDownloaded(model).await()) {
+            Log.d(TAG, "Model $languageTag not found, downloading...")
+            modelManager.download(model, DownloadConditions.Builder().build()).await()
+            Log.i(TAG, "Model $languageTag downloaded.")
+        } else {
+            Log.i(TAG, "Model $languageTag already downloaded.")
+        }
+        return DigitalInkRecognition.getClient(DigitalInkRecognizerOptions.builder(model).build())
     }
 
     override suspend fun recognize(
@@ -70,9 +103,9 @@ class MlKitInkRecognizer(
         writingArea: WritingArea?,
         preContext: String?,
     ): List<String> {
-        val client = recognizer
+        val client = clients[activeTag]
         if (_ready.value?.success != true || client == null) {
-            Log.e(TAG, "Recognizer not ready; cannot recognize.")
+            Log.e(TAG, "Recognizer not ready (tag=$activeTag); cannot recognize.")
             return emptyList()
         }
         if (strokes.isEmpty()) return emptyList()
@@ -86,7 +119,7 @@ class MlKitInkRecognizer(
         // so fall back to plain recognition rather than failing the child's answer.
         runCatching { recognizeWith(client, ink, context) }
             .onSuccess { candidates ->
-                Log.d(TAG, "Recognized (context=${context != null}): $candidates")
+                Log.d(TAG, "Recognized (tag=$activeTag, context=${context != null}): $candidates")
                 if (candidates.isNotEmpty() || context == null) return candidates
             }
             .onFailure { Log.e(TAG, "Recognition with context failed: ${it.message}", it) }
@@ -109,9 +142,9 @@ class MlKitInkRecognizer(
     }
 
     override fun release() {
-        recognizer?.close()
-        recognizer = null
-        Log.d(TAG, "DigitalInkRecognizer closed.")
+        clients.values.forEach { it.close() }
+        clients.clear()
+        Log.d(TAG, "All DigitalInkRecognizers closed.")
     }
 
     /** Builds an optional recognition context hint (writing area + preceding text). */

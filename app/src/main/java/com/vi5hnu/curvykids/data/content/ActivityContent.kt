@@ -335,3 +335,83 @@ val RHYME_GROUPS = listOf(
     RhymeGroup("RING", "💍", listOf("KING" to "🤴", "SING" to "🎵", "WING" to "🪶")),
     RhymeGroup("BEAR", "🐻", listOf("HAIR" to "💇", "CHAIR" to "🪑", "PEAR" to "🍐")),
 )
+
+// ── Hindi (Devanagari) varnamala ────────────────────────────────────────────────
+
+/**
+ * One Hindi letter for the trace + learn track.
+ *
+ * @param char       The Devanagari character to draw/recognise (e.g. "अ", "क").
+ * @param romanized  ASCII name used for audio fallback and accessibility ("a", "ka").
+ * @param example    A starter word beginning with the letter, in Devanagari ("अनानास").
+ * @param exampleEmoji Emoji illustrating the example word (may be empty).
+ * @param svg        Asset path of the illustrated badge.
+ */
+data class HindiLetter(
+    val char: String,
+    val romanized: String,
+    val example: String,
+    val exampleEmoji: String,
+    val svg: String,
+)
+
+/** 13 vowels (स्वर) in traditional order. */
+val HINDI_VOWELS = listOf(
+    HindiLetter("अ",  "a",  "अनानास", "🍍", "kids/hindi-vowels/hindi-swar-a.svg"),
+    HindiLetter("आ",  "aa", "आम",     "🥭", "kids/hindi-vowels/hindi-swar-aa.svg"),
+    HindiLetter("इ",  "i",  "इंजन",   "🚂", "kids/hindi-vowels/hindi-swar-i.svg"),
+    HindiLetter("ई",  "ii", "ईंट",    "🧱", "kids/hindi-vowels/hindi-swar-ii.svg"),
+    HindiLetter("उ",  "u",  "उल्लू",  "🦉", "kids/hindi-vowels/hindi-swar-u.svg"),
+    HindiLetter("ऊ",  "uu", "ऊँट",    "🐪", "kids/hindi-vowels/hindi-swar-uu.svg"),
+    HindiLetter("ऋ",  "ri", "ऋषि",    "🧘", "kids/hindi-vowels/hindi-swar-ri.svg"),
+    HindiLetter("ए",  "e",  "एड़ी",   "🦶", "kids/hindi-vowels/hindi-swar-e.svg"),
+    HindiLetter("ऐ",  "ai", "ऐनक",    "👓", "kids/hindi-vowels/hindi-swar-ai.svg"),
+    HindiLetter("ओ",  "o",  "ओम",     "🕉️", "kids/hindi-vowels/hindi-swar-o.svg"),
+    HindiLetter("औ",  "au", "औज़ार",  "🔧", "kids/hindi-vowels/hindi-swar-au.svg"),
+    HindiLetter("अं", "am", "अंगूर",  "🍇", "kids/hindi-vowels/hindi-swar-am.svg"),
+    HindiLetter("अः", "ah", "",       "",   "kids/hindi-vowels/hindi-swar-ah.svg"),
+)
+
+/** 36 consonants (व्यंजन) in traditional order, including the common conjuncts क्ष त्र ज्ञ. */
+val HINDI_CONSONANTS = listOf(
+    HindiLetter("क",   "ka",   "कबूतर",   "🕊️", "kids/hindi-consonants/hindi-vyanjan-ka.svg"),
+    HindiLetter("ख",   "kha",  "खरगोश",   "🐰", "kids/hindi-consonants/hindi-vyanjan-kha.svg"),
+    HindiLetter("ग",   "ga",   "गाय",     "🐄", "kids/hindi-consonants/hindi-vyanjan-ga.svg"),
+    HindiLetter("घ",   "gha",  "घड़ी",    "⏰", "kids/hindi-consonants/hindi-vyanjan-gha.svg"),
+    HindiLetter("ङ",   "nga",  "",        "",   "kids/hindi-consonants/hindi-vyanjan-nga.svg"),
+    HindiLetter("च",   "cha",  "चम्मच",   "🥄", "kids/hindi-consonants/hindi-vyanjan-cha.svg"),
+    HindiLetter("छ",   "chha", "छाता",    "☂️", "kids/hindi-consonants/hindi-vyanjan-chha.svg"),
+    HindiLetter("ज",   "ja",   "जहाज",    "🚢", "kids/hindi-consonants/hindi-vyanjan-ja.svg"),
+    HindiLetter("झ",   "jha",  "झंडा",    "🚩", "kids/hindi-consonants/hindi-vyanjan-jha.svg"),
+    HindiLetter("ञ",   "nya",  "",        "",   "kids/hindi-consonants/hindi-vyanjan-nya.svg"),
+    HindiLetter("ट",   "tta",  "टमाटर",   "🍅", "kids/hindi-consonants/hindi-vyanjan-tta.svg"),
+    HindiLetter("ठ",   "ttha", "ठंडा",    "🧊", "kids/hindi-consonants/hindi-vyanjan-ttha.svg"),
+    HindiLetter("ड",   "dda",  "डमरू",    "🪘", "kids/hindi-consonants/hindi-vyanjan-dda.svg"),
+    HindiLetter("ढ",   "ddha", "ढोल",     "🥁", "kids/hindi-consonants/hindi-vyanjan-ddha.svg"),
+    HindiLetter("ण",   "nna",  "बाण",     "🏹", "kids/hindi-consonants/hindi-vyanjan-nna.svg"),
+    HindiLetter("त",   "ta",   "तरबूज",   "🍉", "kids/hindi-consonants/hindi-vyanjan-ta.svg"),
+    HindiLetter("थ",   "tha",  "थाली",    "🍽️", "kids/hindi-consonants/hindi-vyanjan-tha.svg"),
+    HindiLetter("द",   "da",   "दूध",     "🥛", "kids/hindi-consonants/hindi-vyanjan-da.svg"),
+    HindiLetter("ध",   "dha",  "धनुष",    "🏹", "kids/hindi-consonants/hindi-vyanjan-dha.svg"),
+    HindiLetter("न",   "na",   "नाव",     "⛵", "kids/hindi-consonants/hindi-vyanjan-na.svg"),
+    HindiLetter("प",   "pa",   "पतंग",    "🪁", "kids/hindi-consonants/hindi-vyanjan-pa.svg"),
+    HindiLetter("फ",   "pha",  "फूल",     "🌸", "kids/hindi-consonants/hindi-vyanjan-pha.svg"),
+    HindiLetter("ब",   "ba",   "बकरी",    "🐐", "kids/hindi-consonants/hindi-vyanjan-ba.svg"),
+    HindiLetter("भ",   "bha",  "भालू",    "🐻", "kids/hindi-consonants/hindi-vyanjan-bha.svg"),
+    HindiLetter("म",   "ma",   "मछली",    "🐟", "kids/hindi-consonants/hindi-vyanjan-ma.svg"),
+    HindiLetter("य",   "ya",   "योग",     "🧘", "kids/hindi-consonants/hindi-vyanjan-ya.svg"),
+    HindiLetter("र",   "ra",   "रेल",     "🚆", "kids/hindi-consonants/hindi-vyanjan-ra.svg"),
+    HindiLetter("ल",   "la",   "लोमड़ी",  "🦊", "kids/hindi-consonants/hindi-vyanjan-la.svg"),
+    HindiLetter("व",   "va",   "वर्षा",   "🌧️", "kids/hindi-consonants/hindi-vyanjan-va.svg"),
+    HindiLetter("श",   "sha",  "शेर",     "🦁", "kids/hindi-consonants/hindi-vyanjan-sha.svg"),
+    HindiLetter("ष",   "ssa",  "",        "",   "kids/hindi-consonants/hindi-vyanjan-ssa.svg"),
+    HindiLetter("स",   "sa",   "सेब",     "🍎", "kids/hindi-consonants/hindi-vyanjan-sa.svg"),
+    HindiLetter("ह",   "ha",   "हाथी",    "🐘", "kids/hindi-consonants/hindi-vyanjan-ha.svg"),
+    HindiLetter("क्ष", "ksha", "क्षितिज", "🌅", "kids/hindi-consonants/hindi-vyanjan-ksha.svg"),
+    HindiLetter("त्र", "tra",  "त्रिशूल", "🔱", "kids/hindi-consonants/hindi-vyanjan-tra.svg"),
+    HindiLetter("ज्ञ", "gya",  "ज्ञान",   "🧠", "kids/hindi-consonants/hindi-vyanjan-gya.svg"),
+)
+
+/** Fast lookup of a Hindi letter by its Devanagari character (used by the trace prompt/audio). */
+val HINDI_BY_CHAR: Map<String, HindiLetter> =
+    (HINDI_VOWELS + HINDI_CONSONANTS).associateBy { it.char }

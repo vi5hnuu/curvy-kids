@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vi5hnu.curvykids.data.content.Script
 import com.vi5hnu.curvykids.data.content.TOPICS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.data.content.TopicKind
@@ -31,7 +32,9 @@ fun PlayScreen(
     onOpenTopic: (Topic) -> Unit,
     modifier: Modifier = Modifier,
 ) {
-    val writing  = TOPICS.filter { it.kind == TopicKind.TRACE }
+    // Writing = Latin tracing; Hindi tracing (Devanagari) gets its own group below.
+    val writing  = TOPICS.filter { it.kind == TopicKind.TRACE && it.set?.script != Script.DEVANAGARI }
+    val hindi    = TOPICS.filter { it.kind == TopicKind.TRACE && it.set?.script == Script.DEVANAGARI }
     val discover = TOPICS.filter { it.kind in listOf(TopicKind.SHAPES, TopicKind.COLORS, TopicKind.ANIMALS, TopicKind.BODY, TopicKind.DAYS) }
     val games    = TOPICS.filter { it.kind in listOf(TopicKind.COUNT, TopicKind.WORDS, TopicKind.DRAW) }
     val brain    = TOPICS.filter { it.kind in listOf(TopicKind.MEMORY, TopicKind.BIGSMALL, TopicKind.ODDONE, TopicKind.CATCH) }
@@ -62,6 +65,7 @@ fun PlayScreen(
         Spacer(Modifier.height(18.dp))
 
         ActivityGroup(title = "Writing",     topics = writing,  onOpen = onOpenTopic)
+        ActivityGroup(title = "Hindi",       topics = hindi,    onOpen = onOpenTopic)
         ActivityGroup(title = "Discover",    topics = discover, onOpen = onOpenTopic)
         ActivityGroup(title = "Games",       topics = games,    onOpen = onOpenTopic)
         ActivityGroup(title = "Brain Games", topics = brain,    onOpen = onOpenTopic)

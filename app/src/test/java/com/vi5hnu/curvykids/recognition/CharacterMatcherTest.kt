@@ -35,4 +35,22 @@ class CharacterMatcherTest {
     fun `empty candidates never match`() {
         assertFalse(CharacterMatcher.matches("A", emptyList(), Level.UPPERCASE))
     }
+
+    @Test
+    fun `devanagari matches exact letter`() {
+        assertTrue(CharacterMatcher.matches("क", listOf("क"), Level.HINDI_CONSONANTS))
+        assertTrue(CharacterMatcher.matches("अ", listOf("अ", "आ"), Level.HINDI_VOWELS))
+    }
+
+    @Test
+    fun `devanagari matches leniently when letter appears within a candidate`() {
+        // The hi model may return the letter joined with a matra or inside a word.
+        assertTrue(CharacterMatcher.matches("क", listOf("का"), Level.HINDI_CONSONANTS))
+        assertTrue(CharacterMatcher.matches("क", listOf("कमल"), Level.HINDI_CONSONANTS))
+    }
+
+    @Test
+    fun `devanagari does not match an unrelated letter`() {
+        assertFalse(CharacterMatcher.matches("क", listOf("म", "र"), Level.HINDI_CONSONANTS))
+    }
 }

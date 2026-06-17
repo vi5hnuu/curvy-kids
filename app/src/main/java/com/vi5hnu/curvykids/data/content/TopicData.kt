@@ -88,4 +88,7 @@ val TOPICS: List<Topic> = listOf(
     Topic("phonics",      "Letter Sounds",  "A says ahh",   "🔤", Coral, TintCoral, TopicKind.PHONICS),
     Topic("opposites",    "Opposites",      "Big ↔ Small",  "↔️", Sun,   TintSun,   TopicKind.OPPOSITES),
     Topic("rhyming",      "Rhyming",        "Cat – Hat!",   "🎵", Pink,  TintPink,  TopicKind.RHYMING),
+    // Hindi — trace + recognise Devanagari (reuses the TRACE scaffold via the level's script)
+    Topic("hindi_vowels",     "Hindi Vowels",  "स्वर",   "अ", Coral, TintCoral, TopicKind.TRACE, Level.HINDI_VOWELS),
+    Topic("hindi_consonants", "Hindi Letters", "व्यंजन", "क", Teal,  TintTeal,  TopicKind.TRACE, Level.HINDI_CONSONANTS),
 )

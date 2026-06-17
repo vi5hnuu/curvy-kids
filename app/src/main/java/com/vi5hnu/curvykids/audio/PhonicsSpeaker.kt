@@ -34,27 +34,57 @@ class PhonicsSpeaker(context: Context) {
     @Volatile
     private var pendingText: String? = null
 
+    @Volatile
+    private var pendingLangTag: String? = null
+
+    /** Currently-applied TTS language, so we only switch locale when it actually changes. */
+    @Volatile
+    private var currentLangTag: String = Locale.US.toLanguageTag()
+
     private val tts: TextToSpeech = TextToSpeech(context.applicationContext) { status ->
         if (status == TextToSpeech.SUCCESS) {
             tts.language = Locale.US
             // Slower rate is easier for young children to follow.
             tts.setSpeechRate(0.85f)
             ready = true
-            pendingText?.let { speak(it) }
+            pendingText?.let { speak(it, pendingLangTag) }
             pendingText = null
+            pendingLangTag = null
         } else {
             Log.e(TAG, "TextToSpeech init failed: $status")
         }
     }
 
-    /** Speaks the given phrase, replacing anything currently being spoken. */
-    fun speak(text: String) {
+    /**
+     * Speaks the given phrase, replacing anything currently being spoken.
+     *
+     * @param langTag optional BCP-47 tag (e.g. "hi") to pronounce non-English text. The locale is
+     *        switched only when it changes; if the device lacks that voice, it falls back to US so
+     *        speech is never silently broken.
+     */
+    fun speak(text: String, langTag: String? = null) {
         if (text.isBlank() || muted) return
         if (!ready) {
             pendingText = text  // will fire once TTS is initialised
+            pendingLangTag = langTag
             return
         }
+        applyLanguage(langTag)
         tts.speak(text, TextToSpeech.QUEUE_FLUSH, null, text)
+    }
+
+    /** Switches the TTS voice to [langTag] (default US), with a safe fallback if unsupported. */
+    private fun applyLanguage(langTag: String?) {
+        val target = langTag ?: Locale.US.toLanguageTag()
+        if (target == currentLangTag) return
+        val result = tts.setLanguage(Locale.forLanguageTag(target))
+        if (result == TextToSpeech.LANG_MISSING_DATA || result == TextToSpeech.LANG_NOT_SUPPORTED) {
+            Log.w(TAG, "TTS language '$target' unavailable; falling back to US")
+            tts.language = Locale.US
+            currentLangTag = Locale.US.toLanguageTag()
+        } else {
+            currentLangTag = target
+        }
     }
 
     /**
@@ -64,6 +94,7 @@ class PhonicsSpeaker(context: Context) {
      */
     fun stop() {
         pendingText = null
+        pendingLangTag = null
         if (ready) tts.stop()
     }
 

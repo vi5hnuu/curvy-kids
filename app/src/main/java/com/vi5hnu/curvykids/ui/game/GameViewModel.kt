@@ -8,8 +8,10 @@ import androidx.lifecycle.viewModelScope
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.audio.SoundEffects
+import com.vi5hnu.curvykids.data.content.HINDI_BY_CHAR
 import com.vi5hnu.curvykids.data.content.Level
 import com.vi5hnu.curvykids.data.content.Phonics
+import com.vi5hnu.curvykids.data.content.Script
 import com.vi5hnu.curvykids.data.progress.ProgressRepository
 import com.vi5hnu.curvykids.haptics.Haptics
 import com.vi5hnu.curvykids.models.HttpState
@@ -68,8 +70,9 @@ class GameViewModel(
             // Restore saved level/index without speaking — the prompt fires when the user
             // actually opens the TraceScreen (via goTo() inside selectLevel()).
             _uiState.update { it.copy(level = saved.level, index = saved.index, masteredCharacters = mastered) }
+            // Warm the recognizer model for the resumed track (en-US or hi).
+            recognizer.ensure(saved.level.languageTag)
         }
-        viewModelScope.launch { recognizer.prepare() }
     }
 
     /** Recognises the drawn [strokes] and gives correct/wrong feedback. */
@@ -144,6 +147,9 @@ class GameViewModel(
     /** Switches track, resuming at that level's last saved character. */
     fun selectLevel(level: Level) {
         if (level == _uiState.value.level) return
+        // Switch the recognizer model concurrently — readiness gates input in TraceScreen, so a
+        // first-time Hindi model download shows the loader while the UI already shows the letter.
+        viewModelScope.launch { recognizer.ensure(level.languageTag) }
         viewModelScope.launch {
             val mastered = progress.masteredSet(level)
             goTo(level, progress.loadIndex(level), mastered)
@@ -169,31 +175,56 @@ class GameViewModel(
 
     /** Re-speaks the current character's phonics (the "hear it" 🔊 button). */
     fun speakCurrent() {
-        phonics.speak(Phonics.phraseFor(_uiState.value.character))
+        val state = _uiState.value
+        if (state.level.script == Script.DEVANAGARI) {
+            speakHindiLetter(state.character); return
+        }
+        phonics.speak(Phonics.phraseFor(state.character))
     }
 
     /** Guides the child on what to draw, e.g. "Draw the letter A. A for Apple." */
     private fun speakPrompt() {
         val state = _uiState.value
+        if (state.level.script == Script.DEVANAGARI) {
+            speakHindiLetter(state.character); return
+        }
         val noun = if (state.level == Level.NUMBERS) "number" else "letter"
         val word = Phonics.wordFor(state.character)
         val suffix = word?.let { " ${Phonics.phraseFor(state.character)}." } ?: ""
         phonics.speak("Draw the $noun ${state.character}.$suffix")
     }
 
+    /** Speaks a Hindi letter (and its example word) using the Hindi TTS voice. */
+    private fun speakHindiLetter(char: String) {
+        val letter = HINDI_BY_CHAR[char]
+        val text = if (letter != null && letter.example.isNotEmpty())
+            "${letter.char}। ${letter.char} से ${letter.example}।"
+        else "$char।"
+        phonics.speak(text, langTag = "hi")
+    }
+
     private fun speakPraise() {
+        if (_uiState.value.level.script == Script.DEVANAGARI) {
+            phonics.speak(HINDI_PRAISE.random(), langTag = "hi"); return
+        }
         phonics.speak(PRAISE.random())
     }
 
     /** Spoken when the child has used all attempts — gentle, not discouraging. */
     private fun speakGiveUp() {
         val state = _uiState.value
+        if (state.level.script == Script.DEVANAGARI) {
+            phonics.speak("कोई बात नहीं! फिर कोशिश करते हैं।", langTag = "hi"); return
+        }
         phonics.speak("That's OK! Keep practicing. ${Phonics.phraseFor(state.character)}. Moving on!")
     }
 
     /** Encourages another attempt; gives a clearer hint when nothing was recognised. */
     private fun speakTryAgain(sawNothing: Boolean) {
         val state = _uiState.value
+        if (state.level.script == Script.DEVANAGARI) {
+            phonics.speak("फिर से कोशिश करो। यह ${state.character} है।", langTag = "hi"); return
+        }
         val noun = if (state.level == Level.NUMBERS) "number" else "letter"
         val lead = if (sawNothing) "Hmm, I couldn't see it. Try drawing a bit bigger."
         else "Almost! Let's try again."
@@ -219,13 +250,19 @@ class GameViewModel(
         speakPrompt()
     }
 
-    /** Advances to the next level in order: UPPERCASE → LOWERCASE → NUMBERS → UPPERCASE. */
+    /**
+     * Advances to the next level, cycling within the same script so the English and Hindi tracks
+     * stay separate: A→a→1→A for Latin, स्वर→व्यंजन→स्वर for Devanagari.
+     */
     private fun nextLevel() {
         val next = when (_uiState.value.level) {
             Level.UPPERCASE -> Level.LOWERCASE
             Level.LOWERCASE -> Level.NUMBERS
             Level.NUMBERS -> Level.UPPERCASE
+            Level.HINDI_VOWELS -> Level.HINDI_CONSONANTS
+            Level.HINDI_CONSONANTS -> Level.HINDI_VOWELS
         }
+        viewModelScope.launch { recognizer.ensure(next.languageTag) }
         viewModelScope.launch {
             val mastered = progress.masteredSet(next)
             goTo(next, progress.loadIndex(next), mastered)
@@ -245,6 +282,7 @@ class GameViewModel(
         private const val MAX_WRONG_ATTEMPTS = 3
         private const val GIVE_UP_DELAY_MS = 2000L
         private val PRAISE = listOf("Yay! Great job!", "Awesome!", "Well done!", "Perfect!", "You did it!")
+        private val HINDI_PRAISE = listOf("शाबाश!", "बहुत बढ़िया!", "वाह! कमाल कर दिया!", "बिलकुल सही!")
 
         /** Builds a ViewModel with concrete platform-backed dependencies. */
         fun factory(context: Context): ViewModelProvider.Factory {
