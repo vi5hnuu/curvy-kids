@@ -86,6 +86,15 @@ class PhonicsSpeaker(context: Context) {
         return tts.isLanguageAvailable(Locale.forLanguageTag(langTag)) >= TextToSpeech.LANG_AVAILABLE
     }
 
+    /**
+     * Sets the speaking pitch (1.0 = normal). Higher values sound younger/"boyish" — used by the
+     * Barakhadi recite mode so the forms are read like a child reciting in class. Remember to reset
+     * to 1.0 afterwards so other prompts keep the normal voice.
+     */
+    fun setPitch(pitch: Float) {
+        if (ready) tts.setPitch(pitch)
+    }
+
     /** Switches the TTS voice to [langTag] (default US), with a safe fallback if unsupported. */
     private fun applyLanguage(langTag: String?) {
         val target = langTag ?: Locale.US.toLanguageTag()
