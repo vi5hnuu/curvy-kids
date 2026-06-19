@@ -105,7 +105,6 @@ private fun BodyLearnGrid(
                         ) {
                             SvgBadge(
                                 asset = part.svg,
-                                emoji = part.emoji,
                                 fallbackEmoji = part.emoji,
                                 themeColor = topic.color,
                                 contentDescription = part.name,

@@ -81,7 +81,6 @@ private fun EmotionsLearnGrid(topic: Topic) {
                     ) {
                         SvgBadge(
                             asset = emotion.svg,
-                            emoji = emotion.emoji,
                             fallbackEmoji = emotion.emoji,
                             themeColor = topic.color,
                             contentDescription = emotion.name,

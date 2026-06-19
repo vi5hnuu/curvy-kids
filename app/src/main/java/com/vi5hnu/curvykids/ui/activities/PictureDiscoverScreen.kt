@@ -110,7 +110,6 @@ private fun PictureLearnGrid(
                     ) {
                         SvgBadge(
                             asset = item.svg,
-                            emoji = item.emoji,
                             fallbackEmoji = item.emoji,
                             themeColor = topic.color,
                             contentDescription = item.name,

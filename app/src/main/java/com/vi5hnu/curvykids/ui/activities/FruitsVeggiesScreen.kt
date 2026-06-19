@@ -142,7 +142,6 @@ fun FruitsVeggiesScreen(
                         Spacer(Modifier.height(12.dp))
                         SvgBadge(
                             asset = current.svg,
-                            emoji = current.emoji,
                             fallbackEmoji = current.emoji,
                             themeColor = topic.color, // neutral — fruit/veggie tint would reveal the answer
                             contentDescription = current.name,
@@ -237,7 +236,6 @@ private fun FruitsLearnGrid() {
                         // SVG badge carries the item name already; rendered on its own (no card).
                         SvgBadge(
                             asset = item.svg,
-                            emoji = item.emoji,
                             fallbackEmoji = item.emoji,
                             themeColor = accent,
                             contentDescription = item.name,

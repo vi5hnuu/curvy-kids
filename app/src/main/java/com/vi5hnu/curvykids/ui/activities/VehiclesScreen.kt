@@ -88,7 +88,6 @@ private fun VehiclesLearnGrid(accent: Color, onSpeak: (Vehicle) -> Unit) {
                     ) {
                         SvgBadge(
                             asset = vehicle.svg,
-                            emoji = vehicle.emoji,
                             fallbackEmoji = vehicle.emoji,
                             themeColor = accent,
                             contentDescription = vehicle.name,

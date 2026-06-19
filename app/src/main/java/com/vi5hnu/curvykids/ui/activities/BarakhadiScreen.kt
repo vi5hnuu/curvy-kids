@@ -151,7 +151,6 @@ fun BarakhadiScreen(
                         ) {
                             SvgBadge(
                                 asset = barakhadiSvg(consonant.romanized, matra),
-                                emoji = null,
                                 fallbackEmoji = syllable,
                                 themeColor = topic.color,
                                 contentDescription = syllable,

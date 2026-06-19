@@ -104,7 +104,6 @@ private fun AnimalsLearnGrid(
                         ) {
                             SvgBadge(
                                 asset = animal.svg,
-                                emoji = animal.emoji,
                                 fallbackEmoji = animal.emoji,
                                 themeColor = topic.color,
                                 contentDescription = animal.name,
