@@ -142,7 +142,6 @@ fun FruitsVeggiesScreen(
                         SvgBadge(
                             asset = current.svg,
                             fallbackEmoji = current.emoji,
-                            themeColor = topic.color, // neutral — fruit/veggie tint would reveal the answer
                             contentDescription = current.name,
                             // Scale with the card width (no hard-coded size) so it's consistent on phones & tablets.
                             modifier = Modifier
@@ -239,7 +238,6 @@ private fun FruitsLearnGrid() {
                         SvgBadge(
                             asset = item.svg,
                             fallbackEmoji = item.emoji,
-                            themeColor = accent,
                             contentDescription = item.name,
                             modifier = Modifier
                                 .fillMaxWidth()

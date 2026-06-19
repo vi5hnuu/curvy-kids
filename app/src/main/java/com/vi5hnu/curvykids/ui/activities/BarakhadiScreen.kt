@@ -144,7 +144,6 @@ fun BarakhadiScreen(
                             SvgBadge(
                                 asset = barakhadiSvg(consonant.romanized, matra),
                                 fallbackEmoji = syllable,
-                                themeColor = topic.color,
                                 contentDescription = syllable,
                                 modifier = Modifier
                                     .fillMaxSize()

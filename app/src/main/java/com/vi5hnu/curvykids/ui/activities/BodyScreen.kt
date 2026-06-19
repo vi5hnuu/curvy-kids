@@ -51,7 +51,7 @@ fun BodyScreen(
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Body Star!",
-        learnContent = { BodyLearnGrid(topic = topic, onReward = onReward, speaker = feedback?.speaker) },
+        learnContent = { BodyLearnGrid(onReward = onReward, speaker = feedback?.speaker) },
         quizPrompt = { target ->
             Text(
                 text = target.name,
@@ -71,7 +71,6 @@ fun BodyScreen(
 /** Original explore grid — 3-column, tap a part to hear its name and earn a star once. */
 @Composable
 private fun BodyLearnGrid(
-    topic: Topic,
     onReward: (Int) -> Unit,
     speaker: PhonicsSpeaker?,
 ) {
@@ -104,7 +103,6 @@ private fun BodyLearnGrid(
                             SvgBadge(
                                 asset = part.svg,
                                 fallbackEmoji = part.emoji,
-                                themeColor = topic.color,
                                 contentDescription = part.name,
                                 modifier = Modifier
                                     .fillMaxWidth()

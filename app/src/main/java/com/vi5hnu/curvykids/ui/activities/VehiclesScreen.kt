@@ -15,7 +15,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -47,7 +46,7 @@ fun VehiclesScreen(
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Road Trip!",
-        learnContent = { VehiclesLearnGrid(topic.color, onSpeak = { v -> feedback?.speaker?.speak("${v.name}! ${v.sound}") }) },
+        learnContent = { VehiclesLearnGrid(onSpeak = { v -> feedback?.speaker?.speak("${v.name}! ${v.sound}") }) },
         quizPrompt = { vehicle ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -69,7 +68,7 @@ fun VehiclesScreen(
 }
 
 @Composable
-private fun VehiclesLearnGrid(accent: Color, onSpeak: (Vehicle) -> Unit) {
+private fun VehiclesLearnGrid(onSpeak: (Vehicle) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         VEHICLES.chunked(2).forEach { pair ->
             Row(
@@ -89,7 +88,6 @@ private fun VehiclesLearnGrid(accent: Color, onSpeak: (Vehicle) -> Unit) {
                         SvgBadge(
                             asset = vehicle.svg,
                             fallbackEmoji = vehicle.emoji,
-                            themeColor = accent,
                             contentDescription = vehicle.name,
                             modifier = Modifier
                                 .fillMaxWidth()

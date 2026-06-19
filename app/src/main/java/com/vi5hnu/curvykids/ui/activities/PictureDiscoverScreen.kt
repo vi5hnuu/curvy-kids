@@ -102,7 +102,6 @@ private fun PictureLearnGrid(
                         SvgBadge(
                             asset = item.svg,
                             fallbackEmoji = item.emoji,
-                            themeColor = topic.color,
                             contentDescription = item.name,
                             modifier = Modifier
                                 .fillMaxWidth()

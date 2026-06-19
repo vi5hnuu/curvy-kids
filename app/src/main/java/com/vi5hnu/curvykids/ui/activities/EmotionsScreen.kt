@@ -43,7 +43,7 @@ fun EmotionsScreen(
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Feelings Star!",
-        learnContent = { EmotionsLearnGrid(topic = topic) },
+        learnContent = { EmotionsLearnGrid() },
         quizPrompt = { emotion ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -65,7 +65,7 @@ fun EmotionsScreen(
 }
 
 @Composable
-private fun EmotionsLearnGrid(topic: Topic) {
+private fun EmotionsLearnGrid() {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         EMOTIONS.chunked(2).forEach { pair ->
             Row(
@@ -82,7 +82,6 @@ private fun EmotionsLearnGrid(topic: Topic) {
                         SvgBadge(
                             asset = emotion.svg,
                             fallbackEmoji = emotion.emoji,
-                            themeColor = topic.color,
                             contentDescription = emotion.name,
                             modifier = Modifier
                                 .fillMaxWidth()
