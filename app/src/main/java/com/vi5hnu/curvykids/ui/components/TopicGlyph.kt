@@ -24,6 +24,14 @@ import com.vi5hnu.curvykids.ui.theme.FontDisplay
 /** Writing topics legitimately want their letters shown — others get a vector illustration. */
 private val LETTER_TOPICS = setOf("upper", "lower", "numbers")
 
+/** Topic ids that [drawTopicGlyph] has a hand-drawn vector for; others fall back to their glyph. */
+private val GLYPH_TOPICS = setOf(
+    "shapes", "colors", "count", "words", "animals", "body", "days", "draw",
+    "memory", "bigsmall", "oddone", "catch", "months", "seasons", "emotions",
+    "vehicles", "fruitsveggies", "addition", "subtraction", "patterns",
+    "phonics", "opposites", "rhyming",
+)
+
 /**
  * The icon shown inside a topic card's badge. Writing topics ("Aa", "bd", "12") keep their
  * readable letters; every other topic renders a friendly white vector illustration instead of
@@ -41,16 +49,26 @@ fun TopicGlyph(
     color: Color = Color.White,
 ) {
     Box(modifier = modifier, contentAlignment = Alignment.Center) {
-        if (topicId in LETTER_TOPICS) {
-            Text(
+        when {
+            // Writing topics ("Aa", "bd", "12") show their readable letters.
+            topicId in LETTER_TOPICS -> Text(
                 text = fallback,
                 fontFamily = FontDisplay,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = if (fallback.length >= 2) 24.sp else 28.sp,
                 color = color,
             )
-        } else {
-            Canvas(modifier = Modifier.size(30.dp)) { drawTopicGlyph(topicId, color) }
+            // Topics with a bespoke vector illustration.
+            topicId in GLYPH_TOPICS -> Canvas(modifier = Modifier.size(30.dp)) { drawTopicGlyph(topicId, color) }
+            // Everything else (picture topics, time, fractions, Hindi, …) shows its glyph —
+            // an emoji or a Devanagari letter — so the badge is never blank.
+            else -> Text(
+                text = fallback,
+                fontFamily = FontDisplay,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 26.sp,
+                color = color,
+            )
         }
     }
 }
