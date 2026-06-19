@@ -1,7 +1,10 @@
 package com.vi5hnu.curvykids.audio
 
 import android.content.Context
+import android.os.Handler
+import android.os.Looper
 import android.speech.tts.TextToSpeech
+import android.speech.tts.UtteranceProgressListener
 import android.util.Log
 import java.util.Locale
 
@@ -14,12 +17,35 @@ import java.util.Locale
  */
 class PhonicsSpeaker(context: Context) {
 
-    private companion object {
-        const val TAG = "PHONICS"
+    companion object {
+        private const val TAG = "PHONICS"
+        /** Default kids' speaking rate (a little slower than normal). */
+        const val DEFAULT_RATE = 0.85f
     }
 
     @Volatile
     private var ready = false
+
+    private val mainHandler = Handler(Looper.getMainLooper())
+
+    /**
+     * Optional callbacks fired (on the main thread) when a spoken utterance starts / finishes. Used
+     * by sequential read-aloud (e.g. Stories) to highlight the sentence currently being read. The
+     * id is the `utteranceId` passed to [speak]. Set to null when leaving the screen.
+     */
+    @Volatile
+    var onUtteranceStart: ((String) -> Unit)? = null
+
+    @Volatile
+    var onUtteranceDone: ((String) -> Unit)? = null
+
+    /**
+     * Fired (on the main thread) as the engine speaks through an utterance, with the character
+     * [start]/[end] range currently being voiced. Lets a single, naturally-flowing utterance drive
+     * a word/line highlight (used by Stories) instead of choppy one-utterance-per-line playback.
+     */
+    @Volatile
+    var onUtteranceRange: ((id: String, start: Int, end: Int) -> Unit)? = null
 
     /** When true, [speak] is a no-op and any in-progress speech is halted (parent sound toggle). */
     @Volatile
@@ -45,7 +71,26 @@ class PhonicsSpeaker(context: Context) {
         if (status == TextToSpeech.SUCCESS) {
             tts.language = Locale.US
             // Slower rate is easier for young children to follow.
-            tts.setSpeechRate(0.85f)
+            tts.setSpeechRate(DEFAULT_RATE)
+            tts.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
+                override fun onStart(utteranceId: String?) {
+                    val id = utteranceId ?: return
+                    mainHandler.post { onUtteranceStart?.invoke(id) }
+                }
+                override fun onDone(utteranceId: String?) {
+                    val id = utteranceId ?: return
+                    mainHandler.post { onUtteranceDone?.invoke(id) }
+                }
+                @Deprecated("Deprecated in Java")
+                override fun onError(utteranceId: String?) {
+                    val id = utteranceId ?: return
+                    mainHandler.post { onUtteranceDone?.invoke(id) }
+                }
+                override fun onRangeStart(utteranceId: String?, start: Int, end: Int, frame: Int) {
+                    val id = utteranceId ?: return
+                    mainHandler.post { onUtteranceRange?.invoke(id, start, end) }
+                }
+            })
             ready = true
             pendingText?.let { speak(it, pendingLangTag) }
             pendingText = null
@@ -65,7 +110,7 @@ class PhonicsSpeaker(context: Context) {
      *        QUEUED after whatever is playing — used so a praise/feedback line finishes before the
      *        next prompt speaks, instead of being cut off mid-word.
      */
-    fun speak(text: String, langTag: String? = null, flush: Boolean = true) {
+    fun speak(text: String, langTag: String? = null, flush: Boolean = true, utteranceId: String = text) {
         if (text.isBlank() || muted) return
         if (!ready) {
             pendingText = text  // will fire once TTS is initialised
@@ -74,7 +119,7 @@ class PhonicsSpeaker(context: Context) {
         }
         applyLanguage(langTag)
         val mode = if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
-        tts.speak(text, mode, null, text)
+        tts.speak(text, mode, null, utteranceId)
     }
 
     /**
@@ -93,6 +138,15 @@ class PhonicsSpeaker(context: Context) {
      */
     fun setPitch(pitch: Float) {
         if (ready) tts.setPitch(pitch)
+    }
+
+    /**
+     * Sets the speaking rate (1.0 = normal; the engine default for this app is 0.85, set on init).
+     * Story narration nudges this closer to natural so sentences flow; reset to [DEFAULT_RATE]
+     * afterwards so the slower kids' pace returns for letters/words.
+     */
+    fun setSpeechRate(rate: Float) {
+        if (ready) tts.setSpeechRate(rate)
     }
 
     /** Switches the TTS voice to [langTag] (default US), with a safe fallback if unsupported. */

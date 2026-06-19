@@ -32,6 +32,8 @@ enum class TopicKind {
     PICTURE,
     // Hindi barakhadi reference (consonant × vowel matra grid)
     BARAKHADI,
+    // Hindi stories read aloud
+    STORIES,
 }
 
 /**
@@ -98,6 +100,7 @@ val TOPICS: List<Topic> = listOf(
     Topic("hindi_vowels",     "Hindi Vowels",  "स्वर",   "अ", Coral, TintCoral, TopicKind.TRACE, Level.HINDI_VOWELS),
     Topic("hindi_consonants", "Hindi Letters", "व्यंजन", "क", Teal,  TintTeal,  TopicKind.TRACE, Level.HINDI_CONSONANTS),
     Topic("barakhadi",        "Barakhadi",     "क का कि", "क", Grape, TintGrape, TopicKind.BARAKHADI),
+    Topic("stories",          "Hindi Stories", "कहानियाँ", "📖", Pink,  TintPink,  TopicKind.STORIES),
     // Nature & Animals (picture topics)
     Topic("birds",        "Birds",          "Tweet!",       "🐦", Blue,  TintBlue,  TopicKind.PICTURE),
     Topic("sea",          "Sea Animals",    "Splash!",      "🐬", Aqua,  TintAqua,  TopicKind.PICTURE),

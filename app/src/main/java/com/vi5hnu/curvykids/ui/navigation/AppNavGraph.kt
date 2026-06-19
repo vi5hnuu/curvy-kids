@@ -54,6 +54,7 @@ import com.vi5hnu.curvykids.ui.activities.RhymingScreen
 import com.vi5hnu.curvykids.ui.activities.TimeScreen
 import com.vi5hnu.curvykids.ui.activities.SeasonsScreen
 import com.vi5hnu.curvykids.ui.activities.ShapesScreen
+import com.vi5hnu.curvykids.ui.activities.StoriesScreen
 import com.vi5hnu.curvykids.ui.activities.SubtractionScreen
 import com.vi5hnu.curvykids.ui.activities.VehiclesScreen
 import com.vi5hnu.curvykids.ui.activities.WordsScreen
@@ -396,6 +397,13 @@ fun AppNavGraph(
                     )
 
                     TopicKind.BARAKHADI -> BarakhadiScreen(
+                        topic = topic,
+                        onBack = { navController.popBackStack() },
+                        onReward = appViewModel::reward,
+                        feedback = gameViewModel.feedback,
+                    )
+
+                    TopicKind.STORIES -> StoriesScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
                         onReward = appViewModel::reward,

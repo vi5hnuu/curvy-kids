@@ -35,7 +35,8 @@ fun PlayScreen(
     // Writing = Latin tracing; Hindi tracing (Devanagari) gets its own group below.
     val writing  = TOPICS.filter { it.kind == TopicKind.TRACE && it.set?.script != Script.DEVANAGARI }
     val hindi    = TOPICS.filter {
-        (it.kind == TopicKind.TRACE && it.set?.script == Script.DEVANAGARI) || it.kind == TopicKind.BARAKHADI
+        (it.kind == TopicKind.TRACE && it.set?.script == Script.DEVANAGARI) ||
+            it.kind == TopicKind.BARAKHADI || it.kind == TopicKind.STORIES
     }
     val discover = TOPICS.filter { it.kind in listOf(TopicKind.SHAPES, TopicKind.COLORS, TopicKind.ANIMALS, TopicKind.BODY, TopicKind.DAYS) }
     val games    = TOPICS.filter { it.kind in listOf(TopicKind.COUNT, TopicKind.WORDS, TopicKind.DRAW) }
