@@ -1,10 +1,10 @@
 package com.vi5hnu.curvykids.ui.activities
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -38,7 +38,7 @@ import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.data.content.barakhadiSvg
 import com.vi5hnu.curvykids.data.content.barakhadiSyllable
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
-import com.vi5hnu.curvykids.ui.components.SvgImage
+import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 
@@ -133,36 +133,32 @@ fun BarakhadiScreen(
                 ) {
                     row.forEach { matra ->
                         val syllable = barakhadiSyllable(consonant.char, matra)
+                        // The SVG carries its own framed badge; we render it on its own (no outer
+                        // card) and recolor its border to the screen theme.
                         Box(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .weight(1f)
+                                .aspectRatio(1f)
                                 .clip(RoundedCornerShape(20.dp))
-                                .background(topic.tint)
-                                .border(
-                                    width = if (explored.contains(syllable)) 2.dp else 0.dp,
-                                    color = topic.color.copy(alpha = 0.4f),
-                                    shape = RoundedCornerShape(20.dp),
-                                ),
-                        ) {
-                            SurfaceTap(
-                                onTap = {
+                                .clickable {
                                     speakHi(syllable, consonant.romanized.dropLast(1) + matra.key)
                                     if (!explored.contains(syllable)) {
                                         explored = explored + syllable
                                         onReward(1)
                                     }
                                 },
-                            ) {
-                                SvgImage(
-                                    asset = barakhadiSvg(consonant.romanized, matra),
-                                    fallbackEmoji = syllable,
-                                    fallbackSize = 30.sp,
-                                    contentDescription = syllable,
-                                    modifier = Modifier
-                                        .padding(8.dp)
-                                        .size(76.dp),
-                                )
+                        ) {
+                            SvgBadge(
+                                asset = barakhadiSvg(consonant.romanized, matra),
+                                emoji = null,
+                                fallbackEmoji = syllable,
+                                themeColor = topic.color,
+                                contentDescription = syllable,
+                                modifier = Modifier.fillMaxSize(),
+                            )
+                            if (explored.contains(syllable)) {
+                                Text("⭐", fontSize = 13.sp, modifier = Modifier.align(Alignment.TopEnd).padding(6.dp))
                             }
                         }
                     }
@@ -171,10 +167,4 @@ fun BarakhadiScreen(
             }
         }
     }
-}
-
-/** Tiny click wrapper so the badge area is tappable without adding card chrome. */
-@Composable
-private fun SurfaceTap(onTap: () -> Unit, content: @Composable () -> Unit) {
-    Surface(onClick = onTap, color = Color.Transparent) { content() }
 }

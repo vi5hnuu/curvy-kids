@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -38,7 +39,7 @@ import com.vi5hnu.curvykids.ui.activities.components.SegmentedTabs
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Pill
-import com.vi5hnu.curvykids.ui.components.SvgImage
+import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
@@ -139,10 +140,11 @@ fun FruitsVeggiesScreen(
                     ) {
                         Text("FRUIT OR VEGETABLE?", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 14.sp, color = InkSoft)
                         Spacer(Modifier.height(12.dp))
-                        SvgImage(
+                        SvgBadge(
                             asset = current.svg,
+                            emoji = current.emoji,
                             fallbackEmoji = current.emoji,
-                            fallbackSize = 72.sp,
+                            themeColor = topic.color, // neutral — fruit/veggie tint would reveal the answer
                             contentDescription = current.name,
                             modifier = Modifier.size(124.dp),
                         )
@@ -232,13 +234,16 @@ private fun FruitsLearnGrid() {
                             .weight(1f)
                             .padding(4.dp),
                     ) {
-                        // SVG badge carries the item name already.
-                        SvgImage(
+                        // SVG badge carries the item name already; rendered on its own (no card).
+                        SvgBadge(
                             asset = item.svg,
+                            emoji = item.emoji,
                             fallbackEmoji = item.emoji,
-                            fallbackSize = 32.sp,
+                            themeColor = accent,
                             contentDescription = item.name,
-                            modifier = Modifier.size(64.dp),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
                         )
                     }
                 }

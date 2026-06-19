@@ -1,15 +1,14 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Surface
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -18,7 +17,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
@@ -27,7 +28,7 @@ import com.vi5hnu.curvykids.data.content.PICTURE_SPECS
 import com.vi5hnu.curvykids.data.content.PictureItem
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
-import com.vi5hnu.curvykids.ui.components.SvgImage
+import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 
 /**
@@ -68,13 +69,8 @@ fun PictureDiscoverScreen(
             )
         },
         quizOption = { item ->
-            SvgImage(
-                asset = item.svg,
-                fallbackEmoji = item.emoji,
-                fallbackSize = 44.sp,
-                contentDescription = item.name,
-                modifier = Modifier.size(84.dp),
-            )
+            // Emoji only in the quiz — the SVG bakes the name in, which would reveal the answer.
+            Text(item.emoji, fontSize = 48.sp, textAlign = TextAlign.Center)
         },
     )
 }
@@ -96,38 +92,34 @@ private fun PictureLearnGrid(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 row.forEach { item ->
-                    Surface(
-                        onClick = {
-                            speaker?.speak(item.name)
-                            if (!seen.contains(item.name)) {
-                                seen = seen + item.name
-                                onReward(2)
-                            }
-                        },
-                        modifier = Modifier.weight(1f),
-                        color = topic.tint,
-                        shadowElevation = 3.dp,
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(22.dp),
+                    // The SVG badge already carries its own rounded border, emoji and name, so we
+                    // render it on its own — no surrounding card — to avoid a box-inside-a-box look.
+                    // The badge itself is the tap target.
+                    Box(
+                        modifier = Modifier
+                            .weight(1f)
+                            .clip(RoundedCornerShape(22.dp))
+                            .clickable {
+                                speaker?.speak(item.name)
+                                if (!seen.contains(item.name)) {
+                                    seen = seen + item.name
+                                    onReward(2)
+                                }
+                            },
+                        contentAlignment = Alignment.Center,
                     ) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.padding(10.dp),
-                        ) {
-                            // SVG badge carries the item name already.
-                            SvgImage(
-                                asset = item.svg,
-                                fallbackEmoji = item.emoji,
-                                fallbackSize = 40.sp,
-                                contentDescription = item.name,
-                                modifier = Modifier.size(78.dp),
-                            )
-                            if (seen.contains(item.name)) {
-                                Text(
-                                    "⭐",
-                                    fontSize = 13.sp,
-                                    modifier = Modifier.align(Alignment.TopEnd),
-                                )
-                            }
+                        SvgBadge(
+                            asset = item.svg,
+                            emoji = item.emoji,
+                            fallbackEmoji = item.emoji,
+                            themeColor = topic.color,
+                            contentDescription = item.name,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .aspectRatio(1f),
+                        )
+                        if (seen.contains(item.name)) {
+                            Text("⭐", fontSize = 13.sp, modifier = Modifier.align(Alignment.TopEnd))
                         }
                     }
                 }
