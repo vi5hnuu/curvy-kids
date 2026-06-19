@@ -1,5 +1,9 @@
 package com.vi5hnu.curvykids.ui.parent
 
+import android.content.Intent
+import android.net.Uri
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -14,9 +18,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vi5hnu.curvykids.config.LegalLinks
 import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.CurvyMascot
@@ -108,12 +115,47 @@ fun ParentTab(
             CurvyMascot(size = 50.dp, mood = CurvyMood.Idle)
             Spacer(Modifier.width(12.dp))
             Text(
-                text = "CurvyKids has no ads and no links out. Made for happy, safe learning. 💚",
+                text = "CurvyKids has no ads and no tracking. Made for happy, safe learning. 💚",
                 fontWeight = FontWeight.Bold,
                 fontSize = 13.5.sp,
                 color = InkSoft,
                 lineHeight = 20.sp,
             )
         }
+
+        Spacer(Modifier.height(20.dp))
+
+        // Legal — Privacy Policy & Terms (open the hosted pages in the browser). Placed in the
+        // Grown-ups tab so they're available to adults without the parent gate.
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.fillMaxWidth(),
+        ) {
+            LegalLink(text = "Privacy Policy", url = LegalLinks.PRIVACY_POLICY)
+            Text(
+                text = "  ·  ",
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                color = InkSoft,
+            )
+            LegalLink(text = "Terms of Service", url = LegalLinks.TERMS_OF_SERVICE)
+        }
     }
+}
+
+/** A small text link in the Grown-ups footer that opens [url] in the device browser. */
+@Composable
+private fun LegalLink(text: String, url: String) {
+    val context = LocalContext.current
+    Text(
+        text = text,
+        fontWeight = FontWeight.Bold,
+        fontSize = 13.sp,
+        color = Teal,
+        textDecoration = TextDecoration.Underline,
+        modifier = Modifier
+            .clickable { context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url))) }
+            .padding(vertical = 4.dp, horizontal = 2.dp),
+    )
 }
