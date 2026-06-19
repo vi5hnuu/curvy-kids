@@ -86,21 +86,19 @@ private fun AnimalsLearnGrid(
                 pair.forEach { animal ->
                     // The SVG badge already carries its own framed box + animal name, so it's
                     // rendered on its own (no outer card); only the sound is added below it.
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(24.dp))
-                            .clickable {
-                                speaker?.speak("${animal.name}. ${animal.sound}")
-                                if (!seen.contains(animal.name)) {
-                                    seen = seen + animal.name
-                                    onReward(2)
-                                }
-                            },
-                    ) {
+                    Box(modifier = Modifier.weight(1f)) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(24.dp))
+                                .clickable {
+                                    speaker?.speak("${animal.name}. ${animal.sound}")
+                                    if (!seen.contains(animal.name)) {
+                                        seen = seen + animal.name
+                                        onReward(2)
+                                    }
+                                },
                         ) {
                             SvgBadge(
                                 asset = animal.svg,

@@ -139,22 +139,23 @@ fun BarakhadiScreen(
                             contentAlignment = Alignment.Center,
                             modifier = Modifier
                                 .weight(1f)
-                                .aspectRatio(1f)
-                                .clip(RoundedCornerShape(20.dp))
-                                .clickable {
-                                    speakHi(syllable, consonant.romanized.dropLast(1) + matra.key)
-                                    if (!explored.contains(syllable)) {
-                                        explored = explored + syllable
-                                        onReward(1)
-                                    }
-                                },
+                                .aspectRatio(1f),
                         ) {
                             SvgBadge(
                                 asset = barakhadiSvg(consonant.romanized, matra),
                                 fallbackEmoji = syllable,
                                 themeColor = topic.color,
                                 contentDescription = syllable,
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .clip(RoundedCornerShape(20.dp))
+                                    .clickable {
+                                        speakHi(syllable, consonant.romanized.dropLast(1) + matra.key)
+                                        if (!explored.contains(syllable)) {
+                                            explored = explored + syllable
+                                            onReward(1)
+                                        }
+                                    },
                             )
                             if (explored.contains(syllable)) {
                                 Text("⭐", fontSize = 13.sp, modifier = Modifier.align(Alignment.TopEnd).padding(6.dp))

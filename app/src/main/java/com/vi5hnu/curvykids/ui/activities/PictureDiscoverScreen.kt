@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -95,19 +96,9 @@ private fun PictureLearnGrid(
                     // The SVG badge already carries its own rounded border, emoji and name, so we
                     // render it on its own — no surrounding card — to avoid a box-inside-a-box look.
                     // The badge itself is the tap target.
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(22.dp))
-                            .clickable {
-                                speaker?.speak(item.name)
-                                if (!seen.contains(item.name)) {
-                                    seen = seen + item.name
-                                    onReward(2)
-                                }
-                            },
-                        contentAlignment = Alignment.Center,
-                    ) {
+                    // Outer Box is not clipped, so the ⭐ marker is never cut off at the corner;
+                    // the clip + tap target live on the badge itself.
+                    Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
                         SvgBadge(
                             asset = item.svg,
                             fallbackEmoji = item.emoji,
@@ -115,10 +106,18 @@ private fun PictureLearnGrid(
                             contentDescription = item.name,
                             modifier = Modifier
                                 .fillMaxWidth()
-                                .aspectRatio(1f),
+                                .aspectRatio(1f)
+                                .clip(RoundedCornerShape(22.dp))
+                                .clickable {
+                                    speaker?.speak(item.name)
+                                    if (!seen.contains(item.name)) {
+                                        seen = seen + item.name
+                                        onReward(2)
+                                    }
+                                },
                         )
                         if (seen.contains(item.name)) {
-                            Text("⭐", fontSize = 13.sp, modifier = Modifier.align(Alignment.TopEnd))
+                            Text("⭐", fontSize = 13.sp, modifier = Modifier.align(Alignment.TopEnd).padding(6.dp))
                         }
                     }
                 }

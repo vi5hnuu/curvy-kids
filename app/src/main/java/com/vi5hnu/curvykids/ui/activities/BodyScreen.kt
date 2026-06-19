@@ -87,21 +87,19 @@ private fun BodyLearnGrid(
                 triple.forEach { part ->
                     // The SVG badge carries its own framed box + name, so it's rendered on its
                     // own (no outer card) with its border in the screen theme.
-                    Box(
-                        modifier = Modifier
-                            .weight(1f)
-                            .clip(RoundedCornerShape(22.dp))
-                            .clickable {
-                                speaker?.speak(part.name)
-                                if (!seen.contains(part.name)) {
-                                    seen = seen + part.name
-                                    onReward(2)
-                                }
-                            },
-                    ) {
+                    Box(modifier = Modifier.weight(1f)) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,
-                            modifier = Modifier.fillMaxWidth(),
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .clip(RoundedCornerShape(22.dp))
+                                .clickable {
+                                    speaker?.speak(part.name)
+                                    if (!seen.contains(part.name)) {
+                                        seen = seen + part.name
+                                        onReward(2)
+                                    }
+                                },
                         ) {
                             SvgBadge(
                                 asset = part.svg,
