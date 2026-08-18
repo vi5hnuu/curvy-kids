@@ -6,12 +6,12 @@ plugins {
 
 android {
     namespace = "com.vi5hnu.curvykids"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.vi5hnu.curvykids"
         minSdk = 29
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 3
         versionName = "2.1"
 
@@ -41,7 +41,7 @@ android {
     packaging {
         jniLibs {
             // Store .so files uncompressed so the OS can memory-map them at 16 KB page
-            // boundaries — required for Android 15+ 16 KB page-size support (API 35 target).
+            // boundaries — required for Android 15+ 16 KB page-size support (mandatory at API 36).
             useLegacyPackaging = false
         }
     }
