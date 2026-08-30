@@ -83,11 +83,11 @@ fun <T> DiscoverActivity(
     var mode by rememberSaveable { mutableStateOf(0) } // 0 = Learn, 1 = Play
 
     // Quiz state — session-scoped; resets only when the screen leaves composition.
-    var score by remember { mutableIntStateOf(0) }
+    var score by rememberSaveable { mutableIntStateOf(0) }
     var target by remember { mutableStateOf(quizItems.random()) }
     var options by remember { mutableStateOf(buildOptions(quizItems, target, keyOf, optionCount)) }
     var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) } // key → correct?
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     fun newRound() {
         val next = quizItems.filter { keyOf(it) != keyOf(target) }.randomOrNull() ?: target

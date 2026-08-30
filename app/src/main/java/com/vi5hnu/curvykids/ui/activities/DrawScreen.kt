@@ -22,6 +22,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
@@ -96,6 +97,7 @@ private val GUIDE_COLOR = Color(0xFFCBD9E3)
 fun DrawScreen(
     topic: Topic,
     onBack: () -> Unit,
+    onAddBadge: (String) -> Unit = {},
 ) {
     var selectedColor by remember { mutableStateOf(PALETTE[0]) }
     var selectedSize by remember { mutableStateOf(BRUSH_SIZES[1]) }
@@ -104,6 +106,12 @@ fun DrawScreen(
     var selectedStamp by remember { mutableStateOf(STAMPS[0]) }
 
     val marks = remember { mutableStateListOf<Mark>() }
+
+    // Unlocks the "Lil Artist" sticker the first time the child actually draws something.
+    // The sticker used to be hardcoded as always-earned, so it rewarded nothing.
+    LaunchedEffect(marks.isNotEmpty()) {
+        if (marks.isNotEmpty()) onAddBadge("artist")
+    }
     var currentPoints by remember { mutableStateOf(listOf<Offset>()) }
 
     // Native paint reused across frames for stamp glyph rendering.

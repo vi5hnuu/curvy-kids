@@ -38,16 +38,24 @@ fun CurvyMascot(
     floating: Boolean = false,
     modifier: Modifier = Modifier,
 ) {
-    val infiniteTransition = rememberInfiniteTransition(label = "float")
-    val floatY by infiniteTransition.animateFloat(
-        initialValue = 0f,
-        targetValue = if (floating) -7f else 0f,
-        animationSpec = infiniteRepeatable(
-            animation = tween(durationMillis = 1750),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "floatY",
-    )
+    // Only run the animation when it is actually asked for. Previously the infinite transition
+    // was always created — with a 0f..0f range when floating was off — which still ticked every
+    // frame and permanently invalidated this Canvas on every screen that shows a static mascot.
+    val floatY = if (floating) {
+        val transition = rememberInfiniteTransition(label = "float")
+        val animated by transition.animateFloat(
+            initialValue = 0f,
+            targetValue = -7f,
+            animationSpec = infiniteRepeatable(
+                animation = tween(durationMillis = 1750),
+                repeatMode = RepeatMode.Reverse,
+            ),
+            label = "floatY",
+        )
+        animated
+    } else {
+        0f
+    }
 
     // The viewBox is 120×134; we scale to the requested dp size
     Canvas(

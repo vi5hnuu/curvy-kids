@@ -5,6 +5,22 @@ import com.vi5hnu.curvykids.data.content.Level
 /** Outcome of the most recent check, used to drive feedback (sound, confetti). */
 enum class AnswerResult { CORRECT, WRONG }
 
+/**
+ * A one-shot notification that the child drew [character] correctly.
+ *
+ * Delivered on GameViewModel.correctAnswers so stars are awarded exactly once per accepted
+ * drawing, regardless of how many times the screen recomposes or is recreated.
+ *
+ * @param topicId          Where to file the mastery, e.g. "upper" (see Level.progressKey).
+ * @param alreadyMastered  True when the child had already learned this character before,
+ *                         so the reward can be smaller for a repeat.
+ */
+data class CorrectAnswer(
+    val topicId: String,
+    val character: String,
+    val alreadyMastered: Boolean,
+)
+
 /** Immutable snapshot of everything the game screen needs to render. */
 data class GameUiState(
     val level: Level = Level.UPPERCASE,

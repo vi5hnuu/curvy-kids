@@ -33,6 +33,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -55,6 +56,8 @@ import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.data.content.CRAYON_COLORS
 import com.vi5hnu.curvykids.ui.trace.components.CharStrip
 import com.vi5hnu.curvykids.ui.trace.components.DemoWipe
+import com.vi5hnu.curvykids.ui.trace.components.StrokeOrderDemo
+import com.vi5hnu.curvykids.ui.trace.components.hasStrokeGuide
 
 /**
  * Redesigned tracing screen matching trace.jsx design.
@@ -84,6 +87,9 @@ fun TraceScreen(
     val topic = TOPICS.find { it.set == uiState.level } ?: TOPICS.first()
     val chars = uiState.level.characters
 
+    // Sized in dp-converted-to-sp so the guide glyph keeps its layout at any OS font scale.
+    val ghostSize = with(LocalDensity.current) { 190.dp.toSp() }
+
     val ch = uiState.character
     val word = Phonics.wordFor(ch)
     val emoji = Phonics.emojiFor(ch)
@@ -101,12 +107,12 @@ fun TraceScreen(
     }
 
     // Give reward + sync mastery when a correct answer is accepted.
-    // Topic id ("upper"/"lower"/"numbers") maps to the set prefix in AppRepository.
-    LaunchedEffect(uiState.lastResult) {
-        if (uiState.lastResult == AnswerResult.CORRECT) {
-            val alreadyMastered = uiState.masteredCharacters.contains(ch)
-            onReward(if (alreadyMastered) 1 else 5)
-            onMarkMastered(topic.id, ch)
+    // Driven by the one-shot event stream rather than uiState.lastResult, so a rotation (which
+    // replays state to the recreated composition) cannot pay the child twice for one letter.
+    LaunchedEffect(viewModel) {
+        viewModel.correctAnswers.collect { answer ->
+            onReward(if (answer.alreadyMastered) 1 else 5)
+            onMarkMastered(answer.topicId, answer.character)
         }
     }
 
@@ -215,27 +221,39 @@ fun TraceScreen(
                     .weight(1f),
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    // Ghost letter (background guide)
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = ch,
-                            fontFamily = FontDisplay,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 230.sp,
-                            lineHeight = 230.sp,
-                            color = Color(0xFFEAF1F6),
+                    // Guidance layer. Where stroke-order data exists (all Latin letters and
+                    // digits) the child is shown how the character is actually formed — pen
+                    // travelling each stroke in the taught order and direction. Devanagari has
+                    // no authored stroke data yet, so it keeps the plain reveal of the glyph.
+                    if (hasStrokeGuide(ch)) {
+                        StrokeOrderDemo(
+                            char = ch,
+                            color = inkColor,
+                            demoKey = demoKey,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(28.dp),
+                        )
+                    } else {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = ch,
+                                fontFamily = FontDisplay,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = ghostSize,
+                                lineHeight = ghostSize,
+                                color = Color(0xFFEAF1F6),
+                            )
+                        }
+                        DemoWipe(
+                            char = ch,
+                            color = inkColor,
+                            demoKey = demoKey,
                         )
                     }
-
-                    // Animated demo wipe overlay
-                    DemoWipe(
-                        char = ch,
-                        color = inkColor,
-                        demoKey = demoKey,
-                    )
 
                     // Drawing canvas (on top) — pure ink layer, guidance handled by ghost letter + DemoWipe
                     DrawingCanvas(

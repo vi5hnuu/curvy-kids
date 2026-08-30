@@ -70,7 +70,7 @@ fun SvgImage(
 @Composable
 fun SvgBadge(
     asset: String?,
-    fallbackEmoji: String?,
+    fallbackEmoji: String? = null,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
 ) {

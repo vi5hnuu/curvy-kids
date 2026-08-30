@@ -100,8 +100,10 @@ fun AppNavGraph(
     val onTabScreen = currentRoute in tabRoutes
     val currentTab = AppTab.entries.firstOrNull { it.route == currentRoute } ?: AppTab.HOME
 
-    // Tab screens need bottom padding to avoid content hidden behind the floating tab bar
-    val tabContentPadding = Modifier.padding(bottom = 92.dp)
+    // The tab bar floats over the content, so tab screens are given the full height and each
+    // one ends its scrollable content with enough bottom padding to clear the bar. Insetting the
+    // screen here as well stacked the two, leaving ~180dp of dead space below every list.
+    val tabContentPadding = Modifier
 
     Box(
         modifier = Modifier
@@ -274,6 +276,7 @@ fun AppNavGraph(
                     TopicKind.DRAW -> DrawScreen(
                         topic = topic,
                         onBack = { navController.popBackStack() },
+                        onAddBadge = appViewModel::addBadge,
                     )
 
                     TopicKind.MEMORY -> MemoryMatchScreen(

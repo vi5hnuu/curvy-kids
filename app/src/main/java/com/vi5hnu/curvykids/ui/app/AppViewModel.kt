@@ -8,9 +8,8 @@ import com.vi5hnu.curvykids.data.app.AppRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
-import kotlinx.coroutines.flow.combine
-import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 
 /** Persisted parent-facing settings. */
 data class AppSettings(
@@ -31,37 +30,36 @@ class AppViewModel(private val repo: AppRepository) : ViewModel() {
 
     init {
         viewModelScope.launch {
-            combine(
-                repo.starsFlow,
-                repo.streakFlow,
-                repo.masteredFlow,
-                repo.badgesFlow,
-                repo.lastTopicFlow,
-            ) { stars, streak, mastered, badges, lastTopic ->
-                AppUiState(
-                    stars = stars,
-                    streak = streak,
-                    mastered = mastered,
-                    badges = badges,
-                    lastTopicId = lastTopic,
+            repo.record.collect { record ->
+                _uiState.value = AppUiState(
+                    stars = record.stars,
+                    streak = record.streak,
+                    mastered = record.mastered,
+                    badges = record.badges,
+                    lastTopicId = record.lastTopicId,
                 )
-            }.collect { _uiState.value = it }
-        }
-        viewModelScope.launch {
-            repo.soundEffectsFlow.collect { sound ->
-                _settings.value = AppSettings(soundEffects = sound)
+                _settings.value = AppSettings(soundEffects = record.soundEffects)
             }
         }
     }
 
-    /** Award [amount] stars to the child and persist. */
+    /**
+     * Award [amount] stars to the child and persist.
+     *
+     * Earning a star is what counts as "the child played today", so this is also where the
+     * daily streak advances — keeping the two together means no screen can award progress
+     * without the streak noticing.
+     */
     fun reward(amount: Int) {
-        viewModelScope.launch { repo.addStars(amount) }
+        viewModelScope.launch {
+            repo.addStars(amount)
+            repo.recordActivity(LocalDate.now().toEpochDay())
+        }
     }
 
     /**
-     * Mark a character as mastered. [set] is "upper" / "lower" / "numbers",
-     * [char] is the character string (e.g. "A", "a", "3").
+     * Mark a character as mastered. [set] is the trace topic id ("upper", "lower", "numbers",
+     * "hindi_vowels", "hindi_consonants"), [char] is the character string (e.g. "A", "a", "3").
      */
     fun markMastered(set: String, char: String) {
         viewModelScope.launch { repo.markMastered("$set:$char") }
@@ -79,6 +77,11 @@ class AppViewModel(private val repo: AppRepository) : ViewModel() {
 
     fun setSoundEffects(enabled: Boolean) {
         viewModelScope.launch { repo.setSoundEffects(enabled) }
+    }
+
+    /** Clears all child progress; the parent sound setting is kept. */
+    fun resetProgress() {
+        viewModelScope.launch { repo.resetProgress() }
     }
 
     companion object {

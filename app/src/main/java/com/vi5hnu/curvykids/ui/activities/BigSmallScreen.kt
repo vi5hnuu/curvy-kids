@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -98,10 +99,10 @@ fun BigSmallScreen(
     onReward: (Int) -> Unit,
     feedback: PlayFeedback? = null,
 ) {
-    var score by remember { mutableIntStateOf(0) }
-    var round by remember { mutableIntStateOf(0) }
+    var score by rememberSaveable { mutableIntStateOf(0) }
+    var round by rememberSaveable { mutableIntStateOf(0) }
     var flash by remember(round) { mutableStateOf<Pair<Boolean, Boolean>?>(null) }
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     val spec = remember(round) { buildSpec(round) }
     val correctLeft = spec.askBig == spec.bigOnLeft

@@ -54,10 +54,10 @@ fun SeasonsScreen(
     feedback: PlayFeedback? = null,
 ) {
     var mode by rememberSaveable { mutableStateOf(0) }
-    var score by remember { mutableIntStateOf(0) }
-    var round by remember { mutableIntStateOf(0) }
+    var score by rememberSaveable { mutableIntStateOf(0) }
+    var round by rememberSaveable { mutableIntStateOf(0) }
     var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     // Quiz target: show a weather clue emoji, child picks which season it belongs to.
     val quizState = remember(round) {

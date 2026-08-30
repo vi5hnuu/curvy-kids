@@ -57,10 +57,10 @@ fun FruitsVeggiesScreen(
     feedback: PlayFeedback? = null,
 ) {
     var mode by rememberSaveable { mutableStateOf(0) }
-    var score by remember { mutableIntStateOf(0) }
-    var round by remember { mutableIntStateOf(0) }
+    var score by rememberSaveable { mutableIntStateOf(0) }
+    var round by rememberSaveable { mutableIntStateOf(0) }
     var flash by remember { mutableStateOf<Pair<Boolean, Boolean>?>(null) } // guessedFruit → correct?
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     // Shuffle order so each session feels different
     val shuffled = remember { FRUITS_VEGGIES.shuffled() }

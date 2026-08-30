@@ -21,8 +21,11 @@ import com.vi5hnu.curvykids.recognition.Recognizer
 import com.vi5hnu.curvykids.recognition.Stroke
 import com.vi5hnu.curvykids.recognition.WritingArea
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -44,6 +47,17 @@ class GameViewModel(
 
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
+
+    private val _correctAnswers = MutableSharedFlow<CorrectAnswer>(extraBufferCapacity = 4)
+
+    /**
+     * Emitted exactly once each time a drawing is accepted.
+     *
+     * Rewards must not be driven off [uiState].lastResult: that is state, so it is replayed to
+     * every new collector — a screen rotation re-delivered a still-CORRECT result and the child
+     * was paid twice for one letter. An event stream is consumed once and never replayed.
+     */
+    val correctAnswers: SharedFlow<CorrectAnswer> = _correctAnswers.asSharedFlow()
 
     /** Recognizer readiness, surfaced for the loading/error overlay. */
     val recognizerReady: StateFlow<HttpState?> = recognizer.ready
@@ -90,11 +104,27 @@ class GameViewModel(
             Log.d(TAG, "check level=${state.level} expected=${state.character} " +
                 "candidates=$candidates matched=$matched")
 
+            // The child may have tapped Next/Previous during the up-to-8s recognition. Scoring
+            // the stale character would credit (and advance past) the wrong letter, so drop a
+            // result that no longer describes what is on screen.
+            val currentState = _uiState.value
+            if (currentState.level != state.level || currentState.index != state.index) {
+                _uiState.update { it.copy(isChecking = false) }
+                return@launch
+            }
+
             if (matched) {
                 sound.playCorrect()
                 speakPraise()
                 viewModelScope.launch { progress.markMastered(state.level, state.character) }
                 val newMastered = state.masteredCharacters + state.character
+                _correctAnswers.tryEmit(
+                    CorrectAnswer(
+                        topicId = state.level.progressKey,
+                        character = state.character,
+                        alreadyMastered = state.character in state.masteredCharacters,
+                    )
+                )
                 // Only trigger the completion overlay when the level is mastered for the first
                 // time — not on repeat correct answers after full completion.
                 val levelComplete = state.masteredCharacters.size < state.level.characters.size &&
@@ -290,6 +320,7 @@ class GameViewModel(
     }
 
     override fun onCleared() {
+        super.onCleared()
         recognizer.release()
         sound.release()
         phonics.release()

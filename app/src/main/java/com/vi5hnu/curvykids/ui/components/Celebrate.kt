@@ -8,8 +8,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -20,7 +22,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.blur
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -62,16 +63,8 @@ fun Celebrate(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .run {
-                    // Draw a teal overlay at 22% opacity
-                    this
-                },
-        ) {
-            // Background tint via Canvas
-            androidx.compose.foundation.Canvas(modifier = Modifier.fillMaxSize()) {
-                drawRect(color = Color(0xFF1FC2AE).copy(alpha = 0.22f))
-            }
-        }
+                .background(Color(0xFF1FC2AE).copy(alpha = 0.22f)),
+        )
 
         // Confetti particles
         ConfettiOverlay(count = 36)
@@ -87,13 +80,14 @@ fun Celebrate(
 
             Spacer(Modifier.height(10.dp))
 
-            // Star row
+            // Star row. Drawn as vectors: a colour-emoji star ignores `color`, so earning one
+            // star used to look identical to earning three.
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 for (i in 0 until 3) {
-                    Text(
-                        text = "⭐",
-                        fontSize = 34.sp,
-                        color = if (i < stars) Color.Unspecified else Color.Gray.copy(alpha = 0.4f),
+                    KidIconImage(
+                        icon = KidIcon.Star,
+                        modifier = Modifier.size(38.dp),
+                        color = if (i < stars) Color(0xFFFFD86B) else Color.White.copy(alpha = 0.35f),
                     )
                 }
             }
@@ -121,7 +115,7 @@ fun Celebrate(
             Spacer(Modifier.height(14.dp))
 
             Text(
-                text = "tap to keep going →",
+                text = "tap to keep going",
                 fontFamily = FontDisplay,
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,

@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -52,11 +53,11 @@ fun ColorsScreen(
     onAddBadge: (String) -> Unit = {},
     speaker: PhonicsSpeaker? = null,
 ) {
-    var score by remember { mutableIntStateOf(0) }
+    var score by rememberSaveable { mutableIntStateOf(0) }
     var target by remember { mutableStateOf(COLOR_ITEMS.random()) }
     var options by remember { mutableStateOf(buildOptions(target)) }
     var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) } // name → correct?
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     fun newRound() {
         val t = COLOR_ITEMS.random()

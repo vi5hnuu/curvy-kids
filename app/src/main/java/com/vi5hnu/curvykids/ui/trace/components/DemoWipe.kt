@@ -15,9 +15,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.sp
+import androidx.compose.ui.unit.dp
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import kotlinx.coroutines.delay
 
@@ -50,6 +50,9 @@ fun DemoWipe(
 
     if (finished) return
 
+    // Density-fixed rather than a raw sp literal, so the glyph keeps its layout when the OS
+    // font size is turned up instead of overflowing the drawing card.
+    val glyphSize = with(LocalDensity.current) { 190.dp.toSp() }
     val p = progress.value
 
     Box(
@@ -60,8 +63,8 @@ fun DemoWipe(
             text = char,
             fontFamily = FontDisplay,
             fontWeight = FontWeight.ExtraBold,
-            fontSize = 230.sp,
-            lineHeight = 230.sp,
+            fontSize = glyphSize,
+            lineHeight = glyphSize,
             color = color.copy(alpha = 0.32f),
             modifier = Modifier.drawWithContent {
                 // Clip the drawn content to the revealed fraction (left → right)

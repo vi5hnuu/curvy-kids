@@ -70,7 +70,7 @@ fun ConfettiOverlay(
         val canvasH = size.height
 
         animatables.forEachIndexed { i, anim ->
-            val p = animatables[i].value
+            val p = anim.value
             val particle = particles[i]
             val x = particle.startX * size.width
             val y = -size.height * 0.08f + p * (canvasH * 1.15f)

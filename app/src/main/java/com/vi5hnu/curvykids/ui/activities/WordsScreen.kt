@@ -23,6 +23,7 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -56,7 +57,7 @@ fun WordsScreen(
     var pos by remember { mutableIntStateOf(0) }
     var filled by remember { mutableIntStateOf(0) }
     var wrong by remember { mutableStateOf<Char?>(null) }
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     val word = WORD_LIST[order[pos]]
     val letters = word.word.toList()
