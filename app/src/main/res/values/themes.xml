@@ -1,5 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <style name="Theme.CurvyKids" parent="android:Theme.Material.Light.NoActionBar" />
+    <!--
+        Launch theme. The window background is painted by the OS before the first Compose frame,
+        so it must already be the app's gradient top colour; the platform default is white, which
+        showed as a bright flash on every cold start against this pastel UI.
+
+        The background is light, so status-bar icons are forced dark to stay legible. The bars
+        themselves are transparent because MainActivity calls enableEdgeToEdge() and the gradient
+        is drawn full-bleed behind them.
+    -->
+    <style name="Theme.CurvyKids" parent="android:Theme.Material.Light.NoActionBar">
+        <item name="android:windowBackground">@color/bg_top</item>
+        <item name="android:statusBarColor">@android:color/transparent</item>
+        <item name="android:navigationBarColor">@android:color/transparent</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="android:windowLightNavigationBar">true</item>
+    </style>
 </resources>

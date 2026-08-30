@@ -20,7 +20,10 @@ android {
 
     buildTypes {
         release {
-            isMinifyEnabled = false
+            // R8 shrinking + resource shrinking. The app ships a 4.7 MB hand-drawn SVG asset
+            // set, so keeping the code and unused resources trimmed matters for install size.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -73,9 +76,6 @@ dependencies {
 
     // Local persistence for game progress (resume at last character)
     implementation(libs.androidx.datastore.preferences)
-
-    // Celebration confetti on correct answers
-    implementation(libs.konfetti.compose)
 
     //lotti
     implementation(libs.lottie.compose)
