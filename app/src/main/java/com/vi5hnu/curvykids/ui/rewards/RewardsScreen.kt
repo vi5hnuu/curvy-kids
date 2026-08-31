@@ -42,6 +42,7 @@ import com.vi5hnu.curvykids.ui.theme.Sun
 import com.vi5hnu.curvykids.ui.theme.Teal
 import com.vi5hnu.curvykids.ui.theme.TintSun
 import com.vi5hnu.curvykids.ui.theme.TintTeal
+import com.vi5hnu.curvykids.ui.components.SvgArt
 
 /**
  * One entry in the sticker book.
@@ -50,6 +51,9 @@ import com.vi5hnu.curvykids.ui.theme.TintTeal
  * @param have  Whether the child has met the condition. Every sticker must have a real
  *              condition — one that is always true teaches nothing and cheapens the rest.
  */
+/** Earned art and the padlock share a size so the grid rows line up. */
+private val STICKER_ART = 52.dp
+
 private data class Sticker(
     val id: String,
     val asset: String,
@@ -248,15 +252,15 @@ private fun StickerCell(sticker: Sticker, modifier: Modifier = Modifier) {
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 if (sticker.have) {
-                    SvgBadge(
+                    SvgArt(
                         asset = sticker.asset,
-                        modifier = Modifier.size(52.dp),
+                        modifier = Modifier.size(STICKER_ART),
                         contentDescription = sticker.name,
                     )
                 } else {
                     KidIconImage(
                         icon = KidIcon.Lock,
-                        modifier = Modifier.size(44.dp),
+                        modifier = Modifier.size(STICKER_ART),
                         color = InkFaint,
                         contentDescription = "Locked",
                     )

@@ -251,15 +251,15 @@ private fun DrawScope.drawTopicGlyph(id: String, color: Color) {
         }
 
         "fruitsveggies" -> {
-            // apple: stem + curved leaf + circular body
-            drawLine(color, Offset(cx, h * 0.22f), Offset(cx, h * 0.12f), strokeWidth = sw, cap = StrokeCap.Round)
+            // Apple: solid body with a stem and leaf, so it reads at badge size.
+            drawCircle(color, s * 0.30f, Offset(cx, h * 0.60f))
+            drawLine(color, Offset(cx, h * 0.30f), Offset(cx, h * 0.16f), strokeWidth = sw, cap = StrokeCap.Round)
             val leaf = Path().apply {
-                moveTo(cx, h * 0.20f)
-                cubicTo(w * 0.62f, h * 0.06f, w * 0.80f, h * 0.24f, w * 0.64f, h * 0.34f)
+                moveTo(cx, h * 0.24f)
+                cubicTo(w * 0.64f, h * 0.08f, w * 0.84f, h * 0.26f, w * 0.66f, h * 0.36f)
                 close()
             }
             drawPath(leaf, color)
-            drawCircle(color, s * 0.30f, Offset(cx, h * 0.58f), style = stroke)
         }
 
         // ── Math group ─────────────────────────────────────────────────────────
@@ -271,14 +271,14 @@ private fun DrawScope.drawTopicGlyph(id: String, color: Color) {
         }
 
         "subtraction" -> {
-            // 3 dots on top row + bold minus line + crossed-out dot bottom-right
-            drawCircle(color, s * 0.07f, Offset(w * 0.24f, h * 0.32f))
-            drawCircle(color, s * 0.07f, Offset(w * 0.42f, h * 0.32f))
-            drawCircle(color, s * 0.07f, Offset(w * 0.60f, h * 0.32f))
-            drawLine(color, Offset(w * 0.16f, cy), Offset(w * 0.84f, cy), strokeWidth = sw * 1.5f, cap = StrokeCap.Round)
-            drawCircle(color, s * 0.10f, Offset(w * 0.68f, h * 0.72f), style = stroke)
-            drawLine(color, Offset(w * 0.60f, h * 0.64f), Offset(w * 0.76f, h * 0.80f), strokeWidth = sw * 0.9f, cap = StrokeCap.Round)
-            drawLine(color, Offset(w * 0.76f, h * 0.64f), Offset(w * 0.60f, h * 0.80f), strokeWidth = sw * 0.9f, cap = StrokeCap.Round)
+            // A row of dots with two taken away. Dots above *and* below a bar spell out the
+            // division sign, so the removed ones sit on the same line, crossed through.
+            drawLine(color, Offset(w * 0.14f, cy), Offset(w * 0.86f, cy), strokeWidth = sw * 1.6f, cap = StrokeCap.Round)
+            drawCircle(color, s * 0.09f, Offset(w * 0.26f, h * 0.26f))
+            drawCircle(color, s * 0.09f, Offset(w * 0.50f, h * 0.26f))
+            drawCircle(color, s * 0.09f, Offset(w * 0.74f, h * 0.26f))
+            drawCircle(color.copy(alpha = 0.4f), s * 0.09f, Offset(w * 0.38f, h * 0.74f))
+            drawCircle(color.copy(alpha = 0.4f), s * 0.09f, Offset(w * 0.62f, h * 0.74f))
         }
 
         "patterns" -> {

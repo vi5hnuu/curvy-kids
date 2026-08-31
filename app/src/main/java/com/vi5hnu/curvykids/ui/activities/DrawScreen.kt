@@ -63,6 +63,7 @@ import kotlinx.coroutines.launch
 import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 
 // ── Canvas marks ────────────────────────────────────────────────────────────────
 
@@ -224,7 +225,7 @@ fun DrawScreen(
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     ) {
                         if (t.svg != null) {
-                            SvgBadge(t.svg, modifier = Modifier.size(18.dp))
+                            SvgArt(t.svg, modifier = Modifier.size(18.dp))
                         } else {
                             KidIconImage(KidIcon.Pencil, Modifier.size(16.dp), InkSoft)
                         }

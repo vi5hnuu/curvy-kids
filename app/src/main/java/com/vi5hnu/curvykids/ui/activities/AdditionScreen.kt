@@ -47,6 +47,7 @@ import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
 /**
@@ -259,7 +260,7 @@ private fun DotGroup(count: Int, svg: String) {
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier.padding(4.dp),
     ) {
-        repeat(count) { SvgBadge(svg, modifier = Modifier.size(22.dp)) }
+        repeat(count) { SvgArt(svg, modifier = Modifier.size(24.dp)) }
     }
 }
 

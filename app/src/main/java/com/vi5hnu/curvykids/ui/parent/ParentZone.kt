@@ -203,7 +203,9 @@ fun ParentZone(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(50.dp),
-                containerColor = Coral,
+                // Teal, not coral: warm colour is reserved for the destructive action below,
+                // otherwise the safe button is the one that looks dangerous.
+                containerColor = Teal,
             ) {
                 Text(
                     text = "Done",
