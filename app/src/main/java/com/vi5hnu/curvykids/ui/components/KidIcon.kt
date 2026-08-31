@@ -104,22 +104,27 @@ private fun DrawScope.drawKidIcon(icon: KidIcon, color: Color) {
         }
 
         KidIcon.Flame -> {
-            // Outer flame body: a teardrop that curls to a point at the top.
+            // Flame with a curled tip and a licking side lobe, so it reads as fire rather than
+            // as a plain teardrop.
             val flame = Path().apply {
-                moveTo(cx, h * 0.08f)
-                cubicTo(w * 0.86f, h * 0.36f, w * 0.84f, h * 0.62f, cx, h * 0.94f)
-                cubicTo(w * 0.16f, h * 0.62f, w * 0.14f, h * 0.36f, cx, h * 0.08f)
+                moveTo(w * 0.54f, h * 0.06f)
+                cubicTo(w * 0.54f, h * 0.30f, w * 0.86f, h * 0.34f, w * 0.80f, h * 0.62f)
+                cubicTo(w * 0.75f, h * 0.86f, w * 0.54f, h * 0.96f, w * 0.44f, h * 0.94f)
+                cubicTo(w * 0.20f, h * 0.90f, w * 0.12f, h * 0.70f, w * 0.20f, h * 0.52f)
+                cubicTo(w * 0.26f, h * 0.62f, w * 0.34f, h * 0.62f, w * 0.36f, h * 0.52f)
+                cubicTo(w * 0.40f, h * 0.32f, w * 0.34f, h * 0.24f, w * 0.54f, h * 0.06f)
                 close()
             }
             drawPath(flame, color)
-            // Inner core, punched out at 45% alpha so the flame reads on a flat fill.
+            // Inner core, lighter, offset low like the hot centre of a real flame.
             val core = Path().apply {
-                moveTo(cx, h * 0.44f)
-                cubicTo(w * 0.68f, h * 0.6f, w * 0.66f, h * 0.74f, cx, h * 0.86f)
-                cubicTo(w * 0.34f, h * 0.74f, w * 0.32f, h * 0.6f, cx, h * 0.44f)
+                moveTo(w * 0.56f, h * 0.46f)
+                cubicTo(w * 0.68f, h * 0.62f, w * 0.66f, h * 0.78f, w * 0.50f, h * 0.86f)
+                cubicTo(w * 0.36f, h * 0.80f, w * 0.34f, h * 0.68f, w * 0.42f, h * 0.60f)
+                cubicTo(w * 0.46f, h * 0.66f, w * 0.52f, h * 0.62f, w * 0.56f, h * 0.46f)
                 close()
             }
-            drawPath(core, color.copy(alpha = 0.45f))
+            drawPath(core, color.copy(alpha = 0.42f))
         }
 
         KidIcon.Speaker -> {

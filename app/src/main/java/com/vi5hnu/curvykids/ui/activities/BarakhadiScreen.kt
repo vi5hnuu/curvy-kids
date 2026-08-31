@@ -46,6 +46,9 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.LetterBadge
+import com.vi5hnu.curvykids.data.content.barakhadiSvg
+import com.vi5hnu.curvykids.data.content.barakhadiPalette
+import com.vi5hnu.curvykids.ui.components.SvgBadge
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -74,6 +77,7 @@ fun BarakhadiScreen(
     var reciteJob by remember { mutableStateOf<Job?>(null) }
     val scope = rememberCoroutineScope()
     val consonant = HINDI_CONSONANTS[selected]
+    val (badgeColor, badgeTint) = barakhadiPalette(selected)
 
     // Speak Devanagari in the Hindi voice, or a romanized read-aloud if no Hindi voice is installed.
     fun speakHi(devanagari: String, romanized: String) {
@@ -223,11 +227,21 @@ fun BarakhadiScreen(
                                 .weight(1f)
                                 .aspectRatio(1f),
                         ) {
-                            LetterBadge(
-                                text = syllable,
-                                color = topic.color,
-                                tint = topic.tint,
+                            SvgBadge(
+                                asset = barakhadiSvg(consonant.romanized, matra),
                                 contentDescription = syllable,
+                                // The barakhadi assets are a frame plus one Devanagari glyph as
+                                // SVG text. If the renderer cannot resolve a font for it the card
+                                // comes out empty, so fall back to drawing the syllable natively
+                                // in the same colours the asset uses.
+                                fallback = {
+                                    LetterBadge(
+                                        text = syllable,
+                                        color = badgeColor,
+                                        tint = badgeTint,
+                                        modifier = Modifier.fillMaxSize(),
+                                    )
+                                },
                                 modifier = Modifier
                                     .fillMaxSize()
                                     .scale(if (isSpeaking) 1.10f else 1f)

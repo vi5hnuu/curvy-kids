@@ -72,6 +72,8 @@ fun HomeScreen(
 
     val lastTopic = appState.lastTopic
     val today = LocalDate.now().toEpochDay()
+    // Keyed on the day only. The Continue topic is filtered out of an order that does not
+    // itself depend on it, so opening an activity never reshuffles the rest of the cards.
     val picks = remember(today, appState.lastTopicId) {
         dailyPicks(lastTopicId = appState.lastTopicId, seed = today)
     }

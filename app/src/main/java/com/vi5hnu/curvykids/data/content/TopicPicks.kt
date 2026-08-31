@@ -21,18 +21,18 @@ fun dailyPicks(
     seed: Long,
     count: Int = 6,
 ): List<Topic> {
-    val candidates = all.filter { it.id != lastTopicId }
-    if (candidates.size <= count) return candidates
+    if (all.size <= count) return all
+
+    // The order depends only on the day. Excluding the Continue topic is done by filtering the
+    // already-shuffled order, never by reshuffling — otherwise every visit to Home dealt a new
+    // set of cards, and a child who was reaching for "the lion one" found it gone.
+    val random = Random(seed)
 
     // A tracing topic is always offered: writing is the app's core skill, and a purely random
     // draw regularly produced a Home screen with no writing practice on it at all.
-    val writing = candidates.filter { it.kind == TopicKind.TRACE }
-    val rest = candidates.filter { it.kind != TopicKind.TRACE }
-    val random = Random(seed)
+    val writing = all.filter { it.kind == TopicKind.TRACE }.shuffled(random)
+    val rest = all.filter { it.kind != TopicKind.TRACE }.shuffled(random)
+    val ordered = listOfNotNull(writing.firstOrNull()) + rest + writing.drop(1)
 
-    val picks = buildList {
-        writing.shuffled(random).firstOrNull()?.let { add(it) }
-        addAll(rest.shuffled(random))
-    }
-    return picks.take(count)
+    return ordered.filter { it.id != lastTopicId }.take(count)
 }

@@ -35,6 +35,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.components.LottieViewer
@@ -51,6 +52,7 @@ import com.vi5hnu.curvykids.ui.game.components.DrawingCanvas
 import com.vi5hnu.curvykids.ui.game.components.rememberDrawingController
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
+import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkFaint
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.data.content.CRAYON_COLORS
@@ -425,23 +427,61 @@ fun TraceScreen(
             }
         }
 
-        // ML Kit model loading overlay
+        // Handwriting-model overlay. The model is downloaded once per script, so this is what a
+        // child sees on a first run, and what they are left with if the download cannot happen.
         if (recognizerState?.success != true) {
+            val failed = recognizerState?.error != null
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    // Swallow taps aimed at the canvas underneath, but never trap the child:
+                    // the way out is always on screen (below) and the system back still works.
                     .pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent() } }
-                    .background(Color.White.copy(alpha = 0.92f)),
+                    .background(Color.White.copy(alpha = 0.94f)),
                 contentAlignment = Alignment.Center,
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    LottieViewer(assetName = if (recognizerState?.error != null) "something-wrong.lottie" else "baby-loading.lottie")
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(horizontal = 28.dp),
+                ) {
+                    LottieViewer(assetName = if (failed) "something-wrong.lottie" else "baby-loading.lottie")
                     Text(
-                        text = if (recognizerState?.error != null) "Oops! Please check your internet." else "Getting ready…",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = InkSoft,
+                        text = if (failed) "We need the internet to set up writing." else "Getting ready…",
+                        fontFamily = FontDisplay,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 20.sp,
+                        color = Ink,
+                        textAlign = TextAlign.Center,
                     )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = if (failed) {
+                            "Ask a grown-up to connect, then come back. Everything else still works!"
+                        } else {
+                            "This only happens once."
+                        },
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = InkSoft,
+                        textAlign = TextAlign.Center,
+                    )
+                    if (failed) {
+                        Spacer(Modifier.height(20.dp))
+                        CandyButton(
+                            onClick = onBack,
+                            modifier = Modifier.height(56.dp),
+                            containerColor = topic.color,
+                        ) {
+                            Text(
+                                text = "Pick something else",
+                                fontFamily = FontDisplay,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 18.sp,
+                                color = Color.White,
+                                modifier = Modifier.padding(horizontal = 24.dp),
+                            )
+                        }
+                    }
                 }
             }
         }

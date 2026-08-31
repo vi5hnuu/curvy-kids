@@ -31,28 +31,37 @@ private val PLACEHOLDER = Color(0xFFE4EDF4)
  * frame, artwork and name label — so they're rendered exactly as authored (`ContentScale.Fit`)
  * and must be placed on their own, never inside another card.
  *
- * There is deliberately no emoji fallback. Emoji render differently on every OEM and Android
+ * There is deliberately no *emoji* fallback: emoji render differently on every OEM and Android
  * version, ignore the colour they are given, and scale with the user's font setting rather than
- * the layout — mixing them with the hand-drawn set made the app look like two different apps.
- * A missing or unloadable asset shows a quiet placeholder instead, which reads as a bug to fix
- * rather than silently shipping an inconsistent picture.
+ * the layout, so mixing them with the hand-drawn set made the app look like two different apps.
+ *
+ * A caller may still supply a [fallback] composable for the case where the asset cannot be
+ * drawn. That matters for badges whose content is a character rather than an illustration —
+ * the SVG renderer has to resolve a font for those, and for Devanagari it may not manage it.
+ * Without a fallback the child is shown an empty card. Default is a quiet placeholder.
  *
  * @param asset Asset-relative path, e.g. `"kids/animals/animal-cat.svg"` (no leading slash).
  *              Build these with [com.vi5hnu.curvykids.data.content.KidAssets], not by hand.
  * @param contentDescription Accessibility label.
+ * @param fallback Drawn instead when [asset] is null or fails to load.
  */
 @Composable
 fun SvgImage(
     asset: String?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
+    fallback: (@Composable () -> Unit)? = null,
 ) {
     var failed by remember(asset) { mutableStateOf(false) }
 
     if (asset == null || failed) {
         Box(modifier = modifier) {
-            Canvas(modifier = Modifier.matchParentSize()) {
-                drawRoundRect(PLACEHOLDER, cornerRadius = CornerRadius(size.minDimension * 0.18f))
+            if (fallback != null) {
+                fallback()
+            } else {
+                Canvas(modifier = Modifier.matchParentSize()) {
+                    drawRoundRect(PLACEHOLDER, cornerRadius = CornerRadius(size.minDimension * 0.18f))
+                }
             }
         }
         return
@@ -81,8 +90,14 @@ fun SvgBadge(
     asset: String?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
+    fallback: (@Composable () -> Unit)? = null,
 ) {
-    SvgImage(asset = asset, modifier = modifier, contentDescription = contentDescription)
+    SvgImage(
+        asset = asset,
+        modifier = modifier,
+        contentDescription = contentDescription,
+        fallback = fallback,
+    )
 }
 
 /**

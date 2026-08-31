@@ -1,6 +1,22 @@
 package com.vi5hnu.curvykids.data.content
 
 import androidx.compose.ui.graphics.Color
+import com.vi5hnu.curvykids.ui.theme.Teal
+import com.vi5hnu.curvykids.ui.theme.Coral
+import com.vi5hnu.curvykids.ui.theme.Grape
+import com.vi5hnu.curvykids.ui.theme.Blue
+import com.vi5hnu.curvykids.ui.theme.Pink
+import com.vi5hnu.curvykids.ui.theme.Green
+import com.vi5hnu.curvykids.ui.theme.Sun
+import com.vi5hnu.curvykids.ui.theme.Aqua
+import com.vi5hnu.curvykids.ui.theme.TintTeal
+import com.vi5hnu.curvykids.ui.theme.TintCoral
+import com.vi5hnu.curvykids.ui.theme.TintGrape
+import com.vi5hnu.curvykids.ui.theme.TintBlue
+import com.vi5hnu.curvykids.ui.theme.TintPink
+import com.vi5hnu.curvykids.ui.theme.TintGreen
+import com.vi5hnu.curvykids.ui.theme.TintSun
+import com.vi5hnu.curvykids.ui.theme.TintAqua
 
 // ── Shapes ────────────────────────────────────────────────────────────────────
 
@@ -531,6 +547,31 @@ val BARAKHADI_MATRAS = listOf(
 )
 
 /** Asset path of the barakhadi badge for a consonant (by its romanized name) and a [Matra]. */
+
+/** Asset path of the illustrated badge for a consonant + matra combination. */
+fun barakhadiSvg(consonantRomanized: String, matra: Matra): String =
+    "kids/hindi-barakhadi/barakhadi-${consonantRomanized.dropLast(1)}${matra.key}.svg"
+
+/**
+ * Accent and tint for a consonant's twelve barakhadi forms, as (color, tint).
+ *
+ * The badge assets colour each consonant's set differently, cycling through the palette every
+ * eight consonants, so the grid reads as a sequence rather than a wall of one colour. This
+ * mirrors that rotation so anything drawn alongside or instead of the assets matches them.
+ */
+fun barakhadiPalette(consonantIndex: Int): Pair<Color, Color> =
+    BARAKHADI_PALETTE[consonantIndex.mod(BARAKHADI_PALETTE.size)]
+
+private val BARAKHADI_PALETTE: List<Pair<Color, Color>> = listOf(
+    Teal to TintTeal,
+    Coral to TintCoral,
+    Grape to TintGrape,
+    Blue to TintBlue,
+    Pink to TintPink,
+    Green to TintGreen,
+    Sun to TintSun,
+    Aqua to TintAqua,
+)
 
 /** The Devanagari syllable for a consonant char combined with a [Matra] (e.g. क + ी → की). */
 fun barakhadiSyllable(consonantChar: String, matra: Matra): String = consonantChar + matra.sign

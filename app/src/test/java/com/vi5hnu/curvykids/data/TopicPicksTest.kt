@@ -59,4 +59,13 @@ class TopicPicksTest {
         val two = TOPICS.take(2)
         assertEquals(2, dailyPicks(all = two, lastTopicId = null, seed = day, count = 6).size)
     }
+
+    @Test
+    fun `opening an activity does not reshuffle the other picks`() {
+        // A child reaching for a card must still find it after coming back from another one.
+        val before = dailyPicks(lastTopicId = null, seed = day)
+        val after = dailyPicks(lastTopicId = before[2].id, seed = day)
+        val expected = before.filterNot { it.id == before[2].id }.map { it.id }
+        assertEquals(expected, after.map { it.id }.take(expected.size))
+    }
 }

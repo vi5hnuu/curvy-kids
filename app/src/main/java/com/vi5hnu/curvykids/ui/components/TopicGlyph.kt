@@ -424,11 +424,25 @@ private fun DrawScope.drawTopicGlyph(id: String, color: Color) {
         // ── Things ─────────────────────────────────────────────────────────────
 
         "food" -> {
-            // pizza slice with toppings
+            // Pizza slice: crust along the bottom edge plus topping dots, so it is not just a
+            // bare triangle.
             val slice = Path().apply {
-                moveTo(cx, h * 0.14f); lineTo(w * 0.82f, h * 0.82f); lineTo(w * 0.18f, h * 0.82f); close()
+                moveTo(cx, h * 0.12f)
+                lineTo(w * 0.84f, h * 0.74f)
+                lineTo(w * 0.16f, h * 0.74f)
+                close()
             }
             drawPath(slice, color)
+            drawRoundRect(
+                color,
+                topLeft = Offset(w * 0.12f, h * 0.74f),
+                size = Size(w * 0.76f, h * 0.14f),
+                cornerRadius = CornerRadius(s * 0.07f),
+            )
+            val holes = color.copy(alpha = 0.35f)
+            drawCircle(holes, s * 0.06f, Offset(w * 0.44f, h * 0.42f))
+            drawCircle(holes, s * 0.05f, Offset(w * 0.60f, h * 0.56f))
+            drawCircle(holes, s * 0.045f, Offset(w * 0.38f, h * 0.62f))
         }
 
         "clothes" -> {
