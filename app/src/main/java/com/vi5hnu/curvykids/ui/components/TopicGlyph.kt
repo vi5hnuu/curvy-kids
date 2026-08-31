@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.geometry.Size
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
@@ -20,9 +21,16 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import kotlin.math.PI
+import kotlin.math.cos
+import kotlin.math.sin
 
 /** Writing topics legitimately want their letters shown — others get a vector illustration. */
-private val LETTER_TOPICS = setOf("upper", "lower", "numbers")
+private val LETTER_TOPICS = setOf(
+    "upper", "lower", "numbers",
+    // The Hindi tracks are writing topics too — their Devanagari glyph is the thing being taught.
+    "hindi_vowels", "hindi_consonants", "barakhadi",
+)
 
 /** Topic ids that [drawTopicGlyph] has a hand-drawn vector for; others fall back to their glyph. */
 private val GLYPH_TOPICS = setOf(
@@ -30,12 +38,14 @@ private val GLYPH_TOPICS = setOf(
     "memory", "bigsmall", "oddone", "catch", "months", "seasons", "emotions",
     "vehicles", "fruitsveggies", "addition", "subtraction", "patterns",
     "phonics", "opposites", "rhyming",
+    "time", "fractions", "stories", "birds", "sea", "insects", "nature", "weather",
+    "food", "clothes", "toys", "instruments", "home", "jobs", "places", "sports",
 )
 
 /**
  * The icon shown inside a topic card's badge. Writing topics ("Aa", "bd", "12") keep their
  * readable letters; every other topic renders a friendly white vector illustration instead of
- * an emoji, so the cards feel hand-crafted and consistent.
+ * an svg, so the cards feel hand-crafted and consistent.
  *
  * @param topicId Stable topic id (drives which illustration to draw).
  * @param fallback The topic's glyph text, used for the letter/number writing topics.
@@ -60,10 +70,10 @@ fun TopicGlyph(
             )
             // Topics with a bespoke vector illustration.
             topicId in GLYPH_TOPICS -> Canvas(modifier = Modifier.size(30.dp)) { drawTopicGlyph(topicId, color) }
-            // Everything else (picture topics, time, fractions, Hindi, …) shows its glyph —
-            // an emoji or a Devanagari letter — so the badge is never blank.
+            // Unreachable in practice: every topic id is covered above. Kept as a visible
+            // marker so a newly added topic shows something rather than an empty badge.
             else -> Text(
-                text = fallback,
+                text = fallback.ifEmpty { "?" },
                 fontFamily = FontDisplay,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 26.sp,
@@ -308,6 +318,188 @@ private fun DrawScope.drawTopicGlyph(id: String, color: Color) {
             drawLine(color, Offset(w * 0.74f, h * 0.64f), Offset(w * 0.74f, h * 0.18f), strokeWidth = sw, cap = StrokeCap.Round)
             // connecting beam
             drawLine(color, Offset(w * 0.40f, h * 0.24f), Offset(w * 0.74f, h * 0.18f), strokeWidth = sw * 1.4f, cap = StrokeCap.Round)
+        }
+        // ── Time & number sense ────────────────────────────────────────────────
+
+        "time" -> {
+            // clock face with hands at 3 o'clock
+            drawCircle(color, s * 0.38f, Offset(cx, cy), style = stroke)
+            drawLine(color, Offset(cx, cy), Offset(cx, h * 0.28f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(cx, cy), Offset(w * 0.74f, cy), strokeWidth = sw, cap = StrokeCap.Round)
+        }
+
+        "fractions" -> {
+            // a circle split in half, one half filled
+            val half = Path().apply {
+                moveTo(cx, cy)
+                arcTo(Rect(Offset(w * 0.14f, h * 0.14f), Size(s * 0.72f, s * 0.72f)), -90f, 180f, false)
+                close()
+            }
+            drawPath(half, color)
+            drawCircle(color, s * 0.36f, Offset(cx, cy), style = stroke)
+        }
+
+        "stories" -> {
+            // open book: two pages meeting at a spine
+            val left = Path().apply {
+                moveTo(w * 0.5f, h * 0.3f)
+                cubicTo(w * 0.36f, h * 0.2f, w * 0.24f, h * 0.22f, w * 0.14f, h * 0.26f)
+                lineTo(w * 0.14f, h * 0.74f)
+                cubicTo(w * 0.26f, h * 0.7f, w * 0.38f, h * 0.7f, w * 0.5f, h * 0.78f)
+                close()
+            }
+            val right = Path().apply {
+                moveTo(w * 0.5f, h * 0.3f)
+                cubicTo(w * 0.64f, h * 0.2f, w * 0.76f, h * 0.22f, w * 0.86f, h * 0.26f)
+                lineTo(w * 0.86f, h * 0.74f)
+                cubicTo(w * 0.74f, h * 0.7f, w * 0.62f, h * 0.7f, w * 0.5f, h * 0.78f)
+                close()
+            }
+            drawPath(left, color, style = stroke)
+            drawPath(right, color, style = stroke)
+        }
+
+        // ── Nature & animals ───────────────────────────────────────────────────
+
+        "birds" -> {
+            // side-on bird: round body, wing, beak
+            drawCircle(color, s * 0.26f, Offset(w * 0.46f, h * 0.56f))
+            drawCircle(color, s * 0.15f, Offset(w * 0.68f, h * 0.34f))
+            val beak = Path().apply {
+                moveTo(w * 0.8f, h * 0.34f); lineTo(w * 0.94f, h * 0.4f); lineTo(w * 0.8f, h * 0.44f); close()
+            }
+            drawPath(beak, color)
+            drawArc(color, 160f, 130f, false,
+                topLeft = Offset(w * 0.26f, h * 0.36f), size = Size(s * 0.4f, s * 0.4f), style = stroke)
+        }
+
+        "sea" -> {
+            // fish: teardrop body + tail fin
+            val body = Path().apply {
+                moveTo(w * 0.74f, cy)
+                cubicTo(w * 0.62f, h * 0.28f, w * 0.3f, h * 0.28f, w * 0.2f, cy)
+                cubicTo(w * 0.3f, h * 0.72f, w * 0.62f, h * 0.72f, w * 0.74f, cy)
+                close()
+            }
+            drawPath(body, color)
+            val tail = Path().apply {
+                moveTo(w * 0.74f, cy); lineTo(w * 0.92f, h * 0.34f); lineTo(w * 0.92f, h * 0.66f); close()
+            }
+            drawPath(tail, color)
+        }
+
+        "insects" -> {
+            // ladybug: body, centre line, spots, antennae
+            drawCircle(color, s * 0.32f, Offset(cx, h * 0.58f))
+            drawLine(color, Offset(cx, h * 0.26f), Offset(cx, h * 0.9f), strokeWidth = sw * 0.7f)
+            drawLine(color, Offset(w * 0.4f, h * 0.2f), Offset(w * 0.34f, h * 0.08f), strokeWidth = sw * 0.7f, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.6f, h * 0.2f), Offset(w * 0.66f, h * 0.08f), strokeWidth = sw * 0.7f, cap = StrokeCap.Round)
+        }
+
+        "nature" -> {
+            // leafy tree: canopy circles + trunk
+            drawCircle(color, s * 0.2f, Offset(w * 0.36f, h * 0.4f))
+            drawCircle(color, s * 0.22f, Offset(w * 0.62f, h * 0.36f))
+            drawCircle(color, s * 0.2f, Offset(cx, h * 0.56f))
+            drawLine(color, Offset(cx, h * 0.6f), Offset(cx, h * 0.9f), strokeWidth = sw * 1.2f, cap = StrokeCap.Round)
+        }
+
+        "weather" -> {
+            // sun peeking from behind a cloud
+            drawCircle(color, s * 0.17f, Offset(w * 0.66f, h * 0.32f))
+            for (i in 0 until 8) {
+                val a = (i * 45f) * (PI / 180f).toFloat()
+                val ox = w * 0.66f; val oy = h * 0.32f
+                drawLine(color,
+                    Offset(ox + cos(a) * s * 0.23f, oy + sin(a) * s * 0.23f),
+                    Offset(ox + cos(a) * s * 0.3f, oy + sin(a) * s * 0.3f),
+                    strokeWidth = sw * 0.7f, cap = StrokeCap.Round)
+            }
+            drawCircle(color, s * 0.16f, Offset(w * 0.36f, h * 0.66f))
+            drawCircle(color, s * 0.2f, Offset(w * 0.56f, h * 0.68f))
+            drawRoundRect(color, topLeft = Offset(w * 0.26f, h * 0.66f), size = Size(s * 0.46f, s * 0.22f),
+                cornerRadius = CornerRadius(s * 0.11f))
+        }
+
+        // ── Things ─────────────────────────────────────────────────────────────
+
+        "food" -> {
+            // pizza slice with toppings
+            val slice = Path().apply {
+                moveTo(cx, h * 0.14f); lineTo(w * 0.82f, h * 0.82f); lineTo(w * 0.18f, h * 0.82f); close()
+            }
+            drawPath(slice, color)
+        }
+
+        "clothes" -> {
+            // t-shirt outline
+            val shirt = Path().apply {
+                moveTo(w * 0.34f, h * 0.2f)
+                lineTo(w * 0.16f, h * 0.34f); lineTo(w * 0.26f, h * 0.46f); lineTo(w * 0.3f, h * 0.42f)
+                lineTo(w * 0.3f, h * 0.84f); lineTo(w * 0.7f, h * 0.84f); lineTo(w * 0.7f, h * 0.42f)
+                lineTo(w * 0.74f, h * 0.46f); lineTo(w * 0.84f, h * 0.34f); lineTo(w * 0.66f, h * 0.2f)
+                cubicTo(w * 0.62f, h * 0.3f, w * 0.38f, h * 0.3f, w * 0.34f, h * 0.2f)
+                close()
+            }
+            drawPath(shirt, color)
+        }
+
+        "toys" -> {
+            // teddy bear: ears + head + muzzle
+            drawCircle(color, s * 0.13f, Offset(w * 0.28f, h * 0.28f))
+            drawCircle(color, s * 0.13f, Offset(w * 0.72f, h * 0.28f))
+            drawCircle(color, s * 0.32f, Offset(cx, h * 0.56f))
+            drawCircle(color.copy(alpha = 0.45f), s * 0.13f, Offset(cx, h * 0.66f))
+        }
+
+        "instruments" -> {
+            // guitar: body, waist, neck, strings
+            drawCircle(color, s * 0.22f, Offset(w * 0.4f, h * 0.68f))
+            drawCircle(color, s * 0.16f, Offset(w * 0.56f, h * 0.48f))
+            drawLine(color, Offset(w * 0.62f, h * 0.42f), Offset(w * 0.88f, h * 0.16f),
+                strokeWidth = sw * 1.3f, cap = StrokeCap.Round)
+        }
+
+        "home" -> {
+            // sofa: back, seat, arms
+            drawRoundRect(color, topLeft = Offset(w * 0.18f, h * 0.34f), size = Size(s * 0.64f, s * 0.24f),
+                cornerRadius = CornerRadius(s * 0.1f))
+            drawRoundRect(color, topLeft = Offset(w * 0.14f, h * 0.52f), size = Size(s * 0.72f, s * 0.22f),
+                cornerRadius = CornerRadius(s * 0.08f))
+            drawLine(color, Offset(w * 0.24f, h * 0.74f), Offset(w * 0.24f, h * 0.86f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.76f, h * 0.74f), Offset(w * 0.76f, h * 0.86f), strokeWidth = sw, cap = StrokeCap.Round)
+        }
+
+        // ── People & places ────────────────────────────────────────────────────
+
+        "jobs" -> {
+            // person in a hard hat
+            drawArc(color, 180f, 180f, true,
+                topLeft = Offset(w * 0.28f, h * 0.16f), size = Size(s * 0.44f, s * 0.34f))
+            drawLine(color, Offset(w * 0.22f, h * 0.34f), Offset(w * 0.78f, h * 0.34f), strokeWidth = sw, cap = StrokeCap.Round)
+            drawCircle(color, s * 0.13f, Offset(cx, h * 0.5f))
+            drawArc(color, 180f, 180f, true,
+                topLeft = Offset(w * 0.26f, h * 0.62f), size = Size(s * 0.48f, s * 0.4f))
+        }
+
+        "places" -> {
+            // house: roof + body + door
+            val roof = Path().apply {
+                moveTo(cx, h * 0.16f); lineTo(w * 0.88f, h * 0.48f); lineTo(w * 0.12f, h * 0.48f); close()
+            }
+            drawPath(roof, color)
+            drawRect(color, topLeft = Offset(w * 0.24f, h * 0.48f), size = Size(s * 0.52f, s * 0.36f))
+            drawRoundRect(color.copy(alpha = 0.45f), topLeft = Offset(w * 0.43f, h * 0.62f),
+                size = Size(s * 0.14f, s * 0.22f), cornerRadius = CornerRadius(s * 0.03f))
+        }
+
+        "sports" -> {
+            // football with pentagon panels suggested by lines
+            drawCircle(color, s * 0.36f, Offset(cx, cy), style = stroke)
+            drawCircle(color, s * 0.11f, Offset(cx, cy))
+            drawLine(color, Offset(cx, h * 0.36f), Offset(cx, h * 0.16f), strokeWidth = sw * 0.8f, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.38f, h * 0.58f), Offset(w * 0.2f, h * 0.68f), strokeWidth = sw * 0.8f, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.62f, h * 0.58f), Offset(w * 0.8f, h * 0.68f), strokeWidth = sw * 0.8f, cap = StrokeCap.Round)
         }
     }
 }

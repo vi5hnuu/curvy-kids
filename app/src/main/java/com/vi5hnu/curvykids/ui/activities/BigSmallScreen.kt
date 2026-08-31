@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
-import com.vi5hnu.curvykids.data.content.GAME_EMOJIS
+import com.vi5hnu.curvykids.data.content.GAME_PICTURES
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
@@ -41,21 +41,26 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgBadge
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
 private enum class BigSmallMode { SIZE, NUMBER }
 
 /**
  * All state that changes per round, computed once via remember(round).
- * SIZE mode: two emoji at different display sizes.
+ * SIZE mode: two svg at different display sizes.
  * NUMBER mode: two different numbers; ask which is bigger/smaller.
  */
 private data class BigSmallSpec(
     val mode: BigSmallMode,
     val askBig: Boolean,
-    /** True if the "bigger" side (emoji OR larger number) is on the left. */
+    /** True if the "bigger" side (svg OR larger number) is on the left. */
     val bigOnLeft: Boolean,
-    val emoji: String = "",
+    val svg: String = "",
     val numLeft: Int = 0,
     val numRight: Int = 0,
 ) {
@@ -76,7 +81,7 @@ private fun buildSpec(round: Int): BigSmallSpec {
             mode = BigSmallMode.SIZE,
             askBig = askBig,
             bigOnLeft = listOf(true, false).random(),
-            emoji = GAME_EMOJIS.random(),
+            svg = GAME_PICTURES.random(),
         )
     } else {
         val nums = (1..9).toList().shuffled().take(2) // guaranteed distinct
@@ -91,7 +96,7 @@ private fun buildSpec(round: Int): BigSmallSpec {
     }
 }
 
-/** Big or Small — compare sizes (emoji) or compare numbers, tap the correct side. */
+/** Big or Small — compare sizes (svg) or compare numbers, tap the correct side. */
 @Composable
 fun BigSmallScreen(
     topic: Topic,
@@ -101,6 +106,9 @@ fun BigSmallScreen(
 ) {
     var score by rememberSaveable { mutableIntStateOf(0) }
     var round by rememberSaveable { mutableIntStateOf(0) }
+    // Wrong answers on the current question, so a child who cannot get it is
+    // moved on instead of being left tapping forever.
+    var misses by remember { mutableIntStateOf(0) }
     var flash by remember(round) { mutableStateOf<Pair<Boolean, Boolean>?>(null) }
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
@@ -119,16 +127,24 @@ fun BigSmallScreen(
             feedback?.correct()
             feedback?.speaker?.speak("Yes!")
         } else {
+            misses += 1
             feedback?.wrong()
-            feedback?.speaker?.speak("Try again")
+            feedback?.speaker?.speak(
+                if (misses >= MISSES_BEFORE_MOVING_ON) "That one is tricky. Let's try another."
+                else "Try again"
+            )
         }
     }
+
+    LaunchedEffect(round) { misses = 0 }
 
     LaunchedEffect(flash) {
         if (flash != null) {
             delay(700)
             if (flash?.second == true) {
                 if (score > 0 && score % 5 == 0) showCelebrate = true else round++
+            } else if (misses >= MISSES_BEFORE_MOVING_ON) {
+                round++
             }
             flash = null
         }
@@ -151,12 +167,7 @@ fun BigSmallScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text(
-                                "⭐ $score",
-                                fontFamily = FontDisplay,
-                                fontSize = 16.sp,
-                                color = Color(0xFFF2A93B),
-                            )
+                            StarCount(score)
                         }
                     }
                 },
@@ -178,9 +189,9 @@ fun BigSmallScreen(
                     Spacer(Modifier.height(10.dp))
                     Chip(
                         onClick = { feedback?.speaker?.speak(spec.spokenPrompt()) },
-                        modifier = Modifier.size(46.dp),
+                        modifier = Modifier.size(48.dp),
                     ) {
-                        Text("🔊", fontSize = 20.sp)
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }
@@ -198,7 +209,7 @@ fun BigSmallScreen(
                     modifier = Modifier.weight(1f),
                 ) {
                     if (spec.mode == BigSmallMode.SIZE) {
-                        Text(spec.emoji, fontSize = if (spec.bigOnLeft) 110.sp else 52.sp)
+                        SvgArt(spec.svg, modifier = Modifier.size(if (spec.bigOnLeft) 110.dp else 52.dp))
                     } else {
                         NumberDisplay(spec.numLeft, topic.color)
                     }
@@ -210,7 +221,7 @@ fun BigSmallScreen(
                     modifier = Modifier.weight(1f),
                 ) {
                     if (spec.mode == BigSmallMode.SIZE) {
-                        Text(spec.emoji, fontSize = if (!spec.bigOnLeft) 110.sp else 52.sp)
+                        SvgArt(spec.svg, modifier = Modifier.size(if (!spec.bigOnLeft) 110.dp else 52.dp))
                     } else {
                         NumberDisplay(spec.numRight, topic.color)
                     }
@@ -270,3 +281,6 @@ private fun ChoiceCard(
         }
     }
 }
+
+/** Wrong answers tolerated before the question is changed for the child. */
+private const val MISSES_BEFORE_MOVING_ON = 3

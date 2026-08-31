@@ -42,6 +42,9 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
 import kotlinx.coroutines.delay
 
 private data class PhonicSpec(
@@ -66,6 +69,9 @@ fun PhonicScreen(
 ) {
     var score by rememberSaveable { mutableIntStateOf(0) }
     var round by rememberSaveable { mutableIntStateOf(0) }
+    // Wrong answers on the current question, so a child who cannot get it is
+    // moved on instead of being left tapping forever.
+    var misses by remember { mutableIntStateOf(0) }
     var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
     // Track letters seen this session so we rotate through the alphabet
@@ -82,6 +88,7 @@ fun PhonicScreen(
     fun speakPrompt() = feedback?.speaker?.speak("${target.letter}. What sound does ${target.letter} make?")
 
     LaunchedEffect(round) { speakPrompt() }
+    LaunchedEffect(round) { misses = 0 }
 
     fun choose(phonic: LetterPhonic) {
         if (flash != null) return
@@ -93,8 +100,12 @@ fun PhonicScreen(
             feedback?.correct()
             feedback?.speaker?.speak("${target.letter} says ${target.sound}! Like ${target.example}!")
         } else {
+            misses += 1
             feedback?.wrong()
-            feedback?.speaker?.speak("Try again")
+            feedback?.speaker?.speak(
+                if (misses >= MISSES_BEFORE_MOVING_ON) "That one is tricky. Let's try another."
+                else "Try again"
+            )
         }
     }
 
@@ -103,6 +114,8 @@ fun PhonicScreen(
             delay(900)
             if (flash?.second == true) {
                 if (score > 0 && score % 6 == 0) showCelebrate = true else round++
+            } else if (misses >= MISSES_BEFORE_MOVING_ON) {
+                round++
             }
             flash = null
         }
@@ -125,7 +138,7 @@ fun PhonicScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                            StarCount(score)
                         }
                     }
                 },
@@ -154,7 +167,7 @@ fun PhonicScreen(
                         color = topic.color,
                     )
                     Text(
-                        target.emoji,
+                        target.svg,
                         fontSize = 36.sp,
                     )
                     Text(
@@ -165,8 +178,8 @@ fun PhonicScreen(
                         color = topic.color.copy(alpha = 0.6f),
                     )
                     Spacer(Modifier.height(12.dp))
-                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(46.dp)) {
-                        Text("🔊", fontSize = 20.sp)
+                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(48.dp)) {
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }
@@ -223,3 +236,6 @@ fun PhonicScreen(
         }
     }
 }
+
+/** Wrong answers tolerated before the question is changed for the child. */
+private const val MISSES_BEFORE_MOVING_ON = 3

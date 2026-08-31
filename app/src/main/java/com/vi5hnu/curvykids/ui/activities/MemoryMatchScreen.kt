@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -31,13 +32,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
-import com.vi5hnu.curvykids.data.content.GAME_EMOJIS
+import com.vi5hnu.curvykids.data.content.GAME_PICTURES
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgBadge
+import com.vi5hnu.curvykids.ui.components.SvgArt
 
 private const val COLS = 4
 
@@ -52,9 +55,9 @@ private fun pairsForRound(round: Int) = when {
 }
 
 private fun levelLabel(round: Int) = when {
-    round < 3 -> "★ Easy"
-    round < 6 -> "★★ Medium"
-    else -> "★★★ Hard"
+    round < 3 -> "Easy"
+    round < 6 -> "Medium"
+    else -> "Hard"
 }
 
 /** Memory Match — flip cards two at a time to find matching pairs. */
@@ -69,7 +72,7 @@ fun MemoryMatchScreen(
     val pairs = pairsForRound(round)
 
     val board = remember(round) {
-        val picks = GAME_EMOJIS.shuffled().take(pairsForRound(round))
+        val picks = GAME_PICTURES.shuffled().take(pairsForRound(round))
         (picks + picks).shuffled()
     }
     val matched = remember(round) { mutableStateListOf<Int>() }
@@ -152,7 +155,7 @@ fun MemoryMatchScreen(
                         .fillMaxWidth()
                         .padding(bottom = 10.dp),
                 ) {
-                    rowCards.forEachIndexed { colIdx, emoji ->
+                    rowCards.forEachIndexed { colIdx, svg ->
                         val i = rowIdx * COLS + colIdx
                         val isUp = matched.contains(i) || i == first || i == second
                         val isMatched = matched.contains(i)
@@ -171,7 +174,7 @@ fun MemoryMatchScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 if (isUp) {
-                                    Text(emoji, fontSize = if (pairs <= 4) 36.sp else 28.sp)
+                                    SvgArt(svg, modifier = Modifier.size(if (pairs <= 4) 36.dp else 28.dp))
                                 } else {
                                     Text(
                                         "?",

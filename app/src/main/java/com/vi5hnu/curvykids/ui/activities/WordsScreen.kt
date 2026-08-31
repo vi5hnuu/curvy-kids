@@ -40,6 +40,10 @@ import com.vi5hnu.curvykids.ui.components.Chip
 import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.ui.components.SvgBadge
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
 private val EXTRA_LETTERS = "ABCDEFGHIJKLMNOPRSTUVWY".toList()
@@ -115,15 +119,15 @@ fun WordsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(22.dp),
                 ) {
-                    Text(word.emoji, fontSize = 72.sp, lineHeight = 80.sp)
+                    SvgArt(word.svg, modifier = Modifier.size(72.dp))
                     Spacer(Modifier.height(10.dp))
                     Chip(
                         onClick = { speaker?.speak(word.word) },
-                        modifier = Modifier.size(46.dp),
+                        modifier = Modifier.size(48.dp),
                         containerColor = topic.tint,
                         contentColor = topic.color,
                     ) {
-                        Text("🔊", fontSize = 20.sp)
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }

@@ -41,7 +41,7 @@ fun ScreenHeader(
     ) {
         if (onBack != null) {
             Chip(
-                modifier = Modifier.size(46.dp),
+                modifier = Modifier.size(48.dp),
                 onClick = onBack,
             ) {
                 Icon(

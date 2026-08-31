@@ -14,6 +14,22 @@ import kotlinx.coroutines.flow.map
 
 private val Context.dataStore by preferencesDataStore("curvy_app")
 
+/**
+ * How forgiving the activities are.
+ *
+ * A three-year-old and a six-year-old use the same app; without this the quizzes are either
+ * frustrating for the younger child or trivial for the older one.
+ */
+enum class Difficulty {
+    /** Fewer choices per question and more attempts before moving on. */
+    EASY,
+    NORMAL;
+
+    companion object {
+        fun from(name: String?) = entries.firstOrNull { it.name == name } ?: NORMAL
+    }
+}
+
 /** Everything the app persists about the child, read in one pass. */
 data class AppRecord(
     val stars: Int = 0,
@@ -22,6 +38,7 @@ data class AppRecord(
     val badges: List<String> = emptyList(),
     val lastTopicId: String? = null,
     val soundEffects: Boolean = true,
+    val difficulty: Difficulty = Difficulty.NORMAL,
 )
 
 /**
@@ -43,6 +60,7 @@ class AppRepository(private val context: Context) {
         badges = this[BADGES]?.toList() ?: emptyList(),
         lastTopicId = this[LAST_TOPIC],
         soundEffects = this[SOUND_EFFECTS] ?: true,
+        difficulty = Difficulty.from(this[DIFFICULTY]),
     )
 
     suspend fun addStars(amount: Int) {
@@ -84,6 +102,10 @@ class AppRepository(private val context: Context) {
         context.dataStore.edit { it[SOUND_EFFECTS] = enabled }
     }
 
+    suspend fun setDifficulty(difficulty: Difficulty) {
+        context.dataStore.edit { it[DIFFICULTY] = difficulty.name }
+    }
+
     /** Wipes all progress. Used by the parent zone's "Reset progress" action. */
     suspend fun resetProgress() {
         context.dataStore.edit { prefs ->
@@ -93,7 +115,7 @@ class AppRepository(private val context: Context) {
             prefs.remove(BADGES)
             prefs.remove(LAST_TOPIC)
             prefs.remove(LAST_ACTIVE_DAY)
-            // The sound preference is a parent setting, not child progress — deliberately kept.
+            // Sound and difficulty are parent settings, not child progress — deliberately kept.
         }
     }
 
@@ -105,6 +127,7 @@ class AppRepository(private val context: Context) {
         private val LAST_TOPIC = stringPreferencesKey("last_topic")
         private val SOUND_EFFECTS = booleanPreferencesKey("sound_effects")
         private val LAST_ACTIVE_DAY = longPreferencesKey("last_active_day")
+        private val DIFFICULTY = stringPreferencesKey("difficulty")
 
         /**
          * The streak value for a child active on [today], given they were last active on

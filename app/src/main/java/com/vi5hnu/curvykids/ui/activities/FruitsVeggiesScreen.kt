@@ -43,6 +43,7 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.StarCount
 import kotlinx.coroutines.delay
 
 private val FRUIT_COLOR = Color(0xFF4FCB94)
@@ -59,6 +60,9 @@ fun FruitsVeggiesScreen(
     var mode by rememberSaveable { mutableStateOf(0) }
     var score by rememberSaveable { mutableIntStateOf(0) }
     var round by rememberSaveable { mutableIntStateOf(0) }
+    // Wrong answers on the current question, so a child who cannot get it is
+    // moved on instead of being left tapping forever.
+    var misses by remember { mutableIntStateOf(0) }
     var flash by remember { mutableStateOf<Pair<Boolean, Boolean>?>(null) } // guessedFruit → correct?
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
@@ -74,11 +78,15 @@ fun FruitsVeggiesScreen(
         if (mode == 1) feedback?.speaker?.speak("Is a ${current.name} a Fruit or Vegetable?")
     }
 
+    LaunchedEffect(round) { misses = 0 }
+
     LaunchedEffect(flash) {
         if (flash != null) {
             delay(750)
             if (flash?.second == true) {
                 if (score > 0 && score % 7 == 0) showCelebrate = true else round++
+            } else if (misses >= MISSES_BEFORE_MOVING_ON) {
+                round++
             }
             flash = null
         }
@@ -95,8 +103,12 @@ fun FruitsVeggiesScreen(
             val label = if (current.isFruit) "Fruit!" else "Vegetable!"
             feedback?.speaker?.speak("Yes! $label")
         } else {
+            misses += 1
             feedback?.wrong()
-            feedback?.speaker?.speak("Try again")
+            feedback?.speaker?.speak(
+                if (misses >= MISSES_BEFORE_MOVING_ON) "That one is tricky. Let's try another."
+                else "Try again"
+            )
         }
     }
 
@@ -118,7 +130,7 @@ fun FruitsVeggiesScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                             ) {
-                                Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                                StarCount(score)
                             }
                         }
                     }
@@ -131,7 +143,7 @@ fun FruitsVeggiesScreen(
             if (mode == 0) {
                 FruitsLearnGrid()
             } else {
-                // Play — show item emoji, ask if it's a fruit or veggie
+                // Play — show item svg, ask if it's a fruit or veggie
                 CardSurface(modifier = Modifier.fillMaxWidth()) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -141,7 +153,6 @@ fun FruitsVeggiesScreen(
                         Spacer(Modifier.height(12.dp))
                         SvgBadge(
                             asset = current.svg,
-                            fallbackEmoji = current.emoji,
                             contentDescription = current.name,
                             // Scale with the card width (no hard-coded size) so it's consistent on phones & tablets.
                             modifier = Modifier
@@ -166,7 +177,7 @@ fun FruitsVeggiesScreen(
                     modifier = Modifier.fillMaxWidth(),
                 ) {
                     ChoiceButton(
-                        label = "🍎 Fruit",
+                        label = "Fruit",
                         color = FRUIT_COLOR,
                         flashOk = flash?.first == true && flash?.second == true,
                         flashBad = flash?.first == true && flash?.second == false,
@@ -174,7 +185,7 @@ fun FruitsVeggiesScreen(
                         modifier = Modifier.weight(1f),
                     )
                     ChoiceButton(
-                        label = "🥦 Veggie",
+                        label = "Veggie",
                         color = VEGGIE_COLOR,
                         flashOk = flash?.first == false && flash?.second == true,
                         flashBad = flash?.first == false && flash?.second == false,
@@ -237,7 +248,6 @@ private fun FruitsLearnGrid() {
                         // SVG badge carries the item name already; rendered on its own (no card).
                         SvgBadge(
                             asset = item.svg,
-                            fallbackEmoji = item.emoji,
                             contentDescription = item.name,
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -250,9 +260,9 @@ private fun FruitsLearnGrid() {
         }
     }
 
-    CategoryRow("Fruits 🍎", fruits, FRUIT_COLOR)
+    CategoryRow("Fruits", fruits, FRUIT_COLOR)
     Spacer(Modifier.height(4.dp))
-    CategoryRow("Vegetables 🥦", veggies, VEGGIE_COLOR)
+    CategoryRow("Vegetables", veggies, VEGGIE_COLOR)
 }
 
 @Composable
@@ -290,3 +300,6 @@ private fun ChoiceButton(
         }
     }
 }
+
+/** Wrong answers tolerated before the question is changed for the child. */
+private const val MISSES_BEFORE_MOVING_ON = 3

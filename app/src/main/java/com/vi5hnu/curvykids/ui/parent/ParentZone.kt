@@ -9,6 +9,9 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.layout.Box
+import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
@@ -16,12 +19,17 @@ import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vi5hnu.curvykids.data.app.Difficulty
 import com.vi5hnu.curvykids.ui.app.AppSettings
 import com.vi5hnu.curvykids.ui.app.AppUiState
 import com.vi5hnu.curvykids.ui.components.CandyButton
@@ -44,9 +52,13 @@ fun ParentZone(
     appState: AppUiState,
     settings: AppSettings,
     onSoundEffects: (Boolean) -> Unit,
+    onDifficulty: (Difficulty) -> Unit,
+    onResetProgress: () -> Unit,
     onDismiss: () -> Unit,
 ) {
     val sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
+    // Two-step so a mis-tap cannot wipe weeks of a child's progress.
+    var confirmingReset by rememberSaveable { mutableStateOf(false) }
 
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -90,7 +102,101 @@ fun ParentZone(
             // ── Toggle ────────────────────────────────────────────────────
             ToggleRow(label = "Sound effects & voice", checked = settings.soundEffects, onChange = onSoundEffects)
 
-            Spacer(Modifier.height(8.dp))
+            HorizontalDivider(color = InkFaint.copy(alpha = 0.35f))
+
+            // ── Difficulty ────────────────────────────────────────────────
+            Spacer(Modifier.height(14.dp))
+            Text(
+                text = "Difficulty",
+                fontFamily = FontDisplay,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 15.sp,
+                color = Ink,
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = "Easy gives fewer choices per question and more tries before moving on.",
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.5.sp,
+                color = Ink.copy(alpha = 0.6f),
+            )
+            Spacer(Modifier.height(10.dp))
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                Difficulty.entries.forEach { level ->
+                    val selected = settings.difficulty == level
+                    Surface(
+                        onClick = { onDifficulty(level) },
+                        shape = RoundedCornerShape(16.dp),
+                        color = if (selected) TintTeal else Color(0xFFF4FAFE),
+                        border = if (selected) BorderStroke(2.dp, Teal) else null,
+                        modifier = Modifier.weight(1f).height(48.dp),
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text(
+                                text = level.name.lowercase().replaceFirstChar { it.uppercase() },
+                                fontFamily = FontDisplay,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 15.sp,
+                                color = if (selected) Teal else Ink.copy(alpha = 0.6f),
+                            )
+                        }
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider(color = InkFaint.copy(alpha = 0.35f))
+            Spacer(Modifier.height(14.dp))
+
+            // ── Reset ─────────────────────────────────────────────────────
+            if (!confirmingReset) {
+                Surface(
+                    onClick = { confirmingReset = true },
+                    shape = RoundedCornerShape(16.dp),
+                    color = Color(0xFFFFF1EE),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                ) {
+                    Box(contentAlignment = Alignment.Center) {
+                        Text(
+                            text = "Reset progress",
+                            fontFamily = FontDisplay,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 15.sp,
+                            color = Coral,
+                        )
+                    }
+                }
+            } else {
+                Text(
+                    text = "This erases all stars, stickers and letters learned. It cannot be undone.",
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 13.sp,
+                    color = Coral,
+                )
+                Spacer(Modifier.height(10.dp))
+                Row(horizontalArrangement = Arrangement.spacedBy(10.dp), modifier = Modifier.fillMaxWidth()) {
+                    Surface(
+                        onClick = { confirmingReset = false },
+                        shape = RoundedCornerShape(16.dp),
+                        color = Color(0xFFF4FAFE),
+                        modifier = Modifier.weight(1f).height(48.dp),
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Text("Keep it", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,
+                                fontSize = 15.sp, color = Ink)
+                        }
+                    }
+                    CandyButton(
+                        onClick = { onResetProgress(); confirmingReset = false },
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        containerColor = Coral,
+                    ) {
+                        Text("Erase", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp)
+                    }
+                }
+            }
+
+            Spacer(Modifier.height(16.dp))
 
             CandyButton(
                 onClick = onDismiss,

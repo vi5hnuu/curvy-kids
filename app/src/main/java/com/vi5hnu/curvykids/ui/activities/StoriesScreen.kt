@@ -41,6 +41,7 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgBadge
 
 /** A touch higher than normal so it sounds like a young child reading — but still natural. */
 private const val STORY_PITCH = 1.12f
@@ -110,7 +111,7 @@ private fun StoryList(topic: Topic, onBack: () -> Unit, onPick: (Story) -> Unit)
                         modifier = Modifier.size(56.dp),
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Text(story.emoji, fontSize = 30.sp)
+                            SvgBadge(story.svg, modifier = Modifier.size(30.dp))
                         }
                     }
                     Spacer(Modifier.size(14.dp))
@@ -223,7 +224,7 @@ private fun StoryReader(
                 .padding(vertical = 20.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Text(story.emoji, fontSize = 72.sp)
+            SvgBadge(story.svg, modifier = Modifier.size(72.dp))
         }
         Spacer(Modifier.height(16.dp))
 

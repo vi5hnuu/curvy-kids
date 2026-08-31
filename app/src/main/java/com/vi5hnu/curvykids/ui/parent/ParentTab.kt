@@ -32,6 +32,8 @@ import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.theme.Teal
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.KidIcon
 
 /**
  * "Grown-ups" tab landing page. Tapping "Unlock Parent Zone" triggers
@@ -70,7 +72,7 @@ fun ParentTab(
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.padding(26.dp),
             ) {
-                Text("🔒", fontSize = 48.sp)
+                KidIconImage(KidIcon.Lock, Modifier.size(48.dp))
                 Spacer(Modifier.height(6.dp))
                 Text(
                     text = "Parent Zone",
@@ -115,7 +117,7 @@ fun ParentTab(
             CurvyMascot(size = 50.dp, mood = CurvyMood.Idle)
             Spacer(Modifier.width(12.dp))
             Text(
-                text = "CurvyKids has no ads and no tracking. Made for happy, safe learning. 💚",
+                text = "CurvyKids has no ads and no tracking. Made for happy, safe learning.",
                 fontWeight = FontWeight.Bold,
                 fontSize = 13.5.sp,
                 color = InkSoft,

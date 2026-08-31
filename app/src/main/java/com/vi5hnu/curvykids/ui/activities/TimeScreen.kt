@@ -52,8 +52,6 @@ fun TimeScreen(
         quizPrompt = { item ->
             SvgImage(
                 asset = item.svg,
-                fallbackEmoji = "🕐",
-                fallbackSize = 64.sp,
                 contentDescription = item.label,
                 modifier = Modifier.size(140.dp),
             )
@@ -97,8 +95,6 @@ private fun TimeLearnGrid(
                         ) {
                             SvgImage(
                                 asset = item.svg,
-                                fallbackEmoji = "🕐",
-                                fallbackSize = 36.sp,
                                 contentDescription = item.label,
                                 modifier = Modifier.size(74.dp),
                             )

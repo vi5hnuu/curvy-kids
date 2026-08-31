@@ -27,11 +27,15 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.Topic
+import com.vi5hnu.curvykids.data.app.Difficulty
+import com.vi5hnu.curvykids.ui.app.LocalDifficulty
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Chip
@@ -42,6 +46,9 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
 import kotlinx.coroutines.delay
 
 /**
@@ -60,7 +67,7 @@ import kotlinx.coroutines.delay
  * @param speakFor        Spoken prompt for the current target ("Find the Circle").
  * @param learnContent    The explore-mode UI (preserves the original tap-to-learn grid).
  * @param quizPrompt      Renders the large target inside the prompt card.
- * @param quizOption      Renders one option tile's inner visual (shape/emoji/day).
+ * @param quizOption      Renders one option tile's inner visual (shape/svg/day).
  */
 @Composable
 fun <T> DiscoverActivity(
@@ -76,7 +83,7 @@ fun <T> DiscoverActivity(
     quizPrompt: @Composable (target: T) -> Unit,
     quizOption: @Composable (item: T) -> Unit,
     rewardPerCorrect: Int = 3,
-    optionCount: Int = 4,
+    optionCount: Int = LocalDifficulty.current.optionCount(),
     celebrateEvery: Int = 5,
     celebrateTitle: String = "Great job!",
 ) {
@@ -86,13 +93,20 @@ fun <T> DiscoverActivity(
     var score by rememberSaveable { mutableIntStateOf(0) }
     var target by remember { mutableStateOf(quizItems.random()) }
     var options by remember { mutableStateOf(buildOptions(quizItems, target, keyOf, optionCount)) }
-    var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) } // key → correct?
+    var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) } // key -> correct?
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
+
+    // Wrong guesses on the current target. After a couple of misses the answer is shown rather
+    // than leaving a stuck child tapping the same tiles forever with no way forward.
+    var misses by remember { mutableIntStateOf(0) }
+    var revealAnswer by remember { mutableStateOf(false) }
 
     fun newRound() {
         val next = quizItems.filter { keyOf(it) != keyOf(target) }.randomOrNull() ?: target
         target = next
         options = buildOptions(quizItems, next, keyOf, optionCount)
+        misses = 0
+        revealAnswer = false
         // Queue (don't flush) so the "Yes!" praise finishes before the next prompt is spoken.
         feedback?.speaker?.speak(speakFor(next), flush = false)
     }
@@ -127,7 +141,7 @@ fun <T> DiscoverActivity(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                             ) {
-                                Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                                StarCount(score)
                             }
                         }
                     }
@@ -168,7 +182,7 @@ fun <T> DiscoverActivity(
                             onClick = { feedback?.speaker?.speak(speakFor(target)) },
                             modifier = Modifier.size(48.dp),
                         ) {
-                            Text("🔊", fontSize = 20.sp)
+                            KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                         }
                     }
                 }
@@ -188,6 +202,9 @@ fun <T> DiscoverActivity(
                                 val isFlash = flash?.first == key
                                 val flashOk = isFlash && flash?.second == true
                                 val flashBad = isFlash && flash?.second == false
+                                // After too many misses the right tile is outlined so the child
+                                // can see, and copy, the answer instead of guessing blindly.
+                                val hinted = revealAnswer && key == keyOf(target)
                                 Surface(
                                     onClick = {
                                         if (flash != null) return@Surface
@@ -199,8 +216,14 @@ fun <T> DiscoverActivity(
                                             feedback?.speaker?.speak("Yes!")
                                         } else {
                                             flash = key to false
+                                            misses += 1
                                             feedback?.wrong()
-                                            feedback?.speaker?.speak("Try again")
+                                            if (misses >= MISSES_BEFORE_REVEAL) {
+                                                revealAnswer = true
+                                                feedback?.speaker?.speak("Here it is. ${speakFor(target)}")
+                                            } else {
+                                                feedback?.speaker?.speak("Try again")
+                                            }
                                         }
                                     },
                                     modifier = Modifier
@@ -210,6 +233,7 @@ fun <T> DiscoverActivity(
                                             when {
                                                 flashOk -> Modifier.border(4.dp, Green, RoundedCornerShape(24.dp))
                                                 flashBad -> Modifier.border(4.dp, Color(0xFFFF6B6B), RoundedCornerShape(24.dp))
+                                                hinted -> Modifier.border(4.dp, topic.color, RoundedCornerShape(24.dp))
                                                 else -> Modifier
                                             }
                                         ),
@@ -217,10 +241,15 @@ fun <T> DiscoverActivity(
                                     color = Color.White,
                                     shadowElevation = 4.dp,
                                 ) {
-                                    Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
+                                    Box(
+                                        contentAlignment = Alignment.Center,
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .semantics { contentDescription = keyOf(item) },
+                                    ) {
                                         quizOption(item)
                                         if (flashOk) {
-                                            Text("✓", fontSize = 34.sp, color = Green, fontWeight = FontWeight.ExtraBold)
+                                            KidIconImage(KidIcon.Check, Modifier.size(34.dp), Green)
                                         }
                                     }
                                 }
@@ -229,6 +258,14 @@ fun <T> DiscoverActivity(
                         }
                     }
                 }
+            }
+        }
+
+        // Once the answer has been shown, give the child a moment to look, then move on.
+        LaunchedEffect(revealAnswer) {
+            if (revealAnswer) {
+                delay(2200)
+                newRound()
             }
         }
 
@@ -258,6 +295,9 @@ fun <T> DiscoverActivity(
     }
 }
 
+/** Wrong guesses tolerated before the correct tile is pointed out. */
+private const val MISSES_BEFORE_REVEAL = 2
+
 /** Builds [optionCount] options — the [target] plus distinct distractors — in shuffled order. */
 private fun <T> buildOptions(items: List<T>, target: T, keyOf: (T) -> String, optionCount: Int): List<T> {
     val distractors = items
@@ -265,4 +305,10 @@ private fun <T> buildOptions(items: List<T>, target: T, keyOf: (T) -> String, op
         .shuffled()
         .take(optionCount - 1)
     return (distractors + target).shuffled()
+}
+
+/** Choices shown per question. Fewer options means less to scan for a younger child. */
+private fun Difficulty.optionCount() = when (this) {
+    Difficulty.EASY -> 3
+    Difficulty.NORMAL -> 4
 }

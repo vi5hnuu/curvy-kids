@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.ui.components.KidIcon
 import kotlinx.coroutines.delay
 
 /**
@@ -80,7 +81,7 @@ fun Celebrate(
 
             Spacer(Modifier.height(10.dp))
 
-            // Star row. Drawn as vectors: a colour-emoji star ignores `color`, so earning one
+            // Star row. Drawn as vectors: a colour-svg star ignores `color`, so earning one
             // star used to look identical to earning three.
             Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                 for (i in 0 until 3) {

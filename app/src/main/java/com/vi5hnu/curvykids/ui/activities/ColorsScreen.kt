@@ -42,6 +42,9 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
 import kotlinx.coroutines.delay
 
 /** "Find the Color" matching game. */
@@ -85,7 +88,7 @@ fun ColorsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                            StarCount(score)
                         }
                     }
                 },
@@ -117,7 +120,7 @@ fun ColorsScreen(
                         onClick = { speaker?.speak("Find ${target.name}") },
                         modifier = Modifier.size(48.dp),
                     ) {
-                        Text("🔊", fontSize = 20.sp)
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }
@@ -158,7 +161,7 @@ fun ColorsScreen(
                                 shadowElevation = 6.dp,
                             ) {
                                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                                    if (isFlash && flashOk) Text("✓", fontSize = 40.sp, color = Color.White)
+                                    if (isFlash && flashOk) KidIconImage(KidIcon.Check, Modifier.size(40.dp), Color.White)
                                 }
                             }
                         }

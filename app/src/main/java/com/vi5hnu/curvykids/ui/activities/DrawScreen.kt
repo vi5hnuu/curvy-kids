@@ -27,8 +27,14 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.drawWithContent
+import androidx.compose.ui.graphics.asAndroidBitmap
+import androidx.compose.ui.graphics.layer.drawLayer
+import androidx.compose.ui.graphics.rememberGraphicsLayer
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Size
@@ -38,11 +44,13 @@ import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke as DrawStyle
-import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import android.net.Uri
+import com.vi5hnu.curvykids.data.content.KidAssets
+import com.vi5hnu.curvykids.data.export.ArtworkStore
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Chip
@@ -50,13 +58,24 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.theme.TintTeal
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
+import com.vi5hnu.curvykids.ui.components.SvgBadge
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.KidIcon
 
 // ── Canvas marks ────────────────────────────────────────────────────────────────
 
 /** Anything painted on the canvas, kept in draw order so Undo can pop the most recent. */
 private sealed interface Mark
 private data class StrokeMark(val points: List<Offset>, val color: Color, val width: Float) : Mark
-private data class StampMark(val emoji: String, val x: Float, val y: Float, val size: Float) : Mark
+private data class StampMark(
+    val shape: StampShape,
+    val x: Float,
+    val y: Float,
+    val size: Float,
+    val color: Color,
+) : Mark
 
 // ── Palette / brushes / content ─────────────────────────────────────────────────
 
@@ -68,21 +87,31 @@ private val PALETTE = listOf(
 
 private val BRUSH_SIZES = listOf(10.dp, 16.dp, 26.dp)
 
-private data class Template(val id: String, val name: String, val emoji: String)
+/** @param svg Picture for the picker chip; null for "blank", which shows a pencil instead. */
+private data class Template(val id: String, val name: String, val svg: String?)
 
 /** "Blank" plus colour-in outline pictures. */
 private val TEMPLATES = listOf(
-    Template("blank", "Blank", "✏️"),
-    Template("sun", "Sun", "☀️"),
-    Template("house", "House", "🏠"),
-    Template("fish", "Fish", "🐟"),
-    Template("flower", "Flower", "🌸"),
-    Template("car", "Car", "🚗"),
-    Template("star", "Star", "⭐"),
-    Template("heart", "Heart", "❤️"),
+    Template("blank", "Blank", null),
+    Template("sun", "Sun", KidAssets.weather("sun")),
+    Template("house", "House", KidAssets.place("house")),
+    Template("fish", "Fish", KidAssets.seaAnimal("fish")),
+    Template("flower", "Flower", KidAssets.nature("tulip")),
+    Template("car", "Car", KidAssets.transport("car")),
+    Template("star", "Star", KidAssets.weather("star")),
+    Template("heart", "Heart", KidAssets.body("heart")),
 )
 
-private val STAMPS = listOf("⭐", "❤️", "🌸", "🦋", "🌈", "☁️", "🐝", "🍎", "😊", "🌙")
+/**
+ * Shapes the child can stamp onto the canvas.
+ *
+ * Drawn as vectors rather than pasted pictures so each stamp takes the currently selected
+ * crayon colour — the same star can be red or blue — and so nothing depends on the device's
+ * emoji font.
+ */
+private enum class StampShape { Star, Heart, Flower, Circle, Square, Triangle, Moon, Cloud }
+
+private val STAMPS = StampShape.entries
 
 private val GUIDE_COLOR = Color(0xFFCBD9E3)
 
@@ -103,7 +132,7 @@ fun DrawScreen(
     var selectedSize by remember { mutableStateOf(BRUSH_SIZES[1]) }
     var templateId by remember { mutableStateOf("blank") }
     var stampMode by remember { mutableStateOf(false) }
-    var selectedStamp by remember { mutableStateOf(STAMPS[0]) }
+    var selectedStamp by remember { mutableStateOf(STAMPS.first()) }
 
     val marks = remember { mutableStateListOf<Mark>() }
 
@@ -114,14 +143,15 @@ fun DrawScreen(
     }
     var currentPoints by remember { mutableStateOf(listOf<Offset>()) }
 
-    // Native paint reused across frames for stamp glyph rendering.
-    val stampPaint = remember {
-        android.graphics.Paint(android.graphics.Paint.ANTI_ALIAS_FLAG).apply {
-            textAlign = android.graphics.Paint.Align.CENTER
-        }
-    }
-
     val template = TEMPLATES.first { it.id == templateId }
+
+    // Capture layer for "keep this drawing": records exactly what the canvas paints.
+    val artLayer = rememberGraphicsLayer()
+    val context = LocalContext.current
+    val store = remember(context) { ArtworkStore(context) }
+    val scope = rememberCoroutineScope()
+    var savedUri by remember { mutableStateOf<Uri?>(null) }
+    var saveMessage by remember { mutableStateOf<String?>(null) }
 
     Column(
         modifier = Modifier
@@ -136,16 +166,34 @@ fun DrawScreen(
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
                     Chip(
                         onClick = { marks.removeLastOrNull() },
-                        modifier = Modifier.size(46.dp),
+                        modifier = Modifier.size(48.dp),
                         containerColor = Color(0xFFEAF1F6),
                         contentColor = InkSoft,
-                    ) { Text("↶", fontSize = 22.sp) }
+                    ) { KidIconImage(KidIcon.Undo, Modifier.size(22.dp)) }
                     Chip(
                         onClick = { marks.clear() },
-                        modifier = Modifier.size(46.dp),
+                        modifier = Modifier.size(48.dp),
                         containerColor = Color(0xFFFFE9E4),
                         contentColor = Color(0xFFFF8B6B),
-                    ) { Text("🧹", fontSize = 18.sp) }
+                    ) { KidIconImage(KidIcon.Eraser, Modifier.size(18.dp)) }
+                    Chip(
+                        onClick = {
+                            if (marks.isEmpty()) {
+                                savedUri = null
+                                saveMessage = "Draw something first!"
+                            } else {
+                                scope.launch {
+                                    val uri = store.save(artLayer.toImageBitmap().asAndroidBitmap())
+                                    savedUri = uri
+                                    saveMessage = if (uri != null) "Saved to your photos!"
+                                                  else "Could not save right now."
+                                }
+                            }
+                        },
+                        modifier = Modifier.size(48.dp),
+                        containerColor = TintTeal,
+                        contentColor = Color(0xFF1FC2AE),
+                    ) { KidIconImage(KidIcon.Check, Modifier.size(20.dp)) }
                 }
             },
         )
@@ -175,7 +223,11 @@ fun DrawScreen(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     ) {
-                        Text(t.emoji, fontSize = 18.sp)
+                        if (t.svg != null) {
+                            SvgBadge(t.svg, modifier = Modifier.size(18.dp))
+                        } else {
+                            KidIconImage(KidIcon.Pencil, Modifier.size(16.dp), InkSoft)
+                        }
                         Text(
                             t.name,
                             fontFamily = FontDisplay,
@@ -199,10 +251,16 @@ fun DrawScreen(
             Canvas(
                 modifier = Modifier
                     .fillMaxSize()
+                    .drawWithContent {
+                        // Record into the layer, then draw the layer — so what is saved is
+                        // pixel-for-pixel what the child sees.
+                        artLayer.record { this@drawWithContent.drawContent() }
+                        drawLayer(artLayer)
+                    }
                     .pointerInput(stampMode, selectedStamp, selectedColor, selectedSize) {
                         if (stampMode) {
                             detectTapGestures { offset ->
-                                marks.add(StampMark(selectedStamp, offset.x, offset.y, 96f))
+                                marks.add(StampMark(selectedStamp, offset.x, offset.y, 96f, selectedColor))
                             }
                         } else {
                             val widthPx = selectedSize.toPx()
@@ -224,6 +282,11 @@ fun DrawScreen(
                         }
                     },
             ) {
+                // Opaque ground. On screen the card behind supplies the white, but the saved
+                // PNG only contains what this canvas paints — without this the exported image
+                // is transparent, which most galleries show as black.
+                drawRect(Color.White)
+
                 // Outline guide for the colour-in template (under everything).
                 if (templateId != "blank") drawTemplate(templateId, GUIDE_COLOR)
 
@@ -231,17 +294,59 @@ fun DrawScreen(
                 marks.forEach { mark ->
                     when (mark) {
                         is StrokeMark -> drawSmoothStroke(mark.points, mark.color, mark.width)
-                        is StampMark -> {
-                            stampPaint.textSize = mark.size
-                            drawContext.canvas.nativeCanvas.drawText(
-                                mark.emoji, mark.x, mark.y + mark.size * 0.35f, stampPaint,
-                            )
-                        }
+                        is StampMark -> drawStamp(mark.shape, mark.x, mark.y, mark.size, mark.color)
                     }
                 }
 
                 // Live stroke being drawn.
                 if (currentPoints.size >= 2) drawSmoothStroke(currentPoints, selectedColor, selectedSize.toPx())
+            }
+        }
+
+        // ── Save confirmation ─────────────────────────────────────────────
+        saveMessage?.let { message ->
+            Spacer(Modifier.height(10.dp))
+            Surface(
+                shape = RoundedCornerShape(18.dp),
+                color = if (savedUri != null) TintTeal else Color(0xFFFFE9E4),
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                ) {
+                    Text(
+                        text = message,
+                        fontFamily = FontDisplay,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 14.sp,
+                        color = if (savedUri != null) Color(0xFF158D80) else Color(0xFFCF5B3E),
+                        modifier = Modifier.weight(1f),
+                    )
+                    savedUri?.let { uri ->
+                        Surface(
+                            onClick = { store.share(uri) },
+                            shape = RoundedCornerShape(999.dp),
+                            color = Color.White,
+                            modifier = Modifier.height(36.dp),
+                        ) {
+                            Box(contentAlignment = Alignment.Center, modifier = Modifier.padding(horizontal = 16.dp)) {
+                                Text(
+                                    text = "Share",
+                                    fontFamily = FontDisplay,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 14.sp,
+                                    color = Color(0xFF1FC2AE),
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+            // Clear the banner on its own so it does not sit there for the rest of the session.
+            LaunchedEffect(message) {
+                delay(6000)
+                saveMessage = null
             }
         }
 
@@ -257,14 +362,16 @@ fun DrawScreen(
         ) {
             // Pencil = draw mode
             ToolDot(selected = !stampMode, onClick = { stampMode = false }) {
-                Text("✏️", fontSize = 20.sp)
+                KidIconImage(KidIcon.Pencil, Modifier.size(20.dp), selectedColor)
             }
             Spacer(Modifier.width(2.dp))
             STAMPS.forEach { s ->
                 ToolDot(
                     selected = stampMode && selectedStamp == s,
                     onClick = { stampMode = true; selectedStamp = s },
-                ) { Text(s, fontSize = 20.sp) }
+                ) {
+                    Canvas(Modifier.size(22.dp)) { drawStamp(s, size.width / 2f, size.height / 2f, size.minDimension, selectedColor) }
+                }
             }
         }
 
@@ -281,7 +388,7 @@ fun DrawScreen(
             BRUSH_SIZES.forEach { sz ->
                 Chip(
                     onClick = { selectedSize = sz; stampMode = false },
-                    modifier = Modifier.size(42.dp),
+                    modifier = Modifier.size(48.dp),
                     containerColor = if (selectedSize == sz && !stampMode) TintTeal else Color.White,
                 ) {
                     Surface(shape = CircleShape, color = selectedColor, modifier = Modifier.size(sz.coerceAtMost(30.dp))) {}
@@ -322,7 +429,8 @@ private fun ToolDot(selected: Boolean, onClick: () -> Unit, content: @Composable
         color = if (selected) TintTeal else Color.White,
         border = if (selected) BorderStroke(2.dp, Color(0xFF1FC2AE)) else null,
         shadowElevation = 2.dp,
-        modifier = Modifier.size(44.dp),
+        // 48dp is the accessible minimum; these are the drawing tools a small hand taps most.
+        modifier = Modifier.size(48.dp),
     ) {
         Box(contentAlignment = Alignment.Center) { content() }
     }
@@ -433,6 +541,94 @@ private fun DrawScope.drawTemplate(id: String, color: Color) {
                 close()
             }
             drawPath(path, color, style = st)
+        }
+    }
+}
+
+/**
+ * Paints one stamp centred on [cx],[cy] within a [size]-wide box, in [color].
+ * Coordinates are normalised against the box so every shape scales together.
+ */
+private fun DrawScope.drawStamp(shape: StampShape, cx: Float, cy: Float, size: Float, color: Color) {
+    val r = size / 2f
+    fun pt(fx: Float, fy: Float) = Offset(cx + fx * r, cy + fy * r)
+
+    when (shape) {
+        StampShape.Circle -> drawCircle(color, r * 0.8f, Offset(cx, cy))
+
+        StampShape.Square -> drawRoundRect(
+            color,
+            topLeft = Offset(cx - r * 0.72f, cy - r * 0.72f),
+            size = Size(r * 1.44f, r * 1.44f),
+            cornerRadius = androidx.compose.ui.geometry.CornerRadius(r * 0.16f),
+        )
+
+        StampShape.Triangle -> drawPath(
+            Path().apply {
+                moveTo(cx, cy - r * 0.82f)
+                lineTo(cx + r * 0.78f, cy + r * 0.62f)
+                lineTo(cx - r * 0.78f, cy + r * 0.62f)
+                close()
+            },
+            color,
+        )
+
+        StampShape.Star -> drawPath(
+            Path().apply {
+                val outer = r * 0.9f
+                val inner = r * 0.38f
+                for (i in 0 until 10) {
+                    val rad = if (i % 2 == 0) outer else inner
+                    val a = -Math.PI / 2 + i * Math.PI / 5
+                    val x = cx + (rad * kotlin.math.cos(a)).toFloat()
+                    val y = cy + (rad * kotlin.math.sin(a)).toFloat()
+                    if (i == 0) moveTo(x, y) else lineTo(x, y)
+                }
+                close()
+            },
+            color,
+        )
+
+        StampShape.Heart -> drawPath(
+            Path().apply {
+                moveTo(cx, cy + r * 0.8f)
+                cubicTo(cx - r * 1.3f, cy - r * 0.1f, cx - r * 0.55f, cy - r * 0.95f, cx, cy - r * 0.32f)
+                cubicTo(cx + r * 0.55f, cy - r * 0.95f, cx + r * 1.3f, cy - r * 0.1f, cx, cy + r * 0.8f)
+                close()
+            },
+            color,
+        )
+
+        StampShape.Flower -> {
+            repeat(6) { i ->
+                val a = i * Math.PI / 3
+                drawCircle(
+                    color,
+                    r * 0.34f,
+                    Offset(cx + (r * 0.5f * kotlin.math.cos(a)).toFloat(),
+                           cy + (r * 0.5f * kotlin.math.sin(a)).toFloat()),
+                )
+            }
+            drawCircle(color.copy(alpha = 0.55f), r * 0.28f, Offset(cx, cy))
+        }
+
+        StampShape.Moon -> {
+            // Crescent: a disc with a second disc lifted out of it.
+            drawCircle(color, r * 0.82f, Offset(cx, cy))
+            drawCircle(color.copy(alpha = 0f), r * 0.7f, Offset(cx + r * 0.42f, cy - r * 0.18f),
+                blendMode = androidx.compose.ui.graphics.BlendMode.Clear)
+        }
+
+        StampShape.Cloud -> {
+            drawCircle(color, r * 0.42f, pt(-0.5f, 0.12f))
+            drawCircle(color, r * 0.54f, pt(0f, -0.08f))
+            drawCircle(color, r * 0.4f, pt(0.5f, 0.14f))
+            drawRoundRect(
+                color,
+                topLeft = Offset(cx - r * 0.86f, cy + r * 0.02f),
+                size = Size(r * 1.72f, r * 0.52f),
+                cornerRadius = androidx.compose.ui.geometry.CornerRadius(r * 0.26f),
+            )
         }
     }
 }

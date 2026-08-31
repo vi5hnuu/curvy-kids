@@ -43,6 +43,11 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgBadge
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
 /** Seasons — learn the 4 seasons and their weather, then quiz on season recognition. */
@@ -56,13 +61,16 @@ fun SeasonsScreen(
     var mode by rememberSaveable { mutableStateOf(0) }
     var score by rememberSaveable { mutableIntStateOf(0) }
     var round by rememberSaveable { mutableIntStateOf(0) }
+    // Wrong answers on the current question, so a child who cannot get it is
+    // moved on instead of being left tapping forever.
+    var misses by remember { mutableIntStateOf(0) }
     var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
-    // Quiz target: show a weather clue emoji, child picks which season it belongs to.
+    // Quiz target: show a weather clue svg, child picks which season it belongs to.
     val quizState = remember(round) {
         val season = SEASONS_LIST.random()
-        val clueEmoji = season.weatherEmojis.random()
+        val clueEmoji = season.weatherSvgs.random()
         Pair(season, clueEmoji)
     }
     val targetSeason = quizState.first
@@ -72,11 +80,15 @@ fun SeasonsScreen(
         if (mode == 1) feedback?.speaker?.speak("Which season has ${targetSeason.weather}?")
     }
 
+    LaunchedEffect(round) { misses = 0 }
+
     LaunchedEffect(flash) {
         if (flash != null) {
             delay(700)
             if (flash?.second == true) {
                 if (score > 0 && score % 5 == 0) showCelebrate = true else round++
+            } else if (misses >= MISSES_BEFORE_MOVING_ON) {
+                round++
             }
             flash = null
         }
@@ -92,8 +104,12 @@ fun SeasonsScreen(
             feedback?.correct()
             feedback?.speaker?.speak("Yes! ${season.name}!")
         } else {
+            misses += 1
             feedback?.wrong()
-            feedback?.speaker?.speak("Try again")
+            feedback?.speaker?.speak(
+                if (misses >= MISSES_BEFORE_MOVING_ON) "That one is tricky. Let's try another."
+                else "Try again"
+            )
         }
     }
 
@@ -115,7 +131,7 @@ fun SeasonsScreen(
                                 verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                             ) {
-                                Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                                StarCount(score)
                             }
                         }
                     }
@@ -126,7 +142,7 @@ fun SeasonsScreen(
             Spacer(Modifier.height(16.dp))
 
             if (mode == 0) {
-                // Learn — 4 season cards showing name, main emoji, and weather clue emojis
+                // Learn — 4 season cards showing name, main svg, and weather clue emojis
                 Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
                     SEASONS_LIST.chunked(2).forEach { pair ->
                         Row(
@@ -142,7 +158,7 @@ fun SeasonsScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         modifier = Modifier.padding(14.dp),
                                     ) {
-                                        Text(season.emoji, fontSize = 48.sp)
+                                        SvgBadge(season.svg, modifier = Modifier.size(48.dp))
                                         Text(
                                             season.name,
                                             fontFamily = FontDisplay,
@@ -159,7 +175,7 @@ fun SeasonsScreen(
                                         )
                                         Spacer(Modifier.height(6.dp))
                                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                            season.weatherEmojis.forEach { e -> Text(e, fontSize = 18.sp) }
+                                            season.weatherSvgs.forEach { e -> Text(e, fontSize = 18.sp) }
                                         }
                                     }
                                 }
@@ -168,7 +184,7 @@ fun SeasonsScreen(
                     }
                 }
             } else {
-                // Play — show a clue emoji, pick the matching season
+                // Play — show a clue svg, pick the matching season
                 CardSurface(modifier = Modifier.fillMaxWidth()) {
                     Column(
                         horizontalAlignment = Alignment.CenterHorizontally,
@@ -186,8 +202,8 @@ fun SeasonsScreen(
                         Spacer(Modifier.height(8.dp))
                         Chip(
                             onClick = { feedback?.speaker?.speak("Which season has ${targetSeason.weather}?") },
-                            modifier = Modifier.size(46.dp),
-                        ) { Text("🔊", fontSize = 20.sp) }
+                            modifier = Modifier.size(48.dp),
+                        ) { KidIconImage(KidIcon.Speaker, Modifier.size(20.dp)) }
                     }
                 }
 
@@ -221,7 +237,7 @@ fun SeasonsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        Text(season.emoji, fontSize = 36.sp)
+                                        SvgArt(season.svg, modifier = Modifier.size(36.dp))
                                         Text(
                                             season.name,
                                             fontFamily = FontDisplay,
@@ -248,3 +264,6 @@ fun SeasonsScreen(
         }
     }
 }
+
+/** Wrong answers tolerated before the question is changed for the child. */
+private const val MISSES_BEFORE_MOVING_ON = 3

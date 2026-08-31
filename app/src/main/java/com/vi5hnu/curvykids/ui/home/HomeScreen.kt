@@ -14,41 +14,53 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowForward
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.vi5hnu.curvykids.data.content.TOPICS
 import com.vi5hnu.curvykids.data.content.Topic
+import com.vi5hnu.curvykids.data.content.dailyPicks
 import com.vi5hnu.curvykids.ui.app.AppUiState
 import com.vi5hnu.curvykids.ui.components.CurvyMascot
 import com.vi5hnu.curvykids.ui.components.CurvyMood
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.Pill
+import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.components.TopicCard
+import com.vi5hnu.curvykids.ui.components.TopicGlyph
 import com.vi5hnu.curvykids.ui.theme.Coral
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.theme.Teal
+import java.time.LocalDate
 import java.util.Calendar
 
 /**
- * Home tab — mascot greeting, star/streak pills, optional "Continue" card,
- * and the 2-column topic adventure grid.
+ * Home tab — mascot greeting, star/streak pills, an optional "Continue" card, and a short set of
+ * suggested activities.
+ *
+ * Deliberately not the full catalogue: every topic lives on the Play tab, grouped. Home is the
+ * "what shall I do now?" screen, and a small number of large targets is what a pre-reader can
+ * actually choose between.
+ *
+ * @param onSeeAll Opens the Play tab, where all activities are browsable.
  */
 @Composable
 fun HomeScreen(
     appState: AppUiState,
     onOpenTopic: (Topic) -> Unit,
+    onSeeAll: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
@@ -58,11 +70,17 @@ fun HomeScreen(
         else -> "Good evening"
     }
 
+    val lastTopic = appState.lastTopic
+    val today = LocalDate.now().toEpochDay()
+    val picks = remember(today, appState.lastTopicId) {
+        dailyPicks(lastTopicId = appState.lastTopicId, seed = today)
+    }
+
     Column(
         modifier = modifier
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 18.dp, vertical = 18.dp)
-            .padding(bottom = 90.dp), // clear bottom tab bar
+            .padding(bottom = 96.dp), // clears the floating tab bar
     ) {
         // ── Mascot + greeting ──────────────────────────────────────────────
         Row(
@@ -95,48 +113,23 @@ fun HomeScreen(
             horizontalArrangement = Arrangement.spacedBy(10.dp),
             modifier = Modifier.fillMaxWidth(),
         ) {
-            Pill(modifier = Modifier.weight(1f)) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(horizontal = 14.dp, vertical = 7.dp)
-                        .fillMaxWidth(),
-                ) {
-                    Text("⭐", fontSize = 18.sp)
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        text = "${appState.stars}",
-                        fontFamily = FontDisplay,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 16.sp,
-                        color = Color(0xFFF2A93B),
-                    )
-                }
-            }
-            Pill(modifier = Modifier.weight(1f)) {
-                Row(
-                    horizontalArrangement = Arrangement.Center,
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier
-                        .padding(horizontal = 14.dp, vertical = 7.dp)
-                        .fillMaxWidth(),
-                ) {
-                    Text("🔥", fontSize = 16.sp)
-                    Spacer(Modifier.width(6.dp))
-                    Text(
-                        text = "${appState.streak} day${if (appState.streak == 1) "" else "s"}",
-                        fontFamily = FontDisplay,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 16.sp,
-                        color = Coral,
-                    )
-                }
-            }
+            StatPill(
+                icon = KidIcon.Star,
+                tint = StarGold,
+                text = "${appState.stars}",
+                label = "${appState.stars} stars collected",
+                modifier = Modifier.weight(1f),
+            )
+            StatPill(
+                icon = KidIcon.Flame,
+                tint = Coral,
+                text = "${appState.streak} day${if (appState.streak == 1) "" else "s"}",
+                label = "${appState.streak} day streak",
+                modifier = Modifier.weight(1f),
+            )
         }
 
         // ── Continue card ─────────────────────────────────────────────────
-        val lastTopic = appState.lastTopic
         if (lastTopic != null) {
             Spacer(Modifier.height(18.dp))
             Surface(
@@ -148,31 +141,22 @@ fun HomeScreen(
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(
-                            Brush.horizontalGradient(
-                                colors = listOf(Teal, Color(0xFF36D0C0))
-                            )
-                        ),
+                        .background(Brush.horizontalGradient(listOf(Teal, Color(0xFF36D0C0)))),
                 ) {
                     Row(
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier.padding(16.dp),
                     ) {
-                        // Topic glyph badge
                         Surface(
                             shape = RoundedCornerShape(16.dp),
                             color = Color.White.copy(alpha = 0.25f),
                             modifier = Modifier.size(52.dp),
                         ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(
-                                    text = lastTopic.glyph,
-                                    fontFamily = FontDisplay,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 26.sp,
-                                    color = Color.White,
-                                )
-                            }
+                            TopicGlyph(
+                                topicId = lastTopic.id,
+                                fallback = lastTopic.glyph,
+                                color = Color.White,
+                            )
                         }
                         Spacer(Modifier.width(14.dp))
                         Column(modifier = Modifier.weight(1f)) {
@@ -194,14 +178,13 @@ fun HomeScreen(
                         Surface(
                             shape = RoundedCornerShape(999.dp),
                             color = Color.White,
-                            modifier = Modifier.size(42.dp),
+                            modifier = Modifier.size(48.dp),
                         ) {
                             Box(contentAlignment = Alignment.Center) {
-                                Icon(
-                                    imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
-                                    contentDescription = null,
-                                    tint = Teal,
-                                    modifier = Modifier.size(22.dp),
+                                KidIconImage(
+                                    icon = KidIcon.ArrowForward,
+                                    modifier = Modifier.size(24.dp),
+                                    color = Teal,
                                 )
                             }
                         }
@@ -213,7 +196,7 @@ fun HomeScreen(
         Spacer(Modifier.height(22.dp))
 
         Text(
-            text = "Pick an adventure",
+            text = "Today's picks",
             fontFamily = FontDisplay,
             fontWeight = FontWeight.ExtraBold,
             fontSize = 19.sp,
@@ -223,11 +206,10 @@ fun HomeScreen(
 
         Spacer(Modifier.height(12.dp))
 
-        // 2-column topic grid — inside a Column + Row (not LazyGrid) so it
-        // works inside a verticalScroll without conflicting scroll axes.
-        val rows = TOPICS.chunked(2)
+        // A short, fixed set — small enough to lay out eagerly without a lazy grid, and small
+        // enough for a child to compare every option at a glance.
         Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            rows.forEach { pair ->
+            picks.chunked(2).forEach { pair ->
                 Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     TopicCard(
                         topic = pair[0],
@@ -245,6 +227,69 @@ fun HomeScreen(
                     }
                 }
             }
+        }
+
+        Spacer(Modifier.height(16.dp))
+
+        // ── Route into the full catalogue ─────────────────────────────────
+        Surface(
+            onClick = onSeeAll,
+            shape = RoundedCornerShape(22.dp),
+            color = Color.White,
+            shadowElevation = 3.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(58.dp),
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center,
+                modifier = Modifier.fillMaxWidth(),
+            ) {
+                Text(
+                    text = "See all activities",
+                    fontFamily = FontDisplay,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 17.sp,
+                    color = Teal,
+                )
+                Spacer(Modifier.width(8.dp))
+                KidIconImage(
+                    icon = KidIcon.ArrowForward,
+                    modifier = Modifier.size(20.dp),
+                    color = Teal,
+                )
+            }
+        }
+    }
+}
+
+/** One of the two headline counters. [label] is what a screen reader announces for the whole pill. */
+@Composable
+private fun StatPill(
+    icon: KidIcon,
+    tint: Color,
+    text: String,
+    label: String,
+    modifier: Modifier = Modifier,
+) {
+    Pill(modifier = modifier.clearAndSetSemantics { contentDescription = label }) {
+        Row(
+            horizontalArrangement = Arrangement.Center,
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier
+                .padding(horizontal = 14.dp, vertical = 9.dp)
+                .fillMaxWidth(),
+        ) {
+            KidIconImage(icon = icon, modifier = Modifier.size(18.dp), color = tint)
+            Spacer(Modifier.width(6.dp))
+            Text(
+                text = text,
+                fontFamily = FontDisplay,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 16.sp,
+                color = tint,
+            )
         }
     }
 }

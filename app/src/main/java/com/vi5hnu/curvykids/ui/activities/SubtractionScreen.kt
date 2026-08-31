@@ -35,7 +35,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
-import com.vi5hnu.curvykids.data.content.GAME_EMOJIS
+import com.vi5hnu.curvykids.data.content.GAME_PICTURES
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
@@ -45,6 +45,11 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgBadge
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
 /**
@@ -53,7 +58,7 @@ import kotlinx.coroutines.delay
  *  Level 1 → total 4-7, take away 1-3
  *  Level 2 → total 5-10, take away 1-4
  */
-private data class SubSpec(val total: Int, val remove: Int, val emoji: String, val choices: List<Int>)
+private data class SubSpec(val total: Int, val remove: Int, val svg: String, val choices: List<Int>)
 
 private fun buildSubSpec(level: Int): SubSpec {
     val (totalRange, removeMax) = when (level) {
@@ -69,7 +74,7 @@ private fun buildSubSpec(level: Int): SubSpec {
         val d = (answer - 2..answer + 2).random().coerceAtLeast(0)
         if (d != answer) distractors.add(d)
     }
-    return SubSpec(total, remove, GAME_EMOJIS.random(), (distractors.toList() + answer).shuffled())
+    return SubSpec(total, remove, GAME_PICTURES.random(), (distractors.toList() + answer).shuffled())
 }
 
 /** Subtraction — show items with some crossed out; how many are left? */
@@ -82,6 +87,9 @@ fun SubtractionScreen(
 ) {
     var score by rememberSaveable { mutableIntStateOf(0) }
     var round by rememberSaveable { mutableIntStateOf(0) }
+    // Wrong answers on the current question, so a child who cannot get it is
+    // moved on instead of being left tapping forever.
+    var misses by remember { mutableIntStateOf(0) }
     var flash by remember { mutableStateOf<Pair<Int, Boolean>?>(null) }
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
@@ -92,6 +100,7 @@ fun SubtractionScreen(
     fun speakPrompt() = feedback?.speaker?.speak("${spec.total} take away ${spec.remove} equals?")
 
     LaunchedEffect(round) { speakPrompt() }
+    LaunchedEffect(round) { misses = 0 }
 
     fun choose(n: Int) {
         if (flash != null) return
@@ -103,8 +112,12 @@ fun SubtractionScreen(
             feedback?.correct()
             feedback?.speaker?.speak("Yes! $answer left!")
         } else {
+            misses += 1
             feedback?.wrong()
-            feedback?.speaker?.speak("Try again")
+            feedback?.speaker?.speak(
+                if (misses >= MISSES_BEFORE_MOVING_ON) "That one is tricky. Let's try another."
+                else "Try again"
+            )
         }
     }
 
@@ -113,6 +126,8 @@ fun SubtractionScreen(
             delay(800)
             if (flash?.second == true) {
                 if (score > 0 && score % 5 == 0) showCelebrate = true else round++
+            } else if (misses >= MISSES_BEFORE_MOVING_ON) {
+                round++
             }
             flash = null
         }
@@ -135,7 +150,7 @@ fun SubtractionScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                            StarCount(score)
                         }
                     }
                 },
@@ -157,7 +172,7 @@ fun SubtractionScreen(
                     Spacer(Modifier.height(16.dp))
 
                     // Visual: first `remove` items are faded/struck, rest are normal
-                    CrossedOutDots(total = spec.total, remove = spec.remove, emoji = spec.emoji)
+                    CrossedOutDots(total = spec.total, remove = spec.remove, svg = spec.svg)
 
                     Spacer(Modifier.height(12.dp))
                     Text(
@@ -168,8 +183,8 @@ fun SubtractionScreen(
                         color = topic.color,
                     )
                     Spacer(Modifier.height(10.dp))
-                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(46.dp)) {
-                        Text("🔊", fontSize = 20.sp)
+                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(48.dp)) {
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }
@@ -227,7 +242,7 @@ fun SubtractionScreen(
 /** Shows `total` emojis; first `remove` are faded with strikethrough to show "taken away." */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CrossedOutDots(total: Int, remove: Int, emoji: String) {
+private fun CrossedOutDots(total: Int, remove: Int, svg: String) {
     FlowRow(
         maxItemsInEachRow = 5,
         horizontalArrangement = Arrangement.spacedBy(4.dp),
@@ -236,12 +251,26 @@ private fun CrossedOutDots(total: Int, remove: Int, emoji: String) {
     ) {
         (0 until total).forEach { i ->
             val crossed = i < remove
-            Text(
-                text = if (crossed) "❌" else emoji,
-                fontSize = 26.sp,
-                modifier = if (crossed) Modifier.alpha(0.5f) else Modifier,
-                textDecoration = if (crossed) TextDecoration.LineThrough else TextDecoration.None,
-            )
+            // A taken-away item stays visible but faded, with a cross over it, so the child can
+            // still see what was removed and count the difference.
+            Box(contentAlignment = Alignment.Center) {
+                SvgArt(
+                    svg,
+                    modifier = Modifier
+                        .size(26.dp)
+                        .alpha(if (crossed) 0.35f else 1f),
+                )
+                if (crossed) {
+                    KidIconImage(
+                        icon = KidIcon.Cross,
+                        modifier = Modifier.size(20.dp),
+                        color = Color(0xFFFF6B6B),
+                    )
+                }
+            }
         }
     }
 }
+
+/** Wrong answers tolerated before the question is changed for the child. */
+private const val MISSES_BEFORE_MOVING_ON = 3

@@ -42,13 +42,18 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgBadge
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
-private data class RhymeChoice(val word: String, val emoji: String, val isRhyme: Boolean)
+private data class RhymeChoice(val word: String, val svg: String, val isRhyme: Boolean)
 
 private data class RhymeSpec(
     val group: RhymeGroup,
-    val correctRhyme: Pair<String, String>,  // word to emoji
+    val correctRhyme: Pair<String, String>,  // word to svg
     val choices: List<RhymeChoice>,
 )
 
@@ -79,6 +84,9 @@ fun RhymingScreen(
 ) {
     var score by rememberSaveable { mutableIntStateOf(0) }
     var round by rememberSaveable { mutableIntStateOf(0) }
+    // Wrong answers on the current question, so a child who cannot get it is
+    // moved on instead of being left tapping forever.
+    var misses by remember { mutableIntStateOf(0) }
     var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
@@ -107,16 +115,24 @@ fun RhymingScreen(
             feedback?.correct()
             feedback?.speaker?.speak("Yes! ${spec.group.word} and ${choice.word} rhyme!")
         } else {
+            misses += 1
             feedback?.wrong()
-            feedback?.speaker?.speak("Try again")
+            feedback?.speaker?.speak(
+                if (misses >= MISSES_BEFORE_MOVING_ON) "That one is tricky. Let's try another."
+                else "Try again"
+            )
         }
     }
+
+    LaunchedEffect(round) { misses = 0 }
 
     LaunchedEffect(flash) {
         if (flash != null) {
             delay(800)
             if (flash?.second == true) {
                 if (score > 0 && score % 5 == 0) showCelebrate = true else round++
+            } else if (misses >= MISSES_BEFORE_MOVING_ON) {
+                round++
             }
             flash = null
         }
@@ -139,7 +155,7 @@ fun RhymingScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                            StarCount(score)
                         }
                     }
                 },
@@ -160,7 +176,7 @@ fun RhymingScreen(
                         color = InkSoft,
                     )
                     Spacer(Modifier.height(12.dp))
-                    Text(spec.group.emoji, fontSize = 56.sp)
+                    SvgArt(spec.group.svg, modifier = Modifier.size(64.dp))
                     Spacer(Modifier.height(4.dp))
                     Text(
                         spec.group.word,
@@ -171,16 +187,16 @@ fun RhymingScreen(
                     )
                     Spacer(Modifier.height(12.dp))
                     Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                        Chip(onClick = { speakPrompt() }, modifier = Modifier.size(46.dp)) {
-                            Text("🔊", fontSize = 20.sp)
+                        Chip(onClick = { speakPrompt() }, modifier = Modifier.size(48.dp)) {
+                            KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                         }
-                        Chip(onClick = { speakChoices() }, modifier = Modifier.size(46.dp)) {
-                            Text("🎵", fontSize = 20.sp)
+                        Chip(onClick = { speakChoices() }, modifier = Modifier.size(48.dp)) {
+                            KidIconImage(KidIcon.Note, Modifier.size(20.dp))
                         }
                     }
                     Spacer(Modifier.height(4.dp))
                     Text(
-                        "Tap 🎵 to hear the choices",
+                        "Tap the music note to hear the choices",
                         fontSize = 11.sp,
                         color = InkSoft,
                         fontWeight = FontWeight.Bold,
@@ -216,7 +232,7 @@ fun RhymingScreen(
                     ) {
                         Box(contentAlignment = Alignment.Center) {
                             Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                Text(choice.emoji, fontSize = 32.sp)
+                                SvgArt(choice.svg, modifier = Modifier.size(36.dp))
                                 Spacer(Modifier.height(4.dp))
                                 Text(
                                     choice.word,
@@ -242,3 +258,6 @@ fun RhymingScreen(
         }
     }
 }
+
+/** Wrong answers tolerated before the question is changed for the child. */
+private const val MISSES_BEFORE_MOVING_ON = 3

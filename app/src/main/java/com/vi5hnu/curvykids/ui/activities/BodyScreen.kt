@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +33,10 @@ import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarGold
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 
 /** My Body — Learn (tap to hear the part) + Play ("Find the…" quiz). */
 @Composable
@@ -62,8 +67,8 @@ fun BodyScreen(
             )
         },
         quizOption = { part ->
-            // Emoji only in the quiz — the SVG bakes the part's name in, which would reveal the answer.
-            Text(part.emoji, fontSize = 46.sp, textAlign = TextAlign.Center)
+            // The badge caption is the answer, so quiz options render the art only.
+            SvgArt(part.svg, modifier = Modifier.size(46.dp))
         },
     )
 }
@@ -102,29 +107,18 @@ private fun BodyLearnGrid(
                         ) {
                             SvgBadge(
                                 asset = part.svg,
-                                fallbackEmoji = part.emoji,
                                 contentDescription = part.name,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .aspectRatio(1f),
                             )
-                            // The SVG badge carries the name; only show it for unmapped parts.
-                            if (part.svg == null) {
-                                Spacer(Modifier.height(6.dp))
-                                Text(
-                                    text = part.name,
-                                    fontFamily = FontDisplay,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 14.sp,
-                                    color = Ink,
-                                )
-                            }
                         }
                         if (seen.contains(part.name)) {
-                            Text(
-                                text = "⭐",
-                                fontSize = 13.sp,
-                                modifier = Modifier.align(Alignment.TopEnd).padding(6.dp),
+                            KidIconImage(
+                                icon = KidIcon.Star,
+                                modifier = Modifier.align(Alignment.TopEnd).padding(6.dp)
+                                    .size(13.dp),
+                                color = StarGold,
                             )
                         }
                     }

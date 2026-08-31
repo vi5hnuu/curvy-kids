@@ -44,6 +44,9 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarGold
+import com.vi5hnu.curvykids.ui.components.KidIcon
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -223,7 +226,6 @@ fun BarakhadiScreen(
                         ) {
                             SvgBadge(
                                 asset = barakhadiSvg(consonant.romanized, matra),
-                                fallbackEmoji = syllable,
                                 contentDescription = syllable,
                                 modifier = Modifier
                                     .fillMaxSize()
@@ -239,7 +241,7 @@ fun BarakhadiScreen(
                                     },
                             )
                             if (explored.contains(syllable)) {
-                                Text("⭐", fontSize = 13.sp, modifier = Modifier.align(Alignment.TopEnd).padding(6.dp))
+                                KidIconImage(KidIcon.Star, Modifier.align(Alignment.TopEnd).padding(6.dp).size(13.dp), StarGold)
                             }
                         }
                     }

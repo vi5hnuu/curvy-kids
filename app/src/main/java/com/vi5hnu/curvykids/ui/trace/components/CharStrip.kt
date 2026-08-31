@@ -28,10 +28,13 @@ import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarGold
+import com.vi5hnu.curvykids.ui.components.KidIcon
 
 /**
  * Bottom sheet showing all characters for the current topic in a 5-column grid.
- * Current character is highlighted in topic.color; mastered chars show a ⭐;
+ * Current character is highlighted in topic.color; mastered chars show a star;
  * others are white with dark text. Matches CharStrip from trace.jsx.
  */
 @OptIn(ExperimentalMaterial3Api::class)
@@ -116,12 +119,13 @@ fun CharStrip(
                                         },
                                     )
                                     if (isMastered && !isCurrent) {
-                                        Text(
-                                            text = "⭐",
-                                            fontSize = 12.sp,
+                                        KidIconImage(
+                                            icon = KidIcon.Star,
                                             modifier = Modifier
                                                 .align(Alignment.TopEnd)
-                                                .padding(end = 4.dp, top = 2.dp),
+                                                .padding(end = 4.dp, top = 2.dp)
+                                                .size(12.dp),
+                                            color = StarGold,
                                         )
                                     }
                                 }

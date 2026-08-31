@@ -1,50 +1,59 @@
 package com.vi5hnu.curvykids.ui.components
 
+import android.content.Context
+import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Box
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.CornerRadius
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
-import androidx.compose.ui.unit.TextUnit
-import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
+import java.nio.ByteBuffer
+
+/** Neutral placeholder tone, matching the app's faint ink. */
+private val PLACEHOLDER = Color(0xFFE4EDF4)
 
 /**
- * Renders a kids-asset SVG badge from `assets/kids/…` verbatim, using the app-wide Coil loader
+ * Renders a kids-asset SVG from `assets/kids/…` verbatim, using the app-wide Coil loader
  * (configured with the SVG decoder in [com.vi5hnu.curvykids.CurvyKidsApp]).
  *
- * The badge SVGs are self-contained, hand-drawn illustrations — they carry their own rounded frame,
- * artwork and name label — so they're rendered exactly as authored (`ContentScale.Fit`) and must be
- * placed on their own, never inside another card.
+ * The badge SVGs are self-contained, hand-drawn illustrations — they carry their own rounded
+ * frame, artwork and name label — so they're rendered exactly as authored (`ContentScale.Fit`)
+ * and must be placed on their own, never inside another card.
  *
- * Falls back to the [fallbackEmoji] text whenever [asset] is null or the SVG fails to load, so any
- * item without a matching asset keeps rendering something — nothing is ever lost.
+ * There is deliberately no emoji fallback. Emoji render differently on every OEM and Android
+ * version, ignore the colour they are given, and scale with the user's font setting rather than
+ * the layout — mixing them with the hand-drawn set made the app look like two different apps.
+ * A missing or unloadable asset shows a quiet placeholder instead, which reads as a bug to fix
+ * rather than silently shipping an inconsistent picture.
  *
- * @param asset          Asset-relative path, e.g. `"kids/animals/animal-cat.svg"` (no leading slash).
- * @param fallbackEmoji  Emoji shown if [asset] is missing/unloadable.
- * @param fallbackSize   Font size for the fallback emoji (matches the visual the SVG would fill).
+ * @param asset Asset-relative path, e.g. `"kids/animals/animal-cat.svg"` (no leading slash).
+ *              Build these with [com.vi5hnu.curvykids.data.content.KidAssets], not by hand.
  * @param contentDescription Accessibility label.
  */
 @Composable
 fun SvgImage(
     asset: String?,
-    fallbackEmoji: String?,
     modifier: Modifier = Modifier,
-    fallbackSize: TextUnit = 44.sp,
     contentDescription: String? = null,
 ) {
     var failed by remember(asset) { mutableStateOf(false) }
 
     if (asset == null || failed) {
-        Box(modifier = modifier, contentAlignment = Alignment.Center) {
-            if (!fallbackEmoji.isNullOrEmpty()) Text(fallbackEmoji, fontSize = fallbackSize)
+        Box(modifier = modifier) {
+            Canvas(modifier = Modifier.matchParentSize()) {
+                drawRoundRect(PLACEHOLDER, cornerRadius = CornerRadius(size.minDimension * 0.18f))
+            }
         }
         return
     }
@@ -62,22 +71,76 @@ fun SvgImage(
 }
 
 /**
- * Semantic alias for a kids-asset badge. The asset SVGs already carry their frame, art and name and
- * size themselves to the (square) space the caller gives them — use e.g.
- * `Modifier.fillMaxWidth().aspectRatio(1f)`. Kept as a named wrapper so call sites read as "badge"
- * and so any future badge-only treatment lives in one place.
+ * Semantic alias for a kids-asset badge. The asset SVGs already carry their frame, art and name
+ * and size themselves to the (square) space the caller gives them — use e.g.
+ * `Modifier.fillMaxWidth().aspectRatio(1f)`. Kept as a named wrapper so call sites read as
+ * "badge" and so any future badge-only treatment lives in one place.
  */
 @Composable
 fun SvgBadge(
     asset: String?,
-    fallbackEmoji: String? = null,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
 ) {
-    SvgImage(
-        asset = asset,
-        fallbackEmoji = fallbackEmoji,
-        modifier = modifier,
+    SvgImage(asset = asset, modifier = modifier, contentDescription = contentDescription)
+}
+
+/**
+ * Renders a badge with its printed name removed.
+ *
+ * The illustrated badges carry the item's name along the bottom, which is exactly right when the
+ * child is exploring ("this is a Lion") and exactly wrong in a quiz, where the picture is the
+ * question and the caption is the answer. Quiz options therefore render through here.
+ *
+ * The caption is identified by its geometry rather than by editing 1166 files: it is small type
+ * low in the viewBox. The large glyphs that *are* the content — numerals, Latin and Devanagari
+ * letterforms, math symbols — sit higher and are set much larger, so they are left alone.
+ */
+@Composable
+fun SvgArt(
+    asset: String?,
+    modifier: Modifier = Modifier,
+    contentDescription: String? = null,
+) {
+    val context = LocalContext.current
+    val stripped by produceState<ByteArray?>(initialValue = null, asset) {
+        value = asset?.let { path ->
+            withContext(Dispatchers.IO) { runCatching { captionlessSvg(context, path) }.getOrNull() }
+        }
+    }
+
+    val bytes = stripped
+    if (bytes == null) {
+        // Still loading, or unreadable: hold the space rather than flashing a placeholder in.
+        Box(modifier = modifier)
+        return
+    }
+
+    AsyncImage(
+        model = ImageRequest.Builder(context)
+            .data(ByteBuffer.wrap(bytes))
+            .build(),
         contentDescription = contentDescription,
+        contentScale = ContentScale.Fit,
+        modifier = modifier,
     )
+}
+
+/** Small type low in the viewBox is a caption, not artwork. */
+private val CAPTION = Regex(
+    """<text[^>]*?y="([\d.]+)"[^>]*?font-size="([\d.]+)"[^>]*?>[^<]*</text>"""
+)
+
+private const val CAPTION_MAX_FONT_SIZE = 14f
+private const val CAPTION_MIN_Y = 70f
+
+/** Reads [path] from assets and returns its bytes with any caption text removed. */
+private fun captionlessSvg(context: Context, path: String): ByteArray {
+    val raw = context.assets.open(path).bufferedReader().use { it.readText() }
+    val cleaned = CAPTION.replace(raw) { match ->
+        val y = match.groupValues[1].toFloatOrNull() ?: return@replace match.value
+        val size = match.groupValues[2].toFloatOrNull() ?: return@replace match.value
+        if (size <= CAPTION_MAX_FONT_SIZE && y >= CAPTION_MIN_Y) "" else match.value
+    }
+    return cleaned.toByteArray()
 }

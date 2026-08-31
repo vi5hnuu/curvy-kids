@@ -8,6 +8,7 @@ import androidx.lifecycle.viewModelScope
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.audio.SoundEffects
+import com.vi5hnu.curvykids.data.app.Difficulty
 import com.vi5hnu.curvykids.data.content.HINDI_BY_CHAR
 import com.vi5hnu.curvykids.data.content.Level
 import com.vi5hnu.curvykids.data.content.Phonics
@@ -75,6 +76,16 @@ class GameViewModel(
     fun setAudioEnabled(enabled: Boolean) {
         phonics.muted = !enabled
         sound.muted = !enabled
+    }
+
+    /** Attempts allowed on a character before the app moves on; Easy is more forgiving. */
+    private var maxWrongAttempts: Int = MAX_WRONG_ATTEMPTS_NORMAL
+
+    fun setDifficulty(difficulty: Difficulty) {
+        maxWrongAttempts = when (difficulty) {
+            Difficulty.EASY -> MAX_WRONG_ATTEMPTS_EASY
+            Difficulty.NORMAL -> MAX_WRONG_ATTEMPTS_NORMAL
+        }
     }
 
     init {
@@ -151,7 +162,7 @@ class GameViewModel(
                 _uiState.update {
                     it.copy(isChecking = false, lastResult = AnswerResult.WRONG, wrongAttempts = newAttempts)
                 }
-                if (newAttempts >= MAX_WRONG_ATTEMPTS) {
+                if (newAttempts >= maxWrongAttempts) {
                     speakGiveUp()
                     delay(GIVE_UP_DELAY_MS)
                     // Queue so the "keep practicing" line finishes before the next prompt.
@@ -192,6 +203,32 @@ class GameViewModel(
     fun jumpToIndex(index: Int) {
         val state = _uiState.value
         goTo(state.level, index.coerceIn(0, state.level.characters.lastIndex))
+    }
+
+    /**
+     * Spoken when the child taps Check with nothing drawn. The button stays enabled so the tap
+     * always does something; this is what it does.
+     */
+    fun promptToDraw() {
+        val state = _uiState.value
+        if (state.level.script == Script.DEVANAGARI && phonics.supports(HINDI_TTS_TAG)) {
+            phonics.speak("पहले लिखो!", langTag = HINDI_TTS_TAG); return
+        }
+        phonics.speak("Draw it first, then tap check.")
+    }
+
+    /**
+     * Clears all tracing progress and returns to the first character of the first level.
+     *
+     * Paired with AppViewModel.resetProgress by the navigation graph: the two ViewModels own
+     * different DataStore files, so a full reset has to go through both.
+     */
+    fun resetProgress() {
+        viewModelScope.launch {
+            progress.clear()
+            _uiState.value = GameUiState()
+            recognizer.ensure(Level.UPPERCASE.languageTag)
+        }
     }
 
     /** Clears the last answer result so the feedback badge disappears (e.g. after erasing). */
@@ -330,7 +367,8 @@ class GameViewModel(
         private const val TAG = "CurvyKidsVM"
         private const val CORRECT_ADVANCE_DELAY_MS = 1200L
         private const val RECOGNIZE_TIMEOUT_MS = 8000L
-        private const val MAX_WRONG_ATTEMPTS = 3
+        private const val MAX_WRONG_ATTEMPTS_NORMAL = 3
+        private const val MAX_WRONG_ATTEMPTS_EASY = 5
         private const val GIVE_UP_DELAY_MS = 2000L
         private val PRAISE = listOf("Yay! Great job!", "Awesome!", "Well done!", "Perfect!", "You did it!")
         private val HINDI_PRAISE = listOf("शाबाश!", "बहुत बढ़िया!", "वाह! कमाल कर दिया!", "बिलकुल सही!")

@@ -41,9 +41,10 @@ import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Teal
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
-/** Counting activity — tap each emoji then pick the number. */
+/** Counting activity — tap each svg then pick the number. */
 @Composable
 fun CountScreen(
     topic: Topic,
@@ -139,7 +140,7 @@ fun CountScreen(
                                     modifier = Modifier.size(56.dp),
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Text(item, fontSize = 40.sp)
+                                        SvgArt(item, modifier = Modifier.size(40.dp))
                                     }
                                 }
                                 if (isTapped) {
@@ -223,7 +224,7 @@ fun CountScreen(
                     }
                 } else {
                     // Reset both answer and tapped so the child can re-count from scratch.
-                    // Without this, all emoji stay locked (isTapped=true) while answer==null.
+                    // Without this, all svg stay locked (isTapped=true) while answer==null.
                     tapped = listOf()
                     answer = null
                 }

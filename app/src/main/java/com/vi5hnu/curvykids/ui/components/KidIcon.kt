@@ -1,7 +1,14 @@
 package com.vi5hnu.curvykids.ui.components
 
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.LocalContentColor
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.geometry.Offset
@@ -14,6 +21,11 @@ import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import kotlin.math.PI
 import kotlin.math.cos
 import kotlin.math.sin
@@ -24,7 +36,7 @@ import kotlin.math.sin
  * These are the symbols that are *interface* rather than *content* — the star currency, the
  * listen button, the eraser. The illustrated SVG library under `assets/kids/` covers content
  * (animals, food, shapes…) but has no art for chrome, and the app must not fall back to system
- * emoji: emoji glyphs vary per OEM/Android version, ignore `color` (colour-emoji fonts render
+ * svg: svg glyphs vary per OEM/Android version, ignore `color` (colour-svg fonts render
  * their own palette), and scale with the user's font setting rather than the layout.
  *
  * Drawn with the same normalised-coordinate idiom as [TopicGlyph] so both icon systems stay
@@ -32,7 +44,7 @@ import kotlin.math.sin
  */
 enum class KidIcon {
     Star, Flame, Speaker, Eraser, Lock, Sparkle, Check, Pointer,
-    ArrowBack, ArrowForward, Undo, Trophy,
+    ArrowBack, ArrowForward, Undo, Trophy, Pencil, Note, Cross,
 }
 
 /**
@@ -45,7 +57,7 @@ enum class KidIcon {
 fun KidIconImage(
     icon: KidIcon,
     modifier: Modifier = Modifier,
-    color: Color = Color.White,
+    color: Color = LocalContentColor.current,
     contentDescription: String? = null,
 ) {
     val semantics = if (contentDescription != null) {
@@ -216,6 +228,40 @@ private fun DrawScope.drawKidIcon(icon: KidIcon, color: Color) {
             drawPath(head, color, style = stroke)
         }
 
+        KidIcon.Pencil -> {
+            // Tilted pencil: barrel, wooden tip, dark point.
+            val barrel = Path().apply {
+                moveTo(w * 0.26f, h * 0.74f); lineTo(w * 0.66f, h * 0.14f)
+                lineTo(w * 0.86f, h * 0.28f); lineTo(w * 0.46f, h * 0.88f); close()
+            }
+            drawPath(barrel, color)
+            val tip = Path().apply {
+                moveTo(w * 0.26f, h * 0.74f); lineTo(w * 0.46f, h * 0.88f)
+                lineTo(w * 0.16f, h * 0.94f); close()
+            }
+            drawPath(tip, color.copy(alpha = 0.55f))
+        }
+
+        KidIcon.Note -> {
+            // Two beamed eighth notes.
+            drawCircle(color, s * 0.13f, Offset(w * 0.3f, h * 0.72f))
+            drawCircle(color, s * 0.13f, Offset(w * 0.68f, h * 0.64f))
+            drawLine(color, Offset(w * 0.41f, h * 0.72f), Offset(w * 0.41f, h * 0.2f),
+                strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.79f, h * 0.64f), Offset(w * 0.79f, h * 0.12f),
+                strokeWidth = sw, cap = StrokeCap.Round)
+            drawLine(color, Offset(w * 0.41f, h * 0.2f), Offset(w * 0.79f, h * 0.12f),
+                strokeWidth = sw * 1.5f, cap = StrokeCap.Round)
+        }
+
+        KidIcon.Cross -> {
+            val x1 = Path().apply { moveTo(w * 0.24f, h * 0.24f); lineTo(w * 0.76f, h * 0.76f) }
+            val x2 = Path().apply { moveTo(w * 0.76f, h * 0.24f); lineTo(w * 0.24f, h * 0.76f) }
+            val heavy = Stroke(width = s * 0.15f, cap = StrokeCap.Round, join = StrokeJoin.Round)
+            drawPath(x1, color, style = heavy)
+            drawPath(x2, color, style = heavy)
+        }
+
         KidIcon.Trophy -> {
             // Cup
             val cup = Path().apply {
@@ -237,5 +283,35 @@ private fun DrawScope.drawKidIcon(icon: KidIcon, color: Color) {
                 topLeft = Offset(w * 0.28f, h * 0.76f), size = Size(w * 0.44f, h * 0.12f),
                 cornerRadius = CornerRadius(s * 0.05f))
         }
+    }
+}
+
+/** The gold the star currency is always drawn in. */
+val StarGold = Color(0xFFF2A93B)
+
+/**
+ * The "N stars" readout used by every activity's score pill.
+ *
+ * Shared so all the games count the same way and look the same doing it — each screen used to
+ * inline its own star-plus-number text.
+ */
+@Composable
+fun StarCount(
+    count: Int,
+    modifier: Modifier = Modifier,
+    color: Color = StarGold,
+    iconSize: Dp = 17.dp,
+    textSize: androidx.compose.ui.unit.TextUnit = 16.sp,
+) {
+    Row(modifier = modifier, verticalAlignment = Alignment.CenterVertically) {
+        KidIconImage(icon = KidIcon.Star, modifier = Modifier.size(iconSize), color = color)
+        Spacer(Modifier.width(5.dp))
+        Text(
+            text = "$count",
+            fontFamily = FontDisplay,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = textSize,
+            color = color,
+        )
     }
 }

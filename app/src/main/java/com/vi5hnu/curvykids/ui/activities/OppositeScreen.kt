@@ -42,10 +42,15 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgBadge
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
 /** One option in the opposite quiz — could be word1 or word2 from any pair. */
-private data class OppositeChoice(val word: String, val emoji: String, val isCorrect: Boolean)
+private data class OppositeChoice(val word: String, val svg: String, val isCorrect: Boolean)
 
 private data class OppositeSpec(
     val prompt: OppositePair,
@@ -57,7 +62,7 @@ private fun buildOppositeSpec(round: Int): OppositeSpec {
     val pair = OPPOSITES[round % OPPOSITES.size]
     val showWord1 = round % 2 == 0
     val correctWord = if (showWord1) pair.word2 else pair.word1
-    val correctEmoji = if (showWord1) pair.emoji2 else pair.emoji1
+    val correctSvg = if (showWord1) pair.svg2 else pair.svg1
 
     // Distractors from other pairs — pick the "opposite" words from random pairs
     val distractors = OPPOSITES
@@ -68,11 +73,11 @@ private fun buildOppositeSpec(round: Int): OppositeSpec {
             val useWord1 = listOf(true, false).random()
             OppositeChoice(
                 if (useWord1) other.word1 else other.word2,
-                if (useWord1) other.emoji1 else other.emoji2,
+                if (useWord1) other.svg1 else other.svg2,
                 isCorrect = false,
             )
         }
-    val correct = OppositeChoice(correctWord, correctEmoji, isCorrect = true)
+    val correct = OppositeChoice(correctWord, correctSvg, isCorrect = true)
     return OppositeSpec(pair, showWord1, (distractors + correct).shuffled())
 }
 
@@ -86,16 +91,20 @@ fun OppositeScreen(
 ) {
     var score by rememberSaveable { mutableIntStateOf(0) }
     var round by rememberSaveable { mutableIntStateOf(0) }
+    // Wrong answers on the current question, so a child who cannot get it is
+    // moved on instead of being left tapping forever.
+    var misses by remember { mutableIntStateOf(0) }
     var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     val spec = remember(round) { buildOppositeSpec(round) }
     val promptWord = if (spec.showWord1) spec.prompt.word1 else spec.prompt.word2
-    val promptEmoji = if (spec.showWord1) spec.prompt.emoji1 else spec.prompt.emoji2
+    val promptSvg = if (spec.showWord1) spec.prompt.svg1 else spec.prompt.svg2
 
     fun speakPrompt() = feedback?.speaker?.speak("What is the opposite of $promptWord?")
 
     LaunchedEffect(round) { speakPrompt() }
+    LaunchedEffect(round) { misses = 0 }
 
     fun choose(choice: OppositeChoice) {
         if (flash != null) return
@@ -106,8 +115,12 @@ fun OppositeScreen(
             feedback?.correct()
             feedback?.speaker?.speak("Yes! ${choice.word}!")
         } else {
+            misses += 1
             feedback?.wrong()
-            feedback?.speaker?.speak("Try again")
+            feedback?.speaker?.speak(
+                if (misses >= MISSES_BEFORE_MOVING_ON) "That one is tricky. Let's try another."
+                else "Try again"
+            )
         }
     }
 
@@ -116,6 +129,8 @@ fun OppositeScreen(
             delay(750)
             if (flash?.second == true) {
                 if (score > 0 && score % 5 == 0) showCelebrate = true else round++
+            } else if (misses >= MISSES_BEFORE_MOVING_ON) {
+                round++
             }
             flash = null
         }
@@ -138,7 +153,7 @@ fun OppositeScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                            StarCount(score)
                         }
                     }
                 },
@@ -159,7 +174,7 @@ fun OppositeScreen(
                         color = InkSoft,
                     )
                     Spacer(Modifier.height(12.dp))
-                    Text(promptEmoji, fontSize = 56.sp)
+                    SvgArt(promptSvg, modifier = Modifier.size(64.dp))
                     Spacer(Modifier.height(6.dp))
                     Text(
                         promptWord,
@@ -169,8 +184,8 @@ fun OppositeScreen(
                         color = topic.color,
                     )
                     Spacer(Modifier.height(12.dp))
-                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(46.dp)) {
-                        Text("🔊", fontSize = 20.sp)
+                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(48.dp)) {
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }
@@ -206,7 +221,7 @@ fun OppositeScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                    Text(choice.emoji, fontSize = 30.sp)
+                                    SvgArt(choice.svg, modifier = Modifier.size(34.dp))
                                     Text(
                                         choice.word,
                                         fontFamily = FontDisplay,
@@ -232,3 +247,6 @@ fun OppositeScreen(
         }
     }
 }
+
+/** Wrong answers tolerated before the question is changed for the child. */
+private const val MISSES_BEFORE_MOVING_ON = 3

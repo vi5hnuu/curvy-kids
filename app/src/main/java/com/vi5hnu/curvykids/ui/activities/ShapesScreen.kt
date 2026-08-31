@@ -37,6 +37,9 @@ import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarGold
+import com.vi5hnu.curvykids.ui.components.KidIcon
 
 /** Shapes — Learn (tap to hear the name) + Play ("Find the Shape" quiz). */
 @Composable
@@ -139,10 +142,11 @@ private fun ShapeCard(
                 )
             }
             if (seen) {
-                Text(
-                    text = "⭐",
-                    fontSize = 16.sp,
-                    modifier = Modifier.align(Alignment.TopEnd),
+                KidIconImage(
+                    icon = KidIcon.Star,
+                    modifier = Modifier.align(Alignment.TopEnd)
+                        .size(16.dp),
+                    color = StarGold,
                 )
             }
         }

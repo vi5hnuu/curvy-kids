@@ -59,8 +59,6 @@ fun MonthsScreen(
                 // SVG badge carries the month name already.
                 SvgImage(
                     asset = prev.svg,
-                    fallbackEmoji = prev.emoji,
-                    fallbackSize = 44.sp,
                     contentDescription = prev.name,
                     modifier = Modifier.size(96.dp),
                 )
@@ -71,8 +69,6 @@ fun MonthsScreen(
         quizOption = { month ->
             SvgImage(
                 asset = month.svg,
-                fallbackEmoji = month.emoji,
-                fallbackSize = 32.sp,
                 contentDescription = month.name,
                 modifier = Modifier.size(74.dp),
             )
@@ -101,8 +97,6 @@ private fun MonthsLearnGrid() {
                             // SVG badge carries the month name already.
                             SvgImage(
                                 asset = month.svg,
-                                fallbackEmoji = month.emoji,
-                                fallbackSize = 24.sp,
                                 contentDescription = month.name,
                                 modifier = Modifier.size(64.dp),
                             )

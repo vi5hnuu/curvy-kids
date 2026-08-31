@@ -31,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
-import com.vi5hnu.curvykids.data.content.GAME_EMOJIS
+import com.vi5hnu.curvykids.data.content.GAME_PICTURES
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
@@ -41,6 +41,11 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.theme.Teal
+import com.vi5hnu.curvykids.ui.components.SvgBadge
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
 private const val COLS = 3
@@ -83,11 +88,11 @@ fun CountCatchScreen(
         val range = targetRangeForLevel(level)
         val target = range.random()
         val pool = (target + (2..3).random()).coerceAtMost(12)
-        Triple(target, pool, GAME_EMOJIS.random())
+        Triple(target, pool, GAME_PICTURES.random())
     }
     val target = spec.first
     val pool = spec.second
-    val emoji = spec.third
+    val svg = spec.third
 
     fun speakPrompt() = feedback?.speaker?.speak("Tap $target")
 
@@ -132,12 +137,7 @@ fun CountCatchScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text(
-                                "⭐ $score",
-                                fontFamily = FontDisplay,
-                                fontSize = 16.sp,
-                                color = Color(0xFFF2A93B),
-                            )
+                            StarCount(score)
                         }
                     }
                 },
@@ -179,8 +179,8 @@ fun CountCatchScreen(
                         color = InkSoft,
                     )
                     Spacer(Modifier.height(8.dp))
-                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(46.dp)) {
-                        Text("🔊", fontSize = 20.sp)
+                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(48.dp)) {
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }
@@ -209,7 +209,7 @@ fun CountCatchScreen(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier.fillMaxSize(),
                             ) {
-                                Text(emoji, fontSize = 40.sp)
+                                SvgArt(svg, modifier = Modifier.size(40.dp))
                                 if (isTapped) {
                                     Surface(
                                         shape = RoundedCornerShape(999.dp),
@@ -220,11 +220,10 @@ fun CountCatchScreen(
                                             .size(22.dp),
                                     ) {
                                         Box(contentAlignment = Alignment.Center) {
-                                            Text(
-                                                "✓",
-                                                fontSize = 13.sp,
+                                            KidIconImage(
+                                                icon = KidIcon.Check,
+                                                modifier = Modifier.size(13.dp),
                                                 color = Color.White,
-                                                fontWeight = FontWeight.ExtraBold,
                                             )
                                         }
                                     }

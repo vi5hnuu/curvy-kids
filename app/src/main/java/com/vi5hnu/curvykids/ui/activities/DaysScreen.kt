@@ -35,6 +35,9 @@ import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Grape
 import com.vi5hnu.curvykids.ui.theme.Ink
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarGold
+import com.vi5hnu.curvykids.ui.components.KidIcon
 import java.util.Calendar
 
 /** Day before [day] in the week, wrapping Sunday→Saturday. */
@@ -183,7 +186,7 @@ private fun DaysLearnList(
                                 color = Color.White,
                             )
                         } else if (seen.contains(i)) {
-                            Text("⭐", fontSize = 15.sp)
+                            KidIconImage(KidIcon.Star, Modifier.size(15.dp), StarGold)
                         }
                     }
                 }

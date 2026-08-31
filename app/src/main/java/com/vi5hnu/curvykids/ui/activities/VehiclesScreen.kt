@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -27,6 +28,7 @@ import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgArt
 
 /** Vehicles — learn transportation names and sounds, then identify them in a quiz. */
 @Composable
@@ -61,8 +63,8 @@ fun VehiclesScreen(
             }
         },
         quizOption = { vehicle ->
-            // Emoji only in the quiz — the SVG bakes the vehicle's name in, which would reveal the answer.
-            Text(vehicle.emoji, fontSize = 44.sp, textAlign = TextAlign.Center)
+            // The badge caption is the answer, so quiz options render the art only.
+            SvgArt(vehicle.svg, modifier = Modifier.size(44.dp))
         },
     )
 }
@@ -87,7 +89,6 @@ private fun VehiclesLearnGrid(onSpeak: (Vehicle) -> Unit) {
                     ) {
                         SvgBadge(
                             asset = vehicle.svg,
-                            fallbackEmoji = vehicle.emoji,
                             contentDescription = vehicle.name,
                             modifier = Modifier
                                 .fillMaxWidth()

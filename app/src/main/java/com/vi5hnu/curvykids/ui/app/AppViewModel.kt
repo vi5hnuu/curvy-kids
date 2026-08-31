@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.vi5hnu.curvykids.data.app.AppRepository
+import com.vi5hnu.curvykids.data.app.Difficulty
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,6 +15,7 @@ import java.time.LocalDate
 /** Persisted parent-facing settings. */
 data class AppSettings(
     val soundEffects: Boolean = true,
+    val difficulty: Difficulty = Difficulty.NORMAL,
 )
 
 /**
@@ -38,7 +40,10 @@ class AppViewModel(private val repo: AppRepository) : ViewModel() {
                     badges = record.badges,
                     lastTopicId = record.lastTopicId,
                 )
-                _settings.value = AppSettings(soundEffects = record.soundEffects)
+                _settings.value = AppSettings(
+                    soundEffects = record.soundEffects,
+                    difficulty = record.difficulty,
+                )
             }
         }
     }
@@ -77,6 +82,10 @@ class AppViewModel(private val repo: AppRepository) : ViewModel() {
 
     fun setSoundEffects(enabled: Boolean) {
         viewModelScope.launch { repo.setSoundEffects(enabled) }
+    }
+
+    fun setDifficulty(difficulty: Difficulty) {
+        viewModelScope.launch { repo.setDifficulty(difficulty) }
     }
 
     /** Clears all child progress; the parent sound setting is kept. */

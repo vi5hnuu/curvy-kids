@@ -19,7 +19,7 @@ data class Story(
     val id: String,
     val title: String,     // Devanagari title
     val subtitle: String,  // short English hint, shown under the title on the list card
-    val emoji: String,
+    val svg: String,
     val color: Color,
     val tint: Color,
     val lines: List<String>,
@@ -32,7 +32,7 @@ val STORIES: List<Story> = listOf(
         id = "thirsty-crow",
         title = "प्यासा कौआ",
         subtitle = "The Thirsty Crow",
-        emoji = "🐦",
+        svg = KidAssets.bird("dove"),
         color = Coral,
         tint = TintCoral,
         lines = listOf(
@@ -49,7 +49,7 @@ val STORIES: List<Story> = listOf(
         id = "lion-mouse",
         title = "शेर और चूहा",
         subtitle = "The Lion and the Mouse",
-        emoji = "🦁",
+        svg = KidAssets.animal("lion"),
         color = Sun,
         tint = TintSun,
         lines = listOf(
@@ -67,7 +67,7 @@ val STORIES: List<Story> = listOf(
         id = "hare-tortoise",
         title = "खरगोश और कछुआ",
         subtitle = "The Hare and the Tortoise",
-        emoji = "🐢",
+        svg = KidAssets.animal("turtle"),
         color = Green,
         tint = TintGreen,
         lines = listOf(
@@ -84,7 +84,7 @@ val STORIES: List<Story> = listOf(
         id = "unity-strength",
         title = "एकता में बल",
         subtitle = "Unity is Strength",
-        emoji = "🌾",
+        svg = KidAssets.nature("wheat"),
         color = Aqua,
         tint = TintAqua,
         lines = listOf(

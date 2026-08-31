@@ -49,8 +49,6 @@ fun FractionsScreen(
         quizPrompt = { item ->
             SvgImage(
                 asset = item.svg,
-                fallbackEmoji = "🥧",
-                fallbackSize = 64.sp,
                 contentDescription = item.spoken,
                 modifier = Modifier.size(130.dp),
             )
@@ -91,8 +89,6 @@ private fun FractionsLearnGrid(
                         ) {
                             SvgImage(
                                 asset = item.svg,
-                                fallbackEmoji = "🥧",
-                                fallbackSize = 40.sp,
                                 contentDescription = item.spoken,
                                 modifier = Modifier.size(78.dp),
                             )

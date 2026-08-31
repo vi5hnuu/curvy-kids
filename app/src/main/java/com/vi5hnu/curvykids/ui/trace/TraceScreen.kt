@@ -58,6 +58,8 @@ import com.vi5hnu.curvykids.ui.trace.components.CharStrip
 import com.vi5hnu.curvykids.ui.trace.components.DemoWipe
 import com.vi5hnu.curvykids.ui.trace.components.StrokeOrderDemo
 import com.vi5hnu.curvykids.ui.trace.components.hasStrokeGuide
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.KidIcon
 
 /**
  * Redesigned tracing screen matching trace.jsx design.
@@ -92,7 +94,7 @@ fun TraceScreen(
 
     val ch = uiState.character
     val word = Phonics.wordFor(ch)
-    val emoji = Phonics.emojiFor(ch)
+    val svg = Phonics.assetFor(ch)
 
     // Clear canvas + restart DemoWipe on every new character
     LaunchedEffect(uiState.level, uiState.index) {
@@ -187,7 +189,7 @@ fun TraceScreen(
                             color = InkSoft,
                         )
                         Text(
-                            text = "${emoji ?: ""} ${word ?: ch}".trim(),
+                            text = "${svg ?: ""} ${word ?: ch}".trim(),
                             fontFamily = FontDisplay,
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 23.sp,
@@ -203,7 +205,7 @@ fun TraceScreen(
                         shadowElevation = 2.dp,
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Text("🔊", fontSize = 22.sp)
+                            KidIconImage(KidIcon.Speaker, Modifier.size(22.dp))
                         }
                     }
                 }
@@ -275,7 +277,7 @@ fun TraceScreen(
                         containerColor = Color(0xFFFFE9E4),
                         contentColor = Color(0xFFFF8B6B),
                     ) {
-                        Text("🧹", fontSize = 20.sp)
+                        KidIconImage(KidIcon.Eraser, Modifier.size(20.dp))
                     }
 
                     // Replay "show me" chip (top-right)
@@ -288,7 +290,7 @@ fun TraceScreen(
                         containerColor = Color(0xFFDFF7F2),
                         contentColor = Color(0xFF1FC2AE),
                     ) {
-                        Text("👆", fontSize = 20.sp)
+                        KidIconImage(KidIcon.Pointer, Modifier.size(20.dp))
                     }
 
                     // Crayon tray (bottom-center)
@@ -329,7 +331,7 @@ fun TraceScreen(
                                 .padding(horizontal = 22.dp, vertical = 10.dp),
                         ) {
                             Text(
-                                text = "Keep going! 💪",
+                                text = "Keep going!",
                                 fontFamily = FontDisplay,
                                 fontWeight = FontWeight.ExtraBold,
                                 fontSize = 20.sp,
@@ -374,25 +376,31 @@ fun TraceScreen(
                     )
                 }
 
-                val canCheck = controller.hasDrawing && !uiState.isChecking
+                // Deliberately always enabled: a greyed-out button reads as "broken" to a
+                // four-year-old, who has no way to know it is waiting for them to draw. It stays
+                // tappable and says what to do instead.
                 CandyButton(
                     onClick = {
-                        viewModel.check(
-                            strokes = controller.snapshot(),
-                            writingArea = null,
-                        )
+                        if (!controller.hasDrawing) {
+                            viewModel.promptToDraw()
+                        } else if (!uiState.isChecking) {
+                            viewModel.check(
+                                strokes = controller.snapshot(),
+                                writingArea = null,
+                            )
+                        }
                     },
-                    enabled = canCheck,
+                    enabled = true,
                     modifier = Modifier
                         .weight(1f)
                         .height(62.dp),
-                    containerColor = Green,
+                    containerColor = if (controller.hasDrawing) Green else Green.copy(alpha = 0.55f),
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text("✓", fontSize = 22.sp, color = Color.White)
+                        KidIconImage(KidIcon.Check, Modifier.size(22.dp), Color.White)
                         Text(
                             text = if (uiState.isChecking) "Checking…" else "Check",
                             fontFamily = FontDisplay,

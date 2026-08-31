@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -59,6 +60,7 @@ import com.vi5hnu.curvykids.ui.activities.SubtractionScreen
 import com.vi5hnu.curvykids.ui.activities.VehiclesScreen
 import com.vi5hnu.curvykids.ui.activities.WordsScreen
 import com.vi5hnu.curvykids.ui.app.AppViewModel
+import com.vi5hnu.curvykids.ui.app.LocalDifficulty
 import com.vi5hnu.curvykids.ui.game.GameViewModel
 import com.vi5hnu.curvykids.ui.home.HomeScreen
 import com.vi5hnu.curvykids.ui.parent.ParentGate
@@ -90,6 +92,11 @@ fun AppNavGraph(
         gameViewModel.setAudioEnabled(appSettings.soundEffects)
     }
 
+    // Tracing gets more attempts before it moves the child on when Easy is selected.
+    LaunchedEffect(appSettings.difficulty) {
+        gameViewModel.setDifficulty(appSettings.difficulty)
+    }
+
     // Gradient background applied to the full screen at all times
     val bgGradient = Brush.verticalGradient(listOf(BgTop, BgBottom))
 
@@ -105,334 +112,349 @@ fun AppNavGraph(
     // screen here as well stacked the two, leaving ~180dp of dead space below every list.
     val tabContentPadding = Modifier
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(bgGradient),
-    ) {
-        NavHost(
-            navController = navController,
-            startDestination = Screen.Home.route,
-            // Keep the gradient full-bleed behind the bars, but inset content below the
-            // status bar (top) and above the gesture/navigation bar (bottom).
+    CompositionLocalProvider(LocalDifficulty provides appSettings.difficulty) {
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .windowInsetsPadding(WindowInsets.systemBars),
+                .background(bgGradient),
         ) {
-            // ── Home tab ───────────────────────────────────────────────────
-            composable(Screen.Home.route) {
-                HomeScreen(
-                    appState = appState,
-                    onOpenTopic = { topic ->
-                        appViewModel.setLastTopic(topic.id)
-                        navController.navigate(Screen.Topic.createRoute(topic.id))
-                    },
-                    modifier = tabContentPadding,
-                )
-            }
-
-            // ── Play tab ───────────────────────────────────────────────────
-            composable(Screen.Play.route) {
-                PlayScreen(
-                    onOpenTopic = { topic ->
-                        appViewModel.setLastTopic(topic.id)
-                        navController.navigate(Screen.Topic.createRoute(topic.id))
-                    },
-                    modifier = tabContentPadding,
-                )
-            }
-
-            // ── Rewards tab ────────────────────────────────────────────────
-            composable(Screen.Rewards.route) {
-                RewardsScreen(
-                    appState = appState,
-                    modifier = tabContentPadding,
-                )
-            }
-
-            // ── Parent tab ─────────────────────────────────────────────────
-            composable(Screen.Parent.route) {
-                // rememberSaveable so config changes (rotation) don't dismiss an open sheet
-                var showGate by rememberSaveable { mutableStateOf(false) }
-                var showZone by rememberSaveable { mutableStateOf(false) }
-
-                ParentTab(
-                    onUnlock = { showGate = true },
-                    modifier = tabContentPadding,
-                )
-
-                if (showGate) {
-                    ParentGate(
-                        onPass = {
-                            showGate = false
-                            showZone = true
-                        },
-                        onDismiss = { showGate = false },
-                    )
-                }
-
-                if (showZone) {
-                    ParentZone(
+            NavHost(
+                navController = navController,
+                startDestination = Screen.Home.route,
+                // Keep the gradient full-bleed behind the bars, but inset content below the
+                // status bar (top) and above the gesture/navigation bar (bottom).
+                modifier = Modifier
+                    .fillMaxSize()
+                    .windowInsetsPadding(WindowInsets.systemBars),
+            ) {
+                // ── Home tab ───────────────────────────────────────────────────
+                composable(Screen.Home.route) {
+                    HomeScreen(
                         appState = appState,
-                        settings = appSettings,
-                        onSoundEffects = appViewModel::setSoundEffects,
-                        onDismiss = { showZone = false },
+                        onOpenTopic = { topic ->
+                            appViewModel.setLastTopic(topic.id)
+                            navController.navigate(Screen.Topic.createRoute(topic.id))
+                        },
+                        onSeeAll = {
+                            navController.navigate(AppTab.PLAY.route) {
+                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        },
+                        modifier = tabContentPadding,
                     )
                 }
-            }
 
-            // ── Topic full-screen ──────────────────────────────────────────
-            composable(
-                route = Screen.Topic.route,
-                arguments = listOf(navArgument("topicId") { type = NavType.StringType }),
-            ) { entry ->
-                val topicId = entry.arguments?.getString("topicId") ?: return@composable
-                val topic = TOPICS.find { it.id == topicId } ?: return@composable
-
-                // Silence the shared voice when leaving ANY topic screen, so a prompt that was
-                // mid-sentence ("Find the red…") doesn't keep talking on the tab screens.
-                DisposableEffect(topicId) {
-                    onDispose { gameViewModel.speaker.stop() }
+                // ── Play tab ───────────────────────────────────────────────────
+                composable(Screen.Play.route) {
+                    PlayScreen(
+                        onOpenTopic = { topic ->
+                            appViewModel.setLastTopic(topic.id)
+                            navController.navigate(Screen.Topic.createRoute(topic.id))
+                        },
+                        modifier = tabContentPadding,
+                    )
                 }
 
-                when (topic.kind) {
-                    TopicKind.TRACE -> {
-                        // Schedule the level switch; GameViewModel.selectLevel is async
-                        // (loads masteredSet from DataStore before calling goTo).
-                        LaunchedEffect(topicId) { gameViewModel.selectLevel(topic.set!!) }
+                // ── Rewards tab ────────────────────────────────────────────────
+                composable(Screen.Rewards.route) {
+                    RewardsScreen(
+                        appState = appState,
+                        modifier = tabContentPadding,
+                    )
+                }
 
-                        val gameState by gameViewModel.uiState.collectAsState()
+                // ── Parent tab ─────────────────────────────────────────────────
+                composable(Screen.Parent.route) {
+                    // rememberSaveable so config changes (rotation) don't dismiss an open sheet
+                    var showGate by rememberSaveable { mutableStateOf(false) }
+                    var showZone by rememberSaveable { mutableStateOf(false) }
 
-                        // Don't render TraceScreen until the correct level is loaded —
-                        // prevents one or more frames of wrong-character content being shown
-                        // or recognised against the previous level's character.
-                        if (gameState.level == topic.set) {
-                            TraceScreen(
-                                viewModel = gameViewModel,
-                                onBack = { navController.popBackStack() },
-                                onReward = appViewModel::reward,
-                                onMarkMastered = appViewModel::markMastered,
-                            )
-                        } else {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center,
-                            ) {
-                                CircularProgressIndicator(color = topic.color)
+                    ParentTab(
+                        onUnlock = { showGate = true },
+                        modifier = tabContentPadding,
+                    )
+
+                    if (showGate) {
+                        ParentGate(
+                            onPass = {
+                                showGate = false
+                                showZone = true
+                            },
+                            onDismiss = { showGate = false },
+                        )
+                    }
+
+                    if (showZone) {
+                        ParentZone(
+                            appState = appState,
+                            settings = appSettings,
+                            onSoundEffects = appViewModel::setSoundEffects,
+                            onDifficulty = appViewModel::setDifficulty,
+                            onResetProgress = {
+                                // Stars/badges and tracing progress live in separate stores.
+                                appViewModel.resetProgress()
+                                gameViewModel.resetProgress()
+                            },
+                            onDismiss = { showZone = false },
+                        )
+                    }
+                }
+
+                // ── Topic full-screen ──────────────────────────────────────────
+                composable(
+                    route = Screen.Topic.route,
+                    arguments = listOf(navArgument("topicId") { type = NavType.StringType }),
+                ) { entry ->
+                    val topicId = entry.arguments?.getString("topicId") ?: return@composable
+                    val topic = TOPICS.find { it.id == topicId } ?: return@composable
+
+                    // Silence the shared voice when leaving ANY topic screen, so a prompt that was
+                    // mid-sentence ("Find the red…") doesn't keep talking on the tab screens.
+                    DisposableEffect(topicId) {
+                        onDispose { gameViewModel.speaker.stop() }
+                    }
+
+                    when (topic.kind) {
+                        TopicKind.TRACE -> {
+                            // Schedule the level switch; GameViewModel.selectLevel is async
+                            // (loads masteredSet from DataStore before calling goTo).
+                            LaunchedEffect(topicId) { gameViewModel.selectLevel(topic.set!!) }
+
+                            val gameState by gameViewModel.uiState.collectAsState()
+
+                            // Don't render TraceScreen until the correct level is loaded —
+                            // prevents one or more frames of wrong-character content being shown
+                            // or recognised against the previous level's character.
+                            if (gameState.level == topic.set) {
+                                TraceScreen(
+                                    viewModel = gameViewModel,
+                                    onBack = { navController.popBackStack() },
+                                    onReward = appViewModel::reward,
+                                    onMarkMastered = appViewModel::markMastered,
+                                )
+                            } else {
+                                Box(
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentAlignment = Alignment.Center,
+                                ) {
+                                    CircularProgressIndicator(color = topic.color)
+                                }
                             }
                         }
+
+                        TopicKind.SHAPES -> ShapesScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        TopicKind.COLORS -> ColorsScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            onAddBadge = appViewModel::addBadge,
+                            speaker = gameViewModel.speaker,
+                        )
+
+                        TopicKind.COUNT -> CountScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            speaker = gameViewModel.speaker,
+                        )
+
+                        TopicKind.WORDS -> WordsScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            speaker = gameViewModel.speaker,
+                        )
+
+                        TopicKind.ANIMALS -> AnimalsScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        TopicKind.BODY -> BodyScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        TopicKind.DAYS -> DaysScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        TopicKind.DRAW -> DrawScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onAddBadge = appViewModel::addBadge,
+                        )
+
+                        TopicKind.MEMORY -> MemoryMatchScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        TopicKind.BIGSMALL -> BigSmallScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        TopicKind.ODDONE -> OddOneOutScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        TopicKind.CATCH -> CountCatchScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        // ── World ──────────────────────────────────────────────────
+                        TopicKind.MONTHS -> MonthsScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.SEASONS -> SeasonsScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.EMOTIONS -> EmotionsScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.VEHICLES -> VehiclesScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.FRUITSVEGGIES -> FruitsVeggiesScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        // ── Math ───────────────────────────────────────────────────
+                        TopicKind.ADDITION -> AdditionScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.SUBTRACTION -> SubtractionScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.PATTERNS -> PatternsScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.TIME -> TimeScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.FRACTIONS -> FractionsScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        // ── Language ───────────────────────────────────────────────
+                        TopicKind.PHONICS -> PhonicScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.OPPOSITES -> OppositeScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+                        TopicKind.RHYMING -> RhymingScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        // ── Generic picture topics (Food, Clothes, Jobs, Birds, …) ──
+                        TopicKind.PICTURE -> PictureDiscoverScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        TopicKind.BARAKHADI -> BarakhadiScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
+
+                        TopicKind.STORIES -> StoriesScreen(
+                            topic = topic,
+                            onBack = { navController.popBackStack() },
+                            onReward = appViewModel::reward,
+                            feedback = gameViewModel.feedback,
+                        )
                     }
-
-                    TopicKind.SHAPES -> ShapesScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    TopicKind.COLORS -> ColorsScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        onAddBadge = appViewModel::addBadge,
-                        speaker = gameViewModel.speaker,
-                    )
-
-                    TopicKind.COUNT -> CountScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        speaker = gameViewModel.speaker,
-                    )
-
-                    TopicKind.WORDS -> WordsScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        speaker = gameViewModel.speaker,
-                    )
-
-                    TopicKind.ANIMALS -> AnimalsScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    TopicKind.BODY -> BodyScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    TopicKind.DAYS -> DaysScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    TopicKind.DRAW -> DrawScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onAddBadge = appViewModel::addBadge,
-                    )
-
-                    TopicKind.MEMORY -> MemoryMatchScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    TopicKind.BIGSMALL -> BigSmallScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    TopicKind.ODDONE -> OddOneOutScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    TopicKind.CATCH -> CountCatchScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    // ── World ──────────────────────────────────────────────────
-                    TopicKind.MONTHS -> MonthsScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.SEASONS -> SeasonsScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.EMOTIONS -> EmotionsScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.VEHICLES -> VehiclesScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.FRUITSVEGGIES -> FruitsVeggiesScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    // ── Math ───────────────────────────────────────────────────
-                    TopicKind.ADDITION -> AdditionScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.SUBTRACTION -> SubtractionScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.PATTERNS -> PatternsScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.TIME -> TimeScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.FRACTIONS -> FractionsScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    // ── Language ───────────────────────────────────────────────
-                    TopicKind.PHONICS -> PhonicScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.OPPOSITES -> OppositeScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-                    TopicKind.RHYMING -> RhymingScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    // ── Generic picture topics (Food, Clothes, Jobs, Birds, …) ──
-                    TopicKind.PICTURE -> PictureDiscoverScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    TopicKind.BARAKHADI -> BarakhadiScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
-
-                    TopicKind.STORIES -> StoriesScreen(
-                        topic = topic,
-                        onBack = { navController.popBackStack() },
-                        onReward = appViewModel::reward,
-                        feedback = gameViewModel.feedback,
-                    )
                 }
             }
-        }
 
-        // ── Floating bottom tab bar (hidden inside topic screens) ──────────
-        if (onTabScreen) {
-            BottomTabBar(
-                currentTab = currentTab,
-                onTabSelected = { tab ->
-                    navController.navigate(tab.route) {
-                        // Avoid building up a large back stack
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
-                    }
-                },
-                modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .navigationBarsPadding()
-                    .padding(bottom = 12.dp),
-            )
+            // ── Floating bottom tab bar (hidden inside topic screens) ──────────
+            if (onTabScreen) {
+                BottomTabBar(
+                    currentTab = currentTab,
+                    onTabSelected = { tab ->
+                        navController.navigate(tab.route) {
+                            // Avoid building up a large back stack
+                            popUpTo(navController.graph.startDestinationId) { saveState = true }
+                            launchSingleTop = true
+                            restoreState = true
+                        }
+                    },
+                    modifier = Modifier
+                        .align(Alignment.BottomCenter)
+                        .navigationBarsPadding()
+                        .padding(bottom = 12.dp),
+                )
+            }
         }
     }
 }
