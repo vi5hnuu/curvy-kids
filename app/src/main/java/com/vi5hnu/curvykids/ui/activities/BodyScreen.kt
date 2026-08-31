@@ -68,7 +68,7 @@ fun BodyScreen(
         },
         quizOption = { part ->
             // The badge caption is the answer, so quiz options render the art only.
-            SvgArt(part.svg, modifier = Modifier.size(46.dp))
+            SvgArt(part.svg, modifier = Modifier.size(76.dp))
         },
     )
 }

@@ -64,7 +64,7 @@ fun VehiclesScreen(
         },
         quizOption = { vehicle ->
             // The badge caption is the answer, so quiz options render the art only.
-            SvgArt(vehicle.svg, modifier = Modifier.size(44.dp))
+            SvgArt(vehicle.svg, modifier = Modifier.size(76.dp))
         },
     )
 }

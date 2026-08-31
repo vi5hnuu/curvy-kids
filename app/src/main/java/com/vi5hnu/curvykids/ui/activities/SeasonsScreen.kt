@@ -237,7 +237,7 @@ fun SeasonsScreen(
                             ) {
                                 Box(contentAlignment = Alignment.Center) {
                                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        SvgArt(season.svg, modifier = Modifier.size(36.dp))
+                                        SvgArt(season.svg, modifier = Modifier.size(52.dp))
                                         Text(
                                             season.name,
                                             fontFamily = FontDisplay,

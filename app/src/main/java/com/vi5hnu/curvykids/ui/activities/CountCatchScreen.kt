@@ -209,7 +209,7 @@ fun CountCatchScreen(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier.fillMaxSize(),
                             ) {
-                                SvgArt(svg, modifier = Modifier.size(40.dp))
+                                SvgArt(svg, modifier = Modifier.size(56.dp))
                                 if (isTapped) {
                                     Surface(
                                         shape = RoundedCornerShape(999.dp),

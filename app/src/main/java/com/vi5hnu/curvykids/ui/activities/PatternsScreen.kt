@@ -175,7 +175,7 @@ fun PatternsScreen(
                         modifier = Modifier.fillMaxWidth(),
                     ) {
                         spec.shown.forEach { svg ->
-                            SvgArt(svg, modifier = Modifier.size(36.dp).padding(horizontal = 4.dp))
+                            SvgArt(svg, modifier = Modifier.size(46.dp).padding(horizontal = 4.dp))
                         }
                         Text(
                             "  ?",
@@ -219,7 +219,7 @@ fun PatternsScreen(
                         shadowElevation = 4.dp,
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            SvgArt(svg, modifier = Modifier.size(48.dp))
+                            SvgArt(svg, modifier = Modifier.size(60.dp))
                         }
                     }
                 }

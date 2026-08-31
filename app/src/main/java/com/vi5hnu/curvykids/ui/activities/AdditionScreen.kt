@@ -260,7 +260,7 @@ private fun DotGroup(count: Int, svg: String) {
         verticalArrangement = Arrangement.spacedBy(2.dp),
         modifier = Modifier.padding(4.dp),
     ) {
-        repeat(count) { SvgArt(svg, modifier = Modifier.size(24.dp)) }
+        repeat(count) { SvgArt(svg, modifier = Modifier.size(30.dp)) }
     }
 }
 

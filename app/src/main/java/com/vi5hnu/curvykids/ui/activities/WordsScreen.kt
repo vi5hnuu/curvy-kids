@@ -119,7 +119,7 @@ fun WordsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(22.dp),
                 ) {
-                    SvgArt(word.svg, modifier = Modifier.size(72.dp))
+                    SvgArt(word.svg, modifier = Modifier.size(104.dp))
                     Spacer(Modifier.height(10.dp))
                     Chip(
                         onClick = { speaker?.speak(word.word) },

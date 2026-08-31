@@ -140,7 +140,7 @@ fun CountScreen(
                                     modifier = Modifier.size(56.dp),
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        SvgArt(item, modifier = Modifier.size(40.dp))
+                                        SvgArt(item, modifier = Modifier.size(56.dp))
                                     }
                                 }
                                 if (isTapped) {

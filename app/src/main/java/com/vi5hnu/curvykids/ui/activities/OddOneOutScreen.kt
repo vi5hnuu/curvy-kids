@@ -243,7 +243,7 @@ fun OddOneOutScreen(
                         val flashOk = flash?.first == i && flash?.second == true
                         val flashBad = flash?.first == i && flash?.second == false
                         // SIZE rounds: the odd tile is rendered small so kids can spot it visually.
-                        val tileSize = if (state.oddIsSmall && i == state.oddPos) 32.dp else 64.dp
+                        val tileSize = if (state.oddIsSmall && i == state.oddPos) 44.dp else 84.dp
                         Surface(
                             onClick = { choose(i) },
                             modifier = Modifier

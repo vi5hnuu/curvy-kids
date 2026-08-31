@@ -257,7 +257,7 @@ private fun CrossedOutDots(total: Int, remove: Int, svg: String) {
                 SvgArt(
                     svg,
                     modifier = Modifier
-                        .size(26.dp)
+                        .size(32.dp)
                         .alpha(if (crossed) 0.35f else 1f),
                 )
                 if (crossed) {

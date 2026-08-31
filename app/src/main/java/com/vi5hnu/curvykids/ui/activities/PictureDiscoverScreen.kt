@@ -76,7 +76,7 @@ fun PictureDiscoverScreen(
         },
         quizOption = { item ->
             // The badge caption is the answer, so quiz options render the art only.
-            SvgArt(item.svg, modifier = Modifier.size(48.dp))
+            SvgArt(item.svg, modifier = Modifier.size(76.dp))
         },
     )
 }

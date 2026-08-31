@@ -174,7 +174,7 @@ fun MemoryMatchScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 if (isUp) {
-                                    SvgArt(svg, modifier = Modifier.size(if (pairs <= 4) 36.dp else 28.dp))
+                                    SvgArt(svg, modifier = Modifier.size(if (pairs <= 4) 52.dp else 40.dp))
                                 } else {
                                     Text(
                                         "?",
