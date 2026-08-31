@@ -41,6 +41,9 @@ private const val PIXELS_PER_SECOND = 320f
 private const val MIN_STROKE_MS = 380L
 private const val MAX_STROKE_MS = 1500L
 
+/** How far along a stroke its numbered label sits, as a fraction of the stroke's length. */
+private const val LABEL_OFFSET_FRACTION = 0.12f
+
 /** Beat between strokes, so the child sees the pen lift and reposition. */
 private const val BETWEEN_STROKES_MS = 260L
 
@@ -167,8 +170,8 @@ private fun DrawScope.drawStartMarkers(
 
     geometry.strokes.forEachIndexed { i, stroke ->
         val r = 11.dp.toPx()
-        drawCircle(Color.White, radius = r, center = stroke.start)
-        drawCircle(color, radius = r, center = stroke.start, style = Stroke(width = 2.5.dp.toPx()))
+        drawCircle(Color.White, radius = r, center = stroke.label)
+        drawCircle(color, radius = r, center = stroke.label, style = Stroke(width = 2.5.dp.toPx()))
         val label = textMeasurer.measure(
             text = "${i + 1}",
             style = TextStyle(
@@ -181,8 +184,8 @@ private fun DrawScope.drawStartMarkers(
         drawText(
             textLayoutResult = label,
             topLeft = Offset(
-                stroke.start.x - label.size.width / 2f,
-                stroke.start.y - label.size.height / 2f,
+                stroke.label.x - label.size.width / 2f,
+                stroke.label.y - label.size.height / 2f,
             ),
         )
     }
@@ -193,6 +196,8 @@ private class StrokeGeometry(
     val path: Path,
     val measure: PathMeasure,
     val start: Offset,
+    /** Where the numbered label sits: just along the stroke, so co-located starts don't stack. */
+    val label: Offset,
     val durationMs: Long,
 )
 
@@ -230,7 +235,12 @@ private fun buildGeometry(guide: List<GuideStroke>, boxSize: IntSize): Geometry 
             val measure = PathMeasure().apply { setPath(path, false) }
             val duration = (measure.length / PIXELS_PER_SECOND * 1000f).toLong()
                 .coerceIn(MIN_STROKE_MS, MAX_STROKE_MS)
-            StrokeGeometry(path, measure, start, duration)
+            // Nudge the label a little way along the stroke. Two strokes that begin at the same
+            // point (A's apex, M's and N's first corner) then separate along their own paths.
+            val label = measure.getPosition(
+                (measure.length * LABEL_OFFSET_FRACTION).coerceAtMost(measure.length)
+            )
+            StrokeGeometry(path, measure, start, label, duration)
         }
     )
 }

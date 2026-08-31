@@ -46,6 +46,7 @@ import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Chip
 import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import com.vi5hnu.curvykids.ui.game.AnswerResult
 import com.vi5hnu.curvykids.ui.game.GameViewModel
 import com.vi5hnu.curvykids.ui.game.components.DrawingCanvas
@@ -190,12 +191,19 @@ fun TraceScreen(
                             fontSize = 13.sp,
                             color = InkSoft,
                         )
-                        Text(
-                            text = "${svg ?: ""} ${word ?: ch}".trim(),
-                            fontFamily = FontDisplay,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 23.sp,
-                        )
+                        // Picture beside the word, not the asset path inside the string.
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            if (svg != null) {
+                                SvgArt(svg, modifier = Modifier.size(34.dp))
+                                Spacer(Modifier.width(8.dp))
+                            }
+                            Text(
+                                text = word ?: ch,
+                                fontFamily = FontDisplay,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 23.sp,
+                            )
+                        }
                     }
 
                     // Listen button (pulsing chip)
@@ -396,7 +404,7 @@ fun TraceScreen(
                     modifier = Modifier
                         .weight(1f)
                         .height(62.dp),
-                    containerColor = if (controller.hasDrawing) Green else Green.copy(alpha = 0.55f),
+                    containerColor = if (controller.hasDrawing) Green else GreenMuted,
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
@@ -502,3 +510,9 @@ fun TraceScreen(
         )
     }
 }
+
+/**
+ * The Check button before anything is drawn. A solid tint rather than a translucent Green:
+ * a see-through Surface lets its own elevation shadow show through as a pale inner block.
+ */
+private val GreenMuted = Color(0xFFA6E0C4)
