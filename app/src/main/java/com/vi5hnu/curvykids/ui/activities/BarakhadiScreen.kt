@@ -38,15 +38,14 @@ import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS
 import com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS
 import com.vi5hnu.curvykids.data.content.Topic
-import com.vi5hnu.curvykids.data.content.barakhadiSvg
 import com.vi5hnu.curvykids.data.content.barakhadiSyllable
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
-import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.LetterBadge
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -224,8 +223,10 @@ fun BarakhadiScreen(
                                 .weight(1f)
                                 .aspectRatio(1f),
                         ) {
-                            SvgBadge(
-                                asset = barakhadiSvg(consonant.romanized, matra),
+                            LetterBadge(
+                                text = syllable,
+                                color = topic.color,
+                                tint = topic.tint,
                                 contentDescription = syllable,
                                 modifier = Modifier
                                     .fillMaxSize()

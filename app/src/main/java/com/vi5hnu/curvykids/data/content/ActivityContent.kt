@@ -531,8 +531,6 @@ val BARAKHADI_MATRAS = listOf(
 )
 
 /** Asset path of the barakhadi badge for a consonant (by its romanized name) and a [Matra]. */
-fun barakhadiSvg(consonantRomanized: String, matra: Matra): String =
-    "kids/hindi-barakhadi/barakhadi-${consonantRomanized.dropLast(1)}${matra.key}.svg"
 
 /** The Devanagari syllable for a consonant char combined with a [Matra] (e.g. क + ी → की). */
 fun barakhadiSyllable(consonantChar: String, matra: Matra): String = consonantChar + matra.sign
