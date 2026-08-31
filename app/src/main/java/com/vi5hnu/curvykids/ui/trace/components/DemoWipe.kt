@@ -137,5 +137,21 @@ fun DemoWipe(
                 drawText(layout, color = ink, topLeft = topLeft)
             }
         }
+
+        // A pen travelling with the reveal, so it reads as the letter being written rather than
+        // a block of colour sliding in.
+        val writingBody = body.value > 0f && body.value < 1f
+        val writingHead = headline.value > 0f && headline.value < 1f
+        if (writingBody || writingHead) {
+            val progress = if (writingBody) body.value else headline.value
+            val penY = if (writingBody) {
+                (headlineBottom + topLeft.y + layout.size.height) / 2f
+            } else {
+                headlineBottom - fontPx * 0.06f
+            }
+            val penX = size.width * progress
+            drawCircle(Color.White, radius = 15.dp.toPx(), center = Offset(penX, penY))
+            drawCircle(color, radius = 11.dp.toPx(), center = Offset(penX, penY))
+        }
     }
 }

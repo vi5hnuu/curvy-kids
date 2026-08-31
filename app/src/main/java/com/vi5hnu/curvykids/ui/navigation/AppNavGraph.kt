@@ -132,6 +132,10 @@ fun AppNavGraph(
                     HomeScreen(
                         appState = appState,
                         onOpenTopic = { topic ->
+                            // Say the name aloud. The child this app is for cannot read the
+                            // label under the picture, so without this they have no way to learn
+                            // what a card is — they are navigating an app that teaches reading.
+                            gameViewModel.speaker.speak(topic.title)
                             appViewModel.setLastTopic(topic.id)
                             navController.navigate(Screen.Topic.createRoute(topic.id))
                         },
@@ -150,6 +154,10 @@ fun AppNavGraph(
                 composable(Screen.Play.route) {
                     PlayScreen(
                         onOpenTopic = { topic ->
+                            // Say the name aloud. The child this app is for cannot read the
+                            // label under the picture, so without this they have no way to learn
+                            // what a card is — they are navigating an app that teaches reading.
+                            gameViewModel.speaker.speak(topic.title)
                             appViewModel.setLastTopic(topic.id)
                             navController.navigate(Screen.Topic.createRoute(topic.id))
                         },
