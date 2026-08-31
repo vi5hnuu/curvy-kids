@@ -45,6 +45,7 @@ import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
 
 private data class PhonicSpec(
@@ -166,10 +167,7 @@ fun PhonicScreen(
                         fontSize = 96.sp,
                         color = topic.color,
                     )
-                    Text(
-                        target.svg,
-                        fontSize = 36.sp,
-                    )
+                    SvgArt(target.svg, modifier = Modifier.size(56.dp))
                     Text(
                         target.example,
                         fontFamily = FontDisplay,

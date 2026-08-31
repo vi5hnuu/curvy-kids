@@ -47,10 +47,11 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.AssetPath
 import kotlinx.coroutines.delay
 
 /** One option in the opposite quiz — could be word1 or word2 from any pair. */
-private data class OppositeChoice(val word: String, val svg: String, val isCorrect: Boolean)
+private data class OppositeChoice(val word: String, val svg: AssetPath, val isCorrect: Boolean)
 
 private data class OppositeSpec(
     val prompt: OppositePair,

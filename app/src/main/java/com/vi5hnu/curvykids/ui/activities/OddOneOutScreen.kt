@@ -47,6 +47,7 @@ import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.data.content.KidAssets
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.AssetPath
 import kotlinx.coroutines.delay
 
 // Separate picture pools used for CATEGORY rounds so kids can spot animal vs food.
@@ -73,7 +74,7 @@ private enum class OddType { IDENTITY, CATEGORY, SIZE }
  * @param oddIsSmall When true (SIZE rounds), the odd card renders at a smaller font.
  */
 private data class OddState(
-    val tiles: List<String>,
+    val tiles: List<AssetPath>,
     val oddPos: Int,
     val prompt: String,
     val oddIsSmall: Boolean = false,
@@ -99,7 +100,7 @@ private fun buildOddState(round: Int): OddState {
             val majority = majorityPool.shuffled().take(3)
             val odd = oddPool.random()
             val pos = (0 until 4).random()
-            val tiles = mutableListOf<String>()
+            val tiles = mutableListOf<AssetPath>()
             var mIdx = 0
             repeat(4) { i -> if (i == pos) tiles.add(odd) else tiles.add(majority[mIdx++]) }
             val categoryName = if (animalFirst) "an animal" else "food"

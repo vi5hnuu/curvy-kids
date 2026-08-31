@@ -8,6 +8,7 @@ import com.vi5hnu.curvykids.data.content.FRUITS_VEGGIES
 import com.vi5hnu.curvykids.data.content.GAME_PICTURES
 import com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS
 import com.vi5hnu.curvykids.data.content.HINDI_VOWELS
+import com.vi5hnu.curvykids.data.content.AssetPath
 import com.vi5hnu.curvykids.data.content.KidAssets
 import com.vi5hnu.curvykids.data.content.MONTHS
 import com.vi5hnu.curvykids.data.content.OPPOSITES
@@ -36,10 +37,10 @@ class AssetExistenceTest {
     /** Unit tests run with the module directory as the working directory. */
     private val assetsRoot = File("src/main/assets")
 
-    private fun assertAllExist(label: String, paths: Collection<String>) {
+    private fun assertAllExist(label: String, paths: Collection<AssetPath>) {
         assertTrue("$label referenced no assets — the test is not checking anything", paths.isNotEmpty())
-        val missing = paths.distinct().filterNot { File(assetsRoot, it).isFile }
-        assertTrue("$label references ${missing.size} missing asset(s):\n" + missing.joinToString("\n"),
+        val missing = paths.distinct().filterNot { File(assetsRoot, it.path).isFile }
+        assertTrue("$label references ${missing.size} missing asset(s):\n" + missing.joinToString("\n") { it.path },
             missing.isEmpty())
     }
 

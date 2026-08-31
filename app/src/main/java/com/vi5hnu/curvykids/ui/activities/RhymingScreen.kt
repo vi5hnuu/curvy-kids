@@ -47,13 +47,14 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.AssetPath
 import kotlinx.coroutines.delay
 
-private data class RhymeChoice(val word: String, val svg: String, val isRhyme: Boolean)
+private data class RhymeChoice(val word: String, val svg: AssetPath, val isRhyme: Boolean)
 
 private data class RhymeSpec(
     val group: RhymeGroup,
-    val correctRhyme: Pair<String, String>,  // word to svg
+    val correctRhyme: Pair<String, AssetPath>,  // word to illustration
     val choices: List<RhymeChoice>,
 )
 

@@ -158,7 +158,7 @@ fun SeasonsScreen(
                                         horizontalAlignment = Alignment.CenterHorizontally,
                                         modifier = Modifier.padding(14.dp),
                                     ) {
-                                        SvgBadge(season.svg, modifier = Modifier.size(48.dp))
+                                        SvgArt(season.svg, modifier = Modifier.size(64.dp))
                                         Text(
                                             season.name,
                                             fontFamily = FontDisplay,
@@ -175,7 +175,7 @@ fun SeasonsScreen(
                                         )
                                         Spacer(Modifier.height(6.dp))
                                         Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                            season.weatherSvgs.forEach { e -> Text(e, fontSize = 18.sp) }
+                                            season.weatherSvgs.forEach { clue -> SvgArt(clue, modifier = Modifier.size(26.dp)) }
                                         }
                                     }
                                 }
@@ -198,7 +198,7 @@ fun SeasonsScreen(
                             color = InkSoft,
                         )
                         Spacer(Modifier.height(12.dp))
-                        Text(clue, fontSize = 64.sp)
+                        SvgArt(clue, modifier = Modifier.size(84.dp))
                         Spacer(Modifier.height(8.dp))
                         Chip(
                             onClick = { feedback?.speaker?.speak("Which season has ${targetSeason.weather}?") },

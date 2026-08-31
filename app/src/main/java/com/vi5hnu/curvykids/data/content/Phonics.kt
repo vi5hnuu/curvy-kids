@@ -53,7 +53,7 @@ object Phonics {
         '9' to ("Nine" to KidAssets.number(9)),
     )
 
-    private fun entryFor(character: String): Pair<String, String>? {
+    private fun entryFor(character: String): Pair<String, AssetPath>? {
         val c = character.singleOrNull() ?: return null
         return when {
             c.isLetter() -> letterWords[c.lowercaseChar()]
@@ -73,5 +73,5 @@ object Phonics {
     fun wordFor(character: String): String? = entryFor(character)?.first
 
     /** Asset path of the picture for [character]'s example word, or null if unmapped. */
-    fun assetFor(character: String): String? = entryFor(character)?.second
+    fun assetFor(character: String): AssetPath? = entryFor(character)?.second
 }

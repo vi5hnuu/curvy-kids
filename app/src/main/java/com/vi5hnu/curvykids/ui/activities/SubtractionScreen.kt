@@ -50,6 +50,7 @@ import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.AssetPath
 import kotlinx.coroutines.delay
 
 /**
@@ -58,7 +59,7 @@ import kotlinx.coroutines.delay
  *  Level 1 → total 4-7, take away 1-3
  *  Level 2 → total 5-10, take away 1-4
  */
-private data class SubSpec(val total: Int, val remove: Int, val svg: String, val choices: List<Int>)
+private data class SubSpec(val total: Int, val remove: Int, val svg: AssetPath, val choices: List<Int>)
 
 private fun buildSubSpec(level: Int): SubSpec {
     val (totalRange, removeMax) = when (level) {
@@ -242,7 +243,7 @@ fun SubtractionScreen(
 /** Shows `total` emojis; first `remove` are faded with strikethrough to show "taken away." */
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun CrossedOutDots(total: Int, remove: Int, svg: String) {
+private fun CrossedOutDots(total: Int, remove: Int, svg: AssetPath) {
     FlowRow(
         maxItemsInEachRow = 5,
         horizontalArrangement = Arrangement.spacedBy(4.dp),

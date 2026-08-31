@@ -48,6 +48,7 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.AssetPath
 import kotlinx.coroutines.delay
 
 /**
@@ -56,7 +57,7 @@ import kotlinx.coroutines.delay
  *  Level 1 → sums ≤ 8   (e.g. 3+5)
  *  Level 2 → sums ≤ 10  (e.g. 4+6)
  */
-private data class AddSpec(val a: Int, val b: Int, val svg: String, val choices: List<Int>)
+private data class AddSpec(val a: Int, val b: Int, val svg: AssetPath, val choices: List<Int>)
 
 private fun buildAddSpec(level: Int): AddSpec {
     val maxSum = when (level) { 0 -> 5; 1 -> 8; else -> 10 }
@@ -253,7 +254,7 @@ fun AdditionScreen(
 
 @OptIn(ExperimentalLayoutApi::class)
 @Composable
-private fun DotGroup(count: Int, svg: String) {
+private fun DotGroup(count: Int, svg: AssetPath) {
     FlowRow(
         maxItemsInEachRow = 3,
         horizontalArrangement = Arrangement.spacedBy(2.dp),

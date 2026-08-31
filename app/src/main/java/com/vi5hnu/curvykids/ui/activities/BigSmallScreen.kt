@@ -46,6 +46,7 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.AssetPath
 import kotlinx.coroutines.delay
 
 private enum class BigSmallMode { SIZE, NUMBER }
@@ -60,7 +61,7 @@ private data class BigSmallSpec(
     val askBig: Boolean,
     /** True if the "bigger" side (svg OR larger number) is on the left. */
     val bigOnLeft: Boolean,
-    val svg: String = "",
+    val svg: AssetPath? = null,
     val numLeft: Int = 0,
     val numRight: Int = 0,
 ) {

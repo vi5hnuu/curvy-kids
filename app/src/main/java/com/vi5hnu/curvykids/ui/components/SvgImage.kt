@@ -15,6 +15,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
+import com.vi5hnu.curvykids.data.content.AssetPath
 import coil.request.ImageRequest
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -47,7 +48,7 @@ private val PLACEHOLDER = Color(0xFFE4EDF4)
  */
 @Composable
 fun SvgImage(
-    asset: String?,
+    asset: AssetPath?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     fallback: (@Composable () -> Unit)? = null,
@@ -70,7 +71,7 @@ fun SvgImage(
     val context = LocalContext.current
     AsyncImage(
         model = ImageRequest.Builder(context)
-            .data("file:///android_asset/$asset")
+            .data("file:///android_asset/${asset.path}")
             .build(),
         contentDescription = contentDescription,
         contentScale = ContentScale.Fit,
@@ -87,7 +88,7 @@ fun SvgImage(
  */
 @Composable
 fun SvgBadge(
-    asset: String?,
+    asset: AssetPath?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
     fallback: (@Composable () -> Unit)? = null,
@@ -113,14 +114,14 @@ fun SvgBadge(
  */
 @Composable
 fun SvgArt(
-    asset: String?,
+    asset: AssetPath?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
 ) {
     val context = LocalContext.current
     val stripped by produceState<ByteArray?>(initialValue = null, asset) {
-        value = asset?.let { path ->
-            withContext(Dispatchers.IO) { runCatching { captionlessSvg(context, path) }.getOrNull() }
+        value = asset?.let { a ->
+            withContext(Dispatchers.IO) { runCatching { captionlessSvg(context, a.path) }.getOrNull() }
         }
     }
 

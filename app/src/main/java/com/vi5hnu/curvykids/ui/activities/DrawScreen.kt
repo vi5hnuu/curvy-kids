@@ -64,6 +64,7 @@ import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.AssetPath
 
 // ── Canvas marks ────────────────────────────────────────────────────────────────
 
@@ -89,7 +90,7 @@ private val PALETTE = listOf(
 private val BRUSH_SIZES = listOf(10.dp, 16.dp, 26.dp)
 
 /** @param svg Picture for the picker chip; null for "blank", which shows a pencil instead. */
-private data class Template(val id: String, val name: String, val svg: String?)
+private data class Template(val id: String, val name: String, val svg: AssetPath?)
 
 /** "Blank" plus colour-in outline pictures. */
 private val TEMPLATES = listOf(

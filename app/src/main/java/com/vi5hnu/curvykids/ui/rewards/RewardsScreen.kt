@@ -43,6 +43,7 @@ import com.vi5hnu.curvykids.ui.theme.Teal
 import com.vi5hnu.curvykids.ui.theme.TintSun
 import com.vi5hnu.curvykids.ui.theme.TintTeal
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.AssetPath
 
 /**
  * One entry in the sticker book.
@@ -56,7 +57,7 @@ private val STICKER_ART = 52.dp
 
 private data class Sticker(
     val id: String,
-    val asset: String,
+    val asset: AssetPath,
     val name: String,
     val have: Boolean,
 )

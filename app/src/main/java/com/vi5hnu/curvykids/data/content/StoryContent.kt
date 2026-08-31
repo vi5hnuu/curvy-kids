@@ -19,7 +19,7 @@ data class Story(
     val id: String,
     val title: String,     // Devanagari title
     val subtitle: String,  // short English hint, shown under the title on the list card
-    val svg: String,
+    val svg: AssetPath,
     val color: Color,
     val tint: Color,
     val lines: List<String>,

@@ -15,13 +15,24 @@ package com.vi5hnu.curvykids.data.content
  * Names are the file's own suffix, lowercase and hyphenated — `animal("polar-bear")` resolves to
  * `kids/animals/animal-polar-bear.svg`.
  */
+/**
+ * The location of an illustration inside `assets/`.
+ *
+ * A distinct type rather than a bare String on purpose: an asset path is not display text, and
+ * when it was a String nothing stopped one being handed to a `Text` composable. That went wrong
+ * three separate times — a child was shown AssetPath("kids/fruits/fruit-apple.svg") where the picture of an
+ * apple belonged. Wrapping it means the compiler rejects that instead of the screen rendering it.
+ */
+@JvmInline
+value class AssetPath(val path: String)
+
 object KidAssets {
 
     private const val ROOT = "kids"
 
     /** Builds a path from a category directory and its filename prefix. */
     private fun path(category: String, prefix: String, name: String) =
-        "$ROOT/$category/$prefix-$name.svg"
+        AssetPath("$ROOT/$category/$prefix-$name.svg")
 
     // ── Living things ────────────────────────────────────────────────────────────
     fun animal(name: String) = path("animals", "animal", name)

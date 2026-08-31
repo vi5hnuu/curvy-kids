@@ -56,7 +56,7 @@ val COLOR_ITEMS = listOf(
 // ── Counting ──────────────────────────────────────────────────────────────────
 
 /** Things to count. Illustrated, so the child counts pictures rather than font glyphs. */
-val COUNT_ITEMS = listOf(
+val COUNT_ITEMS: List<AssetPath> = listOf(
     KidAssets.fruit("apple"), KidAssets.bird("chick"), KidAssets.toy("balloon"),
     KidAssets.weather("star"), KidAssets.seaAnimal("tropical-fish"), KidAssets.fruit("strawberry"),
     KidAssets.insect("butterfly"), KidAssets.nature("blossom"), KidAssets.transport("car"),
@@ -65,7 +65,7 @@ val COUNT_ITEMS = listOf(
 
 // ── First Words ───────────────────────────────────────────────────────────────
 
-data class WordEntry(val word: String, val svg: String)
+data class WordEntry(val word: String, val svg: AssetPath)
 
 /**
  * Short words (3–5 letters) spanning A–Z, each with a hand-drawn illustration.
@@ -158,7 +158,7 @@ val WORD_LIST = listOf(
 
 // ── Animals ───────────────────────────────────────────────────────────────────
 
-data class Animal(val name: String, val sound: String, val svg: String)
+data class Animal(val name: String, val sound: String, val svg: AssetPath)
 
 val ANIMALS = listOf(
     Animal("Lion",  "Roar!",   KidAssets.animal("lion")),
@@ -177,7 +177,7 @@ val ANIMALS = listOf(
 
 // ── Body Parts ────────────────────────────────────────────────────────────────
 
-data class BodyPart(val name: String, val svg: String)
+data class BodyPart(val name: String, val svg: AssetPath)
 
 val BODY_PARTS = listOf(
     BodyPart("Hand",  KidAssets.body("hand")),
@@ -209,7 +209,7 @@ val DAY_COLORS = listOf(
 
 // ── Shared emoji pool for the brain games (Memory, Odd-One-Out, Big/Small, Catch) ───────
 
-val GAME_PICTURES = listOf(
+val GAME_PICTURES: List<AssetPath> = listOf(
     // animals
     KidAssets.animal("dog"), KidAssets.animal("cat"), KidAssets.animal("lion"),
     KidAssets.animal("cow"), KidAssets.animal("frog"), KidAssets.bird("duck"),
@@ -245,7 +245,7 @@ val CRAYON_COLORS = listOf(
 
 // ── Months of the Year ────────────────────────────────────────────────────────
 
-data class Month(val name: String, val color: Color, val svg: String)
+data class Month(val name: String, val color: Color, val svg: AssetPath)
 
 val MONTHS = listOf(
     Month("January",   Color(0xFF46A6F0), KidAssets.month("january")),
@@ -266,10 +266,10 @@ val MONTHS = listOf(
 
 data class SeasonItem(
     val name: String,
-    val svg: String,
+    val svg: AssetPath,
     val weather: String,
     /** Picture clues the quiz shows instead of naming the season outright. */
-    val weatherSvgs: List<String>,
+    val weatherSvgs: List<AssetPath>,
     val color: Color,
 )
 
@@ -290,7 +290,7 @@ val SEASONS_LIST = listOf(
 
 // ── Emotions / Feelings ───────────────────────────────────────────────────────
 
-data class Emotion(val name: String, val description: String, val svg: String)
+data class Emotion(val name: String, val description: String, val svg: AssetPath)
 
 val EMOTIONS = listOf(
     Emotion("Happy",     "I feel great!", KidAssets.feeling("happy")),
@@ -298,14 +298,14 @@ val EMOTIONS = listOf(
     Emotion("Angry",     "I feel mad",    KidAssets.feeling("angry")),
     Emotion("Surprised", "Wow!",          KidAssets.feeling("surprised")),
     Emotion("Scared",    "I feel afraid", KidAssets.feeling("scared")),
-    Emotion("Tired",     "I need sleep",  KidAssets.feeling("sleepy")),
+    Emotion("Sleepy",    "I need sleep",  KidAssets.feeling("sleepy")),
     Emotion("Silly",     "Hehe!",         KidAssets.feeling("silly")),
     Emotion("Excited",   "Yay!",          KidAssets.feeling("excited")),
 )
 
 // ── Vehicles / Transport ──────────────────────────────────────────────────────
 
-data class Vehicle(val name: String, val sound: String, val svg: String)
+data class Vehicle(val name: String, val sound: String, val svg: AssetPath)
 
 val VEHICLES = listOf(
     Vehicle("Car",        "Vroom!",     KidAssets.transport("car")),
@@ -322,7 +322,7 @@ val VEHICLES = listOf(
 
 // ── Fruits & Vegetables ───────────────────────────────────────────────────────
 
-data class FruitItem(val name: String, val isFruit: Boolean, val svg: String)
+data class FruitItem(val name: String, val isFruit: Boolean, val svg: AssetPath)
 
 val FRUITS_VEGGIES = listOf(
     FruitItem("Apple",      true,  KidAssets.fruit("apple")),
@@ -343,7 +343,7 @@ val FRUITS_VEGGIES = listOf(
 
 // ── Opposites ─────────────────────────────────────────────────────────────────
 
-data class OppositePair(val word1: String, val svg1: String, val word2: String, val svg2: String)
+data class OppositePair(val word1: String, val svg1: AssetPath, val word2: String, val svg2: AssetPath)
 
 /**
  * Opposite pairs, each side illustrated.
@@ -368,7 +368,7 @@ val OPPOSITES = listOf(
 // ── Phonics — Letter Sounds ───────────────────────────────────────────────────
 
 /** Each letter paired with its primary phonetic sound, a starter word, and its picture. */
-data class LetterPhonic(val letter: String, val sound: String, val example: String, val svg: String)
+data class LetterPhonic(val letter: String, val sound: String, val example: String, val svg: AssetPath)
 
 /**
  * Starter words are chosen so every one has artwork; a few differ from the usual primer choices
@@ -406,7 +406,7 @@ val PHONICS_DATA = listOf(
 // ── Rhyming Word Groups ───────────────────────────────────────────────────────
 
 /** A target word with several rhyming alternatives, each with its picture. */
-data class RhymeGroup(val word: String, val svg: String, val rhymes: List<Pair<String, String>>)
+data class RhymeGroup(val word: String, val svg: AssetPath, val rhymes: List<Pair<String, AssetPath>>)
 
 /**
  * Rhyme families. Every word on both sides is illustrated, so groups built around words with no
@@ -466,64 +466,64 @@ data class HindiLetter(
     val char: String,
     val romanized: String,
     val example: String,
-    val svg: String,
+    val svg: AssetPath,
 )
 
 /** 13 vowels (स्वर) in traditional order. */
 val HINDI_VOWELS = listOf(
-    HindiLetter("अ",  "a",  "अनानास", "kids/hindi-vowels/hindi-swar-a.svg"),
-    HindiLetter("आ",  "aa", "आम", "kids/hindi-vowels/hindi-swar-aa.svg"),
-    HindiLetter("इ",  "i",  "इंजन", "kids/hindi-vowels/hindi-swar-i.svg"),
-    HindiLetter("ई",  "ii", "ईंट", "kids/hindi-vowels/hindi-swar-ii.svg"),
-    HindiLetter("उ",  "u",  "उल्लू", "kids/hindi-vowels/hindi-swar-u.svg"),
-    HindiLetter("ऊ",  "uu", "ऊँट", "kids/hindi-vowels/hindi-swar-uu.svg"),
-    HindiLetter("ऋ",  "ri", "ऋषि", "kids/hindi-vowels/hindi-swar-ri.svg"),
-    HindiLetter("ए",  "e",  "एड़ी", "kids/hindi-vowels/hindi-swar-e.svg"),
-    HindiLetter("ऐ",  "ai", "ऐनक", "kids/hindi-vowels/hindi-swar-ai.svg"),
-    HindiLetter("ओ",  "o",  "ओम", "kids/hindi-vowels/hindi-swar-o.svg"),
-    HindiLetter("औ",  "au", "औज़ार", "kids/hindi-vowels/hindi-swar-au.svg"),
-    HindiLetter("अं", "am", "अंगूर", "kids/hindi-vowels/hindi-swar-am.svg"),
-    HindiLetter("अः", "ah", "",   "kids/hindi-vowels/hindi-swar-ah.svg"),
+    HindiLetter("अ",  "a",  "अनानास", AssetPath("kids/hindi-vowels/hindi-swar-a.svg")),
+    HindiLetter("आ",  "aa", "आम", AssetPath("kids/hindi-vowels/hindi-swar-aa.svg")),
+    HindiLetter("इ",  "i",  "इंजन", AssetPath("kids/hindi-vowels/hindi-swar-i.svg")),
+    HindiLetter("ई",  "ii", "ईंट", AssetPath("kids/hindi-vowels/hindi-swar-ii.svg")),
+    HindiLetter("उ",  "u",  "उल्लू", AssetPath("kids/hindi-vowels/hindi-swar-u.svg")),
+    HindiLetter("ऊ",  "uu", "ऊँट", AssetPath("kids/hindi-vowels/hindi-swar-uu.svg")),
+    HindiLetter("ऋ",  "ri", "ऋषि", AssetPath("kids/hindi-vowels/hindi-swar-ri.svg")),
+    HindiLetter("ए",  "e",  "एड़ी", AssetPath("kids/hindi-vowels/hindi-swar-e.svg")),
+    HindiLetter("ऐ",  "ai", "ऐनक", AssetPath("kids/hindi-vowels/hindi-swar-ai.svg")),
+    HindiLetter("ओ",  "o",  "ओम", AssetPath("kids/hindi-vowels/hindi-swar-o.svg")),
+    HindiLetter("औ",  "au", "औज़ार", AssetPath("kids/hindi-vowels/hindi-swar-au.svg")),
+    HindiLetter("अं", "am", "अंगूर", AssetPath("kids/hindi-vowels/hindi-swar-am.svg")),
+    HindiLetter("अः", "ah", "",   AssetPath("kids/hindi-vowels/hindi-swar-ah.svg")),
 )
 
 /** 36 consonants (व्यंजन) in traditional order, including the common conjuncts क्ष त्र ज्ञ. */
 val HINDI_CONSONANTS = listOf(
-    HindiLetter("क",   "ka",   "कबूतर", "kids/hindi-consonants/hindi-vyanjan-ka.svg"),
-    HindiLetter("ख",   "kha",  "खरगोश", "kids/hindi-consonants/hindi-vyanjan-kha.svg"),
-    HindiLetter("ग",   "ga",   "गाय", "kids/hindi-consonants/hindi-vyanjan-ga.svg"),
-    HindiLetter("घ",   "gha",  "घड़ी", "kids/hindi-consonants/hindi-vyanjan-gha.svg"),
-    HindiLetter("ङ",   "nga",  "",   "kids/hindi-consonants/hindi-vyanjan-nga.svg"),
-    HindiLetter("च",   "cha",  "चम्मच", "kids/hindi-consonants/hindi-vyanjan-cha.svg"),
-    HindiLetter("छ",   "chha", "छाता", "kids/hindi-consonants/hindi-vyanjan-chha.svg"),
-    HindiLetter("ज",   "ja",   "जहाज", "kids/hindi-consonants/hindi-vyanjan-ja.svg"),
-    HindiLetter("झ",   "jha",  "झंडा", "kids/hindi-consonants/hindi-vyanjan-jha.svg"),
-    HindiLetter("ञ",   "nya",  "",   "kids/hindi-consonants/hindi-vyanjan-nya.svg"),
-    HindiLetter("ट",   "tta",  "टमाटर", "kids/hindi-consonants/hindi-vyanjan-tta.svg"),
-    HindiLetter("ठ",   "ttha", "ठंडा", "kids/hindi-consonants/hindi-vyanjan-ttha.svg"),
-    HindiLetter("ड",   "dda",  "डमरू", "kids/hindi-consonants/hindi-vyanjan-dda.svg"),
-    HindiLetter("ढ",   "ddha", "ढोल", "kids/hindi-consonants/hindi-vyanjan-ddha.svg"),
-    HindiLetter("ण",   "nna",  "बाण", "kids/hindi-consonants/hindi-vyanjan-nna.svg"),
-    HindiLetter("त",   "ta",   "तरबूज", "kids/hindi-consonants/hindi-vyanjan-ta.svg"),
-    HindiLetter("थ",   "tha",  "थाली", "kids/hindi-consonants/hindi-vyanjan-tha.svg"),
-    HindiLetter("द",   "da",   "दूध", "kids/hindi-consonants/hindi-vyanjan-da.svg"),
-    HindiLetter("ध",   "dha",  "धनुष", "kids/hindi-consonants/hindi-vyanjan-dha.svg"),
-    HindiLetter("न",   "na",   "नाव", "kids/hindi-consonants/hindi-vyanjan-na.svg"),
-    HindiLetter("प",   "pa",   "पतंग", "kids/hindi-consonants/hindi-vyanjan-pa.svg"),
-    HindiLetter("फ",   "pha",  "फूल", "kids/hindi-consonants/hindi-vyanjan-pha.svg"),
-    HindiLetter("ब",   "ba",   "बकरी", "kids/hindi-consonants/hindi-vyanjan-ba.svg"),
-    HindiLetter("भ",   "bha",  "भालू", "kids/hindi-consonants/hindi-vyanjan-bha.svg"),
-    HindiLetter("म",   "ma",   "मछली", "kids/hindi-consonants/hindi-vyanjan-ma.svg"),
-    HindiLetter("य",   "ya",   "योग", "kids/hindi-consonants/hindi-vyanjan-ya.svg"),
-    HindiLetter("र",   "ra",   "रेल", "kids/hindi-consonants/hindi-vyanjan-ra.svg"),
-    HindiLetter("ल",   "la",   "लोमड़ी", "kids/hindi-consonants/hindi-vyanjan-la.svg"),
-    HindiLetter("व",   "va",   "वर्षा", "kids/hindi-consonants/hindi-vyanjan-va.svg"),
-    HindiLetter("श",   "sha",  "शेर", "kids/hindi-consonants/hindi-vyanjan-sha.svg"),
-    HindiLetter("ष",   "ssa",  "",   "kids/hindi-consonants/hindi-vyanjan-ssa.svg"),
-    HindiLetter("स",   "sa",   "सेब", "kids/hindi-consonants/hindi-vyanjan-sa.svg"),
-    HindiLetter("ह",   "ha",   "हाथी", "kids/hindi-consonants/hindi-vyanjan-ha.svg"),
-    HindiLetter("क्ष", "ksha", "क्षितिज", "kids/hindi-consonants/hindi-vyanjan-ksha.svg"),
-    HindiLetter("त्र", "tra",  "त्रिशूल", "kids/hindi-consonants/hindi-vyanjan-tra.svg"),
-    HindiLetter("ज्ञ", "gya",  "ज्ञान", "kids/hindi-consonants/hindi-vyanjan-gya.svg"),
+    HindiLetter("क",   "ka",   "कबूतर", AssetPath("kids/hindi-consonants/hindi-vyanjan-ka.svg")),
+    HindiLetter("ख",   "kha",  "खरगोश", AssetPath("kids/hindi-consonants/hindi-vyanjan-kha.svg")),
+    HindiLetter("ग",   "ga",   "गाय", AssetPath("kids/hindi-consonants/hindi-vyanjan-ga.svg")),
+    HindiLetter("घ",   "gha",  "घड़ी", AssetPath("kids/hindi-consonants/hindi-vyanjan-gha.svg")),
+    HindiLetter("ङ",   "nga",  "",   AssetPath("kids/hindi-consonants/hindi-vyanjan-nga.svg")),
+    HindiLetter("च",   "cha",  "चम्मच", AssetPath("kids/hindi-consonants/hindi-vyanjan-cha.svg")),
+    HindiLetter("छ",   "chha", "छाता", AssetPath("kids/hindi-consonants/hindi-vyanjan-chha.svg")),
+    HindiLetter("ज",   "ja",   "जहाज", AssetPath("kids/hindi-consonants/hindi-vyanjan-ja.svg")),
+    HindiLetter("झ",   "jha",  "झंडा", AssetPath("kids/hindi-consonants/hindi-vyanjan-jha.svg")),
+    HindiLetter("ञ",   "nya",  "",   AssetPath("kids/hindi-consonants/hindi-vyanjan-nya.svg")),
+    HindiLetter("ट",   "tta",  "टमाटर", AssetPath("kids/hindi-consonants/hindi-vyanjan-tta.svg")),
+    HindiLetter("ठ",   "ttha", "ठंडा", AssetPath("kids/hindi-consonants/hindi-vyanjan-ttha.svg")),
+    HindiLetter("ड",   "dda",  "डमरू", AssetPath("kids/hindi-consonants/hindi-vyanjan-dda.svg")),
+    HindiLetter("ढ",   "ddha", "ढोल", AssetPath("kids/hindi-consonants/hindi-vyanjan-ddha.svg")),
+    HindiLetter("ण",   "nna",  "बाण", AssetPath("kids/hindi-consonants/hindi-vyanjan-nna.svg")),
+    HindiLetter("त",   "ta",   "तरबूज", AssetPath("kids/hindi-consonants/hindi-vyanjan-ta.svg")),
+    HindiLetter("थ",   "tha",  "थाली", AssetPath("kids/hindi-consonants/hindi-vyanjan-tha.svg")),
+    HindiLetter("द",   "da",   "दूध", AssetPath("kids/hindi-consonants/hindi-vyanjan-da.svg")),
+    HindiLetter("ध",   "dha",  "धनुष", AssetPath("kids/hindi-consonants/hindi-vyanjan-dha.svg")),
+    HindiLetter("न",   "na",   "नाव", AssetPath("kids/hindi-consonants/hindi-vyanjan-na.svg")),
+    HindiLetter("प",   "pa",   "पतंग", AssetPath("kids/hindi-consonants/hindi-vyanjan-pa.svg")),
+    HindiLetter("फ",   "pha",  "फूल", AssetPath("kids/hindi-consonants/hindi-vyanjan-pha.svg")),
+    HindiLetter("ब",   "ba",   "बकरी", AssetPath("kids/hindi-consonants/hindi-vyanjan-ba.svg")),
+    HindiLetter("भ",   "bha",  "भालू", AssetPath("kids/hindi-consonants/hindi-vyanjan-bha.svg")),
+    HindiLetter("म",   "ma",   "मछली", AssetPath("kids/hindi-consonants/hindi-vyanjan-ma.svg")),
+    HindiLetter("य",   "ya",   "योग", AssetPath("kids/hindi-consonants/hindi-vyanjan-ya.svg")),
+    HindiLetter("र",   "ra",   "रेल", AssetPath("kids/hindi-consonants/hindi-vyanjan-ra.svg")),
+    HindiLetter("ल",   "la",   "लोमड़ी", AssetPath("kids/hindi-consonants/hindi-vyanjan-la.svg")),
+    HindiLetter("व",   "va",   "वर्षा", AssetPath("kids/hindi-consonants/hindi-vyanjan-va.svg")),
+    HindiLetter("श",   "sha",  "शेर", AssetPath("kids/hindi-consonants/hindi-vyanjan-sha.svg")),
+    HindiLetter("ष",   "ssa",  "",   AssetPath("kids/hindi-consonants/hindi-vyanjan-ssa.svg")),
+    HindiLetter("स",   "sa",   "सेब", AssetPath("kids/hindi-consonants/hindi-vyanjan-sa.svg")),
+    HindiLetter("ह",   "ha",   "हाथी", AssetPath("kids/hindi-consonants/hindi-vyanjan-ha.svg")),
+    HindiLetter("क्ष", "ksha", "क्षितिज", AssetPath("kids/hindi-consonants/hindi-vyanjan-ksha.svg")),
+    HindiLetter("त्र", "tra",  "त्रिशूल", AssetPath("kids/hindi-consonants/hindi-vyanjan-tra.svg")),
+    HindiLetter("ज्ञ", "gya",  "ज्ञान", AssetPath("kids/hindi-consonants/hindi-vyanjan-gya.svg")),
 )
 
 /** Fast lookup of a Hindi letter by its Devanagari character (used by the trace prompt/audio). */
@@ -549,8 +549,8 @@ val BARAKHADI_MATRAS = listOf(
 /** Asset path of the barakhadi badge for a consonant (by its romanized name) and a [Matra]. */
 
 /** Asset path of the illustrated badge for a consonant + matra combination. */
-fun barakhadiSvg(consonantRomanized: String, matra: Matra): String =
-    "kids/hindi-barakhadi/barakhadi-${consonantRomanized.dropLast(1)}${matra.key}.svg"
+fun barakhadiSvg(consonantRomanized: String, matra: Matra): AssetPath =
+    AssetPath("kids/hindi-barakhadi/barakhadi-${consonantRomanized.dropLast(1)}${matra.key}.svg")
 
 /**
  * Accent and tint for a consonant's twelve barakhadi forms, as (color, tint).
@@ -579,24 +579,24 @@ fun barakhadiSyllable(consonantChar: String, matra: Matra): String = consonantCh
 // ── Telling Time (o'clock) ──────────────────────────────────────────────────────
 
 /** A clock face showing a whole hour ([hour] o'clock). */
-data class TimeItem(val hour: Int, val label: String, val svg: String)
+data class TimeItem(val hour: Int, val label: String, val svg: AssetPath)
 
 val TIMES: List<TimeItem> = (1..12).map {
-    TimeItem(it, "$it o'clock", "kids/telling-time/time-$it.svg")
+    TimeItem(it, "$it o'clock", AssetPath("kids/telling-time/time-$it.svg"))
 }
 
 // ── Fractions ───────────────────────────────────────────────────────────────────
 
 /** A shaded pie illustrating a simple fraction (e.g. "1/2"). [spoken] is the read-aloud form. */
-data class FractionItem(val label: String, val spoken: String, val svg: String)
+data class FractionItem(val label: String, val spoken: String, val svg: AssetPath)
 
 val FRACTIONS = listOf(
-    FractionItem("1/2", "one half",       "kids/fractions/fraction-1-2.svg"),
-    FractionItem("1/3", "one third",      "kids/fractions/fraction-1-3.svg"),
-    FractionItem("1/4", "one quarter",    "kids/fractions/fraction-1-4.svg"),
-    FractionItem("1/5", "one fifth",      "kids/fractions/fraction-1-5.svg"),
-    FractionItem("1/6", "one sixth",      "kids/fractions/fraction-1-6.svg"),
-    FractionItem("1/8", "one eighth",     "kids/fractions/fraction-1-8.svg"),
-    FractionItem("2/3", "two thirds",     "kids/fractions/fraction-2-3.svg"),
-    FractionItem("3/4", "three quarters", "kids/fractions/fraction-3-4.svg"),
+    FractionItem("1/2", "one half",       AssetPath("kids/fractions/fraction-1-2.svg")),
+    FractionItem("1/3", "one third",      AssetPath("kids/fractions/fraction-1-3.svg")),
+    FractionItem("1/4", "one quarter",    AssetPath("kids/fractions/fraction-1-4.svg")),
+    FractionItem("1/5", "one fifth",      AssetPath("kids/fractions/fraction-1-5.svg")),
+    FractionItem("1/6", "one sixth",      AssetPath("kids/fractions/fraction-1-6.svg")),
+    FractionItem("1/8", "one eighth",     AssetPath("kids/fractions/fraction-1-8.svg")),
+    FractionItem("2/3", "two thirds",     AssetPath("kids/fractions/fraction-2-3.svg")),
+    FractionItem("3/4", "three quarters", AssetPath("kids/fractions/fraction-3-4.svg")),
 )

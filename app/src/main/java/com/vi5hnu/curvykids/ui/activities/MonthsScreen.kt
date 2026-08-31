@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -60,7 +61,9 @@ fun MonthsScreen(
                 SvgImage(
                     asset = prev.svg,
                     contentDescription = prev.name,
-                    modifier = Modifier.size(96.dp),
+                    modifier = Modifier
+                        .fillMaxWidth(0.72f)
+                        .aspectRatio(NAME_BADGE_RATIO),
                 )
                 Spacer(Modifier.height(4.dp))
                 Text("What comes next?", fontWeight = FontWeight.Bold, fontSize = 13.sp, color = Color(0xFF758999))
@@ -70,7 +73,9 @@ fun MonthsScreen(
             SvgImage(
                 asset = month.svg,
                 contentDescription = month.name,
-                modifier = Modifier.size(74.dp),
+                modifier = Modifier
+                    .fillMaxWidth(0.86f)
+                    .aspectRatio(NAME_BADGE_RATIO),
             )
         },
     )
@@ -93,17 +98,25 @@ private fun MonthsLearnGrid() {
                             .clip(RoundedCornerShape(18.dp))
                             .background(month.color.copy(alpha = 0.12f)),
                     ) {
-                        Column(horizontalAlignment = Alignment.CenterHorizontally, modifier = Modifier.padding(6.dp)) {
-                            // SVG badge carries the month name already.
-                            SvgImage(
-                                asset = month.svg,
-                                contentDescription = month.name,
-                                modifier = Modifier.size(64.dp),
-                            )
-                        }
+                        // The badge carries the month name already.
+                        SvgImage(
+                            asset = month.svg,
+                            contentDescription = month.name,
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(horizontal = 8.dp)
+                                .aspectRatio(NAME_BADGE_RATIO),
+                        )
                     }
                 }
             }
         }
     }
 }
+
+/**
+ * Aspect ratio of the day/month name badges. Unlike every other category in the asset library
+ * these are wide pills (a 220x100 viewBox), so fitting one into a square box left it as a thin
+ * strip floating in empty space.
+ */
+private const val NAME_BADGE_RATIO = 220f / 100f

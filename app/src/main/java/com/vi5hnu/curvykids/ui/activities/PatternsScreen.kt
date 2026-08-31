@@ -46,23 +46,24 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.AssetPath
 import kotlinx.coroutines.delay
 
 /** Pattern type cycling per round. */
 private enum class PatternType { ABAB, AABB, ABBA, ABBC }
 
 private data class PatternSpec(
-    val shown: List<String>,   // the visible portion of the sequence
-    val answer: String,        // the next item (correct choice)
-    val choices: List<String>, // answer + 2 distractors, shuffled
+    val shown: List<AssetPath>,   // the visible portion of the sequence
+    val answer: AssetPath,        // the next item (correct choice)
+    val choices: List<AssetPath>, // answer + 2 distractors, shuffled
 )
 
 private fun buildPatternSpec(round: Int): PatternSpec {
     val type = PatternType.values()[round % 4]
-    val emojis = GAME_PICTURES.shuffled()
-    val a = emojis[0]; val b = emojis[1]; val c = emojis[2]
+    val pictures = GAME_PICTURES.shuffled()
+    val a = pictures[0]; val b = pictures[1]; val c = pictures[2]
     // Build a long sequence then slice off the last item as the answer
-    val sequence: List<String> = when (type) {
+    val sequence: List<AssetPath> = when (type) {
         PatternType.ABAB -> listOf(a, b, a, b, a)  // show 4, answer is b
         PatternType.AABB -> listOf(a, a, b, b, a)  // show 4, answer is a
         PatternType.ABBA -> listOf(a, b, b, a, b)  // show 4, answer is b
@@ -70,8 +71,8 @@ private fun buildPatternSpec(round: Int): PatternSpec {
     }
     val shown = sequence.dropLast(1)
     val answer = sequence.last()
-    // Distractors: two other emojis from the pool that aren't the answer
-    val distractors = emojis.drop(3).take(2)
+    // Distractors: two other pictures from the pool that are not the answer
+    val distractors = pictures.drop(3).take(2)
     return PatternSpec(shown, answer, (distractors + answer).shuffled())
 }
 
@@ -88,7 +89,7 @@ fun PatternsScreen(
     // Wrong answers on the current question, so a child who cannot get it is
     // moved on instead of being left tapping forever.
     var misses by remember { mutableIntStateOf(0) }
-    var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
+    var flash by remember { mutableStateOf<Pair<AssetPath, Boolean>?>(null) }
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     val spec = remember(round) { buildPatternSpec(round) }
@@ -98,7 +99,7 @@ fun PatternsScreen(
     LaunchedEffect(round) { speakPrompt() }
     LaunchedEffect(round) { misses = 0 }
 
-    fun choose(svg: String) {
+    fun choose(svg: AssetPath) {
         if (flash != null) return
         val ok = svg == spec.answer
         flash = svg to ok
