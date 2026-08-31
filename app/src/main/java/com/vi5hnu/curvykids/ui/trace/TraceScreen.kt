@@ -247,23 +247,15 @@ fun TraceScreen(
                                 .padding(28.dp),
                         )
                     } else {
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = ch,
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = ghostSize,
-                                lineHeight = ghostSize,
-                                color = Color(0xFFEAF1F6),
-                            )
-                        }
+                        // Devanagari: no per-letter stroke data yet, but the reveal still
+                        // teaches that the headline goes on last.
                         DemoWipe(
                             char = ch,
                             color = inkColor,
                             demoKey = demoKey,
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(28.dp),
                         )
                     }
 
