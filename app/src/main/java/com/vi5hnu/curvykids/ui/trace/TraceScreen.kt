@@ -247,8 +247,6 @@ fun TraceScreen(
                                 .padding(28.dp),
                         )
                     } else {
-                        // Devanagari: no per-letter stroke data yet, but the reveal still
-                        // teaches that the headline goes on last.
                         DemoWipe(
                             char = ch,
                             color = inkColor,
