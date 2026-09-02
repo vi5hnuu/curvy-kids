@@ -103,10 +103,10 @@ class StrokeGuideTest {
 
     @Test
     fun `devanagari letters without a trustworthy source have no guide at all`() {
-        // Six consonants have only a ~60px animation to read, too coarse to recover a path
-        // from; अः and the conjuncts have no source at all. Showing a guessed stroke order
+        // The conjuncts have no stroke-order source, and are ligatures rather than their parts
+        // written in turn, so composing them would be guesswork. Showing a guessed stroke order
         // would teach a child the wrong hand, so these fall back to the letterform instead.
-        val unsourced = "फ ब भ म व स अः क्ष त्र ज्ञ".split(" ")
+        val unsourced = "क्ष त्र ज्ञ".split(" ")
         unsourced.forEach {
             assertNull("'$it' should have no guide until a real source exists",
                 StrokeGuide.forCharacter(it))
@@ -117,7 +117,7 @@ class StrokeGuideTest {
     fun `most of the devanagari the app teaches is covered`() {
         val all = Level.entries.filter { it.script == Script.DEVANAGARI }.flatMap { it.characters }
         assertTrue("Only ${devanagariWithGuides.size} of ${all.size} letters have a guide",
-            devanagariWithGuides.size >= all.size * 3 / 4)
+            devanagariWithGuides.size == all.size - 3)
     }
 
     @Test
