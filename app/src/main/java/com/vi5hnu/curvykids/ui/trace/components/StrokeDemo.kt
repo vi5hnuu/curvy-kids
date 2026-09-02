@@ -31,6 +31,7 @@ import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.data.content.GuideSeg
 import com.vi5hnu.curvykids.data.content.GuideStroke
 import com.vi5hnu.curvykids.data.content.StrokeGuide
+import com.vi5hnu.curvykids.ui.components.toSmoothPath
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import kotlinx.coroutines.delay
 
@@ -216,18 +217,28 @@ private fun buildGeometry(guide: List<GuideStroke>, boxSize: IntSize): Geometry 
     return Geometry(
         guide.map { stroke ->
             val start = px(stroke.startX, stroke.startY)
-            val path = Path().apply {
-                moveTo(start.x, start.y)
-                stroke.segments.forEach { seg ->
-                    when (seg) {
-                        is GuideSeg.Line -> {
-                            val p = px(seg.x, seg.y)
-                            lineTo(p.x, p.y)
-                        }
-                        is GuideSeg.Quad -> {
-                            val c = px(seg.cx, seg.cy)
-                            val p = px(seg.x, seg.y)
-                            quadraticTo(c.x, c.y, p.x, p.y)
+            // A stroke made only of line segments is a sampled path - traced off a real
+            // handwriting animation - so it is drawn as a curve through its samples. Joining
+            // the samples with straight lines instead leaves a visible corner at every one,
+            // and a letter a child is meant to copy has to look handwritten, not surveyed.
+            // A stroke that carries a hand-authored curve is drawn exactly as authored.
+            val path = if (stroke.segments.all { it is GuideSeg.Line }) {
+                (listOf(start) + stroke.segments.map { px((it as GuideSeg.Line).x, it.y) })
+                    .toSmoothPath()
+            } else {
+                Path().apply {
+                    moveTo(start.x, start.y)
+                    stroke.segments.forEach { seg ->
+                        when (seg) {
+                            is GuideSeg.Line -> {
+                                val p = px(seg.x, seg.y)
+                                lineTo(p.x, p.y)
+                            }
+                            is GuideSeg.Quad -> {
+                                val c = px(seg.cx, seg.cy)
+                                val p = px(seg.x, seg.y)
+                                quadraticTo(c.x, c.y, p.x, p.y)
+                            }
                         }
                     }
                 }

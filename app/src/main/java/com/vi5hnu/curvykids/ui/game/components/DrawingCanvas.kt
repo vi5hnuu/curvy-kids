@@ -12,6 +12,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.StrokeJoin
@@ -19,6 +20,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke as DrawStroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.vi5hnu.curvykids.ui.components.toSmoothPath
 import com.vi5hnu.curvykids.recognition.Point
 import com.vi5hnu.curvykids.recognition.Stroke
 
@@ -163,26 +165,6 @@ fun DrawingCanvas(
     }
 }
 
-/**
- * Converts raw captured [Point]s to a Catmull-Rom cubic Bezier [Path].
- * Phantom duplicate endpoints ensure the first and last segments are also smooth.
- */
-private fun List<Point>.toSmoothedPath(): Path {
-    if (isEmpty()) return Path()
-    val path = Path()
-    path.moveTo(first().x, first().y)
-    if (size < 3) {
-        drop(1).forEach { path.lineTo(it.x, it.y) }
-        return path
-    }
-    val pts = listOf(first()) + this + listOf(last())
-    for (i in 1 until pts.size - 2) {
-        val p0 = pts[i - 1]; val p1 = pts[i]; val p2 = pts[i + 1]; val p3 = pts[i + 2]
-        val cp1x = p1.x + (p2.x - p0.x) / 6f
-        val cp1y = p1.y + (p2.y - p0.y) / 6f
-        val cp2x = p2.x - (p3.x - p1.x) / 6f
-        val cp2y = p2.y - (p3.y - p1.y) / 6f
-        path.cubicTo(cp1x, cp1y, cp2x, cp2y, p2.x, p2.y)
-    }
-    return path
-}
+/** Converts raw captured [Point]s to the smooth path the ink is drawn with. */
+private fun List<Point>.toSmoothedPath(): Path =
+    map { Offset(it.x, it.y) }.toSmoothPath()

@@ -247,6 +247,21 @@ fun TraceScreen(
                                 .padding(28.dp),
                         )
                     } else {
+                        // No stroke data for this character yet: show the letter to trace and
+                        // the plain reveal, which gives the shape but not the writing motion.
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center,
+                        ) {
+                            Text(
+                                text = ch,
+                                fontFamily = FontDisplay,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = ghostSize,
+                                lineHeight = ghostSize,
+                                color = Color(0xFFEAF1F6),
+                            )
+                        }
                         DemoWipe(
                             char = ch,
                             color = inkColor,

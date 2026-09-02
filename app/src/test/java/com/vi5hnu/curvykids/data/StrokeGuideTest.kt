@@ -18,6 +18,12 @@ class StrokeGuideTest {
 
     private val latinLevels = Level.entries.filter { it.script == Script.LATIN }
 
+    /** The Devanagari letters that have a stroke guide; the rest fall back to the letterform. */
+    private val devanagariWithGuides = Level.entries
+        .filter { it.script == Script.DEVANAGARI }
+        .flatMap { it.characters }
+        .filter { StrokeGuide.forCharacter(it) != null }
+
     /** Every point a stroke visits, start and segment endpoints alike. */
     private fun pointsOf(character: String): List<Pair<Float, Float>> =
         StrokeGuide.forCharacter(character).orEmpty().flatMap { stroke ->
@@ -79,9 +85,52 @@ class StrokeGuideTest {
     }
 
     @Test
-    fun `devanagari deliberately has no guide rather than a guessed one`() {
-        val hindi = Level.entries.first { it.script == Script.DEVANAGARI }
-        hindi.characters.forEach { assertNull(StrokeGuide.forCharacter(it)) }
+    fun `devanagari guides are well formed and stay inside the unit box`() {
+        // These are generated from Wikimedia's stroke-order files rather than typed, so the
+        // risk is not a typo but a bad extraction producing an empty or runaway path.
+        devanagariWithGuides.forEach { ch ->
+            val strokes = StrokeGuide.forCharacter(ch)!!
+            assertTrue("'$ch' has no strokes", strokes.isNotEmpty())
+            strokes.forEachIndexed { i, stroke ->
+                assertTrue("'$ch' stroke ${i + 1} has no segments", stroke.segments.isNotEmpty())
+            }
+            pointsOf(ch).forEach { (x, y) ->
+                assertTrue("'$ch' has x=$x outside 0..1", x in 0f..1f)
+                assertTrue("'$ch' has y=$y outside 0..1", y in 0f..1f)
+            }
+        }
+    }
+
+    @Test
+    fun `devanagari letters without a trustworthy source have no guide at all`() {
+        // Six consonants have only a ~60px animation to read, too coarse to recover a path
+        // from, and the composites have no source. Showing a guessed stroke order would teach
+        // a child the wrong hand, so those letters fall back to the letterform instead.
+        val unsourced = "फ ब भ म व स अं अः क्ष त्र ज्ञ".split(" ")
+        unsourced.forEach {
+            assertNull("'$it' should have no guide until a real source exists",
+                StrokeGuide.forCharacter(it))
+        }
+    }
+
+    @Test
+    fun `most of the devanagari the app teaches is covered`() {
+        val all = Level.entries.filter { it.script == Script.DEVANAGARI }.flatMap { it.characters }
+        assertTrue("Only ${devanagariWithGuides.size} of ${all.size} letters have a guide",
+            devanagariWithGuides.size >= all.size * 3 / 4)
+    }
+
+    @Test
+    fun `devanagari writes its headline last`() {
+        // The shirorekha - the bar the letters hang from - is always the final stroke, and it
+        // runs left to right. Getting this backwards was the clearest sign, when the order was
+        // being guessed, that the data did not come from real handwriting.
+        listOf("क", "ग", "न", "प").forEach { ch ->
+            val last = StrokeGuide.forCharacter(ch)!!.last()
+            val end = last.segments.last() as GuideSeg.Line
+            assertTrue("'$ch' should finish on the headline", last.startY < 0.3f && end.y < 0.3f)
+            assertTrue("'$ch' should draw the headline left to right", end.x > last.startX)
+        }
     }
 
     @Test
