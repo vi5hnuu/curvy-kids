@@ -104,9 +104,9 @@ class StrokeGuideTest {
     @Test
     fun `devanagari letters without a trustworthy source have no guide at all`() {
         // Six consonants have only a ~60px animation to read, too coarse to recover a path
-        // from, and the composites have no source. Showing a guessed stroke order would teach
-        // a child the wrong hand, so those letters fall back to the letterform instead.
-        val unsourced = "फ ब भ म व स अं अः क्ष त्र ज्ञ".split(" ")
+        // from; अः and the conjuncts have no source at all. Showing a guessed stroke order
+        // would teach a child the wrong hand, so these fall back to the letterform instead.
+        val unsourced = "फ ब भ म व स अः क्ष त्र ज्ञ".split(" ")
         unsourced.forEach {
             assertNull("'$it' should have no guide until a real source exists",
                 StrokeGuide.forCharacter(it))

@@ -305,10 +305,13 @@ object StrokeGuide {
      * where the pen travelled, and that route is then followed along the finished letter's
      * skeleton so it lands exactly on the letterform.
      *
-     * Letters whose only source is one of the small (~60px) animations are absent rather than
-     * approximated: at that size one frame covers a third of a stroke and the recovered path
-     * does not follow the letter. They fall back to showing the letterform, which teaches less
-     * but teaches nothing wrong.
+     * अं is composed: it is अ, whose strokes are known, plus the dot above it, written last.
+     *
+     * Eleven letters are absent rather than approximated. फ ब भ म व स have only a ~60px
+     * animation, where one frame covers a third of a stroke and the recovered path does not
+     * follow the letter; अः and the conjuncts क्ष त्र ज्ञ have no stroke-order source at all.
+     * Those fall back to showing the letterform, which teaches less but teaches nothing wrong -
+     * a guessed stroke order would teach a child the wrong hand.
      *
      * Points are samples along the stroke, drawn as a smooth curve through them (see
      * StrokeDemo); they are not corner points and should not be read as a polygon.
@@ -381,6 +384,13 @@ object StrokeGuide {
             s(0.81f, 0.316f, l(0.708f, 0.223f), l(0.619f, 0.209f), l(0.598f, 0.241f)),
             s(0.85f, 0.319f, l(0.729f, 0.105f), l(0.622f, 0.078f), l(0.603f, 0.107f)),
             s(0.405f, 0.356f, l(1f, 0.356f)),
+        ),
+        "अं" to listOf(
+            s(0.237f, 0.307f, l(0.382f, 0.3f), l(0.464f, 0.365f), l(0.472f, 0.463f), l(0.388f, 0.547f), l(0.462f, 0.662f), l(0.468f, 0.79f), l(0.398f, 0.848f), l(0.253f, 0.835f), l(0.148f, 0.742f), l(0.099f, 0.617f)),
+            s(0.458f, 0.579f, l(0.536f, 0.617f), l(0.631f, 0.627f), l(0.695f, 0.543f)),
+            s(0.739f, 0.3f, l(0.739f, 1f)),
+            s(0.538f, 0.286f, l(0.942f, 0.286f)),
+            s(0.733f, 0.076f, l(0.733f, 0.08f)),
         ),
         "क" to listOf(
             s(0.5f, 0.489f, l(0.495f, 0.379f), l(0.305f, 0.326f), l(0.195f, 0.353f), l(0.116f, 0.447f), l(0.142f, 0.553f), l(0.242f, 0.621f), l(0.358f, 0.632f), l(0.484f, 0.568f), l(0.511f, 0.463f), l(0.5f, 0.168f)),
