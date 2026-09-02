@@ -45,6 +45,7 @@ import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Chip
 import com.vi5hnu.curvykids.ui.components.Pill
+import com.vi5hnu.curvykids.ui.components.ProgressTrack
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import com.vi5hnu.curvykids.ui.game.AnswerResult
@@ -137,13 +138,11 @@ fun TraceScreen(
                     Pill(onClick = { showCharStrip = true }) {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                         ) {
-                            Text(
-                                text = "${uiState.index + 1}/${chars.size}",
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 16.sp,
+                            ProgressTrack(
+                                current = uiState.index + 1,
+                                total = chars.size,
                                 color = topic.color,
                             )
                         }

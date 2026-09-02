@@ -153,6 +153,7 @@ fun AppNavGraph(
                 // ── Play tab ───────────────────────────────────────────────────
                 composable(Screen.Play.route) {
                     PlayScreen(
+                        onSpeak = { gameViewModel.speaker.speak(it) },
                         onOpenTopic = { topic ->
                             // Say the name aloud. The child this app is for cannot read the
                             // label under the picture, so without this they have no way to learn

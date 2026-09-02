@@ -14,12 +14,23 @@ sealed class Screen(val route: String) {
     }
 }
 
-/** Items shown in the bottom tab bar. */
-enum class AppTab(val route: String, val label: String, val icon: TabIcon) {
+/**
+ * Items shown in the bottom tab bar.
+ *
+ * @param holdToOpen Opens on a press-and-hold rather than a tap. The grown-ups tab is a quarter
+ *   of the bar and a child hits it by accident, which drops them out of play onto a screen with
+ *   nothing for them on it. A hold is beyond a toddler's aim but nothing to an adult.
+ */
+enum class AppTab(
+    val route: String,
+    val label: String,
+    val icon: TabIcon,
+    val holdToOpen: Boolean = false,
+) {
     HOME("home", "Home", TabIcon.Home),
     PLAY("play", "Play", TabIcon.Play),
     REWARDS("rewards", "Rewards", TabIcon.Star),
-    PARENT("parent", "Grown-ups", TabIcon.Kid),
+    PARENT("parent", "Grown-ups", TabIcon.Kid, holdToOpen = true),
 }
 
 /** Lightweight icon descriptor (avoids importing the icon in the enum). */

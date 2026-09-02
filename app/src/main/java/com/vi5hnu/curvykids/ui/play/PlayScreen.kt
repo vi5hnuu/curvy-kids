@@ -1,8 +1,10 @@
 package com.vi5hnu.curvykids.ui.play
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -15,6 +17,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.data.content.Script
@@ -67,6 +70,7 @@ private fun buildGroups(): List<Group> {
 fun PlayScreen(
     onOpenTopic: (Topic) -> Unit,
     modifier: Modifier = Modifier,
+    onSpeak: (String) -> Unit = {},
 ) {
     val groups = remember { buildGroups() }
 
@@ -98,13 +102,18 @@ fun PlayScreen(
 
         groups.forEach { group ->
             item(key = "header-${group.title}", span = { GridItemSpan(maxLineSpan) }) {
+                // Tapping a section says its name. These headings are the only way to tell the
+                // sections apart, and the child this app is for cannot read them.
                 Text(
                     text = group.title,
                     fontFamily = FontDisplay,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 17.sp,
                     color = InkSoft,
-                    modifier = Modifier.padding(horizontal = 2.dp, vertical = 6.dp),
+                    modifier = Modifier
+                        .clip(RoundedCornerShape(12.dp))
+                        .clickable { onSpeak(group.title) }
+                        .padding(horizontal = 6.dp, vertical = 12.dp),
                 )
             }
             items(group.topics, key = { it.id }) { topic ->

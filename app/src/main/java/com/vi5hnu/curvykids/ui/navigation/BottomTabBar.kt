@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.navigation
 
+import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -19,6 +21,11 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableLongStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,6 +34,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import kotlinx.coroutines.delay
 import com.vi5hnu.curvykids.ui.theme.InkFaint
 import com.vi5hnu.curvykids.ui.theme.Teal
 import com.vi5hnu.curvykids.ui.theme.TintTeal
@@ -70,6 +78,7 @@ fun BottomTabBar(
     }
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 private fun TabItem(
     tab: AppTab,
@@ -77,13 +86,34 @@ private fun TabItem(
     onClick: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
+    // A hold-to-open tab tells the grown-up how to get in the first time they tap it; the label
+    // is the only place to say so, and a child cannot read it either way.
+    var hintUntil by remember { mutableLongStateOf(0L) }
+    var now by remember { mutableLongStateOf(0L) }
+    val hinting = tab.holdToOpen && now < hintUntil
+    LaunchedEffect(hintUntil) {
+        while (System.currentTimeMillis() < hintUntil) {
+            now = System.currentTimeMillis()
+            delay(100)
+        }
+        now = System.currentTimeMillis()
+    }
+
     Surface(
-        onClick = onClick,
         modifier = modifier.fillMaxHeight(),
         shape = RoundedCornerShape(18.dp),
         color = if (selected) TintTeal else Color.Transparent,
     ) {
         Column(
+            modifier = Modifier
+                .fillMaxHeight()
+                .combinedClickable(
+                    onClick = {
+                        if (tab.holdToOpen) hintUntil = System.currentTimeMillis() + HINT_MS
+                        else onClick()
+                    },
+                    onLongClick = { if (tab.holdToOpen) onClick() },
+                ),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -95,15 +125,18 @@ private fun TabItem(
             )
             Spacer(Modifier.height(3.dp))
             Text(
-                text = tab.label,
+                text = if (hinting) "Hold" else tab.label,
                 fontFamily = FontDisplay,
                 fontWeight = FontWeight.Bold,
                 fontSize = 11.sp,
-                color = if (selected) Teal else InkFaint,
+                color = if (selected || hinting) Teal else InkFaint,
             )
         }
     }
 }
+
+/** How long the "Hold" prompt stays up after a tap on a hold-to-open tab. */
+private const val HINT_MS = 2000L
 
 private fun TabIcon.toVector(): ImageVector = when (this) {
     TabIcon.Home -> Icons.Rounded.Home

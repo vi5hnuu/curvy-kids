@@ -38,6 +38,7 @@ import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Chip
 import com.vi5hnu.curvykids.ui.components.Pill
+import com.vi5hnu.curvykids.ui.components.ProgressTrack
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.components.SvgBadge
@@ -104,9 +105,9 @@ fun WordsScreen(
                     Pill {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                         ) {
-                            Text("${pos + 1}/${WORD_LIST.size}", fontFamily = FontDisplay, fontSize = 16.sp, color = topic.color)
+                            ProgressTrack(pos + 1, WORD_LIST.size, topic.color)
                         }
                     }
                 },
