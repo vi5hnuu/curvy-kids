@@ -22,6 +22,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.material3.Text
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.sp
+import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.game.components.DrawingCanvas
@@ -69,6 +73,22 @@ fun WritePad(
                         .padding(30.dp),
                 )
             } else {
+                // No stroke order is known for this character, so show the shape to copy. The
+                // reveal clears itself when it finishes, and without the letter behind it the
+                // child would be left facing a blank page.
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    Text(
+                        text = char,
+                        fontFamily = FontDisplay,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = GHOST_SIZE,
+                        lineHeight = GHOST_SIZE,
+                        color = GHOST_COLOR,
+                    )
+                }
                 DemoWipe(
                     char = char,
                     color = color,
@@ -105,6 +125,12 @@ fun WritePad(
         }
     }
 }
+
+/** The letter to copy, sized in sp but fixed against the OS font scale so it stays in the card. */
+private val GHOST_SIZE = 190.sp
+
+/** The same faint grey the stroke guide draws its untraced skeleton in. */
+private val GHOST_COLOR = Color(0xFFE4EDF4)
 
 /** A round control on the writing surface, sized for a small hand. */
 @Composable

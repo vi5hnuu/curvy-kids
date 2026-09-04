@@ -321,6 +321,11 @@ object StrokeGuide {
      * They fall back to showing the letterform, which teaches less but teaches nothing wrong -
      * a guessed stroke order would teach a child the wrong hand.
      *
+     * The barakhadi syllables are absent for the same reason. Wikimedia's stroke-order files
+     * cover letters only: there is nothing published for the vowel signs or for consonant-plus-
+     * sign, so their order and direction would have to be invented. The writing screen shows
+     * such a syllable's shape instead, and animates a real stroke order only where one is known.
+     *
      * Points are samples along the stroke, drawn as a smooth curve through them (see
      * StrokeDemo); they are not corner points and should not be read as a polygon.
      *
