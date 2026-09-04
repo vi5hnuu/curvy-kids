@@ -34,6 +34,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.saveable.rememberSaveable
+import com.vi5hnu.curvykids.ui.trace.components.WritePad
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS
 import com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS
@@ -71,6 +73,10 @@ fun BarakhadiScreen(
     feedback: PlayFeedback? = null,
 ) {
     var selected by remember { mutableIntStateOf(0) }
+    // Reading the syllables aloud and writing them are two different activities on the same
+    // set, so they are two modes rather than two screens: the child keeps their place either way.
+    var writing by rememberSaveable { mutableStateOf(false) }
+    var writingForm by rememberSaveable { mutableIntStateOf(0) }
     var explored by remember { mutableStateOf(setOf<String>()) }
     // Index (0..11) of the form currently being recited, or -1 when not reciting.
     var recitingIndex by remember { mutableIntStateOf(-1) }
@@ -174,7 +180,66 @@ fun BarakhadiScreen(
                 }
             }
 
-            Spacer(Modifier.height(18.dp))
+            Spacer(Modifier.height(16.dp))
+
+            // Read or write. The same twelve forms either way.
+            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
+                ModeChip("Listen", !writing, topic) { stopRecite(); writing = false }
+                ModeChip("Write", writing, topic) { stopRecite(); writing = true }
+            }
+
+            Spacer(Modifier.height(16.dp))
+
+            if (writing) {
+                val matra = BARAKHADI_MATRAS[writingForm]
+                val syllable = barakhadiSyllable(consonant.char, matra)
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .horizontalScroll(rememberScrollState()),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                ) {
+                    BARAKHADI_MATRAS.forEachIndexed { i, m ->
+                        val form = barakhadiSyllable(consonant.char, m)
+                        val isSel = i == writingForm
+                        Surface(
+                            onClick = {
+                                writingForm = i
+                                speakHi(form, consonant.romanized.dropLast(1) + m.key)
+                            },
+                            shape = RoundedCornerShape(16.dp),
+                            color = if (isSel) topic.color else topic.tint,
+                            modifier = Modifier.height(52.dp),
+                        ) {
+                            Box(contentAlignment = Alignment.Center) {
+                                Text(
+                                    form,
+                                    fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 22.sp,
+                                    color = if (isSel) Color.White else topic.color,
+                                    modifier = Modifier.padding(horizontal = 14.dp),
+                                )
+                            }
+                        }
+                    }
+                }
+                Spacer(Modifier.height(14.dp))
+                WritePad(
+                    char = syllable,
+                    color = topic.color,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(420.dp),
+                    onDrawn = {
+                        if (!explored.contains(syllable)) {
+                            explored = explored + syllable
+                            onReward(1)
+                        }
+                    },
+                )
+                Spacer(Modifier.height(24.dp))
+                return@Column
+            }
 
             // Heading + Recite / Stop control
             Row(
@@ -264,5 +329,24 @@ fun BarakhadiScreen(
                 }
             }
         }
+    }
+}
+
+/** One of the two mode buttons at the top: Listen or Write. */
+@Composable
+private fun ModeChip(label: String, selected: Boolean, topic: Topic, onClick: () -> Unit) {
+    Surface(
+        onClick = onClick,
+        shape = RoundedCornerShape(20.dp),
+        color = if (selected) topic.color else topic.tint,
+    ) {
+        Text(
+            text = label,
+            fontFamily = FontDisplay,
+            fontWeight = FontWeight.ExtraBold,
+            fontSize = 15.sp,
+            color = if (selected) Color.White else topic.color,
+            modifier = Modifier.padding(horizontal = 22.dp, vertical = 11.dp),
+        )
     }
 }
