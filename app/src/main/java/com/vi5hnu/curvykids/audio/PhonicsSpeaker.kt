@@ -63,6 +63,9 @@ class PhonicsSpeaker(context: Context) {
     @Volatile
     private var pendingLangTag: String? = null
 
+    @Volatile
+    private var pendingRomanized: String? = null
+
     /** Currently-applied TTS language, so we only switch locale when it actually changes. */
     @Volatile
     private var currentLangTag: String = Locale.US.toLanguageTag()
@@ -92,9 +95,10 @@ class PhonicsSpeaker(context: Context) {
                 }
             })
             ready = true
-            pendingText?.let { speak(it, pendingLangTag) }
+            pendingText?.let { speak(it, pendingLangTag, romanized = pendingRomanized) }
             pendingText = null
             pendingLangTag = null
+            pendingRomanized = null
         } else {
             Log.e(TAG, "TextToSpeech init failed: $status")
         }
@@ -109,17 +113,34 @@ class PhonicsSpeaker(context: Context) {
      * @param flush when true (default) interrupts any current speech; when false the phrase is
      *        QUEUED after whatever is playing — used so a praise/feedback line finishes before the
      *        next prompt speaks, instead of being cut off mid-word.
+     * @param romanized what to say instead when the device has no voice for [langTag]. Whether a
+     *        voice exists can only be known once the engine has started, which is after the first
+     *        tap, so the choice is made here rather than by the caller: asking beforehand returned
+     *        an optimistic yes and sent Devanagari to an English voice, which reads as nonsense.
      */
-    fun speak(text: String, langTag: String? = null, flush: Boolean = true, utteranceId: String = text) {
+    fun speak(
+        text: String,
+        langTag: String? = null,
+        flush: Boolean = true,
+        utteranceId: String = text,
+        romanized: String? = null,
+    ) {
         if (text.isBlank() || muted) return
         if (!ready) {
             pendingText = text  // will fire once TTS is initialised
             pendingLangTag = langTag
+            pendingRomanized = romanized
             return
         }
-        applyLanguage(langTag)
+        val spoken = if (langTag != null && romanized != null && !supports(langTag)) {
+            applyLanguage(null)
+            romanized
+        } else {
+            applyLanguage(langTag)
+            text
+        }
         val mode = if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
-        tts.speak(text, mode, null, utteranceId)
+        tts.speak(spoken, mode, null, utteranceId)
     }
 
     /**
@@ -171,6 +192,7 @@ class PhonicsSpeaker(context: Context) {
     fun stop() {
         pendingText = null
         pendingLangTag = null
+        pendingRomanized = null
         if (ready) tts.stop()
     }
 

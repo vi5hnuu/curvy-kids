@@ -4,6 +4,18 @@
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
 
+    <!--
+        Android 11 hides other packages unless they are declared here, and a text-to-speech
+        engine is another package. Without this the engine is invisible, TextToSpeech never
+        binds, and every spoken prompt in the app is silently dropped - which is exactly what a
+        reviewer on a device whose speech engine is not the default would have found.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
+
     <application
         android:name=".CurvyKidsApp"
         android:networkSecurityConfig="@xml/network_security_config"

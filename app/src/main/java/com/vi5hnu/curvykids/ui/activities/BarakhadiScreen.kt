@@ -88,7 +88,7 @@ fun BarakhadiScreen(
     // Speak Devanagari in the Hindi voice, or a romanized read-aloud if no Hindi voice is installed.
     fun speakHi(devanagari: String, romanized: String) {
         val sp = feedback?.speaker ?: return
-        if (sp.supports("hi-IN")) sp.speak(devanagari, langTag = "hi-IN") else sp.speak(romanized)
+        sp.speak(devanagari, langTag = "hi-IN", romanized = romanized)
     }
 
     fun stopRecite() {

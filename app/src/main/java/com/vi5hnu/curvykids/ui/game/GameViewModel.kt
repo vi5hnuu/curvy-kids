@@ -270,14 +270,15 @@ class GameViewModel(
      */
     private fun speakHindiLetter(char: String, queue: Boolean = false) {
         val letter = HINDI_BY_CHAR[char]
-        if (phonics.supports(HINDI_TTS_TAG)) {
-            val text = if (letter != null && letter.example.isNotEmpty())
-                "$char, $char से ${letter.example}"
-            else char
-            phonics.speak(text, langTag = HINDI_TTS_TAG, flush = !queue)
-        } else {
-            phonics.speak(letter?.romanized ?: char, flush = !queue)
-        }
+        val text = if (letter != null && letter.example.isNotEmpty())
+            "$char, $char से ${letter.example}"
+        else char
+        phonics.speak(
+            text,
+            langTag = HINDI_TTS_TAG,
+            flush = !queue,
+            romanized = letter?.romanized ?: char,
+        )
     }
 
     private fun speakPraise() {
