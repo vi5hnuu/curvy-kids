@@ -35,6 +35,8 @@ object StrokeGuide {
     /** The strokes for [character], or null when no guide has been authored for it. */
     fun forCharacter(character: String): List<GuideStroke>? {
         DEVANAGARI[character]?.let { return it }
+        // A syllable is its consonant plus a vowel sign, and is written in that order.
+        BarakhadiStrokes.forSyllable(character) { DEVANAGARI[it] }?.let { return it }
         val c = character.singleOrNull() ?: return null
         return when (c) {
             in 'A'..'Z' -> UPPERCASE[c]

@@ -10,10 +10,12 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
@@ -36,12 +38,14 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.vi5hnu.curvykids.ui.trace.components.WritePad
+import androidx.activity.compose.BackHandler
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS
 import com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.data.content.barakhadiSyllable
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
+import com.vi5hnu.curvykids.ui.theme.BgTop
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.components.KidIconImage
@@ -73,10 +77,9 @@ fun BarakhadiScreen(
     feedback: PlayFeedback? = null,
 ) {
     var selected by remember { mutableIntStateOf(0) }
-    // Reading the syllables aloud and writing them are two different activities on the same
-    // set, so they are two modes rather than two screens: the child keeps their place either way.
-    var writing by rememberSaveable { mutableStateOf(false) }
-    var writingForm by rememberSaveable { mutableIntStateOf(0) }
+    // Which of the twelve forms is open for writing, or -1 for none. Tapping a form opens it:
+    // a mode switch would have to be read to be used, and the child this is for cannot read it.
+    var writingForm by rememberSaveable { mutableIntStateOf(-1) }
     var explored by remember { mutableStateOf(setOf<String>()) }
     // Index (0..11) of the form currently being recited, or -1 when not reciting.
     var recitingIndex by remember { mutableIntStateOf(-1) }
@@ -130,6 +133,29 @@ fun BarakhadiScreen(
         }
     }
 
+    if (writingForm >= 0) {
+        val matra = BARAKHADI_MATRAS[writingForm]
+        val syllable = barakhadiSyllable(consonant.char, matra)
+        val romanized = consonant.romanized.dropLast(1) + matra.key
+        BackHandler { writingForm = -1 }
+        WriteSheet(
+            syllable = syllable,
+            color = badgeColor,
+            tint = badgeTint,
+            onSpeak = { speakHi(syllable, romanized) },
+            onPrev = { writingForm = (writingForm + BARAKHADI_MATRAS.size - 1) % BARAKHADI_MATRAS.size },
+            onNext = { writingForm = (writingForm + 1) % BARAKHADI_MATRAS.size },
+            onClose = { writingForm = -1 },
+            onDrawn = {
+                if (!explored.contains(syllable)) {
+                    explored = explored + syllable
+                    onReward(1)
+                }
+            },
+        )
+        return
+    }
+
     Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
@@ -180,66 +206,7 @@ fun BarakhadiScreen(
                 }
             }
 
-            Spacer(Modifier.height(16.dp))
-
-            // Read or write. The same twelve forms either way.
-            Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                ModeChip("Listen", KidIcon.Speaker, !writing, topic) { stopRecite(); writing = false }
-                ModeChip("Write", KidIcon.Pencil, writing, topic) { stopRecite(); writing = true }
-            }
-
-            Spacer(Modifier.height(16.dp))
-
-            if (writing) {
-                val matra = BARAKHADI_MATRAS[writingForm]
-                val syllable = barakhadiSyllable(consonant.char, matra)
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .horizontalScroll(rememberScrollState()),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp),
-                ) {
-                    BARAKHADI_MATRAS.forEachIndexed { i, m ->
-                        val form = barakhadiSyllable(consonant.char, m)
-                        val isSel = i == writingForm
-                        Surface(
-                            onClick = {
-                                writingForm = i
-                                speakHi(form, consonant.romanized.dropLast(1) + m.key)
-                            },
-                            shape = RoundedCornerShape(16.dp),
-                            color = if (isSel) topic.color else topic.tint,
-                            modifier = Modifier.height(52.dp),
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                Text(
-                                    form,
-                                    fontWeight = FontWeight.ExtraBold,
-                                    fontSize = 22.sp,
-                                    color = if (isSel) Color.White else topic.color,
-                                    modifier = Modifier.padding(horizontal = 14.dp),
-                                )
-                            }
-                        }
-                    }
-                }
-                Spacer(Modifier.height(14.dp))
-                WritePad(
-                    char = syllable,
-                    color = topic.color,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(420.dp),
-                    onDrawn = {
-                        if (!explored.contains(syllable)) {
-                            explored = explored + syllable
-                            onReward(1)
-                        }
-                    },
-                )
-                Spacer(Modifier.height(24.dp))
-                return@Column
-            }
+            Spacer(Modifier.height(18.dp))
 
             // Heading + Recite / Stop control
             Row(
@@ -326,6 +293,7 @@ fun BarakhadiScreen(
                                     .clickable {
                                         stopRecite()
                                         speakHi(syllable, consonant.romanized.dropLast(1) + matra.key)
+                                        writingForm = index
                                         if (!explored.contains(syllable)) {
                                             explored = explored + syllable
                                             onReward(1)
@@ -344,37 +312,74 @@ fun BarakhadiScreen(
     }
 }
 
-/** One of the two mode buttons at the top: Listen or Write, each with its own picture. */
+/**
+ * One syllable, opened for writing by tapping it.
+ *
+ * A full sheet rather than a mode on the grid: tapping the thing you want is how the child
+ * already moves around this app, and it needs no label to be understood. Arrows move along the
+ * twelve forms so a child can work through them without going back to the grid.
+ */
 @Composable
-private fun ModeChip(
-    label: String,
-    icon: KidIcon,
-    selected: Boolean,
-    topic: Topic,
-    onClick: () -> Unit,
+private fun WriteSheet(
+    syllable: String,
+    color: Color,
+    tint: Color,
+    onSpeak: () -> Unit,
+    onPrev: () -> Unit,
+    onNext: () -> Unit,
+    onClose: () -> Unit,
+    onDrawn: () -> Unit,
 ) {
+    Surface(color = BgTop, modifier = Modifier.fillMaxSize()) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 18.dp, vertical = 18.dp),
+        ) {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                RoundButton(KidIcon.ArrowBack, color, tint, onClose)
+                Spacer(Modifier.width(14.dp))
+                Text(
+                    text = syllable,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 34.sp,
+                    color = color,
+                    modifier = Modifier.weight(1f),
+                )
+                RoundButton(KidIcon.Speaker, color, tint, onSpeak)
+            }
+            Spacer(Modifier.height(14.dp))
+            WritePad(
+                char = syllable,
+                color = color,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(1f),
+                onDrawn = onDrawn,
+            )
+            Spacer(Modifier.height(14.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween,
+            ) {
+                RoundButton(KidIcon.ArrowBack, color, tint, onPrev)
+                RoundButton(KidIcon.ArrowForward, color, tint, onNext)
+            }
+        }
+    }
+}
+
+/** A large round control, sized for a small hand. */
+@Composable
+private fun RoundButton(icon: KidIcon, color: Color, tint: Color, onClick: () -> Unit) {
     Surface(
         onClick = onClick,
-        shape = RoundedCornerShape(20.dp),
-        color = if (selected) topic.color else topic.tint,
+        shape = CircleShape,
+        color = tint,
+        modifier = Modifier.size(60.dp),
     ) {
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
-        ) {
-            KidIconImage(
-                icon,
-                Modifier.size(19.dp),
-                if (selected) Color.White else topic.color,
-            )
-            Text(
-                text = label,
-                fontFamily = FontDisplay,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 15.sp,
-                color = if (selected) Color.White else topic.color,
-            )
+        Box(contentAlignment = Alignment.Center) {
+            KidIconImage(icon, Modifier.size(26.dp), color)
         }
     }
 }

@@ -134,6 +134,39 @@ class StrokeGuideTest {
     }
 
     @Test
+    fun `barakhadi syllables are built from their consonant and their sign`() {
+        // The vowel signs are read out of the vowel letters (आ is अ with ा, and so on), so a
+        // syllable's guide is its consonant's strokes, then the sign, then one headline.
+        listOf("का", "के", "कै", "को", "कौ", "कं", "कः").forEach { syllable ->
+            val strokes = StrokeGuide.forCharacter(syllable)
+            assertNotNull("'$syllable' should have a guide", strokes)
+            val consonant = StrokeGuide.forCharacter("क")!!
+            assertTrue(
+                "'$syllable' should add strokes to क, not replace them",
+                strokes!!.size > consonant.size - 1,
+            )
+            pointsOf(syllable).forEach { (x, y) ->
+                assertTrue("'$syllable' has x=$x outside 0..1", x in 0f..1f)
+                assertTrue("'$syllable' has y=$y outside 0..1", y in 0f..1f)
+            }
+            // The headline is written last and runs across the whole syllable.
+            val last = strokes.last()
+            val end = last.segments.last() as GuideSeg.Line
+            assertTrue("'$syllable' should finish on the headline", end.x - last.startX > 0.7f)
+        }
+    }
+
+    @Test
+    fun `barakhadi signs with no source have no guide`() {
+        // ि ी ु and ू have no vowel letter they can be read out of, so they are left alone and
+        // the writing screen shows the syllable's shape instead of a guessed stroke order.
+        listOf("कि", "की", "कु", "कू").forEach {
+            assertNull("'$it' should have no guide until its sign can be sourced",
+                StrokeGuide.forCharacter(it))
+        }
+    }
+
+    @Test
     fun `multi character strings and symbols resolve to nothing`() {
         assertNull(StrokeGuide.forCharacter("AB"))
         assertNull(StrokeGuide.forCharacter(""))
