@@ -83,6 +83,8 @@ fun TraceScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val recognizerState by viewModel.recognizerReady.collectAsState()
+    // The model only marks the child's writing; the lesson itself needs nothing from it.
+    val modelFailed = recognizerState?.error != null
 
     val controller = rememberDrawingController()
     var demoKey by remember { mutableStateOf(0) }
@@ -395,10 +397,10 @@ fun TraceScreen(
                 // tappable and says what to do instead.
                 CandyButton(
                     onClick = {
-                        if (!controller.hasDrawing) {
-                            viewModel.promptToDraw()
-                        } else if (!uiState.isChecking) {
-                            viewModel.check(
+                        when {
+                            modelFailed -> viewModel.next()
+                            !controller.hasDrawing -> viewModel.promptToDraw()
+                            !uiState.isChecking -> viewModel.check(
                                 strokes = controller.snapshot(),
                                 writingArea = null,
                             )
@@ -408,15 +410,30 @@ fun TraceScreen(
                     modifier = Modifier
                         .weight(1f)
                         .height(62.dp),
-                    containerColor = if (controller.hasDrawing) Green else GreenMuted,
+                    containerColor = when {
+                        modelFailed -> topic.color
+                        controller.hasDrawing -> Green
+                        else -> GreenMuted
+                    },
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        KidIconImage(KidIcon.Check, Modifier.size(22.dp), Color.White)
+                        // Without the model the app cannot mark the writing, so the button
+                        // carries the child on to the next letter rather than promising a check
+                        // it cannot give.
+                        KidIconImage(
+                            if (modelFailed) KidIcon.ArrowForward else KidIcon.Check,
+                            Modifier.size(22.dp),
+                            Color.White,
+                        )
                         Text(
-                            text = if (uiState.isChecking) "Checking…" else "Check",
+                            text = when {
+                                modelFailed -> "Next"
+                                uiState.isChecking -> "Checking…"
+                                else -> "Check"
+                            },
                             fontFamily = FontDisplay,
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 23.sp,
@@ -439,10 +456,14 @@ fun TraceScreen(
             }
         }
 
-        // Handwriting-model overlay. The model is downloaded once per script, so this is what a
-        // child sees on a first run, and what they are left with if the download cannot happen.
-        if (recognizerState?.success != true) {
-            val failed = recognizerState?.error != null
+        // Handwriting-model overlay, shown only while the model is still on its way.
+        //
+        // If it cannot be fetched the screen is left alone: the demonstration and the page to
+        // write on are built into the app and need nothing from the network. Only the check does.
+        // Covering the whole screen took the lesson away from any child without a connection,
+        // over a feature that merely marks their work.
+        if (recognizerState?.success != true && !modelFailed) {
+            val failed = false
             Box(
                 modifier = Modifier
                     .fillMaxSize()
