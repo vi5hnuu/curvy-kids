@@ -16,8 +16,13 @@ package com.vi5hnu.curvykids.data.content
  * source. It corrected a guess, too: the े mark is drawn up and to the *left*, which is the
  * opposite of what it looks like it should be.
  *
- * ि ी ु and ू have no such parent letter to be read out of, so they are absent and those forms
- * fall back to showing the syllable's shape. Guessing them would teach a child the wrong hand.
+ * ि ी ु and ू have no parent letter to be read out of, and no stroke-order file of their own
+ * exists. Their shape is taken from the letterform, and their direction from the one rule the
+ * source does establish beyond doubt: across the 46 verified letters, every one of the 33 ruled
+ * verticals is drawn top to bottom, and every ruled horizontal left to right, without a single
+ * exception. Their stems follow that, and their hooks start where the mark meets the headline,
+ * which is where the pen arrives from. Marked below as convention rather than measurement, so
+ * that the difference is not lost.
  *
  * Signs are described against the headline: x as a fraction of the syllable's width, y as an
  * offset from the headline, which is how they were measured and how they compose onto any
@@ -39,6 +44,8 @@ internal object BarakhadiStrokes {
         /** The consonant's share of the width; a sign to the right leaves it less room. */
         val consonantWidth: Float,
         val strokes: List<List<P>>,
+        /** Where the consonant starts across the box; ि stands to its left and pushes it over. */
+        val consonantLeft: Float = 0f,
     )
 
     /** ा — a bar down the right, measured from आ. */
@@ -61,8 +68,37 @@ internal object BarakhadiStrokes {
     private val AH_1 = listOf(P(0.806f, 0.199f), P(0.806f, 0.203f))
     private val AH_2 = listOf(P(0.806f, 0.450f), P(0.806f, 0.454f))
 
+    // ── By convention, not measured: no stroke-order file covers these four ──────────────
+
+    /** ि — a stem to the left of the consonant, and the hook that carries it to the headline. */
+    private val I_STEM = listOf(P(0.115f, 0.012f), P(0.115f, 0.560f))
+    private val I_HOOK = listOf(
+        P(0.115f, 0.012f), P(0.150f, -0.120f), P(0.260f, -0.175f), P(0.360f, -0.150f),
+    )
+
+    /** ी — a stem to the right, its hook leaning back over the consonant. */
+    private val II_STEM = listOf(P(0.880f, 0.012f), P(0.880f, 0.560f))
+    private val II_HOOK = listOf(
+        P(0.880f, 0.012f), P(0.845f, -0.130f), P(0.730f, -0.190f), P(0.620f, -0.160f),
+    )
+
+    /** ु — a small hook under the consonant. */
+    private val U = listOf(
+        P(0.360f, 0.620f), P(0.395f, 0.720f), P(0.470f, 0.745f), P(0.520f, 0.700f),
+    )
+
+    /** ू — the same, carried further down. */
+    private val UU = listOf(
+        P(0.360f, 0.620f), P(0.400f, 0.730f), P(0.480f, 0.760f), P(0.530f, 0.715f),
+        P(0.545f, 0.830f), P(0.500f, 0.890f),
+    )
+
     private val SIGNS = listOf(
         Sign("ा", 0.70f, listOf(AA)),
+        Sign("ि", 0.70f, listOf(I_STEM, I_HOOK), consonantLeft = 0.30f),
+        Sign("ी", 0.70f, listOf(II_STEM, II_HOOK)),
+        Sign("ु", 0.92f, listOf(U)),
+        Sign("ू", 0.88f, listOf(UU)),
         Sign("े", 0.94f, listOf(E)),
         Sign("ै", 0.94f, listOf(E, AI2)),
         Sign("ो", 0.70f, listOf(AA, E)),
@@ -97,7 +133,7 @@ internal object BarakhadiStrokes {
         val drop = headlineY - ownHeadline * k
         val body = guide
             .filterNot { it.isHeadline() }
-            .map { it.scaledBy(k, drop) }
+            .map { it.scaledBy(k, drop, sign.consonantLeft) }
 
         val marks = sign.strokes.map { pts ->
             GuideStroke(
@@ -161,14 +197,14 @@ internal object BarakhadiStrokes {
         listOf(startY) + segments.map { if (it is GuideSeg.Line) it.y else (it as GuideSeg.Quad).y }
 
     /** Shrinks a stroke about the top-left corner and drops it by [dy], keeping its proportions. */
-    private fun GuideStroke.scaledBy(k: Float, dy: Float): GuideStroke =
+    private fun GuideStroke.scaledBy(k: Float, dy: Float, dx: Float = 0f): GuideStroke =
         GuideStroke(
-            startX * k, startY * k + dy,
+            startX * k + dx, startY * k + dy,
             segments.map { seg ->
                 when (seg) {
-                    is GuideSeg.Line -> GuideSeg.Line(seg.x * k, seg.y * k + dy)
+                    is GuideSeg.Line -> GuideSeg.Line(seg.x * k + dx, seg.y * k + dy)
                     is GuideSeg.Quad ->
-                        GuideSeg.Quad(seg.cx * k, seg.cy * k + dy, seg.x * k, seg.y * k + dy)
+                        GuideSeg.Quad(seg.cx * k + dx, seg.cy * k + dy, seg.x * k + dx, seg.y * k + dy)
                 }
             },
         )

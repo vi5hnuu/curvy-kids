@@ -27,6 +27,11 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.rememberCoroutineScope
+import com.vi5hnu.curvykids.recognition.Stroke
+import com.vi5hnu.curvykids.ui.components.StarGold
+import kotlinx.coroutines.launch
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.game.components.DrawingCanvas
@@ -35,15 +40,14 @@ import com.vi5hnu.curvykids.ui.game.components.rememberDrawingController
 /**
  * A surface for practising one character: it is shown being written, then the child writes it.
  *
- * Deliberately without a right-or-wrong check. The tracing screen can check a single letter
- * against the handwriting recogniser, but a barakhadi syllable is a consonant and a vowel sign
- * together and the recogniser is not dependable on those — telling a child their उ is wrong when
- * it is not would teach them to distrust the app. Here the demonstration is the teaching and the
- * page is theirs to practise on.
- *
  * @param char     The character to demonstrate and trace.
  * @param color    The topic's colour, used for the pen and the controls.
  * @param onDrawn  Called the first time the child puts pen to paper on this character.
+ * @param onCheck  Reads the child's writing and says whether it is the character, or null when
+ *                 nothing can read it — the model may not have been fetched. When it is null the
+ *                 check is simply not offered, rather than the child being told they are wrong
+ *                 by something that never looked.
+ * @param onResult Called with the verdict, for the sound, the buzz and the reward.
  */
 @Composable
 fun WritePad(
@@ -51,11 +55,17 @@ fun WritePad(
     color: Color,
     modifier: Modifier = Modifier,
     onDrawn: () -> Unit = {},
+    onCheck: (suspend (List<Stroke>) -> Boolean?)? = null,
+    onResult: (Boolean) -> Unit = {},
 ) {
     val controller = rememberDrawingController()
     // Bumping this replays the demonstration; it also restarts whenever the character changes.
     var demoKey by rememberSaveable(char) { mutableIntStateOf(0) }
     var drawnHere by rememberSaveable(char) { mutableIntStateOf(0) }
+
+    var verdict by remember(char) { mutableStateOf<Boolean?>(null) }
+    var checking by remember { mutableStateOf(false) }
+    val scope = rememberCoroutineScope()
 
     // The controller outlives the character, so without this the child's writing of one letter
     // is still on the page when they move to the next one.
@@ -125,7 +135,35 @@ fun WritePad(
                 PadButton(KidIcon.Undo, color) {
                     controller.clear()
                     demoKey++
+                    verdict = null
                 }
+                if (onCheck != null) {
+                    PadButton(KidIcon.Check, color) {
+                        if (!checking && controller.hasDrawing) {
+                            checking = true
+                            scope.launch {
+                                val read = onCheck(controller.snapshot())
+                                checking = false
+                                if (read != null) {
+                                    verdict = read
+                                    onResult(read)
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            // The verdict, as a face rather than a word.
+            verdict?.let { correct ->
+                KidIconImage(
+                    if (correct) KidIcon.Star else KidIcon.Pointer,
+                    Modifier
+                        .align(Alignment.TopStart)
+                        .padding(16.dp)
+                        .size(40.dp),
+                    if (correct) StarGold else color,
+                )
             }
         }
     }

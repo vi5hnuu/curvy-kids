@@ -157,12 +157,12 @@ class StrokeGuideTest {
     }
 
     @Test
-    fun `barakhadi signs with no source have no guide`() {
-        // ि ी ु and ू have no vowel letter they can be read out of, so they are left alone and
-        // the writing screen shows the syllable's shape instead of a guessed stroke order.
-        listOf("कि", "की", "कु", "कू").forEach {
-            assertNull("'$it' should have no guide until its sign can be sourced",
-                StrokeGuide.forCharacter(it))
+    fun `every barakhadi form of a guided consonant can be demonstrated`() {
+        val forms = listOf("", "ा", "ि", "ी", "ु", "ू", "े", "ै", "ो", "ौ", "ं", "ः")
+        "क ख ग घ च छ ज ट ठ ड त थ द ध न प फ ब भ म य र ल व श ष स ह".split(" ").forEach { c ->
+            forms.forEach { f ->
+                assertNotNull("'$c$f' should have a guide", StrokeGuide.forCharacter(c + f))
+            }
         }
     }
 
@@ -179,7 +179,9 @@ class StrokeGuideTest {
             .filter { it.script == Script.DEVANAGARI }
             .flatMap { it.characters }
         val syllables = "क ख ग घ च छ ज ट ठ ड त थ द ध न प म य र ल व श ष स ह".split(" ")
-            .flatMap { c -> listOf("ा", "े", "ै", "ो", "ौ", "ं", "ः").map { c + it } }
+            .flatMap { c ->
+                listOf("ा", "ि", "ी", "ु", "ू", "े", "ै", "ो", "ौ", "ं", "ः").map { c + it }
+            }
         return (letters + syllables).filter { StrokeGuide.forCharacter(it) != null }
     }
 

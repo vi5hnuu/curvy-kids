@@ -268,6 +268,28 @@ class GameViewModel(
      * If the device has no Hindi voice, reads the romanized name with the English voice so the
      * child always hears something instead of silence/garble.
      */
+    /**
+     * Whether the drawn [strokes] read as [expected] in Devanagari.
+     *
+     * A narrower door onto the recogniser than [check], for screens that mark a single piece of
+     * writing without owning a whole tracing session - the barakhadi writing page. Keeping it
+     * here means those screens never have to know that a recogniser exists, let alone which one.
+     *
+     * Returns null when the model is not available, so the caller can leave the check out
+     * rather than tell the child their writing is wrong when nothing actually read it.
+     */
+    suspend fun readsAs(strokes: List<Stroke>, expected: String): Boolean? {
+        if (strokes.isEmpty()) return null
+        recognizer.ensure(Level.HINDI_CONSONANTS.languageTag)
+        if (recognizer.ready.value?.success != true) return null
+        val candidates = withTimeoutOrNull(RECOGNIZE_TIMEOUT_MS) {
+            recognizer.recognize(strokes, null, preContext = null)
+        } ?: return null
+        val matched = CharacterMatcher.matches(expected, candidates, Level.HINDI_CONSONANTS)
+        Log.d(TAG, "readsAs expected=$expected candidates=$candidates matched=$matched")
+        return matched
+    }
+
     private fun speakHindiLetter(char: String, queue: Boolean = false) {
         val letter = HINDI_BY_CHAR[char]
         val text = if (letter != null && letter.example.isNotEmpty())

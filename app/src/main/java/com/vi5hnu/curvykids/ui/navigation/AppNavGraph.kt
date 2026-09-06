@@ -434,6 +434,7 @@ fun AppNavGraph(
                             onBack = { navController.popBackStack() },
                             onReward = appViewModel::reward,
                             feedback = gameViewModel.feedback,
+                            readsAs = gameViewModel::readsAs,
                         )
 
                         TopicKind.STORIES -> StoriesScreen(

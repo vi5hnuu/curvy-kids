@@ -39,6 +39,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.vi5hnu.curvykids.ui.trace.components.WritePad
 import androidx.activity.compose.BackHandler
+import com.vi5hnu.curvykids.recognition.Stroke
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS
 import com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS
@@ -75,6 +76,8 @@ fun BarakhadiScreen(
     onBack: () -> Unit,
     onReward: (Int) -> Unit,
     feedback: PlayFeedback? = null,
+    /** Reads a child's writing and says whether it is the syllable; null when nothing can. */
+    readsAs: (suspend (List<Stroke>, String) -> Boolean?)? = null,
 ) {
     var selected by remember { mutableIntStateOf(0) }
     // Which of the twelve forms is open for writing, or -1 for none. Tapping a form opens it:
@@ -142,6 +145,15 @@ fun BarakhadiScreen(
             syllable = syllable,
             color = badgeColor,
             tint = badgeTint,
+            onCheck = readsAs?.let { read -> { strokes -> read(strokes, syllable) } },
+            onResult = { correct ->
+                if (correct) {
+                    feedback?.correct()
+                    speakHi(syllable, romanized)
+                } else {
+                    feedback?.wrong()
+                }
+            },
             onSpeak = { speakHi(syllable, romanized) },
             onPrev = { writingForm = (writingForm + BARAKHADI_MATRAS.size - 1) % BARAKHADI_MATRAS.size },
             onNext = { writingForm = (writingForm + 1) % BARAKHADI_MATRAS.size },
@@ -324,6 +336,8 @@ private fun WriteSheet(
     syllable: String,
     color: Color,
     tint: Color,
+    onCheck: (suspend (List<Stroke>) -> Boolean?)?,
+    onResult: (Boolean) -> Unit,
     onSpeak: () -> Unit,
     onPrev: () -> Unit,
     onNext: () -> Unit,
@@ -358,6 +372,8 @@ private fun WriteSheet(
                     .fillMaxWidth()
                     .weight(1f),
                 onDrawn = onDrawn,
+                onCheck = onCheck,
+                onResult = onResult,
             )
             Spacer(Modifier.height(14.dp))
             Row(
