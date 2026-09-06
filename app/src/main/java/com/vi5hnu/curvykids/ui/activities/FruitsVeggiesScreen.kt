@@ -35,6 +35,7 @@ import com.vi5hnu.curvykids.data.content.FruitItem
 import com.vi5hnu.curvykids.data.content.FRUITS_VEGGIES
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.SegmentedTabs
+import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Pill
@@ -137,7 +138,8 @@ fun FruitsVeggiesScreen(
                 } else null,
             )
             Spacer(Modifier.height(14.dp))
-            SegmentedTabs(tabs = listOf("Learn", "Play"), selected = mode, accent = topic.color, onSelect = { mode = it })
+            SegmentedTabs(tabs = listOf("Learn", "Play"),
+                icons = listOf(KidIcon.Sparkle, KidIcon.Pointer), selected = mode, accent = topic.color, onSelect = { mode = it })
             Spacer(Modifier.height(16.dp))
 
             if (mode == 0) {

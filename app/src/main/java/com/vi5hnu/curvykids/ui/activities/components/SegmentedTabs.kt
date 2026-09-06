@@ -20,6 +20,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.size
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 
@@ -32,6 +36,9 @@ import com.vi5hnu.curvykids.ui.theme.InkSoft
  * @param selected Index of the currently-selected segment.
  * @param accent   Fill color of the selected segment (usually the topic color).
  * @param onSelect Invoked with the tapped segment's index.
+ * @param icons    One picture per segment. The words on a toggle are no use to a child who
+ *                 cannot read them, and this control is how they get between exploring a topic
+ *                 and playing with it - so the picture carries the meaning and the word labels it.
  */
 @Composable
 fun SegmentedTabs(
@@ -40,6 +47,7 @@ fun SegmentedTabs(
     accent: Color,
     onSelect: (Int) -> Unit,
     modifier: Modifier = Modifier,
+    icons: List<KidIcon> = emptyList(),
 ) {
     Surface(
         modifier = modifier.fillMaxWidth(),
@@ -63,15 +71,26 @@ fun SegmentedTabs(
                         .padding(vertical = 11.dp),
                     contentAlignment = Alignment.Center,
                 ) {
-                    Text(
-                        text = label,
-                        modifier = Modifier.fillMaxWidth(),
-                        textAlign = TextAlign.Center,
-                        fontFamily = FontDisplay,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 15.sp,
-                        color = if (isSelected) Color.White else InkSoft,
-                    )
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(7.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        icons.getOrNull(i)?.let { icon ->
+                            KidIconImage(
+                                icon,
+                                Modifier.size(19.dp),
+                                if (isSelected) Color.White else InkSoft,
+                            )
+                        }
+                        Text(
+                            text = label,
+                            textAlign = TextAlign.Center,
+                            fontFamily = FontDisplay,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 15.sp,
+                            color = if (isSelected) Color.White else InkSoft,
+                        )
+                    }
                 }
             }
         }

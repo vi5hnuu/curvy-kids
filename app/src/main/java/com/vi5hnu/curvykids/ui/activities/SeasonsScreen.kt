@@ -138,7 +138,8 @@ fun SeasonsScreen(
                 } else null,
             )
             Spacer(Modifier.height(14.dp))
-            SegmentedTabs(tabs = listOf("Learn", "Play"), selected = mode, accent = topic.color, onSelect = { mode = it })
+            SegmentedTabs(tabs = listOf("Learn", "Play"),
+                icons = listOf(KidIcon.Sparkle, KidIcon.Pointer), selected = mode, accent = topic.color, onSelect = { mode = it })
             Spacer(Modifier.height(16.dp))
 
             if (mode == 0) {

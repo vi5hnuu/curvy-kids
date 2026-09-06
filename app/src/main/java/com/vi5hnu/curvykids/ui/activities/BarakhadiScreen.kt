@@ -184,8 +184,8 @@ fun BarakhadiScreen(
 
             // Read or write. The same twelve forms either way.
             Row(horizontalArrangement = Arrangement.spacedBy(10.dp)) {
-                ModeChip("Listen", !writing, topic) { stopRecite(); writing = false }
-                ModeChip("Write", writing, topic) { stopRecite(); writing = true }
+                ModeChip("Listen", KidIcon.Speaker, !writing, topic) { stopRecite(); writing = false }
+                ModeChip("Write", KidIcon.Pencil, writing, topic) { stopRecite(); writing = true }
             }
 
             Spacer(Modifier.height(16.dp))
@@ -260,14 +260,26 @@ fun BarakhadiScreen(
                     shape = RoundedCornerShape(20.dp),
                     color = if (reciting) topic.tint else topic.color,
                 ) {
-                    Text(
-                        text = if (reciting) "■  Stop" else "▶  Recite",
-                        fontFamily = FontDisplay,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 14.sp,
-                        color = if (reciting) topic.color else Color.White,
-                        modifier = Modifier.padding(horizontal = 16.dp, vertical = 8.dp),
-                    )
+                    // A picture, not an ASCII triangle: this button is how a child starts the
+                    // whole row being read aloud, and the word beside it is no use to them.
+                    Row(
+                        horizontalArrangement = Arrangement.spacedBy(8.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier.padding(horizontal = 18.dp, vertical = 11.dp),
+                    ) {
+                        KidIconImage(
+                            if (reciting) KidIcon.Cross else KidIcon.Speaker,
+                            Modifier.size(18.dp),
+                            if (reciting) topic.color else Color.White,
+                        )
+                        Text(
+                            text = if (reciting) "Stop" else "Recite",
+                            fontFamily = FontDisplay,
+                            fontWeight = FontWeight.ExtraBold,
+                            fontSize = 14.sp,
+                            color = if (reciting) topic.color else Color.White,
+                        )
+                    }
                 }
             }
             Spacer(Modifier.height(12.dp))
@@ -332,21 +344,37 @@ fun BarakhadiScreen(
     }
 }
 
-/** One of the two mode buttons at the top: Listen or Write. */
+/** One of the two mode buttons at the top: Listen or Write, each with its own picture. */
 @Composable
-private fun ModeChip(label: String, selected: Boolean, topic: Topic, onClick: () -> Unit) {
+private fun ModeChip(
+    label: String,
+    icon: KidIcon,
+    selected: Boolean,
+    topic: Topic,
+    onClick: () -> Unit,
+) {
     Surface(
         onClick = onClick,
         shape = RoundedCornerShape(20.dp),
         color = if (selected) topic.color else topic.tint,
     ) {
-        Text(
-            text = label,
-            fontFamily = FontDisplay,
-            fontWeight = FontWeight.ExtraBold,
-            fontSize = 15.sp,
-            color = if (selected) Color.White else topic.color,
-            modifier = Modifier.padding(horizontal = 22.dp, vertical = 11.dp),
-        )
+        Row(
+            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalAlignment = Alignment.CenterVertically,
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 12.dp),
+        ) {
+            KidIconImage(
+                icon,
+                Modifier.size(19.dp),
+                if (selected) Color.White else topic.color,
+            )
+            Text(
+                text = label,
+                fontFamily = FontDisplay,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 15.sp,
+                color = if (selected) Color.White else topic.color,
+            )
+        }
     }
 }

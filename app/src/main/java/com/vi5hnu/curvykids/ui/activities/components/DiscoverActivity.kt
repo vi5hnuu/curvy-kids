@@ -151,6 +151,7 @@ fun <T> DiscoverActivity(
             Spacer(Modifier.height(14.dp))
             SegmentedTabs(
                 tabs = listOf("Learn", "Play"),
+                icons = listOf(KidIcon.Sparkle, KidIcon.Pointer),
                 selected = mode,
                 accent = topic.color,
                 onSelect = { mode = it },
