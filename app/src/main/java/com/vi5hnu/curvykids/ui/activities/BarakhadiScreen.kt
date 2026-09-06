@@ -337,7 +337,9 @@ private fun WriteSheet(
                 .padding(horizontal = 18.dp, vertical = 18.dp),
         ) {
             Row(verticalAlignment = Alignment.CenterVertically) {
-                RoundButton(KidIcon.ArrowBack, color, tint, onClose)
+                // A cross, not an arrow: the arrows at the foot of the page step between the
+                // twelve forms, and the same picture must not mean two different things.
+                RoundButton(KidIcon.Cross, color, tint, onClose)
                 Spacer(Modifier.width(14.dp))
                 Text(
                     text = syllable,

@@ -166,6 +166,53 @@ class StrokeGuideTest {
         }
     }
 
+    /**
+     * Every Devanagari character the app can demonstrate, letters and barakhadi forms alike.
+     *
+     * Only Devanagari: the Latin guides are drawn against manuscript rules, where 'a' is meant
+     * to be shorter than 'A' and 'g' is meant to hang below the line. Devanagari has no such
+     * variation - every letter hangs from the headline and fills the body - so there they should
+     * all come out the same size, and it is a defect when they do not.
+     */
+    private fun everyDevanagariCharacter(): List<String> {
+        val letters = Level.entries
+            .filter { it.script == Script.DEVANAGARI }
+            .flatMap { it.characters }
+        val syllables = "क ख ग घ च छ ज ट ठ ड त थ द ध न प म य र ल व श ष स ह".split(" ")
+            .flatMap { c -> listOf("ा", "े", "ै", "ो", "ौ", "ं", "ः").map { c + it } }
+        return (letters + syllables).filter { StrokeGuide.forCharacter(it) != null }
+    }
+
+    @Test
+    fun `every devanagari guide fills its box, so they are all shown at one size`() {
+        // The guide is drawn into a square, so a character that only occupies a corner of the
+        // unit box is drawn smaller than its neighbours. The composed syllables were doing
+        // exactly that - a sign needing room above pushed everything down and left the card
+        // half empty - and next to a letter it looked like a different alphabet.
+        everyDevanagariCharacter().forEach { ch ->
+            val pts = pointsOf(ch)
+            val spread = maxOf(
+                pts.maxOf { it.first } - pts.minOf { it.first },
+                pts.maxOf { it.second } - pts.minOf { it.second },
+            )
+            assertTrue(
+                "'$ch' only fills ${"%.2f".format(spread)} of its box; it will look undersized",
+                spread > 0.80f,
+            )
+        }
+    }
+
+    @Test
+    fun `every devanagari guide is roughly centred in its box`() {
+        everyDevanagariCharacter().forEach { ch ->
+            val pts = pointsOf(ch)
+            val cx = (pts.maxOf { it.first } + pts.minOf { it.first }) / 2f
+            val cy = (pts.maxOf { it.second } + pts.minOf { it.second }) / 2f
+            assertTrue("'$ch' sits off-centre horizontally at $cx", cx in 0.35f..0.65f)
+            assertTrue("'$ch' sits off-centre vertically at $cy", cy in 0.35f..0.65f)
+        }
+    }
+
     @Test
     fun `multi character strings and symbols resolve to nothing`() {
         assertNull(StrokeGuide.forCharacter("AB"))

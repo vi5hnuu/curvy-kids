@@ -13,6 +13,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
@@ -55,6 +56,10 @@ fun WritePad(
     // Bumping this replays the demonstration; it also restarts whenever the character changes.
     var demoKey by rememberSaveable(char) { mutableIntStateOf(0) }
     var drawnHere by rememberSaveable(char) { mutableIntStateOf(0) }
+
+    // The controller outlives the character, so without this the child's writing of one letter
+    // is still on the page when they move to the next one.
+    LaunchedEffect(char) { controller.clear() }
 
     Surface(
         shape = RoundedCornerShape(30.dp),
