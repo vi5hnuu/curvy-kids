@@ -10,8 +10,7 @@ import androidx.compose.ui.graphics.Path
  * points describe, just without the corners a straight-line join leaves at each sample. Phantom
  * duplicates of the first and last point keep the end segments smooth too.
  *
- * Shared by the child's own ink and by the stroke-order guide, so a demonstrated letter and a
- * traced one are drawn with the same hand.
+ * Used to draw the child's own ink as smooth strokes.
  */
 fun List<Offset>.toSmoothPath(): Path {
     val path = Path()

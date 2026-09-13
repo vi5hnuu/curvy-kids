@@ -33,7 +33,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -59,9 +58,7 @@ import com.vi5hnu.curvykids.ui.theme.InkFaint
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.data.content.CRAYON_COLORS
 import com.vi5hnu.curvykids.ui.trace.components.CharStrip
-import com.vi5hnu.curvykids.ui.trace.components.DemoWipe
-import com.vi5hnu.curvykids.ui.trace.components.StrokeOrderDemo
-import com.vi5hnu.curvykids.ui.trace.components.hasStrokeGuide
+import com.vi5hnu.curvykids.ui.trace.components.GhostLetter
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.KidIcon
 
@@ -87,7 +84,6 @@ fun TraceScreen(
     val modelFailed = recognizerState?.error != null
 
     val controller = rememberDrawingController()
-    var demoKey by remember { mutableStateOf(0) }
     var inkColor by remember { mutableStateOf(CRAYON_COLORS.first()) }
     var showCharStrip by remember { mutableStateOf(false) }
 
@@ -95,17 +91,13 @@ fun TraceScreen(
     val topic = TOPICS.find { it.set == uiState.level } ?: TOPICS.first()
     val chars = uiState.level.characters
 
-    // Sized in dp-converted-to-sp so the guide glyph keeps its layout at any OS font scale.
-    val ghostSize = with(LocalDensity.current) { 190.dp.toSp() }
-
     val ch = uiState.character
     val word = Phonics.wordFor(ch)
     val svg = Phonics.assetFor(ch)
 
-    // Clear canvas + restart DemoWipe on every new character
+    // Clear the canvas on every new character
     LaunchedEffect(uiState.level, uiState.index) {
         controller.clear()
-        demoKey++
     }
 
     // Clear lastResult when leaving so re-entry doesn't double-fire reward.
@@ -234,46 +226,10 @@ fun TraceScreen(
                     .weight(1f),
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
-                    // Guidance layer. Where stroke-order data exists (all Latin letters and
-                    // digits) the child is shown how the character is actually formed — pen
-                    // travelling each stroke in the taught order and direction. Devanagari has
-                    // no authored stroke data yet, so it keeps the plain reveal of the glyph.
-                    if (hasStrokeGuide(ch)) {
-                        StrokeOrderDemo(
-                            char = ch,
-                            color = inkColor,
-                            demoKey = demoKey,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(28.dp),
-                        )
-                    } else {
-                        // No stroke data for this character yet: show the letter to trace and
-                        // the plain reveal, which gives the shape but not the writing motion.
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center,
-                        ) {
-                            Text(
-                                text = ch,
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = ghostSize,
-                                lineHeight = ghostSize,
-                                color = Color(0xFFEAF1F6),
-                            )
-                        }
-                        DemoWipe(
-                            char = ch,
-                            color = inkColor,
-                            demoKey = demoKey,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(28.dp),
-                        )
-                    }
+                    // The letter to trace, shown plainly underneath the child's ink.
+                    GhostLetter(char = ch, modifier = Modifier.fillMaxSize())
 
-                    // Drawing canvas (on top) — pure ink layer, guidance handled by ghost letter + DemoWipe
+                    // Drawing canvas (on top) — pure ink layer over the letter
                     DrawingCanvas(
                         controller = controller,
                         inkColor = inkColor,
@@ -294,19 +250,6 @@ fun TraceScreen(
                         contentColor = Color(0xFFFF8B6B),
                     ) {
                         KidIconImage(KidIcon.Eraser, Modifier.size(20.dp))
-                    }
-
-                    // Replay "show me" chip (top-right)
-                    Chip(
-                        onClick = { demoKey++ },
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(12.dp)
-                            .size(46.dp),
-                        containerColor = Color(0xFFDFF7F2),
-                        contentColor = Color(0xFF1FC2AE),
-                    ) {
-                        KidIconImage(KidIcon.Pointer, Modifier.size(20.dp))
                     }
 
                     // Crayon tray (bottom-center)

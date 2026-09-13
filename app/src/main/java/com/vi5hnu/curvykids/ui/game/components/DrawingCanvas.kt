@@ -122,11 +122,10 @@ fun rememberDrawingController(): DrawingController =
 
 /**
  * Drawing surface — renders the child's ink using Catmull-Rom cubic smoothing.
- * Visual guidance (ghost letter, DemoWipe animation) is handled by the parent composable;
- * this canvas is intentionally clean so ink stands out clearly.
+ * The letter to trace is drawn by the parent composable underneath; this canvas is
+ * intentionally clean so ink stands out clearly.
  *
- * @param onDrawStart Called on the first touch of each gesture — lets the parent pause
- *                    any overlay animations while the child is drawing.
+ * @param onDrawStart Called on the first touch of each gesture.
  */
 @Composable
 fun DrawingCanvas(
