@@ -149,6 +149,7 @@ class GameViewModel(
                         score = it.score + 1,
                         masteredCharacters = newMastered,
                         levelJustCompleted = levelComplete,
+                        lastWasPractice = state.character in state.masteredCharacters,
                     )
                 }
                 if (!levelComplete) {

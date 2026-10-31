@@ -34,6 +34,8 @@ data class GameUiState(
     val wrongAttempts: Int = 0,
     /** True for the frame after the child masters the last character in a level. */
     val levelJustCompleted: Boolean = false,
+    /** True when the last correct answer was for a character already mastered before (practice). */
+    val lastWasPractice: Boolean = false,
 ) {
     /** The character the child is currently asked to draw. */
     val character: String get() = level.characters[index]

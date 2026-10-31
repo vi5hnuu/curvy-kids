@@ -303,9 +303,11 @@ fun TraceScreen(
                     // Celebrate overlay on correct answer
                     if (uiState.lastResult == AnswerResult.CORRECT) {
                         Celebrate(
-                            title = "Perfect!",
+                            // A first-time mastery earns full stars; repeating a mastered letter
+                            // is praised as practice so the title and stars agree.
+                            title = if (uiState.lastWasPractice) "Nice practice!" else "Perfect!",
                             sub = Phonics.phraseFor(ch),
-                            stars = if (uiState.masteredCharacters.contains(ch)) 1 else 3,
+                            stars = if (uiState.lastWasPractice) 1 else 3,
                             // For levelComplete, dismissLevelComplete() clears lastResult and
                             // advances to the next level. For normal correct answers, GameViewModel
                             // already calls next() after 1200ms which clears lastResult via goTo().
