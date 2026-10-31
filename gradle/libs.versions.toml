@@ -15,6 +15,7 @@ datastorePreferences = "1.1.1"
 lifecycleViewmodelCompose = "2.9.0"
 navigationCompose = "2.9.8"
 coil = "2.7.0"
+assetDelivery = "2.3.0"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -39,9 +40,11 @@ androidx-lifecycle-viewmodel-compose = { module = "androidx.lifecycle:lifecycle-
 androidx-navigation-compose = { module = "androidx.navigation:navigation-compose", version.ref = "navigationCompose" }
 coil-compose = { module = "io.coil-kt:coil-compose", version.ref = "coil" }
 coil-svg = { module = "io.coil-kt:coil-svg", version.ref = "coil" }
+play-asset-delivery-ktx = { module = "com.google.android.play:asset-delivery-ktx", version.ref = "assetDelivery" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
+android-asset-pack = { id = "com.android.asset-pack", version.ref = "agp" }
 kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlin-compose = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
 

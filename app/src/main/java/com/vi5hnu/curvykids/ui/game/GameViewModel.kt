@@ -1,5 +1,6 @@
 package com.vi5hnu.curvykids.ui.game
 
+import com.vi5hnu.curvykids.CurvyKidsApp
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -413,7 +414,7 @@ class GameViewModel(
                     return GameViewModel(
                         recognizer = MlKitInkRecognizer(),
                         sound = SoundEffects(app),
-                        phonics = PhonicsSpeaker(app),
+                        phonics = PhonicsSpeaker(app, (app as CurvyKidsApp).clipSources),
                         haptics = Haptics(app),
                         progress = ProgressRepository(app),
                     ) as T

@@ -15,10 +15,10 @@ import java.util.Locale
  * Initialisation is asynchronous; requests made before the engine is ready are dropped
  * (the child can tap again), which keeps the wrapper simple and stateless.
  */
-class PhonicsSpeaker(context: Context) {
+class PhonicsSpeaker(context: Context, clipSources: List<ClipSource>) {
 
     /** Human recordings, preferred over the synthetic voice whenever one exists for a line. */
-    private val clips = ClipPlayer(context)
+    private val clips = ClipPlayer(clipSources)
 
     /**
      * Lines queued behind audio from the *other* engine (a TTS line behind a clip, or a clip

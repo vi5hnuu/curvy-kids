@@ -4,6 +4,16 @@ plugins {
     alias(libs.plugins.kotlin.compose)
 }
 
+/** Voice packs delivered on demand by Play; see audio/packs/VoicePack.kt. */
+val voicePacks = listOf(":voice_hi_letters", ":voice_hi_barakhadi")
+
+/**
+ * Plain debug APKs can't receive Play asset packs, so by default debug builds carry the packs'
+ * audio inside the app and the clips play straight away. Build with -Pvoice.bundled=false (and
+ * bundletool --local-testing) to try the real download flow.
+ */
+val bundleVoiceInDebug = (findProperty("voice.bundled") as String?)?.toBoolean() ?: true
+
 android {
     namespace = "com.vi5hnu.curvykids"
     compileSdk = 36
@@ -39,6 +49,13 @@ android {
     }
     buildFeatures {
         compose = true
+    }
+
+    assetPacks += voicePacks
+    if (bundleVoiceInDebug) {
+        sourceSets.getByName("debug").assets.srcDirs(
+            voicePacks.map { "../${it.removePrefix(":")}/src/main/assets" }
+        )
     }
 
     packaging {
@@ -86,4 +103,7 @@ dependencies {
     // SVG asset rendering (Coil + its SVG decoder)
     implementation(libs.coil.compose)
     implementation(libs.coil.svg)
+
+    // Play Asset Delivery: downloads the on-demand voice packs
+    implementation(libs.play.asset.delivery.ktx)
 }

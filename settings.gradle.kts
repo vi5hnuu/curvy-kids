@@ -21,4 +21,6 @@ dependencyResolutionManagement {
 
 rootProject.name = "CurvyKids"
 include(":app")
+// Category-wise voice packs (Play Asset Delivery, on-demand).
+include(":voice_hi_letters", ":voice_hi_barakhadi")
  

@@ -1,6 +1,5 @@
 package com.vi5hnu.curvykids.audio
 
-import android.content.Context
 import android.media.AudioAttributes
 import android.media.MediaPlayer
 import android.util.Log
@@ -31,7 +30,8 @@ data class VoiceClip(val lang: String, val group: String, val key: String) {
 }
 
 /**
- * Plays bundled [VoiceClip] recordings one after another.
+ * Plays [VoiceClip] recordings one after another, from the first of [sources] that has each one
+ * (built into the app, or in a downloaded voice pack).
  *
  * Has no text-to-speech fallback: [PhonicsSpeaker] asks [has] first and only routes here when the
  * recording exists. Clips play in the order they are queued, so "praise, then the next prompt"
@@ -40,14 +40,9 @@ data class VoiceClip(val lang: String, val group: String, val key: String) {
  * Callbacks fire on the main thread, because MediaPlayer posts its listeners to the thread that
  * created it, and this is created on the main thread.
  */
-class ClipPlayer(context: Context) {
+class ClipPlayer(private val sources: List<ClipSource>) {
 
-    private val assets = context.applicationContext.assets
-
-    /** Folder → set of file names, read once per folder. Asset listing is slow, lookups aren't. */
-    private val listing = mutableMapOf<String, Set<String>>()
-
-    private val queue = ArrayDeque<Pair<String, String>>() // (asset path, utteranceId)
+    private val queue = ArrayDeque<Pair<ClipFile, String>>() // (recording, utteranceId)
     private var player: MediaPlayer? = null
 
     /** Fired when a clip starts / finishes, with the utteranceId it was queued under. */
@@ -67,9 +62,9 @@ class ClipPlayer(context: Context) {
      * `TextToSpeech.QUEUE_FLUSH`. Returns false when there is no recording.
      */
     fun play(clip: VoiceClip, utteranceId: String, flush: Boolean): Boolean {
-        val path = resolve(clip) ?: return false
+        val file = resolve(clip) ?: return false
         if (flush) stop()
-        queue.addLast(path to utteranceId)
+        queue.addLast(file to utteranceId)
         if (player == null) next()
         return true
     }
@@ -84,10 +79,10 @@ class ClipPlayer(context: Context) {
     fun release() = stop()
 
     private fun next() {
-        val (path, id) = queue.removeFirstOrNull() ?: run { onIdle?.invoke(); return }
+        val (file, id) = queue.removeFirstOrNull() ?: run { onIdle?.invoke(); return }
         val mp = MediaPlayer()
         try {
-            assets.openFd(path).use { fd -> mp.setDataSource(fd.fileDescriptor, fd.startOffset, fd.length) }
+            file.attachTo(mp)
             mp.setAudioAttributes(
                 AudioAttributes.Builder()
                     .setUsage(AudioAttributes.USAGE_MEDIA)
@@ -102,7 +97,7 @@ class ClipPlayer(context: Context) {
             mp.start()
         } catch (e: Exception) {
             // A bad file must not stall the queue behind it.
-            Log.w(TAG, "Could not play $path", e)
+            Log.w(TAG, "Could not play clip $id", e)
             mp.release()
             onDone?.invoke(id)
             next()
@@ -117,17 +112,9 @@ class ClipPlayer(context: Context) {
         next()
     }
 
-    private fun resolve(clip: VoiceClip): String? {
-        val folder = clip.basePath.substringBeforeLast('/')
-        val files = listing.getOrPut(folder) {
-            runCatching { assets.list(folder)?.toSet() }.getOrNull() ?: emptySet()
-        }
-        return EXTENSIONS.firstOrNull { "${clip.key}.$it" in files }?.let { "${clip.basePath}.$it" }
-    }
+    private fun resolve(clip: VoiceClip): ClipFile? = sources.firstNotNullOfOrNull { it.find(clip) }
 
     private companion object {
         const val TAG = "CLIPS"
-        // All stored uncompressed by the build, which is what AssetManager.openFd needs.
-        val EXTENSIONS = listOf("m4a", "mp3", "ogg", "wav")
     }
 }
