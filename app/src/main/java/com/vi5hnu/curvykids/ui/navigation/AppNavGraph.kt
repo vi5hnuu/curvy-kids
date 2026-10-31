@@ -10,6 +10,10 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import com.vi5hnu.curvykids.audio.packs.VoicePack
+import com.vi5hnu.curvykids.audio.packs.VoicePackRepository
+import com.vi5hnu.curvykids.audio.packs.allReady
+import com.vi5hnu.curvykids.ui.voice.VoicePackGate
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -77,11 +81,13 @@ import com.vi5hnu.curvykids.ui.trace.TraceScreen
  * - AppViewModel is passed in from MainActivity (activity-scoped, lives across all screens).
  * - GameViewModel is activity-scoped too; selectLevel() is called on trace topic open.
  * - BottomTabBar floats over tab content as an overlay — hidden on topic full-screens.
+ * - A topic whose voice packs aren't downloaded shows [VoicePackGate] until they are.
  */
 @Composable
 fun AppNavGraph(
     appViewModel: AppViewModel,
     gameViewModel: GameViewModel,
+    voicePacks: VoicePackRepository,
 ) {
     val navController = rememberNavController()
     val appState by appViewModel.uiState.collectAsState()
@@ -201,6 +207,7 @@ fun AppNavGraph(
                             settings = appSettings,
                             onSoundEffects = appViewModel::setSoundEffects,
                             onDifficulty = appViewModel::setDifficulty,
+                            voicePacks = voicePacks,
                             onResetProgress = {
                                 // Stars/badges and tracing progress live in separate stores.
                                 appViewModel.resetProgress()
@@ -223,6 +230,21 @@ fun AppNavGraph(
                     // mid-sentence ("Find the red…") doesn't keep talking on the tab screens.
                     DisposableEffect(topicId) {
                         onDispose { gameViewModel.speaker.stop() }
+                    }
+
+                    // Topics that speak recorded voices wait for their packs; a grown-up is asked
+                    // to download them. When they arrive this recomposes straight into the topic.
+                    val requiredPacks = remember(topic) { VoicePack.requiredFor(topic) }
+                    val packStates by voicePacks.states.collectAsState()
+                    if (!packStates.allReady(requiredPacks)) {
+                        VoicePackGate(
+                            topic = topic,
+                            packs = requiredPacks,
+                            repository = voicePacks,
+                            onBack = { navController.popBackStack() },
+                            speak = { gameViewModel.speaker.speak(it) },
+                        )
+                        return@composable
                     }
 
                     when (topic.kind) {

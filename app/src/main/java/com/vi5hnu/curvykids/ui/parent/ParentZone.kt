@@ -36,6 +36,13 @@ import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.theme.Coral
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
+import com.vi5hnu.curvykids.audio.packs.VoicePack
+import com.vi5hnu.curvykids.audio.packs.VoicePackRepository
+import com.vi5hnu.curvykids.ui.voice.VoicePackPanel
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import com.vi5hnu.curvykids.ui.theme.InkFaint
 import com.vi5hnu.curvykids.ui.theme.Teal
 import com.vi5hnu.curvykids.ui.theme.TintSun
@@ -53,6 +60,7 @@ fun ParentZone(
     settings: AppSettings,
     onSoundEffects: (Boolean) -> Unit,
     onDifficulty: (Difficulty) -> Unit,
+    voicePacks: VoicePackRepository,
     onResetProgress: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -66,7 +74,12 @@ fun ParentZone(
         shape = RoundedCornerShape(topStart = 34.dp, topEnd = 34.dp),
         containerColor = Color.White,
     ) {
-        Column(modifier = Modifier.padding(horizontal = 18.dp).padding(bottom = 32.dp)) {
+        Column(
+            modifier = Modifier
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 18.dp)
+                .padding(bottom = 32.dp),
+        ) {
             Text(
                 text = "Parent Zone",
                 fontFamily = FontDisplay,
@@ -143,6 +156,32 @@ fun ParentZone(
                     }
                 }
             }
+
+            Spacer(Modifier.height(16.dp))
+            HorizontalDivider(color = InkFaint.copy(alpha = 0.35f))
+            Spacer(Modifier.height(14.dp))
+
+            // ── Voice packs ───────────────────────────────────────────────
+            // Recorded voices download per category; fetching them here means a child never
+            // meets the "ask a grown-up" screen.
+            Text(
+                text = "Voice packs",
+                fontFamily = FontDisplay,
+                fontWeight = FontWeight.ExtraBold,
+                fontSize = 15.sp,
+                color = Ink,
+            )
+            Spacer(Modifier.height(2.dp))
+            Text(
+                text = "Recorded voices for the Hindi activities. Download once, then they work offline.",
+                fontWeight = FontWeight.Bold,
+                fontSize = 13.sp,
+                color = Ink.copy(alpha = 0.6f),
+            )
+            Spacer(Modifier.height(10.dp))
+            val packStates by voicePacks.states.collectAsState()
+            LaunchedEffect(Unit) { voicePacks.refresh() }
+            VoicePackPanel(VoicePack.entries, packStates, voicePacks)
 
             Spacer(Modifier.height(16.dp))
             HorizontalDivider(color = InkFaint.copy(alpha = 0.35f))

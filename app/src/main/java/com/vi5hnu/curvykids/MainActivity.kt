@@ -32,6 +32,7 @@ class MainActivity : ComponentActivity() {
                 AppNavGraph(
                     appViewModel = appViewModel,
                     gameViewModel = gameViewModel,
+                    voicePacks = (application as CurvyKidsApp).voicePacks,
                 )
             }
         }
