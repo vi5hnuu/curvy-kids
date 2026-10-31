@@ -1,0 +1,575 @@
+CurvyKids - voice recording list
+
+Format: one file per numbered line, named exactly as after the arrow.
+Mono, 44.1 kHz, AAC .m4a (or .mp3), 64-96 kbps. Trim the silence at both ends.
+Warm, slow, clear voice for young children. Lines not recorded yet use the
+phone's built-in voice, so recordings can be added a few at a time.
+
+== HINDI  (save in app/src/main/assets/voice/hi/) ==
+
+-- Letter name --
+1. अ  ->  letter-a.m4a
+2. आ  ->  letter-aa.m4a
+3. इ  ->  letter-i.m4a
+4. ई  ->  letter-ii.m4a
+5. उ  ->  letter-u.m4a
+6. ऊ  ->  letter-uu.m4a
+7. ऋ  ->  letter-ri.m4a
+8. ए  ->  letter-e.m4a
+9. ऐ  ->  letter-ai.m4a
+10. ओ  ->  letter-o.m4a
+11. औ  ->  letter-au.m4a
+12. अं  ->  letter-am.m4a
+13. अः  ->  letter-ah.m4a
+14. क  ->  letter-ka.m4a
+15. ख  ->  letter-kha.m4a
+16. ग  ->  letter-ga.m4a
+17. घ  ->  letter-gha.m4a
+18. ङ  ->  letter-nga.m4a
+19. च  ->  letter-cha.m4a
+20. छ  ->  letter-chha.m4a
+21. ज  ->  letter-ja.m4a
+22. झ  ->  letter-jha.m4a
+23. ञ  ->  letter-nya.m4a
+24. ट  ->  letter-tta.m4a
+25. ठ  ->  letter-ttha.m4a
+26. ड  ->  letter-dda.m4a
+27. ढ  ->  letter-ddha.m4a
+28. ण  ->  letter-nna.m4a
+29. त  ->  letter-ta.m4a
+30. थ  ->  letter-tha.m4a
+31. द  ->  letter-da.m4a
+32. ध  ->  letter-dha.m4a
+33. न  ->  letter-na.m4a
+34. प  ->  letter-pa.m4a
+35. फ  ->  letter-pha.m4a
+36. ब  ->  letter-ba.m4a
+37. भ  ->  letter-bha.m4a
+38. म  ->  letter-ma.m4a
+39. य  ->  letter-ya.m4a
+40. र  ->  letter-ra.m4a
+41. ल  ->  letter-la.m4a
+42. व  ->  letter-va.m4a
+43. श  ->  letter-sha.m4a
+44. ष  ->  letter-ssa.m4a
+45. स  ->  letter-sa.m4a
+46. ह  ->  letter-ha.m4a
+47. क्ष  ->  letter-ksha.m4a
+48. त्र  ->  letter-tra.m4a
+49. ज्ञ  ->  letter-gya.m4a
+
+-- Trace prompt --
+50. अ, अ से अनानास  ->  letter-a-word.m4a
+51. आ, आ से आम  ->  letter-aa-word.m4a
+52. इ, इ से इंजन  ->  letter-i-word.m4a
+53. ई, ई से ईंट  ->  letter-ii-word.m4a
+54. उ, उ से उल्लू  ->  letter-u-word.m4a
+55. ऊ, ऊ से ऊँट  ->  letter-uu-word.m4a
+56. ऋ, ऋ से ऋषि  ->  letter-ri-word.m4a
+57. ए, ए से एड़ी  ->  letter-e-word.m4a
+58. ऐ, ऐ से ऐनक  ->  letter-ai-word.m4a
+59. ओ, ओ से ओम  ->  letter-o-word.m4a
+60. औ, औ से औज़ार  ->  letter-au-word.m4a
+61. अं, अं से अंगूर  ->  letter-am-word.m4a
+62. क, क से कबूतर  ->  letter-ka-word.m4a
+63. ख, ख से खरगोश  ->  letter-kha-word.m4a
+64. ग, ग से गाय  ->  letter-ga-word.m4a
+65. घ, घ से घड़ी  ->  letter-gha-word.m4a
+66. च, च से चम्मच  ->  letter-cha-word.m4a
+67. छ, छ से छाता  ->  letter-chha-word.m4a
+68. ज, ज से जहाज  ->  letter-ja-word.m4a
+69. झ, झ से झंडा  ->  letter-jha-word.m4a
+70. ट, ट से टमाटर  ->  letter-tta-word.m4a
+71. ठ, ठ से ठंडा  ->  letter-ttha-word.m4a
+72. ड, ड से डमरू  ->  letter-dda-word.m4a
+73. ढ, ढ से ढोल  ->  letter-ddha-word.m4a
+74. ण, ण से बाण  ->  letter-nna-word.m4a
+75. त, त से तरबूज  ->  letter-ta-word.m4a
+76. थ, थ से थाली  ->  letter-tha-word.m4a
+77. द, द से दूध  ->  letter-da-word.m4a
+78. ध, ध से धनुष  ->  letter-dha-word.m4a
+79. न, न से नाव  ->  letter-na-word.m4a
+80. प, प से पतंग  ->  letter-pa-word.m4a
+81. फ, फ से फूल  ->  letter-pha-word.m4a
+82. ब, ब से बकरी  ->  letter-ba-word.m4a
+83. भ, भ से भालू  ->  letter-bha-word.m4a
+84. म, म से मछली  ->  letter-ma-word.m4a
+85. य, य से योग  ->  letter-ya-word.m4a
+86. र, र से रेल  ->  letter-ra-word.m4a
+87. ल, ल से लोमड़ी  ->  letter-la-word.m4a
+88. व, व से वर्षा  ->  letter-va-word.m4a
+89. श, श से शेर  ->  letter-sha-word.m4a
+90. स, स से सेब  ->  letter-sa-word.m4a
+91. ह, ह से हाथी  ->  letter-ha-word.m4a
+92. क्ष, क्ष से क्षितिज  ->  letter-ksha-word.m4a
+93. त्र, त्र से त्रिशूल  ->  letter-tra-word.m4a
+94. ज्ञ, ज्ञ से ज्ञान  ->  letter-gya-word.m4a
+
+-- Barakhadi --
+95. का  ->  syllable-kaa.m4a
+96. कि  ->  syllable-ki.m4a
+97. की  ->  syllable-kii.m4a
+98. कु  ->  syllable-ku.m4a
+99. कू  ->  syllable-kuu.m4a
+100. के  ->  syllable-ke.m4a
+101. कै  ->  syllable-kai.m4a
+102. को  ->  syllable-ko.m4a
+103. कौ  ->  syllable-kau.m4a
+104. कं  ->  syllable-kam.m4a
+105. कः  ->  syllable-kah.m4a
+106. खा  ->  syllable-khaa.m4a
+107. खि  ->  syllable-khi.m4a
+108. खी  ->  syllable-khii.m4a
+109. खु  ->  syllable-khu.m4a
+110. खू  ->  syllable-khuu.m4a
+111. खे  ->  syllable-khe.m4a
+112. खै  ->  syllable-khai.m4a
+113. खो  ->  syllable-kho.m4a
+114. खौ  ->  syllable-khau.m4a
+115. खं  ->  syllable-kham.m4a
+116. खः  ->  syllable-khah.m4a
+117. गा  ->  syllable-gaa.m4a
+118. गि  ->  syllable-gi.m4a
+119. गी  ->  syllable-gii.m4a
+120. गु  ->  syllable-gu.m4a
+121. गू  ->  syllable-guu.m4a
+122. गे  ->  syllable-ge.m4a
+123. गै  ->  syllable-gai.m4a
+124. गो  ->  syllable-go.m4a
+125. गौ  ->  syllable-gau.m4a
+126. गं  ->  syllable-gam.m4a
+127. गः  ->  syllable-gah.m4a
+128. घा  ->  syllable-ghaa.m4a
+129. घि  ->  syllable-ghi.m4a
+130. घी  ->  syllable-ghii.m4a
+131. घु  ->  syllable-ghu.m4a
+132. घू  ->  syllable-ghuu.m4a
+133. घे  ->  syllable-ghe.m4a
+134. घै  ->  syllable-ghai.m4a
+135. घो  ->  syllable-gho.m4a
+136. घौ  ->  syllable-ghau.m4a
+137. घं  ->  syllable-gham.m4a
+138. घः  ->  syllable-ghah.m4a
+139. ङा  ->  syllable-ngaa.m4a
+140. ङि  ->  syllable-ngi.m4a
+141. ङी  ->  syllable-ngii.m4a
+142. ङु  ->  syllable-ngu.m4a
+143. ङू  ->  syllable-nguu.m4a
+144. ङे  ->  syllable-nge.m4a
+145. ङै  ->  syllable-ngai.m4a
+146. ङो  ->  syllable-ngo.m4a
+147. ङौ  ->  syllable-ngau.m4a
+148. ङं  ->  syllable-ngam.m4a
+149. ङः  ->  syllable-ngah.m4a
+150. चा  ->  syllable-chaa.m4a
+151. चि  ->  syllable-chi.m4a
+152. ची  ->  syllable-chii.m4a
+153. चु  ->  syllable-chu.m4a
+154. चू  ->  syllable-chuu.m4a
+155. चे  ->  syllable-che.m4a
+156. चै  ->  syllable-chai.m4a
+157. चो  ->  syllable-cho.m4a
+158. चौ  ->  syllable-chau.m4a
+159. चं  ->  syllable-cham.m4a
+160. चः  ->  syllable-chah.m4a
+161. छा  ->  syllable-chhaa.m4a
+162. छि  ->  syllable-chhi.m4a
+163. छी  ->  syllable-chhii.m4a
+164. छु  ->  syllable-chhu.m4a
+165. छू  ->  syllable-chhuu.m4a
+166. छे  ->  syllable-chhe.m4a
+167. छै  ->  syllable-chhai.m4a
+168. छो  ->  syllable-chho.m4a
+169. छौ  ->  syllable-chhau.m4a
+170. छं  ->  syllable-chham.m4a
+171. छः  ->  syllable-chhah.m4a
+172. जा  ->  syllable-jaa.m4a
+173. जि  ->  syllable-ji.m4a
+174. जी  ->  syllable-jii.m4a
+175. जु  ->  syllable-ju.m4a
+176. जू  ->  syllable-juu.m4a
+177. जे  ->  syllable-je.m4a
+178. जै  ->  syllable-jai.m4a
+179. जो  ->  syllable-jo.m4a
+180. जौ  ->  syllable-jau.m4a
+181. जं  ->  syllable-jam.m4a
+182. जः  ->  syllable-jah.m4a
+183. झा  ->  syllable-jhaa.m4a
+184. झि  ->  syllable-jhi.m4a
+185. झी  ->  syllable-jhii.m4a
+186. झु  ->  syllable-jhu.m4a
+187. झू  ->  syllable-jhuu.m4a
+188. झे  ->  syllable-jhe.m4a
+189. झै  ->  syllable-jhai.m4a
+190. झो  ->  syllable-jho.m4a
+191. झौ  ->  syllable-jhau.m4a
+192. झं  ->  syllable-jham.m4a
+193. झः  ->  syllable-jhah.m4a
+194. ञा  ->  syllable-nyaa.m4a
+195. ञि  ->  syllable-nyi.m4a
+196. ञी  ->  syllable-nyii.m4a
+197. ञु  ->  syllable-nyu.m4a
+198. ञू  ->  syllable-nyuu.m4a
+199. ञे  ->  syllable-nye.m4a
+200. ञै  ->  syllable-nyai.m4a
+201. ञो  ->  syllable-nyo.m4a
+202. ञौ  ->  syllable-nyau.m4a
+203. ञं  ->  syllable-nyam.m4a
+204. ञः  ->  syllable-nyah.m4a
+205. टा  ->  syllable-ttaa.m4a
+206. टि  ->  syllable-tti.m4a
+207. टी  ->  syllable-ttii.m4a
+208. टु  ->  syllable-ttu.m4a
+209. टू  ->  syllable-ttuu.m4a
+210. टे  ->  syllable-tte.m4a
+211. टै  ->  syllable-ttai.m4a
+212. टो  ->  syllable-tto.m4a
+213. टौ  ->  syllable-ttau.m4a
+214. टं  ->  syllable-ttam.m4a
+215. टः  ->  syllable-ttah.m4a
+216. ठा  ->  syllable-tthaa.m4a
+217. ठि  ->  syllable-tthi.m4a
+218. ठी  ->  syllable-tthii.m4a
+219. ठु  ->  syllable-tthu.m4a
+220. ठू  ->  syllable-tthuu.m4a
+221. ठे  ->  syllable-tthe.m4a
+222. ठै  ->  syllable-tthai.m4a
+223. ठो  ->  syllable-ttho.m4a
+224. ठौ  ->  syllable-tthau.m4a
+225. ठं  ->  syllable-ttham.m4a
+226. ठः  ->  syllable-tthah.m4a
+227. डा  ->  syllable-ddaa.m4a
+228. डि  ->  syllable-ddi.m4a
+229. डी  ->  syllable-ddii.m4a
+230. डु  ->  syllable-ddu.m4a
+231. डू  ->  syllable-dduu.m4a
+232. डे  ->  syllable-dde.m4a
+233. डै  ->  syllable-ddai.m4a
+234. डो  ->  syllable-ddo.m4a
+235. डौ  ->  syllable-ddau.m4a
+236. डं  ->  syllable-ddam.m4a
+237. डः  ->  syllable-ddah.m4a
+238. ढा  ->  syllable-ddhaa.m4a
+239. ढि  ->  syllable-ddhi.m4a
+240. ढी  ->  syllable-ddhii.m4a
+241. ढु  ->  syllable-ddhu.m4a
+242. ढू  ->  syllable-ddhuu.m4a
+243. ढे  ->  syllable-ddhe.m4a
+244. ढै  ->  syllable-ddhai.m4a
+245. ढो  ->  syllable-ddho.m4a
+246. ढौ  ->  syllable-ddhau.m4a
+247. ढं  ->  syllable-ddham.m4a
+248. ढः  ->  syllable-ddhah.m4a
+249. णा  ->  syllable-nnaa.m4a
+250. णि  ->  syllable-nni.m4a
+251. णी  ->  syllable-nnii.m4a
+252. णु  ->  syllable-nnu.m4a
+253. णू  ->  syllable-nnuu.m4a
+254. णे  ->  syllable-nne.m4a
+255. णै  ->  syllable-nnai.m4a
+256. णो  ->  syllable-nno.m4a
+257. णौ  ->  syllable-nnau.m4a
+258. णं  ->  syllable-nnam.m4a
+259. णः  ->  syllable-nnah.m4a
+260. ता  ->  syllable-taa.m4a
+261. ति  ->  syllable-ti.m4a
+262. ती  ->  syllable-tii.m4a
+263. तु  ->  syllable-tu.m4a
+264. तू  ->  syllable-tuu.m4a
+265. ते  ->  syllable-te.m4a
+266. तै  ->  syllable-tai.m4a
+267. तो  ->  syllable-to.m4a
+268. तौ  ->  syllable-tau.m4a
+269. तं  ->  syllable-tam.m4a
+270. तः  ->  syllable-tah.m4a
+271. था  ->  syllable-thaa.m4a
+272. थि  ->  syllable-thi.m4a
+273. थी  ->  syllable-thii.m4a
+274. थु  ->  syllable-thu.m4a
+275. थू  ->  syllable-thuu.m4a
+276. थे  ->  syllable-the.m4a
+277. थै  ->  syllable-thai.m4a
+278. थो  ->  syllable-tho.m4a
+279. थौ  ->  syllable-thau.m4a
+280. थं  ->  syllable-tham.m4a
+281. थः  ->  syllable-thah.m4a
+282. दा  ->  syllable-daa.m4a
+283. दि  ->  syllable-di.m4a
+284. दी  ->  syllable-dii.m4a
+285. दु  ->  syllable-du.m4a
+286. दू  ->  syllable-duu.m4a
+287. दे  ->  syllable-de.m4a
+288. दै  ->  syllable-dai.m4a
+289. दो  ->  syllable-do.m4a
+290. दौ  ->  syllable-dau.m4a
+291. दं  ->  syllable-dam.m4a
+292. दः  ->  syllable-dah.m4a
+293. धा  ->  syllable-dhaa.m4a
+294. धि  ->  syllable-dhi.m4a
+295. धी  ->  syllable-dhii.m4a
+296. धु  ->  syllable-dhu.m4a
+297. धू  ->  syllable-dhuu.m4a
+298. धे  ->  syllable-dhe.m4a
+299. धै  ->  syllable-dhai.m4a
+300. धो  ->  syllable-dho.m4a
+301. धौ  ->  syllable-dhau.m4a
+302. धं  ->  syllable-dham.m4a
+303. धः  ->  syllable-dhah.m4a
+304. ना  ->  syllable-naa.m4a
+305. नि  ->  syllable-ni.m4a
+306. नी  ->  syllable-nii.m4a
+307. नु  ->  syllable-nu.m4a
+308. नू  ->  syllable-nuu.m4a
+309. ने  ->  syllable-ne.m4a
+310. नै  ->  syllable-nai.m4a
+311. नो  ->  syllable-no.m4a
+312. नौ  ->  syllable-nau.m4a
+313. नं  ->  syllable-nam.m4a
+314. नः  ->  syllable-nah.m4a
+315. पा  ->  syllable-paa.m4a
+316. पि  ->  syllable-pi.m4a
+317. पी  ->  syllable-pii.m4a
+318. पु  ->  syllable-pu.m4a
+319. पू  ->  syllable-puu.m4a
+320. पे  ->  syllable-pe.m4a
+321. पै  ->  syllable-pai.m4a
+322. पो  ->  syllable-po.m4a
+323. पौ  ->  syllable-pau.m4a
+324. पं  ->  syllable-pam.m4a
+325. पः  ->  syllable-pah.m4a
+326. फा  ->  syllable-phaa.m4a
+327. फि  ->  syllable-phi.m4a
+328. फी  ->  syllable-phii.m4a
+329. फु  ->  syllable-phu.m4a
+330. फू  ->  syllable-phuu.m4a
+331. फे  ->  syllable-phe.m4a
+332. फै  ->  syllable-phai.m4a
+333. फो  ->  syllable-pho.m4a
+334. फौ  ->  syllable-phau.m4a
+335. फं  ->  syllable-pham.m4a
+336. फः  ->  syllable-phah.m4a
+337. बा  ->  syllable-baa.m4a
+338. बि  ->  syllable-bi.m4a
+339. बी  ->  syllable-bii.m4a
+340. बु  ->  syllable-bu.m4a
+341. बू  ->  syllable-buu.m4a
+342. बे  ->  syllable-be.m4a
+343. बै  ->  syllable-bai.m4a
+344. बो  ->  syllable-bo.m4a
+345. बौ  ->  syllable-bau.m4a
+346. बं  ->  syllable-bam.m4a
+347. बः  ->  syllable-bah.m4a
+348. भा  ->  syllable-bhaa.m4a
+349. भि  ->  syllable-bhi.m4a
+350. भी  ->  syllable-bhii.m4a
+351. भु  ->  syllable-bhu.m4a
+352. भू  ->  syllable-bhuu.m4a
+353. भे  ->  syllable-bhe.m4a
+354. भै  ->  syllable-bhai.m4a
+355. भो  ->  syllable-bho.m4a
+356. भौ  ->  syllable-bhau.m4a
+357. भं  ->  syllable-bham.m4a
+358. भः  ->  syllable-bhah.m4a
+359. मा  ->  syllable-maa.m4a
+360. मि  ->  syllable-mi.m4a
+361. मी  ->  syllable-mii.m4a
+362. मु  ->  syllable-mu.m4a
+363. मू  ->  syllable-muu.m4a
+364. मे  ->  syllable-me.m4a
+365. मै  ->  syllable-mai.m4a
+366. मो  ->  syllable-mo.m4a
+367. मौ  ->  syllable-mau.m4a
+368. मं  ->  syllable-mam.m4a
+369. मः  ->  syllable-mah.m4a
+370. या  ->  syllable-yaa.m4a
+371. यि  ->  syllable-yi.m4a
+372. यी  ->  syllable-yii.m4a
+373. यु  ->  syllable-yu.m4a
+374. यू  ->  syllable-yuu.m4a
+375. ये  ->  syllable-ye.m4a
+376. यै  ->  syllable-yai.m4a
+377. यो  ->  syllable-yo.m4a
+378. यौ  ->  syllable-yau.m4a
+379. यं  ->  syllable-yam.m4a
+380. यः  ->  syllable-yah.m4a
+381. रा  ->  syllable-raa.m4a
+382. रि  ->  syllable-ri.m4a
+383. री  ->  syllable-rii.m4a
+384. रु  ->  syllable-ru.m4a
+385. रू  ->  syllable-ruu.m4a
+386. रे  ->  syllable-re.m4a
+387. रै  ->  syllable-rai.m4a
+388. रो  ->  syllable-ro.m4a
+389. रौ  ->  syllable-rau.m4a
+390. रं  ->  syllable-ram.m4a
+391. रः  ->  syllable-rah.m4a
+392. ला  ->  syllable-laa.m4a
+393. लि  ->  syllable-li.m4a
+394. ली  ->  syllable-lii.m4a
+395. लु  ->  syllable-lu.m4a
+396. लू  ->  syllable-luu.m4a
+397. ले  ->  syllable-le.m4a
+398. लै  ->  syllable-lai.m4a
+399. लो  ->  syllable-lo.m4a
+400. लौ  ->  syllable-lau.m4a
+401. लं  ->  syllable-lam.m4a
+402. लः  ->  syllable-lah.m4a
+403. वा  ->  syllable-vaa.m4a
+404. वि  ->  syllable-vi.m4a
+405. वी  ->  syllable-vii.m4a
+406. वु  ->  syllable-vu.m4a
+407. वू  ->  syllable-vuu.m4a
+408. वे  ->  syllable-ve.m4a
+409. वै  ->  syllable-vai.m4a
+410. वो  ->  syllable-vo.m4a
+411. वौ  ->  syllable-vau.m4a
+412. वं  ->  syllable-vam.m4a
+413. वः  ->  syllable-vah.m4a
+414. शा  ->  syllable-shaa.m4a
+415. शि  ->  syllable-shi.m4a
+416. शी  ->  syllable-shii.m4a
+417. शु  ->  syllable-shu.m4a
+418. शू  ->  syllable-shuu.m4a
+419. शे  ->  syllable-she.m4a
+420. शै  ->  syllable-shai.m4a
+421. शो  ->  syllable-sho.m4a
+422. शौ  ->  syllable-shau.m4a
+423. शं  ->  syllable-sham.m4a
+424. शः  ->  syllable-shah.m4a
+425. षा  ->  syllable-ssaa.m4a
+426. षि  ->  syllable-ssi.m4a
+427. षी  ->  syllable-ssii.m4a
+428. षु  ->  syllable-ssu.m4a
+429. षू  ->  syllable-ssuu.m4a
+430. षे  ->  syllable-sse.m4a
+431. षै  ->  syllable-ssai.m4a
+432. षो  ->  syllable-sso.m4a
+433. षौ  ->  syllable-ssau.m4a
+434. षं  ->  syllable-ssam.m4a
+435. षः  ->  syllable-ssah.m4a
+436. सा  ->  syllable-saa.m4a
+437. सि  ->  syllable-si.m4a
+438. सी  ->  syllable-sii.m4a
+439. सु  ->  syllable-su.m4a
+440. सू  ->  syllable-suu.m4a
+441. से  ->  syllable-se.m4a
+442. सै  ->  syllable-sai.m4a
+443. सो  ->  syllable-so.m4a
+444. सौ  ->  syllable-sau.m4a
+445. सं  ->  syllable-sam.m4a
+446. सः  ->  syllable-sah.m4a
+447. हा  ->  syllable-haa.m4a
+448. हि  ->  syllable-hi.m4a
+449. ही  ->  syllable-hii.m4a
+450. हु  ->  syllable-hu.m4a
+451. हू  ->  syllable-huu.m4a
+452. हे  ->  syllable-he.m4a
+453. है  ->  syllable-hai.m4a
+454. हो  ->  syllable-ho.m4a
+455. हौ  ->  syllable-hau.m4a
+456. हं  ->  syllable-ham.m4a
+457. हः  ->  syllable-hah.m4a
+458. क्षा  ->  syllable-kshaa.m4a
+459. क्षि  ->  syllable-kshi.m4a
+460. क्षी  ->  syllable-kshii.m4a
+461. क्षु  ->  syllable-kshu.m4a
+462. क्षू  ->  syllable-kshuu.m4a
+463. क्षे  ->  syllable-kshe.m4a
+464. क्षै  ->  syllable-kshai.m4a
+465. क्षो  ->  syllable-ksho.m4a
+466. क्षौ  ->  syllable-kshau.m4a
+467. क्षं  ->  syllable-ksham.m4a
+468. क्षः  ->  syllable-kshah.m4a
+469. त्रा  ->  syllable-traa.m4a
+470. त्रि  ->  syllable-tri.m4a
+471. त्री  ->  syllable-trii.m4a
+472. त्रु  ->  syllable-tru.m4a
+473. त्रू  ->  syllable-truu.m4a
+474. त्रे  ->  syllable-tre.m4a
+475. त्रै  ->  syllable-trai.m4a
+476. त्रो  ->  syllable-tro.m4a
+477. त्रौ  ->  syllable-trau.m4a
+478. त्रं  ->  syllable-tram.m4a
+479. त्रः  ->  syllable-trah.m4a
+480. ज्ञा  ->  syllable-gyaa.m4a
+481. ज्ञि  ->  syllable-gyi.m4a
+482. ज्ञी  ->  syllable-gyii.m4a
+483. ज्ञु  ->  syllable-gyu.m4a
+484. ज्ञू  ->  syllable-gyuu.m4a
+485. ज्ञे  ->  syllable-gye.m4a
+486. ज्ञै  ->  syllable-gyai.m4a
+487. ज्ञो  ->  syllable-gyo.m4a
+488. ज्ञौ  ->  syllable-gyau.m4a
+489. ज्ञं  ->  syllable-gyam.m4a
+490. ज्ञः  ->  syllable-gyah.m4a
+
+-- Trace --
+491. शाबाश!  ->  praise-1.m4a
+492. बहुत बढ़िया!  ->  praise-2.m4a
+493. वाह! कमाल कर दिया!  ->  praise-3.m4a
+494. बिलकुल सही!  ->  praise-4.m4a
+495. फिर से कोशिश करो।  ->  try-again.m4a
+496. कोई बात नहीं! फिर कोशिश करते हैं।  ->  give-up.m4a
+497. पहले लिखो!  ->  write-first.m4a
+
+-- Story --
+498. एक गरम दिन था।  ->  story-thirsty-crow-line-1.m4a
+499. एक कौआ बहुत प्यासा था।  ->  story-thirsty-crow-line-2.m4a
+500. वह इधर-उधर पानी ढूँढने लगा।  ->  story-thirsty-crow-line-3.m4a
+501. उसे एक घड़ा दिखा, जिसमें थोड़ा-सा पानी था।  ->  story-thirsty-crow-line-4.m4a
+502. कौए ने एक-एक करके घड़े में कंकड़ डाले।  ->  story-thirsty-crow-line-5.m4a
+503. पानी ऊपर आ गया और कौए ने पानी पी लिया।  ->  story-thirsty-crow-line-6.m4a
+504. मेहनत और सूझ-बूझ से हर मुश्किल हल हो जाती है।  ->  story-thirsty-crow-moral.m4a
+505. एक जंगल में एक शेर सो रहा था।  ->  story-lion-mouse-line-1.m4a
+506. एक छोटा चूहा उसके ऊपर कूदने लगा।  ->  story-lion-mouse-line-2.m4a
+507. शेर जाग गया और चूहे को पकड़ लिया।  ->  story-lion-mouse-line-3.m4a
+508. चूहे ने कहा, मुझे छोड़ दो, मैं भी तुम्हारी मदद करूँगा।  ->  story-lion-mouse-line-4.m4a
+509. शेर हँसा और उसे छोड़ दिया।  ->  story-lion-mouse-line-5.m4a
+510. एक दिन शेर जाल में फँस गया।  ->  story-lion-mouse-line-6.m4a
+511. चूहे ने जाल काट दिया और शेर को बचा लिया।  ->  story-lion-mouse-line-7.m4a
+512. छोटा हो या बड़ा, हर किसी की मदद काम आती है।  ->  story-lion-mouse-moral.m4a
+513. एक खरगोश को अपनी तेज़ी पर घमंड था।  ->  story-hare-tortoise-line-1.m4a
+514. उसने कछुए को दौड़ के लिए ललकारा।  ->  story-hare-tortoise-line-2.m4a
+515. दौड़ शुरू हुई और खरगोश बहुत आगे निकल गया।  ->  story-hare-tortoise-line-3.m4a
+516. खरगोश रास्ते में पेड़ के नीचे सो गया।  ->  story-hare-tortoise-line-4.m4a
+517. कछुआ धीरे-धीरे चलता रहा।  ->  story-hare-tortoise-line-5.m4a
+518. कछुआ पहले पहुँच गया और दौड़ जीत गया।  ->  story-hare-tortoise-line-6.m4a
+519. लगातार मेहनत करने वाला ही जीतता है।  ->  story-hare-tortoise-moral.m4a
+520. एक किसान के चार बेटे थे।  ->  story-unity-strength-line-1.m4a
+521. वे हमेशा आपस में लड़ते रहते थे।  ->  story-unity-strength-line-2.m4a
+522. किसान ने उन्हें लकड़ियों का एक गट्ठर दिया।  ->  story-unity-strength-line-3.m4a
+523. अकेली-अकेली लकड़ी सबने आसानी से तोड़ दी।  ->  story-unity-strength-line-4.m4a
+524. पर पूरा गट्ठर कोई नहीं तोड़ पाया।  ->  story-unity-strength-line-5.m4a
+525. किसान ने कहा, मिलकर रहोगे तो मज़बूत रहोगे।  ->  story-unity-strength-line-6.m4a
+526. एकता में ही बल है।  ->  story-unity-strength-moral.m4a
+
+== ENGLISH LETTER SOUNDS  (save in app/src/main/assets/voice/en/) ==
+Say only the pure sound, short and crisp. No added "uh" ("b", not "buh").
+Hold sounds that can be held (mmm, sss, fff) for about one second.
+
+527. The sound of A, as at the start of "Apple"  ->  phoneme-a.m4a
+528. The sound of B, as at the start of "Ball"  ->  phoneme-b.m4a
+529. The sound of C, as at the start of "Cat"  ->  phoneme-c.m4a
+530. The sound of D, as at the start of "Dog"  ->  phoneme-d.m4a
+531. The sound of E, as at the start of "Egg"  ->  phoneme-e.m4a
+532. The sound of F, as at the start of "Fish"  ->  phoneme-f.m4a
+533. The sound of G, as at the start of "Goat"  ->  phoneme-g.m4a
+534. The sound of H, as at the start of "Hat"  ->  phoneme-h.m4a
+535. The sound of I, as at the start of "Insect"  ->  phoneme-i.m4a
+536. The sound of J, as at the start of "Jellyfish"  ->  phoneme-j.m4a
+537. The sound of K, as at the start of "Kite"  ->  phoneme-k.m4a
+538. The sound of L, as at the start of "Lion"  ->  phoneme-l.m4a
+539. The sound of M, as at the start of "Moon"  ->  phoneme-m.m4a
+540. The sound of N, as at the start of "Nose"  ->  phoneme-n.m4a
+541. The sound of O, as at the start of "Octopus"  ->  phoneme-o.m4a
+542. The sound of P, as at the start of "Pig"  ->  phoneme-p.m4a
+543. The sound of Q, as at the start of "Queen"  ->  phoneme-q.m4a
+544. The sound of R, as at the start of "Rainbow"  ->  phoneme-r.m4a
+545. The sound of S, as at the start of "Sun"  ->  phoneme-s.m4a
+546. The sound of T, as at the start of "Tree"  ->  phoneme-t.m4a
+547. The sound of U, as at the start of "Umbrella"  ->  phoneme-u.m4a
+548. The sound of V, as at the start of "Violin"  ->  phoneme-v.m4a
+549. The sound of W, as at the start of "Wolf"  ->  phoneme-w.m4a
+550. The sound of X, as at the end of "Fox"  ->  phoneme-x.m4a
+551. The sound of Y, as at the start of "Yo-yo"  ->  phoneme-y.m4a
+552. The sound of Z, as at the start of "Zebra"  ->  phoneme-z.m4a

@@ -43,6 +43,8 @@ import com.vi5hnu.curvykids.recognition.Stroke
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS
 import com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS
+import com.vi5hnu.curvykids.data.content.HindiVoiceScript
+import com.vi5hnu.curvykids.data.content.VoiceLine
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.data.content.barakhadiSyllable
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
@@ -91,10 +93,11 @@ fun BarakhadiScreen(
     val consonant = HINDI_CONSONANTS[selected]
     val (badgeColor, badgeTint) = barakhadiPalette(selected)
 
-    // Speak Devanagari in the Hindi voice, or a romanized read-aloud if no Hindi voice is installed.
-    fun speakHi(devanagari: String, romanized: String) {
+    // Plays the recording of the line if bundled; otherwise the Hindi voice, or a romanized
+    // read-aloud if no Hindi voice is installed.
+    fun speakHi(line: VoiceLine, romanized: String) {
         val sp = feedback?.speaker ?: return
-        sp.speak(devanagari, langTag = "hi-IN", romanized = romanized)
+        sp.speak(line.text, langTag = "hi-IN", romanized = romanized, clip = line.clip)
     }
 
     fun stopRecite() {
@@ -115,7 +118,7 @@ fun BarakhadiScreen(
                 BARAKHADI_MATRAS.forEachIndexed { i, matra ->
                     recitingIndex = i
                     val syllable = barakhadiSyllable(consonant.char, matra)
-                    speakHi(syllable, consonant.romanized.dropLast(1) + matra.key)
+                    speakHi(HindiVoiceScript.syllable(consonant, matra), consonant.romanized.dropLast(1) + matra.key)
                     explored = explored + syllable
                     delay(RECITE_GAP_MS)
                 }
@@ -149,12 +152,12 @@ fun BarakhadiScreen(
             onResult = { correct ->
                 if (correct) {
                     feedback?.correct()
-                    speakHi(syllable, romanized)
+                    speakHi(HindiVoiceScript.syllable(consonant, matra), romanized)
                 } else {
                     feedback?.wrong()
                 }
             },
-            onSpeak = { speakHi(syllable, romanized) },
+            onSpeak = { speakHi(HindiVoiceScript.syllable(consonant, matra), romanized) },
             onPrev = { writingForm = (writingForm + BARAKHADI_MATRAS.size - 1) % BARAKHADI_MATRAS.size },
             onNext = { writingForm = (writingForm + 1) % BARAKHADI_MATRAS.size },
             onClose = { writingForm = -1 },
@@ -200,7 +203,7 @@ fun BarakhadiScreen(
                         onClick = {
                             stopRecite() // switching letters cancels any running recitation
                             selected = i
-                            speakHi(c.char, c.romanized)
+                            speakHi(HindiVoiceScript.letter(c), c.romanized)
                         },
                         shape = RoundedCornerShape(16.dp),
                         color = if (isSel) topic.color else topic.tint,
@@ -304,7 +307,7 @@ fun BarakhadiScreen(
                                     .clip(RoundedCornerShape(20.dp))
                                     .clickable {
                                         stopRecite()
-                                        speakHi(syllable, consonant.romanized.dropLast(1) + matra.key)
+                                        speakHi(HindiVoiceScript.syllable(consonant, matra), consonant.romanized.dropLast(1) + matra.key)
                                         writingForm = index
                                         if (!explored.contains(syllable)) {
                                             explored = explored + syllable

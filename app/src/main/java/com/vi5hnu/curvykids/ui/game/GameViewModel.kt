@@ -10,6 +10,8 @@ import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.audio.SoundEffects
 import com.vi5hnu.curvykids.data.app.Difficulty
 import com.vi5hnu.curvykids.data.content.HINDI_BY_CHAR
+import com.vi5hnu.curvykids.data.content.HindiVoiceScript
+import com.vi5hnu.curvykids.data.content.VoiceLine
 import com.vi5hnu.curvykids.data.content.Level
 import com.vi5hnu.curvykids.data.content.Phonics
 import com.vi5hnu.curvykids.data.content.Script
@@ -211,9 +213,7 @@ class GameViewModel(
      */
     fun promptToDraw() {
         val state = _uiState.value
-        if (state.level.script == Script.DEVANAGARI && phonics.supports(HINDI_TTS_TAG)) {
-            phonics.speak("पहले लिखो!", langTag = HINDI_TTS_TAG); return
-        }
+        if (state.level.script == Script.DEVANAGARI && speakHindi(HindiVoiceScript.WRITE_FIRST)) return
         phonics.speak("Draw it first, then tap check.")
     }
 
@@ -264,11 +264,6 @@ class GameViewModel(
     }
 
     /**
-     * Speaks a Hindi letter naturally ("अ से अनानास" — "A as in Pineapple") in the Hindi voice.
-     * If the device has no Hindi voice, reads the romanized name with the English voice so the
-     * child always hears something instead of silence/garble.
-     */
-    /**
      * Whether the drawn [strokes] read as [expected] in Devanagari.
      *
      * A narrower door onto the recogniser than [check], for screens that mark a single piece of
@@ -290,32 +285,45 @@ class GameViewModel(
         return matched
     }
 
+    /**
+     * Speaks a Hindi letter naturally ("अ, अ से अनानास"): the recording if bundled, else the Hindi
+     * voice, else the romanized name in English so the child always hears something.
+     */
     private fun speakHindiLetter(char: String, queue: Boolean = false) {
         val letter = HINDI_BY_CHAR[char]
-        val text = if (letter != null && letter.example.isNotEmpty())
-            "$char, $char से ${letter.example}"
-        else char
+        if (letter == null) {
+            phonics.speak(char, langTag = HINDI_TTS_TAG, flush = !queue, romanized = char); return
+        }
+        val line = HindiVoiceScript.letterWithWord(letter)
         phonics.speak(
-            text,
+            line.text,
             langTag = HINDI_TTS_TAG,
             flush = !queue,
-            romanized = letter?.romanized ?: char,
+            romanized = letter.romanized,
+            clip = line.clip,
         )
     }
 
+    /**
+     * Speaks a fixed Hindi phrase if it can be said properly (a recording, or a Hindi voice).
+     * Returns false so the caller can say its English line instead of a garbled one.
+     */
+    private fun speakHindi(line: VoiceLine): Boolean {
+        if (!phonics.canSpeak(HINDI_TTS_TAG, line.clip)) return false
+        phonics.speak(line.text, langTag = HINDI_TTS_TAG, clip = line.clip)
+        return true
+    }
+
     private fun speakPraise() {
-        if (_uiState.value.level.script == Script.DEVANAGARI && phonics.supports(HINDI_TTS_TAG)) {
-            phonics.speak(HINDI_PRAISE.random(), langTag = HINDI_TTS_TAG); return
-        }
+        if (_uiState.value.level.script == Script.DEVANAGARI &&
+            speakHindi(HindiVoiceScript.PRAISE.random())) return
         phonics.speak(PRAISE.random())
     }
 
     /** Spoken when the child has used all attempts — gentle, not discouraging. */
     private fun speakGiveUp() {
         val state = _uiState.value
-        if (state.level.script == Script.DEVANAGARI && phonics.supports(HINDI_TTS_TAG)) {
-            phonics.speak("कोई बात नहीं! फिर कोशिश करते हैं।", langTag = HINDI_TTS_TAG); return
-        }
+        if (state.level.script == Script.DEVANAGARI && speakHindi(HindiVoiceScript.GIVE_UP)) return
         if (state.level.script == Script.DEVANAGARI) { phonics.speak("That's okay! Let's try the next one."); return }
         phonics.speak("That's OK! Keep practicing. ${Phonics.phraseFor(state.character)}. Moving on!")
     }
@@ -324,10 +332,7 @@ class GameViewModel(
     private fun speakTryAgain(sawNothing: Boolean) {
         val state = _uiState.value
         if (state.level.script == Script.DEVANAGARI) {
-            if (phonics.supports(HINDI_TTS_TAG))
-                phonics.speak("फिर से कोशिश करो।", langTag = HINDI_TTS_TAG)
-            else
-                phonics.speak("Try again!")
+            if (!speakHindi(HindiVoiceScript.TRY_AGAIN)) phonics.speak("Try again!")
             return
         }
         val noun = if (state.level == Level.NUMBERS) "number" else "letter"
@@ -394,7 +399,6 @@ class GameViewModel(
         private const val MAX_WRONG_ATTEMPTS_EASY = 5
         private const val GIVE_UP_DELAY_MS = 2000L
         private val PRAISE = listOf("Yay! Great job!", "Awesome!", "Well done!", "Perfect!", "You did it!")
-        private val HINDI_PRAISE = listOf("शाबाश!", "बहुत बढ़िया!", "वाह! कमाल कर दिया!", "बिलकुल सही!")
 
         /** BCP-47 tag for the Hindi TTS voice (India), distinct from the recognizer's "hi" model tag. */
         private const val HINDI_TTS_TAG = "hi-IN"

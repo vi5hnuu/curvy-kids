@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.data.content
 
+import com.vi5hnu.curvykids.audio.VoiceClip
+
 import androidx.compose.ui.graphics.Color
 import com.vi5hnu.curvykids.ui.theme.Teal
 import com.vi5hnu.curvykids.ui.theme.Coral
@@ -367,40 +369,62 @@ val OPPOSITES = listOf(
 
 // ── Phonics — Letter Sounds ───────────────────────────────────────────────────
 
-/** Each letter paired with its primary phonetic sound, a starter word, and its picture. */
-data class LetterPhonic(val letter: String, val sound: String, val example: String, val svg: AssetPath)
+/**
+ * A letter, the sound it makes, and a word that starts (or, for X, ends) with that sound.
+ *
+ * @param sound      How text-to-speech should try to say the sound when no recording exists.
+ *                   Never shown to the child; the quiz is "hear the sound, tap the letter".
+ * @param soundGroup Letters that make the same sound share a group (C and K both say /k/), so a
+ *                   question never offers two letters that are both right.
+ * @param position   Where the sound sits in [example], for the spoken hint ("like Fox" vs "like Moon").
+ */
+data class LetterPhonic(
+    val letter: String,
+    val sound: String,
+    val example: String,
+    val svg: AssetPath,
+    val soundGroup: String = letter,
+    val position: SoundPosition = SoundPosition.START,
+) {
+    /** Recording of the pure sound, e.g. `assets/voice/en/phoneme-m.m4a`. */
+    val clip: VoiceClip get() = VoiceClip.english("phoneme-${letter.lowercase()}")
+}
+
+enum class SoundPosition { START, END }
 
 /**
- * Starter words are chosen so every one has artwork; a few differ from the usual primer choices
- * (Igloo, Jam, Nest, Yarn) because those have no illustration in the library.
+ * Starter words are chosen so every one has artwork and the picture is what a child would call it
+ * (no "Jet" drawn as an airplane). Short vowels use the classic primer words (Apple, Egg,
+ * Octopus, Umbrella). X is taught by its ending sound, as in Fox, because almost no early word
+ * starts with /ks/ ("X-ray" starts with the letter's name, not its sound).
  */
 val PHONICS_DATA = listOf(
-    LetterPhonic("A", "ahh",  "Apple",    KidAssets.fruit("apple")),
-    LetterPhonic("B", "buh",  "Ball",     KidAssets.sport("soccer")),
-    LetterPhonic("C", "kuh",  "Cat",      KidAssets.animal("cat")),
-    LetterPhonic("D", "duh",  "Dog",      KidAssets.animal("dog")),
-    LetterPhonic("E", "ehh",  "Egg",      KidAssets.food("egg")),
-    LetterPhonic("F", "fuh",  "Fish",     KidAssets.seaAnimal("fish")),
-    LetterPhonic("G", "guh",  "Goat",     KidAssets.animal("goat")),
-    LetterPhonic("H", "huh",  "Hat",      KidAssets.clothes("top-hat")),
-    LetterPhonic("I", "ih",   "Insect",   KidAssets.insect("ladybug")),
-    LetterPhonic("J", "juh",  "Jet",      KidAssets.transport("airplane")),
-    LetterPhonic("K", "kuh",  "Kite",     KidAssets.toy("kite")),
-    LetterPhonic("L", "luh",  "Lion",     KidAssets.animal("lion")),
-    LetterPhonic("M", "muh",  "Moon",     KidAssets.weather("moon")),
-    LetterPhonic("N", "nuh",  "Nose",     KidAssets.body("nose")),
-    LetterPhonic("O", "ohh",  "Orange",   KidAssets.fruit("orange")),
-    LetterPhonic("P", "puh",  "Pig",      KidAssets.animal("pig")),
-    LetterPhonic("Q", "kwuh", "Queen",    KidAssets.clothes("crown")),
-    LetterPhonic("R", "ruh",  "Rainbow",  KidAssets.weather("rainbow")),
-    LetterPhonic("S", "suh",  "Sun",      KidAssets.weather("sun")),
-    LetterPhonic("T", "tuh",  "Tree",     KidAssets.nature("tree")),
-    LetterPhonic("U", "uhh",  "Umbrella", KidAssets.weather("umbrella")),
-    LetterPhonic("V", "vuh",  "Violin",   KidAssets.instrument("violin")),
-    LetterPhonic("W", "wuh",  "Wolf",     KidAssets.animal("wolf")),
-    LetterPhonic("X", "ksss", "X-ray",    KidAssets.body("bone")),
-    LetterPhonic("Y", "yuh",  "Yo-yo",    KidAssets.toy("yo-yo")),
-    LetterPhonic("Z", "zuh",  "Zebra",    KidAssets.animal("zebra")),
+    LetterPhonic("A", "a",    "Apple",     KidAssets.fruit("apple")),
+    LetterPhonic("B", "buh",  "Ball",      KidAssets.sport("soccer")),
+    LetterPhonic("C", "kuh",  "Cat",       KidAssets.animal("cat"), soundGroup = "k"),
+    LetterPhonic("D", "duh",  "Dog",       KidAssets.animal("dog")),
+    LetterPhonic("E", "eh",   "Egg",       KidAssets.food("egg")),
+    LetterPhonic("F", "fff",  "Fish",      KidAssets.seaAnimal("fish")),
+    LetterPhonic("G", "guh",  "Goat",      KidAssets.animal("goat")),
+    LetterPhonic("H", "hhh",  "Hat",       KidAssets.clothes("top-hat")),
+    LetterPhonic("I", "ih",   "Insect",    KidAssets.insect("ladybug")),
+    LetterPhonic("J", "juh",  "Jellyfish", KidAssets.seaAnimal("jellyfish")),
+    LetterPhonic("K", "kuh",  "Kite",      KidAssets.toy("kite"), soundGroup = "k"),
+    LetterPhonic("L", "lll",  "Lion",      KidAssets.animal("lion")),
+    LetterPhonic("M", "mmm",  "Moon",      KidAssets.weather("moon")),
+    LetterPhonic("N", "nnn",  "Nose",      KidAssets.body("nose")),
+    LetterPhonic("O", "o",    "Octopus",   KidAssets.seaAnimal("octopus")),
+    LetterPhonic("P", "puh",  "Pig",       KidAssets.animal("pig")),
+    LetterPhonic("Q", "kwuh", "Queen",     KidAssets.clothes("crown")),
+    LetterPhonic("R", "rrr",  "Rainbow",   KidAssets.weather("rainbow")),
+    LetterPhonic("S", "sss",  "Sun",       KidAssets.weather("sun")),
+    LetterPhonic("T", "tuh",  "Tree",      KidAssets.nature("tree")),
+    LetterPhonic("U", "uh",   "Umbrella",  KidAssets.weather("umbrella")),
+    LetterPhonic("V", "vvv",  "Violin",    KidAssets.instrument("violin")),
+    LetterPhonic("W", "wuh",  "Wolf",      KidAssets.animal("wolf")),
+    LetterPhonic("X", "ks",   "Fox",       KidAssets.animal("fox"), position = SoundPosition.END),
+    LetterPhonic("Y", "yuh",  "Yo-yo",     KidAssets.toy("yo-yo")),
+    LetterPhonic("Z", "zzz",  "Zebra",     KidAssets.animal("zebra")),
 )
 
 // ── Rhyming Word Groups ───────────────────────────────────────────────────────

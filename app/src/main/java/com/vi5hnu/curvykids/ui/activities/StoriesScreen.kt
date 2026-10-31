@@ -33,6 +33,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
 import com.vi5hnu.curvykids.audio.PlayFeedback
+import com.vi5hnu.curvykids.data.content.HindiVoiceScript
 import com.vi5hnu.curvykids.data.content.STORIES
 import com.vi5hnu.curvykids.data.content.Story
 import com.vi5hnu.curvykids.data.content.Topic
@@ -162,6 +163,18 @@ private fun StoryReader(
         segments.map { seg -> val start = idx; idx += seg.length + 1; start until (start + seg.length) }
     }
 
+    // Each segment's recording. When every one is bundled the story is played clip by clip (a
+    // human voice, highlighted a sentence at a time); otherwise the synthetic voice reads it.
+    val voiceLines = remember(story.id) {
+        story.lines.indices.map { HindiVoiceScript.storyLine(story, it) } + HindiVoiceScript.storyMoral(story)
+    }
+    val recorded = remember(story.id) { speaker != null && voiceLines.all { speaker.hasClip(it.clip) } }
+
+    /** Speaks one segment on its own (a tapped line or the moral). */
+    fun speakSegment(i: Int) {
+        speaker?.speak(segments[i], langTag = "hi-IN", utteranceId = "tap-$i", clip = voiceLines[i].clip)
+    }
+
     fun resetVoice() {
         speaker?.setPitch(1f)
         speaker?.setSpeechRate(PhonicsSpeaker.DEFAULT_RATE)
@@ -182,7 +195,13 @@ private fun StoryReader(
         sp.setSpeechRate(STORY_RATE)
         reading = true
         current = -1
-        sp.speak(fullText, langTag = "hi-IN", flush = true, utteranceId = "story")
+        if (recorded) {
+            voiceLines.forEachIndexed { i, line ->
+                sp.speak(line.text, langTag = "hi-IN", flush = i == 0, utteranceId = "story-$i", clip = line.clip)
+            }
+        } else {
+            sp.speak(fullText, langTag = "hi-IN", flush = true, utteranceId = "story")
+        }
     }
 
     // Highlight follows the spoken character range; clean up (and stop audio) on leave / story change.
@@ -193,13 +212,22 @@ private fun StoryReader(
                 if (seg >= 0) current = seg
             }
         }
+        // Recorded reading reports each sentence as it starts.
+        speaker?.onUtteranceStart = { id ->
+            id.removePrefix("story-").toIntOrNull()?.takeIf { id.startsWith("story-") }?.let { current = it }
+        }
         speaker?.onUtteranceDone = { id ->
-            current = -1
-            reading = false
-            resetVoice()
-            if (id == "story") onReward(3) // reward for listening to a whole story
+            val finishedStory = id == "story" || id == "story-$moralIndex"
+            // Mid-story sentences of a recorded reading end here too; only the last one ends it.
+            if (finishedStory || id.startsWith("tap-")) {
+                current = -1
+                reading = false
+                resetVoice()
+            }
+            if (finishedStory) onReward(3) // reward for listening to a whole story
         }
         onDispose {
+            speaker?.onUtteranceStart = null
             speaker?.onUtteranceRange = null
             speaker?.onUtteranceDone = null
             resetVoice()
@@ -266,7 +294,7 @@ private fun StoryReader(
                         speaker?.setPitch(STORY_PITCH)
                         speaker?.setSpeechRate(STORY_RATE)
                         current = i
-                        speaker?.speak(line, langTag = "hi-IN", utteranceId = "tap-$i")
+                        speakSegment(i)
                     }
                     .padding(horizontal = 12.dp, vertical = 8.dp),
             )
@@ -283,7 +311,7 @@ private fun StoryReader(
                 speaker?.setPitch(STORY_PITCH)
                 speaker?.setSpeechRate(STORY_RATE)
                 current = moralIndex
-                speaker?.speak(story.moral, langTag = "hi-IN", utteranceId = "tap-moral")
+                speakSegment(moralIndex)
             },
         ) {
             Column(

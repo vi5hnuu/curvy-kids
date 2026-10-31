@@ -17,6 +17,29 @@ import java.util.Locale
  */
 class PhonicsSpeaker(context: Context) {
 
+    /** Human recordings, preferred over the synthetic voice whenever one exists for a line. */
+    private val clips = ClipPlayer(context)
+
+    /**
+     * Lines queued behind audio from the *other* engine (a TTS line behind a clip, or a clip
+     * behind a TTS line). Each engine queues its own lines natively, but they can't see each
+     * other, so cross-engine order is kept here and released when both have gone quiet.
+     */
+    private val waiting = ArrayDeque<() -> Unit>()
+
+    /**
+     * Id of the last line handed to TTS while it is still playing, else null. Tracked here because
+     * `TextToSpeech.isSpeaking` can still read true inside the onDone callback of that same line.
+     */
+    @Volatile
+    private var ttsTail: String? = null
+
+    private fun releaseWaiting() {
+        while (waiting.isNotEmpty() && !clips.isBusy && ttsTail == null) {
+            waiting.removeFirst().invoke()
+        }
+    }
+
     companion object {
         private const val TAG = "PHONICS"
         /** Default kids' speaking rate (a little slower than normal). */
@@ -70,6 +93,12 @@ class PhonicsSpeaker(context: Context) {
     @Volatile
     private var currentLangTag: String = Locale.US.toLanguageTag()
 
+    init {
+        clips.onStart = { id -> onUtteranceStart?.invoke(id) }
+        clips.onDone = { id -> onUtteranceDone?.invoke(id) }
+        clips.onIdle = { releaseWaiting() }
+    }
+
     private val tts: TextToSpeech = TextToSpeech(context.applicationContext) { status ->
         if (status == TextToSpeech.SUCCESS) {
             tts.language = Locale.US
@@ -82,12 +111,20 @@ class PhonicsSpeaker(context: Context) {
                 }
                 override fun onDone(utteranceId: String?) {
                     val id = utteranceId ?: return
-                    mainHandler.post { onUtteranceDone?.invoke(id) }
+                    mainHandler.post {
+                        if (id == ttsTail) ttsTail = null
+                        onUtteranceDone?.invoke(id)
+                        releaseWaiting()
+                    }
                 }
                 @Deprecated("Deprecated in Java")
                 override fun onError(utteranceId: String?) {
                     val id = utteranceId ?: return
-                    mainHandler.post { onUtteranceDone?.invoke(id) }
+                    mainHandler.post {
+                        if (id == ttsTail) ttsTail = null
+                        onUtteranceDone?.invoke(id)
+                        releaseWaiting()
+                    }
                 }
                 override fun onRangeStart(utteranceId: String?, start: Int, end: Int, frame: Int) {
                     val id = utteranceId ?: return
@@ -117,6 +154,8 @@ class PhonicsSpeaker(context: Context) {
      *        voice exists can only be known once the engine has started, which is after the first
      *        tap, so the choice is made here rather than by the caller: asking beforehand returned
      *        an optimistic yes and sent Devanagari to an English voice, which reads as nonsense.
+     * @param clip a recording of this exact line. When it is bundled it is played instead of the
+     *        synthetic voice; when it isn't, everything above applies unchanged.
      */
     fun speak(
         text: String,
@@ -124,8 +163,23 @@ class PhonicsSpeaker(context: Context) {
         flush: Boolean = true,
         utteranceId: String = text,
         romanized: String? = null,
+        clip: VoiceClip? = null,
     ) {
         if (text.isBlank() || muted) return
+        if (clip != null && clips.has(clip)) {
+            if (flush) { waiting.clear(); ttsTail = null; if (ready) tts.stop() }
+            if (!flush && ttsTail != null) {
+                waiting.addLast { clips.play(clip, utteranceId, flush = false) }
+            } else {
+                clips.play(clip, utteranceId, flush)
+            }
+            return
+        }
+        if (flush) { clips.stop(); waiting.clear() }
+        else if (clips.isBusy) {
+            waiting.addLast { speak(text, langTag, flush = false, utteranceId, romanized) }
+            return
+        }
         if (!ready) {
             pendingText = text  // will fire once TTS is initialised
             pendingLangTag = langTag
@@ -140,6 +194,7 @@ class PhonicsSpeaker(context: Context) {
             text
         }
         val mode = if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
+        ttsTail = utteranceId
         tts.speak(spoken, mode, null, utteranceId)
     }
 
@@ -151,6 +206,20 @@ class PhonicsSpeaker(context: Context) {
         if (!ready) return true
         return tts.isLanguageAvailable(Locale.forLanguageTag(langTag)) >= TextToSpeech.LANG_AVAILABLE
     }
+
+    /** Whether a human recording is bundled for [clip]. */
+    fun hasClip(clip: VoiceClip): Boolean = clips.has(clip)
+
+    /**
+     * Whether [langTag] can be spoken properly: either [clip] is recorded, or the device has a
+     * voice for the language. Callers use it to choose a Hindi line over an English stand-in.
+     */
+    fun canSpeak(langTag: String, clip: VoiceClip?): Boolean =
+        (clip != null && clips.has(clip)) || supports(langTag)
+
+    /** Whether the device has a real voice installed for [langTag], known only after init. */
+    fun hasVoiceFor(langTag: String): Boolean =
+        ready && tts.isLanguageAvailable(Locale.forLanguageTag(langTag)) >= TextToSpeech.LANG_AVAILABLE
 
     /**
      * Sets the speaking pitch (1.0 = normal). Higher values sound younger/"boyish" — used by the
@@ -193,10 +262,14 @@ class PhonicsSpeaker(context: Context) {
         pendingText = null
         pendingLangTag = null
         pendingRomanized = null
+        waiting.clear()
+        clips.stop()
+        ttsTail = null
         if (ready) tts.stop()
     }
 
     fun release() {
+        clips.release()
         tts.stop()
         tts.shutdown()
     }
