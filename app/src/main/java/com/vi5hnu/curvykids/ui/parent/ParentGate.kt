@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -33,8 +34,9 @@ import com.vi5hnu.curvykids.ui.theme.InkFaint
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 
 /**
- * ParentGate bottom sheet — a multiplication puzzle that only adults can solve quickly.
- * Opened from ParentTab; calls [onPass] when the correct answer is entered.
+ * ParentGate bottom sheet — a sum written in words (see [GateQuestion]) that only adults can
+ * solve. Opened from ParentTab; calls [onPass] when the correct answer is entered. A wrong answer
+ * brings a new question, so the gate can't be passed by guessing the same one over and over.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -42,11 +44,11 @@ fun ParentGate(
     onPass: () -> Unit,
     onDismiss: () -> Unit,
 ) {
-    // Randomise a and b once per gate open. Saveable so a rotation does not swap the question
-    // out from under a parent who is mid-answer.
-    val a = rememberSaveable { (2..7).random() }
-    val b = rememberSaveable { (2..6).random() }
-    val answer = a * b
+    // Saveable so a rotation does not swap the question out from under a parent mid-answer.
+    var a by rememberSaveable { mutableIntStateOf(0) }
+    var b by rememberSaveable { mutableIntStateOf(0) }
+    if (a == 0) GateQuestion.random().let { a = it.a; b = it.b }
+    val question = GateQuestion(a, b)
 
     var input by rememberSaveable { mutableStateOf("") }
     var showWrong by rememberSaveable { mutableStateOf(false) }
@@ -68,13 +70,13 @@ fun ParentGate(
             )
             Spacer(Modifier.height(4.dp))
             Text(
-                text = "Solve to continue:",
+                text = "Add the numbers and type the answer:",
                 fontWeight = FontWeight.Bold,
                 fontSize = 14.sp,
                 color = InkSoft,
             )
             Text(
-                text = "$a × $b = ?",
+                text = question.text,
                 fontFamily = FontDisplay,
                 fontWeight = FontWeight.ExtraBold,
                 fontSize = 22.sp,
@@ -99,7 +101,7 @@ fun ParentGate(
 
             if (showWrong) {
                 Text(
-                    text = "Not quite — try again.",
+                    text = "Not quite — here's a new one.",
                     fontWeight = FontWeight.Bold,
                     fontSize = 13.sp,
                     color = Coral,
@@ -112,7 +114,13 @@ fun ParentGate(
             // gate into a game a child could brute-force by watching for the colour change.
             CandyButton(
                 onClick = {
-                    if (input.toIntOrNull() == answer) onPass() else showWrong = true
+                    if (input.toIntOrNull() == question.answer) {
+                        onPass()
+                    } else {
+                        showWrong = true
+                        input = ""
+                        GateQuestion.random().let { a = it.a; b = it.b }
+                    }
                 },
                 modifier = Modifier
                     .fillMaxWidth()

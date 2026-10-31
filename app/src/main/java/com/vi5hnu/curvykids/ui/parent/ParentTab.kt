@@ -83,7 +83,7 @@ fun ParentTab(
                 )
                 Spacer(Modifier.height(6.dp))
                 Text(
-                    text = "See progress, sounds & reminders. A quick puzzle keeps little fingers out.",
+                    text = "See progress and sound settings. A grown-up puzzle keeps little fingers out.",
                     fontWeight = FontWeight.Bold,
                     fontSize = 14.sp,
                     color = InkSoft,
