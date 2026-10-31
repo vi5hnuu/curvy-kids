@@ -112,6 +112,9 @@ class QuizSession internal constructor(
         pending = null
     }
 
+    /** What the tap being shown turned out to be, or null between taps (drives the mascot). */
+    val shownOutcome: QuizOutcome? get() = pending?.outcome
+
     /** Identity of the tap being shown, for keying the [settle] effect. */
     val pendingKey: Any? get() = pending
 

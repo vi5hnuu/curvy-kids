@@ -12,6 +12,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import com.vi5hnu.curvykids.ui.kit.KidBackButton
+import com.vi5hnu.curvykids.ui.theme.KidInk
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -40,24 +44,19 @@ fun ScreenHeader(
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (onBack != null) {
-            Chip(
-                modifier = Modifier.size(48.dp),
-                onClick = onBack,
-            ) {
-                Icon(
-                    imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
-                    contentDescription = "Back",
-                    modifier = Modifier.size(24.dp),
-                )
-            }
+            // Big candy back button: the one control every child screen shares.
+            KidBackButton(onClick = onBack, color = color)
             Spacer(Modifier.width(12.dp))
         }
         Text(
             text = title,
             modifier = Modifier.weight(1f),
             fontFamily = FontDisplay,
+            fontWeight = FontWeight.ExtraBold,
             fontSize = 26.sp,
-            color = color,
+            color = KidInk,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
         )
         if (trailing != null) trailing()
     }

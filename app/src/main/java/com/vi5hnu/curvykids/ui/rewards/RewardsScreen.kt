@@ -16,6 +16,13 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.ColorFilter
+import androidx.compose.ui.graphics.ColorMatrix
+import com.vi5hnu.curvykids.ui.kit.SceneBackground
+import com.vi5hnu.curvykids.ui.kit.Responsive
+import com.vi5hnu.curvykids.ui.kit.kidContentWidth
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxSize
 import com.vi5hnu.curvykids.ui.kit.KidBackButton
 import com.vi5hnu.curvykids.ui.theme.KidSun
 import androidx.compose.ui.Alignment
@@ -88,11 +95,16 @@ fun RewardsScreen(
         Sticker("spell",   KidAssets.toy("puzzle"),           "Word Builder", mastered.count { it.startsWith("lower:") } >= 5),
     )
 
+    SceneBackground(modifier) {
+    BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+    val twoPane = Responsive.isTwoPane(maxWidth, maxHeight)
+    val columns = if (Responsive.isWide(maxWidth)) 4 else 2
     Column(
-        modifier = modifier
+        modifier = Modifier
+            .kidContentWidth()
             .verticalScroll(rememberScrollState())
             .padding(horizontal = 18.dp, vertical = 18.dp)
-            .padding(bottom = 90.dp),
+            .padding(bottom = 24.dp),
     ) {
         // ── Header with Curvy ─────────────────────────────────────────────
         Row(
@@ -105,7 +117,7 @@ fun RewardsScreen(
             Spacer(Modifier.size(12.dp))
             Column {
                 Text(
-                    text = "My Rewards",
+                    text = "My Stickers",
                     fontFamily = FontDisplay,
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 26.sp,
@@ -122,80 +134,89 @@ fun RewardsScreen(
 
         Spacer(Modifier.height(18.dp))
 
-        // ── Star total card (gold gradient) ───────────────────────────────
-        Surface(
-            shape = RoundedCornerShape(30.dp),
-            shadowElevation = 10.dp,
-            modifier = Modifier.fillMaxWidth(),
+        if (twoPane) {
+            // Landscape: totals on the left, the stickers in view on the right.
+            Row(horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+                Column(Modifier.weight(0.4f)) { Totals(stars, mastered) }
+                Column(Modifier.weight(0.6f)) { StickerBook(stickers, columns = 3) }
+            }
+        } else {
+            Totals(stars, mastered)
+            Spacer(Modifier.height(10.dp))
+            StickerBook(stickers, columns)
+        }
+    }
+    }
+    }
+}
+
+/** The star total and one mastery bar per writing system. */
+@Composable
+private fun Totals(stars: Int, mastered: List<String>) {
+    StarTotalCard(stars)
+    Spacer(Modifier.height(20.dp))
+    traceProgress(mastered).forEach { progress ->
+        ProgressCard(progress)
+        Spacer(Modifier.height(12.dp))
+    }
+}
+
+/** The gold card with the number of stars collected. */
+@Composable
+private fun StarTotalCard(stars: Int) {
+    Surface(
+        shape = RoundedCornerShape(30.dp),
+        shadowElevation = 10.dp,
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(Brush.linearGradient(colors = listOf(Color(0xFFFFD86B), Color(0xFFFFC24A)))),
+            contentAlignment = Alignment.Center,
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .background(
-                        Brush.linearGradient(colors = listOf(Color(0xFFFFD86B), Color(0xFFFFC24A)))
-                    ),
-                contentAlignment = Alignment.Center,
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.padding(22.dp),
             ) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(22.dp),
-                ) {
-                    KidIconImage(
-                        icon = KidIcon.Star,
-                        modifier = Modifier.size(58.dp),
-                        color = Color.White,
-                    )
-                    Text(
-                        text = "$stars",
-                        fontFamily = FontDisplay,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 46.sp,
-                        color = Color.White,
-                    )
-                    Text(
-                        text = "STARS COLLECTED",
-                        fontFamily = FontDisplay,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 15.sp,
-                        color = Color.White.copy(alpha = 0.95f),
-                    )
-                }
+                KidIconImage(icon = KidIcon.Star, modifier = Modifier.size(58.dp), color = Color.White)
+                Text(
+                    text = "$stars",
+                    fontFamily = FontDisplay,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 46.sp,
+                    color = Color.White,
+                )
+                Text(
+                    text = "STARS COLLECTED",
+                    fontFamily = FontDisplay,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 15.sp,
+                    color = Color.White.copy(alpha = 0.95f),
+                )
             }
         }
+    }
+}
 
-        Spacer(Modifier.height(20.dp))
-
-        // ── Mastery progress, one bar per writing system ──────────────────
-        traceProgress(mastered).forEach { progress ->
-            ProgressCard(progress)
-            Spacer(Modifier.height(12.dp))
-        }
-
-        Spacer(Modifier.height(10.dp))
-
-        Text(
-            text = "Sticker Book",
-            fontFamily = FontDisplay,
-            fontWeight = FontWeight.ExtraBold,
-            fontSize = 18.sp,
-            color = Ink,
-            modifier = Modifier.padding(horizontal = 2.dp),
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        // ── Sticker grid (2 columns) ──────────────────────────────────────
-        val rows = stickers.chunked(2)
-        Column(verticalArrangement = Arrangement.spacedBy(13.dp)) {
-            rows.forEach { pair ->
-                Row(horizontalArrangement = Arrangement.spacedBy(13.dp)) {
-                    StickerCell(sticker = pair[0], modifier = Modifier.weight(1f))
-                    if (pair.size > 1) {
-                        StickerCell(sticker = pair[1], modifier = Modifier.weight(1f))
-                    } else {
-                        Spacer(Modifier.weight(1f))
-                    }
-                }
+/** The sticker grid, [columns] to a row. */
+@Composable
+private fun StickerBook(stickers: List<Sticker>, columns: Int) {
+    Text(
+        text = "Sticker Book",
+        fontFamily = FontDisplay,
+        fontWeight = FontWeight.ExtraBold,
+        fontSize = 18.sp,
+        color = Ink,
+        modifier = Modifier.padding(horizontal = 2.dp),
+    )
+    Spacer(Modifier.height(12.dp))
+    Column(verticalArrangement = Arrangement.spacedBy(13.dp)) {
+        stickers.chunked(columns).forEach { row ->
+            Row(horizontalArrangement = Arrangement.spacedBy(13.dp)) {
+                row.forEach { StickerCell(sticker = it, modifier = Modifier.weight(1f)) }
+                // Keep a short last row's cells the same width as the rest.
+                repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
             }
         }
     }
@@ -249,6 +270,19 @@ private fun ProgressCard(progress: TraceProgress) {
     }
 }
 
+/** Greyed and faded: the shape of a sticker not won yet. */
+private val LOCKED_FILTER = ColorFilter.colorMatrix(
+    ColorMatrix().apply { setToSaturation(0f) }.also { m ->
+        // Lighten and fade so it reads as "not yet", not as a black-and-white picture.
+        m.timesAssign(ColorMatrix(floatArrayOf(
+            0.5f, 0f, 0f, 0f, 110f,
+            0f, 0.5f, 0f, 0f, 110f,
+            0f, 0f, 0.5f, 0f, 120f,
+            0f, 0f, 0f, 0.55f, 0f,
+        )))
+    }
+)
+
 @Composable
 private fun StickerCell(sticker: Sticker, modifier: Modifier = Modifier) {
     CardSurface(modifier = modifier) {
@@ -257,19 +291,22 @@ private fun StickerCell(sticker: Sticker, modifier: Modifier = Modifier) {
                 horizontalAlignment = Alignment.CenterHorizontally,
                 modifier = Modifier.fillMaxWidth(),
             ) {
-                if (sticker.have) {
+                // A locked sticker shows its own picture as a grey shape, so the child can
+                // see what there is to win rather than a row of identical padlocks.
+                Box(contentAlignment = Alignment.BottomEnd) {
                     SvgArt(
                         asset = sticker.asset,
                         modifier = Modifier.size(STICKER_ART),
-                        contentDescription = sticker.name,
+                        contentDescription = if (sticker.have) sticker.name else "${sticker.name}, locked",
+                        colorFilter = if (sticker.have) null else LOCKED_FILTER,
                     )
-                } else {
-                    KidIconImage(
-                        icon = KidIcon.Lock,
-                        modifier = Modifier.size(STICKER_ART),
-                        color = InkFaint,
-                        contentDescription = "Locked",
-                    )
+                    if (!sticker.have) {
+                        KidIconImage(
+                            icon = KidIcon.Lock,
+                            modifier = Modifier.size(26.dp).background(Color.White, RoundedCornerShape(50)).padding(4.dp),
+                            color = InkSoft,
+                        )
+                    }
                 }
                 Spacer(Modifier.height(6.dp))
                 Text(

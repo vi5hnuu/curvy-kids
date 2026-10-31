@@ -32,6 +32,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import coil.compose.AsyncImage
@@ -186,6 +187,7 @@ fun SvgArt(
     asset: AssetPath?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
+    colorFilter: ColorFilter? = null,
 ) {
     val context = LocalContext.current
     val stripped by produceState<ByteArray?>(initialValue = null, asset) {
@@ -207,6 +209,7 @@ fun SvgArt(
             .build(),
         contentDescription = contentDescription,
         contentScale = ContentScale.Fit,
+        colorFilter = colorFilter,
         modifier = modifier,
     )
 }

@@ -18,6 +18,12 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.widthIn
+import com.vi5hnu.curvykids.ui.components.CurvyMascot
+import com.vi5hnu.curvykids.ui.components.CurvyMood
+import com.vi5hnu.curvykids.ui.kit.Responsive
+import com.vi5hnu.curvykids.ui.kit.SceneBackground
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -53,6 +59,7 @@ import com.vi5hnu.curvykids.ui.theme.InkSoft
  * - progress is shown as beads rather than numbers.
  *
  * On a short window (a phone on its side) the screen scrolls and the tiles get a fixed height.
+ * On a tablet on its side, the question and the answers sit side by side.
  *
  * @param belowHeader Optional row under the header, e.g. the Learn / Play tabs of a topic.
  */
@@ -79,10 +86,31 @@ fun <T> QuizScaffold(
     LaunchedEffect(session.round) { speakPrompt(session.round == firstRound) }
     LaunchedEffect(session.pendingKey) { session.settle() }
 
-    BoxWithConstraints(Modifier.fillMaxSize()) {
-        val compact = maxHeight < COMPACT_HEIGHT
+    SceneBackground(tint = topic.color) {
+    BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        val twoPane = Responsive.isTwoPane(maxWidth, maxHeight)
+        val compact = maxHeight < COMPACT_HEIGHT && !twoPane
+        val maxRow = if (Responsive.isWide(maxWidth)) MAX_ROW_WIDE else MAX_ROW
+        val mascotMood = when (session.shownOutcome) {
+            QuizOutcome.CORRECT -> CurvyMood.Cheer
+            QuizOutcome.REVEAL, QuizOutcome.TRY_AGAIN -> CurvyMood.Wow
+            null -> CurvyMood.Happy
+        }
+        val grid: @Composable (Modifier) -> Unit = { mod ->
+            ChoiceGrid(choices, columns, compact, maxRow, mod) { choice ->
+                ChoiceTile(
+                    state = session.stateOf(keyOf(choice)),
+                    onClick = {
+                        session.answer(keyOf(choice), keyOf(correct), praiseFor(choice), nameOf(correct))
+                    },
+                    contentDescription = nameOf(choice),
+                    modifier = Modifier.fillMaxSize(),
+                ) { choiceContent(choice) }
+            }
+        }
         Column(
             modifier = Modifier
+                .widthIn(max = if (twoPane) MAX_TWO_PANE else Responsive.MaxContent)
                 .fillMaxSize()
                 .then(if (compact) Modifier.verticalScroll(rememberScrollState()) else Modifier)
                 .padding(horizontal = 18.dp, vertical = 18.dp),
@@ -115,40 +143,17 @@ fun <T> QuizScaffold(
                 Spacer(Modifier.height(14.dp))
             }
 
-            CardSurface(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(horizontal = 20.dp, vertical = 16.dp),
-                ) {
-                    if (promptLabel != null) {
-                        Text(
-                            promptLabel,
-                            fontFamily = FontDisplay,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 15.sp,
-                            color = InkSoft,
-                        )
-                        Spacer(Modifier.height(8.dp))
-                    }
-                    prompt()
-                    Spacer(Modifier.height(10.dp))
-                    Chip(onClick = { speakPrompt(true) }, modifier = Modifier.size(60.dp)) {
-                        KidIconImage(KidIcon.Speaker, Modifier.size(28.dp), contentDescription = "Hear it again")
-                    }
+            if (twoPane) {
+                // Tablet on its side: the question on the left, the answers on the right.
+                Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(18.dp)) {
+                    PromptCard(promptLabel, mascotMood, { speakPrompt(true) }, prompt,
+                        Modifier.weight(0.42f).fillMaxHeight(), fillHeight = true)
+                    grid(Modifier.weight(0.58f).fillMaxHeight())
                 }
-            }
-            Spacer(Modifier.height(18.dp))
-
-            val grid = if (compact) Modifier.fillMaxWidth() else Modifier.fillMaxWidth().weight(1f)
-            ChoiceGrid(choices, columns, compact, grid) { choice ->
-                ChoiceTile(
-                    state = session.stateOf(keyOf(choice)),
-                    onClick = {
-                        session.answer(keyOf(choice), keyOf(correct), praiseFor(choice), nameOf(correct))
-                    },
-                    contentDescription = nameOf(choice),
-                    modifier = Modifier.fillMaxSize(),
-                ) { choiceContent(choice) }
+            } else {
+                PromptCard(promptLabel, mascotMood, { speakPrompt(true) }, prompt, Modifier.fillMaxWidth())
+                Spacer(Modifier.height(18.dp))
+                grid(if (compact) Modifier.fillMaxWidth() else Modifier.fillMaxWidth().weight(1f))
             }
         }
 
@@ -165,6 +170,51 @@ fun <T> QuizScaffold(
             )
         }
     }
+    }
+}
+
+/**
+ * The question: an optional label, the screen's own prompt, and a row with the mascot (who
+ * cheers or gasps with each answer) and a big button to hear the question again.
+ */
+@Composable
+private fun PromptCard(
+    promptLabel: String?,
+    mascotMood: CurvyMood,
+    onReplay: () -> Unit,
+    prompt: @Composable ColumnScope.() -> Unit,
+    modifier: Modifier,
+    fillHeight: Boolean = false,
+) {
+    CardSurface(modifier = modifier) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            // Only the side-by-side layout stretches the card; stacked, it keeps to its content.
+            modifier = Modifier.fillMaxWidth()
+                .then(if (fillHeight) Modifier.fillMaxHeight() else Modifier)
+                .padding(horizontal = 20.dp, vertical = 16.dp),
+        ) {
+            if (promptLabel != null) {
+                Text(
+                    promptLabel,
+                    fontFamily = FontDisplay,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 16.sp,
+                    color = InkSoft,
+                )
+                Spacer(Modifier.height(8.dp))
+            }
+            prompt()
+            Spacer(Modifier.height(10.dp))
+            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                CurvyMascot(size = 60.dp, mood = mascotMood)
+                Chip(onClick = onReplay, modifier = Modifier.size(68.dp)) {
+                    KidIconImage(KidIcon.Speaker, Modifier.size(32.dp), contentDescription = "Hear it again")
+                }
+            }
+        }
+    }
 }
 
 /** Lays the tiles out in rows that share the given height evenly, up to a comfortable maximum. */
@@ -173,13 +223,14 @@ private fun <T> ChoiceGrid(
     choices: List<T>,
     columns: Int,
     compact: Boolean,
+    maxRow: Dp,
     modifier: Modifier,
     tile: @Composable (T) -> Unit,
 ) {
     val rows = choices.chunked(columns.coerceAtLeast(1))
     BoxWithConstraints(modifier) {
         val rowHeight: Dp = if (compact) COMPACT_ROW else
-            ((maxHeight - GAP * (rows.size - 1)) / rows.size).coerceIn(MIN_ROW, MAX_ROW)
+            ((maxHeight - GAP * (rows.size - 1)) / rows.size).coerceIn(MIN_ROW, maxRow)
         Column(verticalArrangement = Arrangement.spacedBy(GAP)) {
             rows.forEach { row ->
                 Row(
@@ -198,5 +249,7 @@ private fun <T> ChoiceGrid(
 private val GAP = 14.dp
 private val MIN_ROW = 88.dp
 private val MAX_ROW = 210.dp
+private val MAX_ROW_WIDE = 300.dp
+private val MAX_TWO_PANE = 1200.dp
 private val COMPACT_ROW = 120.dp
 private val COMPACT_HEIGHT = 560.dp

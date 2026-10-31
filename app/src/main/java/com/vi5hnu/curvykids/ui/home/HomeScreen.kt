@@ -45,6 +45,9 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.kit.CandyCard
 import com.vi5hnu.curvykids.ui.kit.HoldToOpenLock
+import com.vi5hnu.curvykids.ui.kit.Responsive
+import com.vi5hnu.curvykids.ui.kit.kidContentWidth
+import androidx.compose.foundation.layout.fillMaxHeight
 import com.vi5hnu.curvykids.ui.kit.SceneBackground
 import com.vi5hnu.curvykids.ui.kit.TopicArtView
 import com.vi5hnu.curvykids.ui.theme.Coral
@@ -61,7 +64,8 @@ import java.time.LocalDate
  * "play again" bubble, which reopens the last activity (or suggests today's pick before there
  * is one). Grown-ups get in through the lock in the corner, which needs a press and hold.
  *
- * On a short window (phone on its side) the screen scrolls instead of squeezing the worlds.
+ * In landscape (tablet or phone on its side) the worlds take the right side and the rest a column
+ * on the left; on any other short window the screen scrolls instead of squeezing the worlds.
  */
 @Composable
 fun HomeScreen(
@@ -82,25 +86,47 @@ fun HomeScreen(
     val playAgain: Topic? = appState.lastTopic
         ?: remember(today) { dailyPicks(lastTopicId = null, seed = today).firstOrNull() }
 
+    val isReturn = appState.lastTopic != null
     SceneBackground {
-        BoxWithConstraints(Modifier.fillMaxSize()) {
-            val compact = maxHeight < 640.dp
+        BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+            val twoPane = Responsive.isTwoPane(maxWidth, maxHeight)
+            val compact = maxHeight < 640.dp && !twoPane
+            // Tablets and phones on their side: the six worlds sit three to a row.
+            val columns = if (Responsive.isWide(maxWidth)) 3 else 2
             Column(
                 Modifier
-                    .fillMaxSize()
+                    .kidContentWidth()
+                    .fillMaxHeight()
                     .then(if (compact) Modifier.verticalScroll(rememberScrollState()) else Modifier)
                     .padding(KidDimens.ScreenPadding),
             ) {
                 TopBar(appState, onOpenGrownUps)
                 Spacer(Modifier.height(8.dp))
-                Greeting(playAgain, isReturn = appState.lastTopic != null, onOpenTopic)
-                Spacer(Modifier.height(KidDimens.Gap))
-                WorldGrid(
-                    onOpenWorld = onOpenWorld,
-                    modifier = if (compact) Modifier.height(560.dp) else Modifier.weight(1f),
-                )
-                Spacer(Modifier.height(KidDimens.Gap))
-                StickerBookButton(onOpenStickers)
+                if (twoPane) {
+                    // Landscape: the mascot, play-again and stickers down the left, and all
+                    // six worlds in view on the right, so nothing hides below the fold.
+                    Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(KidDimens.Gap)) {
+                        Column(Modifier.weight(0.32f).fillMaxHeight()) {
+                            CurvyMascot(size = 96.dp, mood = CurvyMood.Happy, floating = true,
+                                modifier = Modifier.align(Alignment.CenterHorizontally))
+                            Spacer(Modifier.height(KidDimens.Gap))
+                            PlayAgainCard(playAgain, isReturn, onOpenTopic, Modifier.fillMaxWidth())
+                            Spacer(Modifier.weight(1f))
+                            StickerBookButton(onOpenStickers)
+                        }
+                        WorldGrid(onOpenWorld, columns = 3, modifier = Modifier.weight(0.68f).fillMaxHeight())
+                    }
+                } else {
+                    Greeting(playAgain, isReturn, onOpenTopic)
+                    Spacer(Modifier.height(KidDimens.Gap))
+                    WorldGrid(
+                        onOpenWorld = onOpenWorld,
+                        columns = columns,
+                        modifier = if (compact) Modifier.height(if (columns == 3) 420.dp else 560.dp) else Modifier.weight(1f),
+                    )
+                    Spacer(Modifier.height(KidDimens.Gap))
+                    StickerBookButton(onOpenStickers)
+                }
             }
         }
     }
@@ -140,36 +166,41 @@ private fun Greeting(playAgain: Topic?, isReturn: Boolean, onOpenTopic: (Topic) 
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         CurvyMascot(size = 104.dp, mood = CurvyMood.Happy, floating = true)
         Spacer(Modifier.width(12.dp))
-        if (playAgain != null) {
-            val world = World.of(playAgain)
-            CandyCard(
-                color = Color.White,
-                onClick = { onOpenTopic(playAgain) },
-                label = (if (isReturn) "Play again: " else "Try this: ") + playAgain.title,
-                radius = 26.dp,
-                modifier = Modifier.weight(1f).height(92.dp),
-            ) {
-                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp)) {
-                    TopicArtView(playAgain.art(), world.color, Modifier.size(62.dp))
-                    Spacer(Modifier.width(10.dp))
-                    Text(
-                        playAgain.title,
-                        fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp,
-                        color = KidInk, maxLines = 2, overflow = TextOverflow.Ellipsis,
-                        modifier = Modifier.weight(1f),
-                    )
-                    KidIconImage(KidIcon.ArrowForward, Modifier.size(30.dp), color = world.color)
-                }
-            }
+        PlayAgainCard(playAgain, isReturn, onOpenTopic, Modifier.weight(1f))
+    }
+}
+
+/** The "play again" bubble: the last activity, or today's pick before there is one. */
+@Composable
+private fun PlayAgainCard(playAgain: Topic?, isReturn: Boolean, onOpenTopic: (Topic) -> Unit, modifier: Modifier) {
+    if (playAgain == null) return
+    val world = World.of(playAgain)
+    CandyCard(
+        color = Color.White,
+        onClick = { onOpenTopic(playAgain) },
+        label = (if (isReturn) "Play again: " else "Try this: ") + playAgain.title,
+        radius = 26.dp,
+        modifier = modifier.height(92.dp),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp)) {
+            TopicArtView(playAgain.art(), world.color, Modifier.size(62.dp))
+            Spacer(Modifier.width(10.dp))
+            Text(
+                playAgain.title,
+                fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp,
+                color = KidInk, maxLines = 2, overflow = TextOverflow.Ellipsis,
+                modifier = Modifier.weight(1f),
+            )
+            KidIconImage(KidIcon.ArrowForward, Modifier.size(30.dp), color = world.color)
         }
     }
 }
 
-/** The six worlds, two per row, sharing whatever height is left. */
+/** The six worlds, [columns] per row, sharing whatever height is left. */
 @Composable
-private fun WorldGrid(onOpenWorld: (World) -> Unit, modifier: Modifier) {
+private fun WorldGrid(onOpenWorld: (World) -> Unit, columns: Int, modifier: Modifier) {
     Column(modifier, verticalArrangement = Arrangement.spacedBy(KidDimens.Gap)) {
-        World.entries.chunked(2).forEach { row ->
+        World.entries.chunked(columns).forEach { row ->
             Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(KidDimens.Gap)) {
                 row.forEach { world -> WorldTile(world, { onOpenWorld(world) }, Modifier.weight(1f).fillMaxSize()) }
             }

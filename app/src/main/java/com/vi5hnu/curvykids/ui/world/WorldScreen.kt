@@ -3,6 +3,10 @@ package com.vi5hnu.curvykids.ui.world
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
+import com.vi5hnu.curvykids.ui.kit.Responsive
+import com.vi5hnu.curvykids.ui.kit.kidContentWidth
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -55,7 +59,10 @@ fun WorldScreen(
     LaunchedEffect(world) { onSpeak(world.title) }
 
     SceneBackground(tint = world.color) {
-        Column(Modifier.fillMaxSize()) {
+        BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
+        // Bigger tiles on tablets rather than many small ones.
+        val minTile = if (Responsive.isWide(maxWidth)) 210.dp else 150.dp
+        Column(Modifier.kidContentWidth().fillMaxHeight()) {
             Row(
                 verticalAlignment = Alignment.CenterVertically,
                 modifier = Modifier.fillMaxWidth().padding(KidDimens.ScreenPadding),
@@ -67,7 +74,7 @@ fun WorldScreen(
                 CurvyMascot(size = 64.dp, mood = CurvyMood.Wow, floating = true)
             }
             LazyVerticalGrid(
-                columns = GridCells.Adaptive(minSize = 150.dp),
+                columns = GridCells.Adaptive(minSize = minTile),
                 contentPadding = PaddingValues(start = KidDimens.ScreenPadding, end = KidDimens.ScreenPadding, bottom = 28.dp),
                 horizontalArrangement = Arrangement.spacedBy(KidDimens.Gap),
                 verticalArrangement = Arrangement.spacedBy(KidDimens.Gap),
@@ -77,6 +84,7 @@ fun WorldScreen(
                     ActivityTile(topic, world.color) { onOpenTopic(topic) }
                 }
             }
+        }
         }
     }
 }
