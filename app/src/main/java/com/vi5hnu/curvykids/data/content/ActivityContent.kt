@@ -363,7 +363,6 @@ val OPPOSITES = listOf(
     OppositePair("Tall",  KidAssets.nature("palm-tree"), "Short",  KidAssets.nature("seedling")),
     OppositePair("Sweet", KidAssets.food("candy"),       "Sour",   KidAssets.fruit("lemon")),
     OppositePair("Soft",  KidAssets.toy("teddy-bear"),   "Hard",   KidAssets.nature("rock")),
-    OppositePair("Land",  KidAssets.animal("lion"),      "Sea",    KidAssets.seaAnimal("dolphin")),
     OppositePair("Awake", KidAssets.feeling("excited"),  "Asleep", KidAssets.feeling("sleepy")),
 )
 
