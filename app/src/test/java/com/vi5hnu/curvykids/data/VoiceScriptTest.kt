@@ -24,15 +24,29 @@ class VoiceScriptTest {
         val raw = buildList {
             com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS.forEach { c ->
                 com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS.forEach { m -> add(HindiVoiceScript.syllable(c, m)) }
-                add(HindiVoiceScript.letter(c)); add(HindiVoiceScript.letterWithWord(c))
+                add(HindiVoiceScript.letter(c))
             }
-            com.vi5hnu.curvykids.data.content.HINDI_VOWELS.forEach {
-                add(HindiVoiceScript.letter(it)); add(HindiVoiceScript.letterWithWord(it))
-            }
+            com.vi5hnu.curvykids.data.content.HINDI_VOWELS.forEach { add(HindiVoiceScript.letter(it)) }
         }
-        raw.groupBy { it.clip.key }.forEach { (key, lines) ->
+        raw.groupBy { it.clip.relativePath }.forEach { (key, lines) ->
             assertEquals("key $key has different texts", 1, lines.map { it.text }.distinct().size)
         }
+    }
+
+    @Test
+    fun `letter and barakhadi clips follow the numbered folder layout`() {
+        val vowels = com.vi5hnu.curvykids.data.content.HINDI_VOWELS
+        val consonants = com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS
+        val matras = com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS
+        assertEquals("hi/hindi_vowels/01-a", HindiVoiceScript.letter(vowels[0]).clip.relativePath)
+        assertEquals("hi/hindi_vowels/13-ah", HindiVoiceScript.letter(vowels[12]).clip.relativePath)
+        assertEquals("hi/hindi_consonants/01-ka", HindiVoiceScript.letter(consonants[0]).clip.relativePath)
+        assertEquals("hi/hindi_consonants/36-gya", HindiVoiceScript.letter(consonants[35]).clip.relativePath)
+        assertEquals("hi/barakhadi/01-ka/01-ka", HindiVoiceScript.syllable(consonants[0], matras[0]).clip.relativePath)
+        assertEquals("hi/barakhadi/01-ka/04-kii", HindiVoiceScript.syllable(consonants[0], matras[3]).clip.relativePath)
+        assertEquals("hi/barakhadi/02-kha/12-khah", HindiVoiceScript.syllable(consonants[1], matras[11]).clip.relativePath)
+        val barakhadi = consonants.flatMap { c -> matras.map { HindiVoiceScript.syllable(c, it).clip } }
+        assertEquals(36 * 12, barakhadi.distinct().size)
     }
 
     @Test

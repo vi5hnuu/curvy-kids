@@ -9,648 +9,635 @@ phone's built-in voice, so recordings can be added a few at a time.
 == HINDI ==
 
 -- Hindi vowels (स्वर) --
-1. अ  ->  hi/letters/letter-a.m4a
-2. आ  ->  hi/letters/letter-aa.m4a
-3. इ  ->  hi/letters/letter-i.m4a
-4. ई  ->  hi/letters/letter-ii.m4a
-5. उ  ->  hi/letters/letter-u.m4a
-6. ऊ  ->  hi/letters/letter-uu.m4a
-7. ऋ  ->  hi/letters/letter-ri.m4a
-8. ए  ->  hi/letters/letter-e.m4a
-9. ऐ  ->  hi/letters/letter-ai.m4a
-10. ओ  ->  hi/letters/letter-o.m4a
-11. औ  ->  hi/letters/letter-au.m4a
-12. अं  ->  hi/letters/letter-am.m4a
-13. अः  ->  hi/letters/letter-ah.m4a
+1. अ, अ से अनानास  ->  hi/hindi_vowels/01-a.m4a
+2. आ, आ से आम  ->  hi/hindi_vowels/02-aa.m4a
+3. इ, इ से इंजन  ->  hi/hindi_vowels/03-i.m4a
+4. ई, ई से ईंट  ->  hi/hindi_vowels/04-ii.m4a
+5. उ, उ से उल्लू  ->  hi/hindi_vowels/05-u.m4a
+6. ऊ, ऊ से ऊँट  ->  hi/hindi_vowels/06-uu.m4a
+7. ऋ, ऋ से ऋषि  ->  hi/hindi_vowels/07-ri.m4a
+8. ए, ए से एड़ी  ->  hi/hindi_vowels/08-e.m4a
+9. ऐ, ऐ से ऐनक  ->  hi/hindi_vowels/09-ai.m4a
+10. ओ, ओ से ओम  ->  hi/hindi_vowels/10-o.m4a
+11. औ, औ से औज़ार  ->  hi/hindi_vowels/11-au.m4a
+12. अं, अं से अंगूर  ->  hi/hindi_vowels/12-am.m4a
+13. अः  ->  hi/hindi_vowels/13-ah.m4a
 
 -- Hindi consonants (व्यंजन) --
-14. क  ->  hi/letters/letter-ka.m4a
-15. ख  ->  hi/letters/letter-kha.m4a
-16. ग  ->  hi/letters/letter-ga.m4a
-17. घ  ->  hi/letters/letter-gha.m4a
-18. ङ  ->  hi/letters/letter-nga.m4a
-19. च  ->  hi/letters/letter-cha.m4a
-20. छ  ->  hi/letters/letter-chha.m4a
-21. ज  ->  hi/letters/letter-ja.m4a
-22. झ  ->  hi/letters/letter-jha.m4a
-23. ञ  ->  hi/letters/letter-nya.m4a
-24. ट  ->  hi/letters/letter-tta.m4a
-25. ठ  ->  hi/letters/letter-ttha.m4a
-26. ड  ->  hi/letters/letter-dda.m4a
-27. ढ  ->  hi/letters/letter-ddha.m4a
-28. ण  ->  hi/letters/letter-nna.m4a
-29. त  ->  hi/letters/letter-ta.m4a
-30. थ  ->  hi/letters/letter-tha.m4a
-31. द  ->  hi/letters/letter-da.m4a
-32. ध  ->  hi/letters/letter-dha.m4a
-33. न  ->  hi/letters/letter-na.m4a
-34. प  ->  hi/letters/letter-pa.m4a
-35. फ  ->  hi/letters/letter-pha.m4a
-36. ब  ->  hi/letters/letter-ba.m4a
-37. भ  ->  hi/letters/letter-bha.m4a
-38. म  ->  hi/letters/letter-ma.m4a
-39. य  ->  hi/letters/letter-ya.m4a
-40. र  ->  hi/letters/letter-ra.m4a
-41. ल  ->  hi/letters/letter-la.m4a
-42. व  ->  hi/letters/letter-va.m4a
-43. श  ->  hi/letters/letter-sha.m4a
-44. ष  ->  hi/letters/letter-ssa.m4a
-45. स  ->  hi/letters/letter-sa.m4a
-46. ह  ->  hi/letters/letter-ha.m4a
-47. क्ष  ->  hi/letters/letter-ksha.m4a
-48. त्र  ->  hi/letters/letter-tra.m4a
-49. ज्ञ  ->  hi/letters/letter-gya.m4a
-
--- Hindi vowels with example word --
-50. अ, अ से अनानास  ->  hi/letters/letter-a-word.m4a
-51. आ, आ से आम  ->  hi/letters/letter-aa-word.m4a
-52. इ, इ से इंजन  ->  hi/letters/letter-i-word.m4a
-53. ई, ई से ईंट  ->  hi/letters/letter-ii-word.m4a
-54. उ, उ से उल्लू  ->  hi/letters/letter-u-word.m4a
-55. ऊ, ऊ से ऊँट  ->  hi/letters/letter-uu-word.m4a
-56. ऋ, ऋ से ऋषि  ->  hi/letters/letter-ri-word.m4a
-57. ए, ए से एड़ी  ->  hi/letters/letter-e-word.m4a
-58. ऐ, ऐ से ऐनक  ->  hi/letters/letter-ai-word.m4a
-59. ओ, ओ से ओम  ->  hi/letters/letter-o-word.m4a
-60. औ, औ से औज़ार  ->  hi/letters/letter-au-word.m4a
-61. अं, अं से अंगूर  ->  hi/letters/letter-am-word.m4a
-
--- Hindi consonants with example word --
-62. क, क से कबूतर  ->  hi/letters/letter-ka-word.m4a
-63. ख, ख से खरगोश  ->  hi/letters/letter-kha-word.m4a
-64. ग, ग से गाय  ->  hi/letters/letter-ga-word.m4a
-65. घ, घ से घड़ी  ->  hi/letters/letter-gha-word.m4a
-66. च, च से चम्मच  ->  hi/letters/letter-cha-word.m4a
-67. छ, छ से छाता  ->  hi/letters/letter-chha-word.m4a
-68. ज, ज से जहाज  ->  hi/letters/letter-ja-word.m4a
-69. झ, झ से झंडा  ->  hi/letters/letter-jha-word.m4a
-70. ट, ट से टमाटर  ->  hi/letters/letter-tta-word.m4a
-71. ठ, ठ से ठंडा  ->  hi/letters/letter-ttha-word.m4a
-72. ड, ड से डमरू  ->  hi/letters/letter-dda-word.m4a
-73. ढ, ढ से ढोल  ->  hi/letters/letter-ddha-word.m4a
-74. ण, ण से बाण  ->  hi/letters/letter-nna-word.m4a
-75. त, त से तरबूज  ->  hi/letters/letter-ta-word.m4a
-76. थ, थ से थाली  ->  hi/letters/letter-tha-word.m4a
-77. द, द से दूध  ->  hi/letters/letter-da-word.m4a
-78. ध, ध से धनुष  ->  hi/letters/letter-dha-word.m4a
-79. न, न से नाव  ->  hi/letters/letter-na-word.m4a
-80. प, प से पतंग  ->  hi/letters/letter-pa-word.m4a
-81. फ, फ से फूल  ->  hi/letters/letter-pha-word.m4a
-82. ब, ब से बकरी  ->  hi/letters/letter-ba-word.m4a
-83. भ, भ से भालू  ->  hi/letters/letter-bha-word.m4a
-84. म, म से मछली  ->  hi/letters/letter-ma-word.m4a
-85. य, य से योग  ->  hi/letters/letter-ya-word.m4a
-86. र, र से रेल  ->  hi/letters/letter-ra-word.m4a
-87. ल, ल से लोमड़ी  ->  hi/letters/letter-la-word.m4a
-88. व, व से वर्षा  ->  hi/letters/letter-va-word.m4a
-89. श, श से शेर  ->  hi/letters/letter-sha-word.m4a
-90. स, स से सेब  ->  hi/letters/letter-sa-word.m4a
-91. ह, ह से हाथी  ->  hi/letters/letter-ha-word.m4a
-92. क्ष, क्ष से क्षितिज  ->  hi/letters/letter-ksha-word.m4a
-93. त्र, त्र से त्रिशूल  ->  hi/letters/letter-tra-word.m4a
-94. ज्ञ, ज्ञ से ज्ञान  ->  hi/letters/letter-gya-word.m4a
+14. क, क से कबूतर  ->  hi/hindi_consonants/01-ka.m4a
+15. ख, ख से खरगोश  ->  hi/hindi_consonants/02-kha.m4a
+16. ग, ग से गाय  ->  hi/hindi_consonants/03-ga.m4a
+17. घ, घ से घड़ी  ->  hi/hindi_consonants/04-gha.m4a
+18. ङ  ->  hi/hindi_consonants/05-nga.m4a
+19. च, च से चम्मच  ->  hi/hindi_consonants/06-cha.m4a
+20. छ, छ से छाता  ->  hi/hindi_consonants/07-chha.m4a
+21. ज, ज से जहाज  ->  hi/hindi_consonants/08-ja.m4a
+22. झ, झ से झंडा  ->  hi/hindi_consonants/09-jha.m4a
+23. ञ  ->  hi/hindi_consonants/10-nya.m4a
+24. ट, ट से टमाटर  ->  hi/hindi_consonants/11-tta.m4a
+25. ठ, ठ से ठंडा  ->  hi/hindi_consonants/12-ttha.m4a
+26. ड, ड से डमरू  ->  hi/hindi_consonants/13-dda.m4a
+27. ढ, ढ से ढोल  ->  hi/hindi_consonants/14-ddha.m4a
+28. ण, ण से बाण  ->  hi/hindi_consonants/15-nna.m4a
+29. त, त से तरबूज  ->  hi/hindi_consonants/16-ta.m4a
+30. थ, थ से थाली  ->  hi/hindi_consonants/17-tha.m4a
+31. द, द से दूध  ->  hi/hindi_consonants/18-da.m4a
+32. ध, ध से धनुष  ->  hi/hindi_consonants/19-dha.m4a
+33. न, न से नाव  ->  hi/hindi_consonants/20-na.m4a
+34. प, प से पतंग  ->  hi/hindi_consonants/21-pa.m4a
+35. फ, फ से फूल  ->  hi/hindi_consonants/22-pha.m4a
+36. ब, ब से बकरी  ->  hi/hindi_consonants/23-ba.m4a
+37. भ, भ से भालू  ->  hi/hindi_consonants/24-bha.m4a
+38. म, म से मछली  ->  hi/hindi_consonants/25-ma.m4a
+39. य, य से योग  ->  hi/hindi_consonants/26-ya.m4a
+40. र, र से रेल  ->  hi/hindi_consonants/27-ra.m4a
+41. ल, ल से लोमड़ी  ->  hi/hindi_consonants/28-la.m4a
+42. व, व से वर्षा  ->  hi/hindi_consonants/29-va.m4a
+43. श, श से शेर  ->  hi/hindi_consonants/30-sha.m4a
+44. ष  ->  hi/hindi_consonants/31-ssa.m4a
+45. स, स से सेब  ->  hi/hindi_consonants/32-sa.m4a
+46. ह, ह से हाथी  ->  hi/hindi_consonants/33-ha.m4a
+47. क्ष, क्ष से क्षितिज  ->  hi/hindi_consonants/34-ksha.m4a
+48. त्र, त्र से त्रिशूल  ->  hi/hindi_consonants/35-tra.m4a
+49. ज्ञ, ज्ञ से ज्ञान  ->  hi/hindi_consonants/36-gya.m4a
 
 -- Barakhadi - क --
-95. का  ->  hi/barakhadi/syllable-kaa.m4a
-96. कि  ->  hi/barakhadi/syllable-ki.m4a
-97. की  ->  hi/barakhadi/syllable-kii.m4a
-98. कु  ->  hi/barakhadi/syllable-ku.m4a
-99. कू  ->  hi/barakhadi/syllable-kuu.m4a
-100. के  ->  hi/barakhadi/syllable-ke.m4a
-101. कै  ->  hi/barakhadi/syllable-kai.m4a
-102. को  ->  hi/barakhadi/syllable-ko.m4a
-103. कौ  ->  hi/barakhadi/syllable-kau.m4a
-104. कं  ->  hi/barakhadi/syllable-kam.m4a
-105. कः  ->  hi/barakhadi/syllable-kah.m4a
+50. क  ->  hi/barakhadi/01-ka/01-ka.m4a
+51. का  ->  hi/barakhadi/01-ka/02-kaa.m4a
+52. कि  ->  hi/barakhadi/01-ka/03-ki.m4a
+53. की  ->  hi/barakhadi/01-ka/04-kii.m4a
+54. कु  ->  hi/barakhadi/01-ka/05-ku.m4a
+55. कू  ->  hi/barakhadi/01-ka/06-kuu.m4a
+56. के  ->  hi/barakhadi/01-ka/07-ke.m4a
+57. कै  ->  hi/barakhadi/01-ka/08-kai.m4a
+58. को  ->  hi/barakhadi/01-ka/09-ko.m4a
+59. कौ  ->  hi/barakhadi/01-ka/10-kau.m4a
+60. कं  ->  hi/barakhadi/01-ka/11-kam.m4a
+61. कः  ->  hi/barakhadi/01-ka/12-kah.m4a
 
 -- Barakhadi - ख --
-106. खा  ->  hi/barakhadi/syllable-khaa.m4a
-107. खि  ->  hi/barakhadi/syllable-khi.m4a
-108. खी  ->  hi/barakhadi/syllable-khii.m4a
-109. खु  ->  hi/barakhadi/syllable-khu.m4a
-110. खू  ->  hi/barakhadi/syllable-khuu.m4a
-111. खे  ->  hi/barakhadi/syllable-khe.m4a
-112. खै  ->  hi/barakhadi/syllable-khai.m4a
-113. खो  ->  hi/barakhadi/syllable-kho.m4a
-114. खौ  ->  hi/barakhadi/syllable-khau.m4a
-115. खं  ->  hi/barakhadi/syllable-kham.m4a
-116. खः  ->  hi/barakhadi/syllable-khah.m4a
+62. ख  ->  hi/barakhadi/02-kha/01-kha.m4a
+63. खा  ->  hi/barakhadi/02-kha/02-khaa.m4a
+64. खि  ->  hi/barakhadi/02-kha/03-khi.m4a
+65. खी  ->  hi/barakhadi/02-kha/04-khii.m4a
+66. खु  ->  hi/barakhadi/02-kha/05-khu.m4a
+67. खू  ->  hi/barakhadi/02-kha/06-khuu.m4a
+68. खे  ->  hi/barakhadi/02-kha/07-khe.m4a
+69. खै  ->  hi/barakhadi/02-kha/08-khai.m4a
+70. खो  ->  hi/barakhadi/02-kha/09-kho.m4a
+71. खौ  ->  hi/barakhadi/02-kha/10-khau.m4a
+72. खं  ->  hi/barakhadi/02-kha/11-kham.m4a
+73. खः  ->  hi/barakhadi/02-kha/12-khah.m4a
 
 -- Barakhadi - ग --
-117. गा  ->  hi/barakhadi/syllable-gaa.m4a
-118. गि  ->  hi/barakhadi/syllable-gi.m4a
-119. गी  ->  hi/barakhadi/syllable-gii.m4a
-120. गु  ->  hi/barakhadi/syllable-gu.m4a
-121. गू  ->  hi/barakhadi/syllable-guu.m4a
-122. गे  ->  hi/barakhadi/syllable-ge.m4a
-123. गै  ->  hi/barakhadi/syllable-gai.m4a
-124. गो  ->  hi/barakhadi/syllable-go.m4a
-125. गौ  ->  hi/barakhadi/syllable-gau.m4a
-126. गं  ->  hi/barakhadi/syllable-gam.m4a
-127. गः  ->  hi/barakhadi/syllable-gah.m4a
+74. ग  ->  hi/barakhadi/03-ga/01-ga.m4a
+75. गा  ->  hi/barakhadi/03-ga/02-gaa.m4a
+76. गि  ->  hi/barakhadi/03-ga/03-gi.m4a
+77. गी  ->  hi/barakhadi/03-ga/04-gii.m4a
+78. गु  ->  hi/barakhadi/03-ga/05-gu.m4a
+79. गू  ->  hi/barakhadi/03-ga/06-guu.m4a
+80. गे  ->  hi/barakhadi/03-ga/07-ge.m4a
+81. गै  ->  hi/barakhadi/03-ga/08-gai.m4a
+82. गो  ->  hi/barakhadi/03-ga/09-go.m4a
+83. गौ  ->  hi/barakhadi/03-ga/10-gau.m4a
+84. गं  ->  hi/barakhadi/03-ga/11-gam.m4a
+85. गः  ->  hi/barakhadi/03-ga/12-gah.m4a
 
 -- Barakhadi - घ --
-128. घा  ->  hi/barakhadi/syllable-ghaa.m4a
-129. घि  ->  hi/barakhadi/syllable-ghi.m4a
-130. घी  ->  hi/barakhadi/syllable-ghii.m4a
-131. घु  ->  hi/barakhadi/syllable-ghu.m4a
-132. घू  ->  hi/barakhadi/syllable-ghuu.m4a
-133. घे  ->  hi/barakhadi/syllable-ghe.m4a
-134. घै  ->  hi/barakhadi/syllable-ghai.m4a
-135. घो  ->  hi/barakhadi/syllable-gho.m4a
-136. घौ  ->  hi/barakhadi/syllable-ghau.m4a
-137. घं  ->  hi/barakhadi/syllable-gham.m4a
-138. घः  ->  hi/barakhadi/syllable-ghah.m4a
+86. घ  ->  hi/barakhadi/04-gha/01-gha.m4a
+87. घा  ->  hi/barakhadi/04-gha/02-ghaa.m4a
+88. घि  ->  hi/barakhadi/04-gha/03-ghi.m4a
+89. घी  ->  hi/barakhadi/04-gha/04-ghii.m4a
+90. घु  ->  hi/barakhadi/04-gha/05-ghu.m4a
+91. घू  ->  hi/barakhadi/04-gha/06-ghuu.m4a
+92. घे  ->  hi/barakhadi/04-gha/07-ghe.m4a
+93. घै  ->  hi/barakhadi/04-gha/08-ghai.m4a
+94. घो  ->  hi/barakhadi/04-gha/09-gho.m4a
+95. घौ  ->  hi/barakhadi/04-gha/10-ghau.m4a
+96. घं  ->  hi/barakhadi/04-gha/11-gham.m4a
+97. घः  ->  hi/barakhadi/04-gha/12-ghah.m4a
 
 -- Barakhadi - ङ --
-139. ङा  ->  hi/barakhadi/syllable-ngaa.m4a
-140. ङि  ->  hi/barakhadi/syllable-ngi.m4a
-141. ङी  ->  hi/barakhadi/syllable-ngii.m4a
-142. ङु  ->  hi/barakhadi/syllable-ngu.m4a
-143. ङू  ->  hi/barakhadi/syllable-nguu.m4a
-144. ङे  ->  hi/barakhadi/syllable-nge.m4a
-145. ङै  ->  hi/barakhadi/syllable-ngai.m4a
-146. ङो  ->  hi/barakhadi/syllable-ngo.m4a
-147. ङौ  ->  hi/barakhadi/syllable-ngau.m4a
-148. ङं  ->  hi/barakhadi/syllable-ngam.m4a
-149. ङः  ->  hi/barakhadi/syllable-ngah.m4a
+98. ङ  ->  hi/barakhadi/05-nga/01-nga.m4a
+99. ङा  ->  hi/barakhadi/05-nga/02-ngaa.m4a
+100. ङि  ->  hi/barakhadi/05-nga/03-ngi.m4a
+101. ङी  ->  hi/barakhadi/05-nga/04-ngii.m4a
+102. ङु  ->  hi/barakhadi/05-nga/05-ngu.m4a
+103. ङू  ->  hi/barakhadi/05-nga/06-nguu.m4a
+104. ङे  ->  hi/barakhadi/05-nga/07-nge.m4a
+105. ङै  ->  hi/barakhadi/05-nga/08-ngai.m4a
+106. ङो  ->  hi/barakhadi/05-nga/09-ngo.m4a
+107. ङौ  ->  hi/barakhadi/05-nga/10-ngau.m4a
+108. ङं  ->  hi/barakhadi/05-nga/11-ngam.m4a
+109. ङः  ->  hi/barakhadi/05-nga/12-ngah.m4a
 
 -- Barakhadi - च --
-150. चा  ->  hi/barakhadi/syllable-chaa.m4a
-151. चि  ->  hi/barakhadi/syllable-chi.m4a
-152. ची  ->  hi/barakhadi/syllable-chii.m4a
-153. चु  ->  hi/barakhadi/syllable-chu.m4a
-154. चू  ->  hi/barakhadi/syllable-chuu.m4a
-155. चे  ->  hi/barakhadi/syllable-che.m4a
-156. चै  ->  hi/barakhadi/syllable-chai.m4a
-157. चो  ->  hi/barakhadi/syllable-cho.m4a
-158. चौ  ->  hi/barakhadi/syllable-chau.m4a
-159. चं  ->  hi/barakhadi/syllable-cham.m4a
-160. चः  ->  hi/barakhadi/syllable-chah.m4a
+110. च  ->  hi/barakhadi/06-cha/01-cha.m4a
+111. चा  ->  hi/barakhadi/06-cha/02-chaa.m4a
+112. चि  ->  hi/barakhadi/06-cha/03-chi.m4a
+113. ची  ->  hi/barakhadi/06-cha/04-chii.m4a
+114. चु  ->  hi/barakhadi/06-cha/05-chu.m4a
+115. चू  ->  hi/barakhadi/06-cha/06-chuu.m4a
+116. चे  ->  hi/barakhadi/06-cha/07-che.m4a
+117. चै  ->  hi/barakhadi/06-cha/08-chai.m4a
+118. चो  ->  hi/barakhadi/06-cha/09-cho.m4a
+119. चौ  ->  hi/barakhadi/06-cha/10-chau.m4a
+120. चं  ->  hi/barakhadi/06-cha/11-cham.m4a
+121. चः  ->  hi/barakhadi/06-cha/12-chah.m4a
 
 -- Barakhadi - छ --
-161. छा  ->  hi/barakhadi/syllable-chhaa.m4a
-162. छि  ->  hi/barakhadi/syllable-chhi.m4a
-163. छी  ->  hi/barakhadi/syllable-chhii.m4a
-164. छु  ->  hi/barakhadi/syllable-chhu.m4a
-165. छू  ->  hi/barakhadi/syllable-chhuu.m4a
-166. छे  ->  hi/barakhadi/syllable-chhe.m4a
-167. छै  ->  hi/barakhadi/syllable-chhai.m4a
-168. छो  ->  hi/barakhadi/syllable-chho.m4a
-169. छौ  ->  hi/barakhadi/syllable-chhau.m4a
-170. छं  ->  hi/barakhadi/syllable-chham.m4a
-171. छः  ->  hi/barakhadi/syllable-chhah.m4a
+122. छ  ->  hi/barakhadi/07-chha/01-chha.m4a
+123. छा  ->  hi/barakhadi/07-chha/02-chhaa.m4a
+124. छि  ->  hi/barakhadi/07-chha/03-chhi.m4a
+125. छी  ->  hi/barakhadi/07-chha/04-chhii.m4a
+126. छु  ->  hi/barakhadi/07-chha/05-chhu.m4a
+127. छू  ->  hi/barakhadi/07-chha/06-chhuu.m4a
+128. छे  ->  hi/barakhadi/07-chha/07-chhe.m4a
+129. छै  ->  hi/barakhadi/07-chha/08-chhai.m4a
+130. छो  ->  hi/barakhadi/07-chha/09-chho.m4a
+131. छौ  ->  hi/barakhadi/07-chha/10-chhau.m4a
+132. छं  ->  hi/barakhadi/07-chha/11-chham.m4a
+133. छः  ->  hi/barakhadi/07-chha/12-chhah.m4a
 
 -- Barakhadi - ज --
-172. जा  ->  hi/barakhadi/syllable-jaa.m4a
-173. जि  ->  hi/barakhadi/syllable-ji.m4a
-174. जी  ->  hi/barakhadi/syllable-jii.m4a
-175. जु  ->  hi/barakhadi/syllable-ju.m4a
-176. जू  ->  hi/barakhadi/syllable-juu.m4a
-177. जे  ->  hi/barakhadi/syllable-je.m4a
-178. जै  ->  hi/barakhadi/syllable-jai.m4a
-179. जो  ->  hi/barakhadi/syllable-jo.m4a
-180. जौ  ->  hi/barakhadi/syllable-jau.m4a
-181. जं  ->  hi/barakhadi/syllable-jam.m4a
-182. जः  ->  hi/barakhadi/syllable-jah.m4a
+134. ज  ->  hi/barakhadi/08-ja/01-ja.m4a
+135. जा  ->  hi/barakhadi/08-ja/02-jaa.m4a
+136. जि  ->  hi/barakhadi/08-ja/03-ji.m4a
+137. जी  ->  hi/barakhadi/08-ja/04-jii.m4a
+138. जु  ->  hi/barakhadi/08-ja/05-ju.m4a
+139. जू  ->  hi/barakhadi/08-ja/06-juu.m4a
+140. जे  ->  hi/barakhadi/08-ja/07-je.m4a
+141. जै  ->  hi/barakhadi/08-ja/08-jai.m4a
+142. जो  ->  hi/barakhadi/08-ja/09-jo.m4a
+143. जौ  ->  hi/barakhadi/08-ja/10-jau.m4a
+144. जं  ->  hi/barakhadi/08-ja/11-jam.m4a
+145. जः  ->  hi/barakhadi/08-ja/12-jah.m4a
 
 -- Barakhadi - झ --
-183. झा  ->  hi/barakhadi/syllable-jhaa.m4a
-184. झि  ->  hi/barakhadi/syllable-jhi.m4a
-185. झी  ->  hi/barakhadi/syllable-jhii.m4a
-186. झु  ->  hi/barakhadi/syllable-jhu.m4a
-187. झू  ->  hi/barakhadi/syllable-jhuu.m4a
-188. झे  ->  hi/barakhadi/syllable-jhe.m4a
-189. झै  ->  hi/barakhadi/syllable-jhai.m4a
-190. झो  ->  hi/barakhadi/syllable-jho.m4a
-191. झौ  ->  hi/barakhadi/syllable-jhau.m4a
-192. झं  ->  hi/barakhadi/syllable-jham.m4a
-193. झः  ->  hi/barakhadi/syllable-jhah.m4a
+146. झ  ->  hi/barakhadi/09-jha/01-jha.m4a
+147. झा  ->  hi/barakhadi/09-jha/02-jhaa.m4a
+148. झि  ->  hi/barakhadi/09-jha/03-jhi.m4a
+149. झी  ->  hi/barakhadi/09-jha/04-jhii.m4a
+150. झु  ->  hi/barakhadi/09-jha/05-jhu.m4a
+151. झू  ->  hi/barakhadi/09-jha/06-jhuu.m4a
+152. झे  ->  hi/barakhadi/09-jha/07-jhe.m4a
+153. झै  ->  hi/barakhadi/09-jha/08-jhai.m4a
+154. झो  ->  hi/barakhadi/09-jha/09-jho.m4a
+155. झौ  ->  hi/barakhadi/09-jha/10-jhau.m4a
+156. झं  ->  hi/barakhadi/09-jha/11-jham.m4a
+157. झः  ->  hi/barakhadi/09-jha/12-jhah.m4a
 
 -- Barakhadi - ञ --
-194. ञा  ->  hi/barakhadi/syllable-nyaa.m4a
-195. ञि  ->  hi/barakhadi/syllable-nyi.m4a
-196. ञी  ->  hi/barakhadi/syllable-nyii.m4a
-197. ञु  ->  hi/barakhadi/syllable-nyu.m4a
-198. ञू  ->  hi/barakhadi/syllable-nyuu.m4a
-199. ञे  ->  hi/barakhadi/syllable-nye.m4a
-200. ञै  ->  hi/barakhadi/syllable-nyai.m4a
-201. ञो  ->  hi/barakhadi/syllable-nyo.m4a
-202. ञौ  ->  hi/barakhadi/syllable-nyau.m4a
-203. ञं  ->  hi/barakhadi/syllable-nyam.m4a
-204. ञः  ->  hi/barakhadi/syllable-nyah.m4a
+158. ञ  ->  hi/barakhadi/10-nya/01-nya.m4a
+159. ञा  ->  hi/barakhadi/10-nya/02-nyaa.m4a
+160. ञि  ->  hi/barakhadi/10-nya/03-nyi.m4a
+161. ञी  ->  hi/barakhadi/10-nya/04-nyii.m4a
+162. ञु  ->  hi/barakhadi/10-nya/05-nyu.m4a
+163. ञू  ->  hi/barakhadi/10-nya/06-nyuu.m4a
+164. ञे  ->  hi/barakhadi/10-nya/07-nye.m4a
+165. ञै  ->  hi/barakhadi/10-nya/08-nyai.m4a
+166. ञो  ->  hi/barakhadi/10-nya/09-nyo.m4a
+167. ञौ  ->  hi/barakhadi/10-nya/10-nyau.m4a
+168. ञं  ->  hi/barakhadi/10-nya/11-nyam.m4a
+169. ञः  ->  hi/barakhadi/10-nya/12-nyah.m4a
 
 -- Barakhadi - ट --
-205. टा  ->  hi/barakhadi/syllable-ttaa.m4a
-206. टि  ->  hi/barakhadi/syllable-tti.m4a
-207. टी  ->  hi/barakhadi/syllable-ttii.m4a
-208. टु  ->  hi/barakhadi/syllable-ttu.m4a
-209. टू  ->  hi/barakhadi/syllable-ttuu.m4a
-210. टे  ->  hi/barakhadi/syllable-tte.m4a
-211. टै  ->  hi/barakhadi/syllable-ttai.m4a
-212. टो  ->  hi/barakhadi/syllable-tto.m4a
-213. टौ  ->  hi/barakhadi/syllable-ttau.m4a
-214. टं  ->  hi/barakhadi/syllable-ttam.m4a
-215. टः  ->  hi/barakhadi/syllable-ttah.m4a
+170. ट  ->  hi/barakhadi/11-tta/01-tta.m4a
+171. टा  ->  hi/barakhadi/11-tta/02-ttaa.m4a
+172. टि  ->  hi/barakhadi/11-tta/03-tti.m4a
+173. टी  ->  hi/barakhadi/11-tta/04-ttii.m4a
+174. टु  ->  hi/barakhadi/11-tta/05-ttu.m4a
+175. टू  ->  hi/barakhadi/11-tta/06-ttuu.m4a
+176. टे  ->  hi/barakhadi/11-tta/07-tte.m4a
+177. टै  ->  hi/barakhadi/11-tta/08-ttai.m4a
+178. टो  ->  hi/barakhadi/11-tta/09-tto.m4a
+179. टौ  ->  hi/barakhadi/11-tta/10-ttau.m4a
+180. टं  ->  hi/barakhadi/11-tta/11-ttam.m4a
+181. टः  ->  hi/barakhadi/11-tta/12-ttah.m4a
 
 -- Barakhadi - ठ --
-216. ठा  ->  hi/barakhadi/syllable-tthaa.m4a
-217. ठि  ->  hi/barakhadi/syllable-tthi.m4a
-218. ठी  ->  hi/barakhadi/syllable-tthii.m4a
-219. ठु  ->  hi/barakhadi/syllable-tthu.m4a
-220. ठू  ->  hi/barakhadi/syllable-tthuu.m4a
-221. ठे  ->  hi/barakhadi/syllable-tthe.m4a
-222. ठै  ->  hi/barakhadi/syllable-tthai.m4a
-223. ठो  ->  hi/barakhadi/syllable-ttho.m4a
-224. ठौ  ->  hi/barakhadi/syllable-tthau.m4a
-225. ठं  ->  hi/barakhadi/syllable-ttham.m4a
-226. ठः  ->  hi/barakhadi/syllable-tthah.m4a
+182. ठ  ->  hi/barakhadi/12-ttha/01-ttha.m4a
+183. ठा  ->  hi/barakhadi/12-ttha/02-tthaa.m4a
+184. ठि  ->  hi/barakhadi/12-ttha/03-tthi.m4a
+185. ठी  ->  hi/barakhadi/12-ttha/04-tthii.m4a
+186. ठु  ->  hi/barakhadi/12-ttha/05-tthu.m4a
+187. ठू  ->  hi/barakhadi/12-ttha/06-tthuu.m4a
+188. ठे  ->  hi/barakhadi/12-ttha/07-tthe.m4a
+189. ठै  ->  hi/barakhadi/12-ttha/08-tthai.m4a
+190. ठो  ->  hi/barakhadi/12-ttha/09-ttho.m4a
+191. ठौ  ->  hi/barakhadi/12-ttha/10-tthau.m4a
+192. ठं  ->  hi/barakhadi/12-ttha/11-ttham.m4a
+193. ठः  ->  hi/barakhadi/12-ttha/12-tthah.m4a
 
 -- Barakhadi - ड --
-227. डा  ->  hi/barakhadi/syllable-ddaa.m4a
-228. डि  ->  hi/barakhadi/syllable-ddi.m4a
-229. डी  ->  hi/barakhadi/syllable-ddii.m4a
-230. डु  ->  hi/barakhadi/syllable-ddu.m4a
-231. डू  ->  hi/barakhadi/syllable-dduu.m4a
-232. डे  ->  hi/barakhadi/syllable-dde.m4a
-233. डै  ->  hi/barakhadi/syllable-ddai.m4a
-234. डो  ->  hi/barakhadi/syllable-ddo.m4a
-235. डौ  ->  hi/barakhadi/syllable-ddau.m4a
-236. डं  ->  hi/barakhadi/syllable-ddam.m4a
-237. डः  ->  hi/barakhadi/syllable-ddah.m4a
+194. ड  ->  hi/barakhadi/13-dda/01-dda.m4a
+195. डा  ->  hi/barakhadi/13-dda/02-ddaa.m4a
+196. डि  ->  hi/barakhadi/13-dda/03-ddi.m4a
+197. डी  ->  hi/barakhadi/13-dda/04-ddii.m4a
+198. डु  ->  hi/barakhadi/13-dda/05-ddu.m4a
+199. डू  ->  hi/barakhadi/13-dda/06-dduu.m4a
+200. डे  ->  hi/barakhadi/13-dda/07-dde.m4a
+201. डै  ->  hi/barakhadi/13-dda/08-ddai.m4a
+202. डो  ->  hi/barakhadi/13-dda/09-ddo.m4a
+203. डौ  ->  hi/barakhadi/13-dda/10-ddau.m4a
+204. डं  ->  hi/barakhadi/13-dda/11-ddam.m4a
+205. डः  ->  hi/barakhadi/13-dda/12-ddah.m4a
 
 -- Barakhadi - ढ --
-238. ढा  ->  hi/barakhadi/syllable-ddhaa.m4a
-239. ढि  ->  hi/barakhadi/syllable-ddhi.m4a
-240. ढी  ->  hi/barakhadi/syllable-ddhii.m4a
-241. ढु  ->  hi/barakhadi/syllable-ddhu.m4a
-242. ढू  ->  hi/barakhadi/syllable-ddhuu.m4a
-243. ढे  ->  hi/barakhadi/syllable-ddhe.m4a
-244. ढै  ->  hi/barakhadi/syllable-ddhai.m4a
-245. ढो  ->  hi/barakhadi/syllable-ddho.m4a
-246. ढौ  ->  hi/barakhadi/syllable-ddhau.m4a
-247. ढं  ->  hi/barakhadi/syllable-ddham.m4a
-248. ढः  ->  hi/barakhadi/syllable-ddhah.m4a
+206. ढ  ->  hi/barakhadi/14-ddha/01-ddha.m4a
+207. ढा  ->  hi/barakhadi/14-ddha/02-ddhaa.m4a
+208. ढि  ->  hi/barakhadi/14-ddha/03-ddhi.m4a
+209. ढी  ->  hi/barakhadi/14-ddha/04-ddhii.m4a
+210. ढु  ->  hi/barakhadi/14-ddha/05-ddhu.m4a
+211. ढू  ->  hi/barakhadi/14-ddha/06-ddhuu.m4a
+212. ढे  ->  hi/barakhadi/14-ddha/07-ddhe.m4a
+213. ढै  ->  hi/barakhadi/14-ddha/08-ddhai.m4a
+214. ढो  ->  hi/barakhadi/14-ddha/09-ddho.m4a
+215. ढौ  ->  hi/barakhadi/14-ddha/10-ddhau.m4a
+216. ढं  ->  hi/barakhadi/14-ddha/11-ddham.m4a
+217. ढः  ->  hi/barakhadi/14-ddha/12-ddhah.m4a
 
 -- Barakhadi - ण --
-249. णा  ->  hi/barakhadi/syllable-nnaa.m4a
-250. णि  ->  hi/barakhadi/syllable-nni.m4a
-251. णी  ->  hi/barakhadi/syllable-nnii.m4a
-252. णु  ->  hi/barakhadi/syllable-nnu.m4a
-253. णू  ->  hi/barakhadi/syllable-nnuu.m4a
-254. णे  ->  hi/barakhadi/syllable-nne.m4a
-255. णै  ->  hi/barakhadi/syllable-nnai.m4a
-256. णो  ->  hi/barakhadi/syllable-nno.m4a
-257. णौ  ->  hi/barakhadi/syllable-nnau.m4a
-258. णं  ->  hi/barakhadi/syllable-nnam.m4a
-259. णः  ->  hi/barakhadi/syllable-nnah.m4a
+218. ण  ->  hi/barakhadi/15-nna/01-nna.m4a
+219. णा  ->  hi/barakhadi/15-nna/02-nnaa.m4a
+220. णि  ->  hi/barakhadi/15-nna/03-nni.m4a
+221. णी  ->  hi/barakhadi/15-nna/04-nnii.m4a
+222. णु  ->  hi/barakhadi/15-nna/05-nnu.m4a
+223. णू  ->  hi/barakhadi/15-nna/06-nnuu.m4a
+224. णे  ->  hi/barakhadi/15-nna/07-nne.m4a
+225. णै  ->  hi/barakhadi/15-nna/08-nnai.m4a
+226. णो  ->  hi/barakhadi/15-nna/09-nno.m4a
+227. णौ  ->  hi/barakhadi/15-nna/10-nnau.m4a
+228. णं  ->  hi/barakhadi/15-nna/11-nnam.m4a
+229. णः  ->  hi/barakhadi/15-nna/12-nnah.m4a
 
 -- Barakhadi - त --
-260. ता  ->  hi/barakhadi/syllable-taa.m4a
-261. ति  ->  hi/barakhadi/syllable-ti.m4a
-262. ती  ->  hi/barakhadi/syllable-tii.m4a
-263. तु  ->  hi/barakhadi/syllable-tu.m4a
-264. तू  ->  hi/barakhadi/syllable-tuu.m4a
-265. ते  ->  hi/barakhadi/syllable-te.m4a
-266. तै  ->  hi/barakhadi/syllable-tai.m4a
-267. तो  ->  hi/barakhadi/syllable-to.m4a
-268. तौ  ->  hi/barakhadi/syllable-tau.m4a
-269. तं  ->  hi/barakhadi/syllable-tam.m4a
-270. तः  ->  hi/barakhadi/syllable-tah.m4a
+230. त  ->  hi/barakhadi/16-ta/01-ta.m4a
+231. ता  ->  hi/barakhadi/16-ta/02-taa.m4a
+232. ति  ->  hi/barakhadi/16-ta/03-ti.m4a
+233. ती  ->  hi/barakhadi/16-ta/04-tii.m4a
+234. तु  ->  hi/barakhadi/16-ta/05-tu.m4a
+235. तू  ->  hi/barakhadi/16-ta/06-tuu.m4a
+236. ते  ->  hi/barakhadi/16-ta/07-te.m4a
+237. तै  ->  hi/barakhadi/16-ta/08-tai.m4a
+238. तो  ->  hi/barakhadi/16-ta/09-to.m4a
+239. तौ  ->  hi/barakhadi/16-ta/10-tau.m4a
+240. तं  ->  hi/barakhadi/16-ta/11-tam.m4a
+241. तः  ->  hi/barakhadi/16-ta/12-tah.m4a
 
 -- Barakhadi - थ --
-271. था  ->  hi/barakhadi/syllable-thaa.m4a
-272. थि  ->  hi/barakhadi/syllable-thi.m4a
-273. थी  ->  hi/barakhadi/syllable-thii.m4a
-274. थु  ->  hi/barakhadi/syllable-thu.m4a
-275. थू  ->  hi/barakhadi/syllable-thuu.m4a
-276. थे  ->  hi/barakhadi/syllable-the.m4a
-277. थै  ->  hi/barakhadi/syllable-thai.m4a
-278. थो  ->  hi/barakhadi/syllable-tho.m4a
-279. थौ  ->  hi/barakhadi/syllable-thau.m4a
-280. थं  ->  hi/barakhadi/syllable-tham.m4a
-281. थः  ->  hi/barakhadi/syllable-thah.m4a
+242. थ  ->  hi/barakhadi/17-tha/01-tha.m4a
+243. था  ->  hi/barakhadi/17-tha/02-thaa.m4a
+244. थि  ->  hi/barakhadi/17-tha/03-thi.m4a
+245. थी  ->  hi/barakhadi/17-tha/04-thii.m4a
+246. थु  ->  hi/barakhadi/17-tha/05-thu.m4a
+247. थू  ->  hi/barakhadi/17-tha/06-thuu.m4a
+248. थे  ->  hi/barakhadi/17-tha/07-the.m4a
+249. थै  ->  hi/barakhadi/17-tha/08-thai.m4a
+250. थो  ->  hi/barakhadi/17-tha/09-tho.m4a
+251. थौ  ->  hi/barakhadi/17-tha/10-thau.m4a
+252. थं  ->  hi/barakhadi/17-tha/11-tham.m4a
+253. थः  ->  hi/barakhadi/17-tha/12-thah.m4a
 
 -- Barakhadi - द --
-282. दा  ->  hi/barakhadi/syllable-daa.m4a
-283. दि  ->  hi/barakhadi/syllable-di.m4a
-284. दी  ->  hi/barakhadi/syllable-dii.m4a
-285. दु  ->  hi/barakhadi/syllable-du.m4a
-286. दू  ->  hi/barakhadi/syllable-duu.m4a
-287. दे  ->  hi/barakhadi/syllable-de.m4a
-288. दै  ->  hi/barakhadi/syllable-dai.m4a
-289. दो  ->  hi/barakhadi/syllable-do.m4a
-290. दौ  ->  hi/barakhadi/syllable-dau.m4a
-291. दं  ->  hi/barakhadi/syllable-dam.m4a
-292. दः  ->  hi/barakhadi/syllable-dah.m4a
+254. द  ->  hi/barakhadi/18-da/01-da.m4a
+255. दा  ->  hi/barakhadi/18-da/02-daa.m4a
+256. दि  ->  hi/barakhadi/18-da/03-di.m4a
+257. दी  ->  hi/barakhadi/18-da/04-dii.m4a
+258. दु  ->  hi/barakhadi/18-da/05-du.m4a
+259. दू  ->  hi/barakhadi/18-da/06-duu.m4a
+260. दे  ->  hi/barakhadi/18-da/07-de.m4a
+261. दै  ->  hi/barakhadi/18-da/08-dai.m4a
+262. दो  ->  hi/barakhadi/18-da/09-do.m4a
+263. दौ  ->  hi/barakhadi/18-da/10-dau.m4a
+264. दं  ->  hi/barakhadi/18-da/11-dam.m4a
+265. दः  ->  hi/barakhadi/18-da/12-dah.m4a
 
 -- Barakhadi - ध --
-293. धा  ->  hi/barakhadi/syllable-dhaa.m4a
-294. धि  ->  hi/barakhadi/syllable-dhi.m4a
-295. धी  ->  hi/barakhadi/syllable-dhii.m4a
-296. धु  ->  hi/barakhadi/syllable-dhu.m4a
-297. धू  ->  hi/barakhadi/syllable-dhuu.m4a
-298. धे  ->  hi/barakhadi/syllable-dhe.m4a
-299. धै  ->  hi/barakhadi/syllable-dhai.m4a
-300. धो  ->  hi/barakhadi/syllable-dho.m4a
-301. धौ  ->  hi/barakhadi/syllable-dhau.m4a
-302. धं  ->  hi/barakhadi/syllable-dham.m4a
-303. धः  ->  hi/barakhadi/syllable-dhah.m4a
+266. ध  ->  hi/barakhadi/19-dha/01-dha.m4a
+267. धा  ->  hi/barakhadi/19-dha/02-dhaa.m4a
+268. धि  ->  hi/barakhadi/19-dha/03-dhi.m4a
+269. धी  ->  hi/barakhadi/19-dha/04-dhii.m4a
+270. धु  ->  hi/barakhadi/19-dha/05-dhu.m4a
+271. धू  ->  hi/barakhadi/19-dha/06-dhuu.m4a
+272. धे  ->  hi/barakhadi/19-dha/07-dhe.m4a
+273. धै  ->  hi/barakhadi/19-dha/08-dhai.m4a
+274. धो  ->  hi/barakhadi/19-dha/09-dho.m4a
+275. धौ  ->  hi/barakhadi/19-dha/10-dhau.m4a
+276. धं  ->  hi/barakhadi/19-dha/11-dham.m4a
+277. धः  ->  hi/barakhadi/19-dha/12-dhah.m4a
 
 -- Barakhadi - न --
-304. ना  ->  hi/barakhadi/syllable-naa.m4a
-305. नि  ->  hi/barakhadi/syllable-ni.m4a
-306. नी  ->  hi/barakhadi/syllable-nii.m4a
-307. नु  ->  hi/barakhadi/syllable-nu.m4a
-308. नू  ->  hi/barakhadi/syllable-nuu.m4a
-309. ने  ->  hi/barakhadi/syllable-ne.m4a
-310. नै  ->  hi/barakhadi/syllable-nai.m4a
-311. नो  ->  hi/barakhadi/syllable-no.m4a
-312. नौ  ->  hi/barakhadi/syllable-nau.m4a
-313. नं  ->  hi/barakhadi/syllable-nam.m4a
-314. नः  ->  hi/barakhadi/syllable-nah.m4a
+278. न  ->  hi/barakhadi/20-na/01-na.m4a
+279. ना  ->  hi/barakhadi/20-na/02-naa.m4a
+280. नि  ->  hi/barakhadi/20-na/03-ni.m4a
+281. नी  ->  hi/barakhadi/20-na/04-nii.m4a
+282. नु  ->  hi/barakhadi/20-na/05-nu.m4a
+283. नू  ->  hi/barakhadi/20-na/06-nuu.m4a
+284. ने  ->  hi/barakhadi/20-na/07-ne.m4a
+285. नै  ->  hi/barakhadi/20-na/08-nai.m4a
+286. नो  ->  hi/barakhadi/20-na/09-no.m4a
+287. नौ  ->  hi/barakhadi/20-na/10-nau.m4a
+288. नं  ->  hi/barakhadi/20-na/11-nam.m4a
+289. नः  ->  hi/barakhadi/20-na/12-nah.m4a
 
 -- Barakhadi - प --
-315. पा  ->  hi/barakhadi/syllable-paa.m4a
-316. पि  ->  hi/barakhadi/syllable-pi.m4a
-317. पी  ->  hi/barakhadi/syllable-pii.m4a
-318. पु  ->  hi/barakhadi/syllable-pu.m4a
-319. पू  ->  hi/barakhadi/syllable-puu.m4a
-320. पे  ->  hi/barakhadi/syllable-pe.m4a
-321. पै  ->  hi/barakhadi/syllable-pai.m4a
-322. पो  ->  hi/barakhadi/syllable-po.m4a
-323. पौ  ->  hi/barakhadi/syllable-pau.m4a
-324. पं  ->  hi/barakhadi/syllable-pam.m4a
-325. पः  ->  hi/barakhadi/syllable-pah.m4a
+290. प  ->  hi/barakhadi/21-pa/01-pa.m4a
+291. पा  ->  hi/barakhadi/21-pa/02-paa.m4a
+292. पि  ->  hi/barakhadi/21-pa/03-pi.m4a
+293. पी  ->  hi/barakhadi/21-pa/04-pii.m4a
+294. पु  ->  hi/barakhadi/21-pa/05-pu.m4a
+295. पू  ->  hi/barakhadi/21-pa/06-puu.m4a
+296. पे  ->  hi/barakhadi/21-pa/07-pe.m4a
+297. पै  ->  hi/barakhadi/21-pa/08-pai.m4a
+298. पो  ->  hi/barakhadi/21-pa/09-po.m4a
+299. पौ  ->  hi/barakhadi/21-pa/10-pau.m4a
+300. पं  ->  hi/barakhadi/21-pa/11-pam.m4a
+301. पः  ->  hi/barakhadi/21-pa/12-pah.m4a
 
 -- Barakhadi - फ --
-326. फा  ->  hi/barakhadi/syllable-phaa.m4a
-327. फि  ->  hi/barakhadi/syllable-phi.m4a
-328. फी  ->  hi/barakhadi/syllable-phii.m4a
-329. फु  ->  hi/barakhadi/syllable-phu.m4a
-330. फू  ->  hi/barakhadi/syllable-phuu.m4a
-331. फे  ->  hi/barakhadi/syllable-phe.m4a
-332. फै  ->  hi/barakhadi/syllable-phai.m4a
-333. फो  ->  hi/barakhadi/syllable-pho.m4a
-334. फौ  ->  hi/barakhadi/syllable-phau.m4a
-335. फं  ->  hi/barakhadi/syllable-pham.m4a
-336. फः  ->  hi/barakhadi/syllable-phah.m4a
+302. फ  ->  hi/barakhadi/22-pha/01-pha.m4a
+303. फा  ->  hi/barakhadi/22-pha/02-phaa.m4a
+304. फि  ->  hi/barakhadi/22-pha/03-phi.m4a
+305. फी  ->  hi/barakhadi/22-pha/04-phii.m4a
+306. फु  ->  hi/barakhadi/22-pha/05-phu.m4a
+307. फू  ->  hi/barakhadi/22-pha/06-phuu.m4a
+308. फे  ->  hi/barakhadi/22-pha/07-phe.m4a
+309. फै  ->  hi/barakhadi/22-pha/08-phai.m4a
+310. फो  ->  hi/barakhadi/22-pha/09-pho.m4a
+311. फौ  ->  hi/barakhadi/22-pha/10-phau.m4a
+312. फं  ->  hi/barakhadi/22-pha/11-pham.m4a
+313. फः  ->  hi/barakhadi/22-pha/12-phah.m4a
 
 -- Barakhadi - ब --
-337. बा  ->  hi/barakhadi/syllable-baa.m4a
-338. बि  ->  hi/barakhadi/syllable-bi.m4a
-339. बी  ->  hi/barakhadi/syllable-bii.m4a
-340. बु  ->  hi/barakhadi/syllable-bu.m4a
-341. बू  ->  hi/barakhadi/syllable-buu.m4a
-342. बे  ->  hi/barakhadi/syllable-be.m4a
-343. बै  ->  hi/barakhadi/syllable-bai.m4a
-344. बो  ->  hi/barakhadi/syllable-bo.m4a
-345. बौ  ->  hi/barakhadi/syllable-bau.m4a
-346. बं  ->  hi/barakhadi/syllable-bam.m4a
-347. बः  ->  hi/barakhadi/syllable-bah.m4a
+314. ब  ->  hi/barakhadi/23-ba/01-ba.m4a
+315. बा  ->  hi/barakhadi/23-ba/02-baa.m4a
+316. बि  ->  hi/barakhadi/23-ba/03-bi.m4a
+317. बी  ->  hi/barakhadi/23-ba/04-bii.m4a
+318. बु  ->  hi/barakhadi/23-ba/05-bu.m4a
+319. बू  ->  hi/barakhadi/23-ba/06-buu.m4a
+320. बे  ->  hi/barakhadi/23-ba/07-be.m4a
+321. बै  ->  hi/barakhadi/23-ba/08-bai.m4a
+322. बो  ->  hi/barakhadi/23-ba/09-bo.m4a
+323. बौ  ->  hi/barakhadi/23-ba/10-bau.m4a
+324. बं  ->  hi/barakhadi/23-ba/11-bam.m4a
+325. बः  ->  hi/barakhadi/23-ba/12-bah.m4a
 
 -- Barakhadi - भ --
-348. भा  ->  hi/barakhadi/syllable-bhaa.m4a
-349. भि  ->  hi/barakhadi/syllable-bhi.m4a
-350. भी  ->  hi/barakhadi/syllable-bhii.m4a
-351. भु  ->  hi/barakhadi/syllable-bhu.m4a
-352. भू  ->  hi/barakhadi/syllable-bhuu.m4a
-353. भे  ->  hi/barakhadi/syllable-bhe.m4a
-354. भै  ->  hi/barakhadi/syllable-bhai.m4a
-355. भो  ->  hi/barakhadi/syllable-bho.m4a
-356. भौ  ->  hi/barakhadi/syllable-bhau.m4a
-357. भं  ->  hi/barakhadi/syllable-bham.m4a
-358. भः  ->  hi/barakhadi/syllable-bhah.m4a
+326. भ  ->  hi/barakhadi/24-bha/01-bha.m4a
+327. भा  ->  hi/barakhadi/24-bha/02-bhaa.m4a
+328. भि  ->  hi/barakhadi/24-bha/03-bhi.m4a
+329. भी  ->  hi/barakhadi/24-bha/04-bhii.m4a
+330. भु  ->  hi/barakhadi/24-bha/05-bhu.m4a
+331. भू  ->  hi/barakhadi/24-bha/06-bhuu.m4a
+332. भे  ->  hi/barakhadi/24-bha/07-bhe.m4a
+333. भै  ->  hi/barakhadi/24-bha/08-bhai.m4a
+334. भो  ->  hi/barakhadi/24-bha/09-bho.m4a
+335. भौ  ->  hi/barakhadi/24-bha/10-bhau.m4a
+336. भं  ->  hi/barakhadi/24-bha/11-bham.m4a
+337. भः  ->  hi/barakhadi/24-bha/12-bhah.m4a
 
 -- Barakhadi - म --
-359. मा  ->  hi/barakhadi/syllable-maa.m4a
-360. मि  ->  hi/barakhadi/syllable-mi.m4a
-361. मी  ->  hi/barakhadi/syllable-mii.m4a
-362. मु  ->  hi/barakhadi/syllable-mu.m4a
-363. मू  ->  hi/barakhadi/syllable-muu.m4a
-364. मे  ->  hi/barakhadi/syllable-me.m4a
-365. मै  ->  hi/barakhadi/syllable-mai.m4a
-366. मो  ->  hi/barakhadi/syllable-mo.m4a
-367. मौ  ->  hi/barakhadi/syllable-mau.m4a
-368. मं  ->  hi/barakhadi/syllable-mam.m4a
-369. मः  ->  hi/barakhadi/syllable-mah.m4a
+338. म  ->  hi/barakhadi/25-ma/01-ma.m4a
+339. मा  ->  hi/barakhadi/25-ma/02-maa.m4a
+340. मि  ->  hi/barakhadi/25-ma/03-mi.m4a
+341. मी  ->  hi/barakhadi/25-ma/04-mii.m4a
+342. मु  ->  hi/barakhadi/25-ma/05-mu.m4a
+343. मू  ->  hi/barakhadi/25-ma/06-muu.m4a
+344. मे  ->  hi/barakhadi/25-ma/07-me.m4a
+345. मै  ->  hi/barakhadi/25-ma/08-mai.m4a
+346. मो  ->  hi/barakhadi/25-ma/09-mo.m4a
+347. मौ  ->  hi/barakhadi/25-ma/10-mau.m4a
+348. मं  ->  hi/barakhadi/25-ma/11-mam.m4a
+349. मः  ->  hi/barakhadi/25-ma/12-mah.m4a
 
 -- Barakhadi - य --
-370. या  ->  hi/barakhadi/syllable-yaa.m4a
-371. यि  ->  hi/barakhadi/syllable-yi.m4a
-372. यी  ->  hi/barakhadi/syllable-yii.m4a
-373. यु  ->  hi/barakhadi/syllable-yu.m4a
-374. यू  ->  hi/barakhadi/syllable-yuu.m4a
-375. ये  ->  hi/barakhadi/syllable-ye.m4a
-376. यै  ->  hi/barakhadi/syllable-yai.m4a
-377. यो  ->  hi/barakhadi/syllable-yo.m4a
-378. यौ  ->  hi/barakhadi/syllable-yau.m4a
-379. यं  ->  hi/barakhadi/syllable-yam.m4a
-380. यः  ->  hi/barakhadi/syllable-yah.m4a
+350. य  ->  hi/barakhadi/26-ya/01-ya.m4a
+351. या  ->  hi/barakhadi/26-ya/02-yaa.m4a
+352. यि  ->  hi/barakhadi/26-ya/03-yi.m4a
+353. यी  ->  hi/barakhadi/26-ya/04-yii.m4a
+354. यु  ->  hi/barakhadi/26-ya/05-yu.m4a
+355. यू  ->  hi/barakhadi/26-ya/06-yuu.m4a
+356. ये  ->  hi/barakhadi/26-ya/07-ye.m4a
+357. यै  ->  hi/barakhadi/26-ya/08-yai.m4a
+358. यो  ->  hi/barakhadi/26-ya/09-yo.m4a
+359. यौ  ->  hi/barakhadi/26-ya/10-yau.m4a
+360. यं  ->  hi/barakhadi/26-ya/11-yam.m4a
+361. यः  ->  hi/barakhadi/26-ya/12-yah.m4a
 
 -- Barakhadi - र --
-381. रा  ->  hi/barakhadi/syllable-raa.m4a
-382. रि  ->  hi/barakhadi/syllable-ri.m4a
-383. री  ->  hi/barakhadi/syllable-rii.m4a
-384. रु  ->  hi/barakhadi/syllable-ru.m4a
-385. रू  ->  hi/barakhadi/syllable-ruu.m4a
-386. रे  ->  hi/barakhadi/syllable-re.m4a
-387. रै  ->  hi/barakhadi/syllable-rai.m4a
-388. रो  ->  hi/barakhadi/syllable-ro.m4a
-389. रौ  ->  hi/barakhadi/syllable-rau.m4a
-390. रं  ->  hi/barakhadi/syllable-ram.m4a
-391. रः  ->  hi/barakhadi/syllable-rah.m4a
+362. र  ->  hi/barakhadi/27-ra/01-ra.m4a
+363. रा  ->  hi/barakhadi/27-ra/02-raa.m4a
+364. रि  ->  hi/barakhadi/27-ra/03-ri.m4a
+365. री  ->  hi/barakhadi/27-ra/04-rii.m4a
+366. रु  ->  hi/barakhadi/27-ra/05-ru.m4a
+367. रू  ->  hi/barakhadi/27-ra/06-ruu.m4a
+368. रे  ->  hi/barakhadi/27-ra/07-re.m4a
+369. रै  ->  hi/barakhadi/27-ra/08-rai.m4a
+370. रो  ->  hi/barakhadi/27-ra/09-ro.m4a
+371. रौ  ->  hi/barakhadi/27-ra/10-rau.m4a
+372. रं  ->  hi/barakhadi/27-ra/11-ram.m4a
+373. रः  ->  hi/barakhadi/27-ra/12-rah.m4a
 
 -- Barakhadi - ल --
-392. ला  ->  hi/barakhadi/syllable-laa.m4a
-393. लि  ->  hi/barakhadi/syllable-li.m4a
-394. ली  ->  hi/barakhadi/syllable-lii.m4a
-395. लु  ->  hi/barakhadi/syllable-lu.m4a
-396. लू  ->  hi/barakhadi/syllable-luu.m4a
-397. ले  ->  hi/barakhadi/syllable-le.m4a
-398. लै  ->  hi/barakhadi/syllable-lai.m4a
-399. लो  ->  hi/barakhadi/syllable-lo.m4a
-400. लौ  ->  hi/barakhadi/syllable-lau.m4a
-401. लं  ->  hi/barakhadi/syllable-lam.m4a
-402. लः  ->  hi/barakhadi/syllable-lah.m4a
+374. ल  ->  hi/barakhadi/28-la/01-la.m4a
+375. ला  ->  hi/barakhadi/28-la/02-laa.m4a
+376. लि  ->  hi/barakhadi/28-la/03-li.m4a
+377. ली  ->  hi/barakhadi/28-la/04-lii.m4a
+378. लु  ->  hi/barakhadi/28-la/05-lu.m4a
+379. लू  ->  hi/barakhadi/28-la/06-luu.m4a
+380. ले  ->  hi/barakhadi/28-la/07-le.m4a
+381. लै  ->  hi/barakhadi/28-la/08-lai.m4a
+382. लो  ->  hi/barakhadi/28-la/09-lo.m4a
+383. लौ  ->  hi/barakhadi/28-la/10-lau.m4a
+384. लं  ->  hi/barakhadi/28-la/11-lam.m4a
+385. लः  ->  hi/barakhadi/28-la/12-lah.m4a
 
 -- Barakhadi - व --
-403. वा  ->  hi/barakhadi/syllable-vaa.m4a
-404. वि  ->  hi/barakhadi/syllable-vi.m4a
-405. वी  ->  hi/barakhadi/syllable-vii.m4a
-406. वु  ->  hi/barakhadi/syllable-vu.m4a
-407. वू  ->  hi/barakhadi/syllable-vuu.m4a
-408. वे  ->  hi/barakhadi/syllable-ve.m4a
-409. वै  ->  hi/barakhadi/syllable-vai.m4a
-410. वो  ->  hi/barakhadi/syllable-vo.m4a
-411. वौ  ->  hi/barakhadi/syllable-vau.m4a
-412. वं  ->  hi/barakhadi/syllable-vam.m4a
-413. वः  ->  hi/barakhadi/syllable-vah.m4a
+386. व  ->  hi/barakhadi/29-va/01-va.m4a
+387. वा  ->  hi/barakhadi/29-va/02-vaa.m4a
+388. वि  ->  hi/barakhadi/29-va/03-vi.m4a
+389. वी  ->  hi/barakhadi/29-va/04-vii.m4a
+390. वु  ->  hi/barakhadi/29-va/05-vu.m4a
+391. वू  ->  hi/barakhadi/29-va/06-vuu.m4a
+392. वे  ->  hi/barakhadi/29-va/07-ve.m4a
+393. वै  ->  hi/barakhadi/29-va/08-vai.m4a
+394. वो  ->  hi/barakhadi/29-va/09-vo.m4a
+395. वौ  ->  hi/barakhadi/29-va/10-vau.m4a
+396. वं  ->  hi/barakhadi/29-va/11-vam.m4a
+397. वः  ->  hi/barakhadi/29-va/12-vah.m4a
 
 -- Barakhadi - श --
-414. शा  ->  hi/barakhadi/syllable-shaa.m4a
-415. शि  ->  hi/barakhadi/syllable-shi.m4a
-416. शी  ->  hi/barakhadi/syllable-shii.m4a
-417. शु  ->  hi/barakhadi/syllable-shu.m4a
-418. शू  ->  hi/barakhadi/syllable-shuu.m4a
-419. शे  ->  hi/barakhadi/syllable-she.m4a
-420. शै  ->  hi/barakhadi/syllable-shai.m4a
-421. शो  ->  hi/barakhadi/syllable-sho.m4a
-422. शौ  ->  hi/barakhadi/syllable-shau.m4a
-423. शं  ->  hi/barakhadi/syllable-sham.m4a
-424. शः  ->  hi/barakhadi/syllable-shah.m4a
+398. श  ->  hi/barakhadi/30-sha/01-sha.m4a
+399. शा  ->  hi/barakhadi/30-sha/02-shaa.m4a
+400. शि  ->  hi/barakhadi/30-sha/03-shi.m4a
+401. शी  ->  hi/barakhadi/30-sha/04-shii.m4a
+402. शु  ->  hi/barakhadi/30-sha/05-shu.m4a
+403. शू  ->  hi/barakhadi/30-sha/06-shuu.m4a
+404. शे  ->  hi/barakhadi/30-sha/07-she.m4a
+405. शै  ->  hi/barakhadi/30-sha/08-shai.m4a
+406. शो  ->  hi/barakhadi/30-sha/09-sho.m4a
+407. शौ  ->  hi/barakhadi/30-sha/10-shau.m4a
+408. शं  ->  hi/barakhadi/30-sha/11-sham.m4a
+409. शः  ->  hi/barakhadi/30-sha/12-shah.m4a
 
 -- Barakhadi - ष --
-425. षा  ->  hi/barakhadi/syllable-ssaa.m4a
-426. षि  ->  hi/barakhadi/syllable-ssi.m4a
-427. षी  ->  hi/barakhadi/syllable-ssii.m4a
-428. षु  ->  hi/barakhadi/syllable-ssu.m4a
-429. षू  ->  hi/barakhadi/syllable-ssuu.m4a
-430. षे  ->  hi/barakhadi/syllable-sse.m4a
-431. षै  ->  hi/barakhadi/syllable-ssai.m4a
-432. षो  ->  hi/barakhadi/syllable-sso.m4a
-433. षौ  ->  hi/barakhadi/syllable-ssau.m4a
-434. षं  ->  hi/barakhadi/syllable-ssam.m4a
-435. षः  ->  hi/barakhadi/syllable-ssah.m4a
+410. ष  ->  hi/barakhadi/31-ssa/01-ssa.m4a
+411. षा  ->  hi/barakhadi/31-ssa/02-ssaa.m4a
+412. षि  ->  hi/barakhadi/31-ssa/03-ssi.m4a
+413. षी  ->  hi/barakhadi/31-ssa/04-ssii.m4a
+414. षु  ->  hi/barakhadi/31-ssa/05-ssu.m4a
+415. षू  ->  hi/barakhadi/31-ssa/06-ssuu.m4a
+416. षे  ->  hi/barakhadi/31-ssa/07-sse.m4a
+417. षै  ->  hi/barakhadi/31-ssa/08-ssai.m4a
+418. षो  ->  hi/barakhadi/31-ssa/09-sso.m4a
+419. षौ  ->  hi/barakhadi/31-ssa/10-ssau.m4a
+420. षं  ->  hi/barakhadi/31-ssa/11-ssam.m4a
+421. षः  ->  hi/barakhadi/31-ssa/12-ssah.m4a
 
 -- Barakhadi - स --
-436. सा  ->  hi/barakhadi/syllable-saa.m4a
-437. सि  ->  hi/barakhadi/syllable-si.m4a
-438. सी  ->  hi/barakhadi/syllable-sii.m4a
-439. सु  ->  hi/barakhadi/syllable-su.m4a
-440. सू  ->  hi/barakhadi/syllable-suu.m4a
-441. से  ->  hi/barakhadi/syllable-se.m4a
-442. सै  ->  hi/barakhadi/syllable-sai.m4a
-443. सो  ->  hi/barakhadi/syllable-so.m4a
-444. सौ  ->  hi/barakhadi/syllable-sau.m4a
-445. सं  ->  hi/barakhadi/syllable-sam.m4a
-446. सः  ->  hi/barakhadi/syllable-sah.m4a
+422. स  ->  hi/barakhadi/32-sa/01-sa.m4a
+423. सा  ->  hi/barakhadi/32-sa/02-saa.m4a
+424. सि  ->  hi/barakhadi/32-sa/03-si.m4a
+425. सी  ->  hi/barakhadi/32-sa/04-sii.m4a
+426. सु  ->  hi/barakhadi/32-sa/05-su.m4a
+427. सू  ->  hi/barakhadi/32-sa/06-suu.m4a
+428. से  ->  hi/barakhadi/32-sa/07-se.m4a
+429. सै  ->  hi/barakhadi/32-sa/08-sai.m4a
+430. सो  ->  hi/barakhadi/32-sa/09-so.m4a
+431. सौ  ->  hi/barakhadi/32-sa/10-sau.m4a
+432. सं  ->  hi/barakhadi/32-sa/11-sam.m4a
+433. सः  ->  hi/barakhadi/32-sa/12-sah.m4a
 
 -- Barakhadi - ह --
-447. हा  ->  hi/barakhadi/syllable-haa.m4a
-448. हि  ->  hi/barakhadi/syllable-hi.m4a
-449. ही  ->  hi/barakhadi/syllable-hii.m4a
-450. हु  ->  hi/barakhadi/syllable-hu.m4a
-451. हू  ->  hi/barakhadi/syllable-huu.m4a
-452. हे  ->  hi/barakhadi/syllable-he.m4a
-453. है  ->  hi/barakhadi/syllable-hai.m4a
-454. हो  ->  hi/barakhadi/syllable-ho.m4a
-455. हौ  ->  hi/barakhadi/syllable-hau.m4a
-456. हं  ->  hi/barakhadi/syllable-ham.m4a
-457. हः  ->  hi/barakhadi/syllable-hah.m4a
+434. ह  ->  hi/barakhadi/33-ha/01-ha.m4a
+435. हा  ->  hi/barakhadi/33-ha/02-haa.m4a
+436. हि  ->  hi/barakhadi/33-ha/03-hi.m4a
+437. ही  ->  hi/barakhadi/33-ha/04-hii.m4a
+438. हु  ->  hi/barakhadi/33-ha/05-hu.m4a
+439. हू  ->  hi/barakhadi/33-ha/06-huu.m4a
+440. हे  ->  hi/barakhadi/33-ha/07-he.m4a
+441. है  ->  hi/barakhadi/33-ha/08-hai.m4a
+442. हो  ->  hi/barakhadi/33-ha/09-ho.m4a
+443. हौ  ->  hi/barakhadi/33-ha/10-hau.m4a
+444. हं  ->  hi/barakhadi/33-ha/11-ham.m4a
+445. हः  ->  hi/barakhadi/33-ha/12-hah.m4a
 
 -- Barakhadi - क्ष --
-458. क्षा  ->  hi/barakhadi/syllable-kshaa.m4a
-459. क्षि  ->  hi/barakhadi/syllable-kshi.m4a
-460. क्षी  ->  hi/barakhadi/syllable-kshii.m4a
-461. क्षु  ->  hi/barakhadi/syllable-kshu.m4a
-462. क्षू  ->  hi/barakhadi/syllable-kshuu.m4a
-463. क्षे  ->  hi/barakhadi/syllable-kshe.m4a
-464. क्षै  ->  hi/barakhadi/syllable-kshai.m4a
-465. क्षो  ->  hi/barakhadi/syllable-ksho.m4a
-466. क्षौ  ->  hi/barakhadi/syllable-kshau.m4a
-467. क्षं  ->  hi/barakhadi/syllable-ksham.m4a
-468. क्षः  ->  hi/barakhadi/syllable-kshah.m4a
+446. क्ष  ->  hi/barakhadi/34-ksha/01-ksha.m4a
+447. क्षा  ->  hi/barakhadi/34-ksha/02-kshaa.m4a
+448. क्षि  ->  hi/barakhadi/34-ksha/03-kshi.m4a
+449. क्षी  ->  hi/barakhadi/34-ksha/04-kshii.m4a
+450. क्षु  ->  hi/barakhadi/34-ksha/05-kshu.m4a
+451. क्षू  ->  hi/barakhadi/34-ksha/06-kshuu.m4a
+452. क्षे  ->  hi/barakhadi/34-ksha/07-kshe.m4a
+453. क्षै  ->  hi/barakhadi/34-ksha/08-kshai.m4a
+454. क्षो  ->  hi/barakhadi/34-ksha/09-ksho.m4a
+455. क्षौ  ->  hi/barakhadi/34-ksha/10-kshau.m4a
+456. क्षं  ->  hi/barakhadi/34-ksha/11-ksham.m4a
+457. क्षः  ->  hi/barakhadi/34-ksha/12-kshah.m4a
 
 -- Barakhadi - त्र --
-469. त्रा  ->  hi/barakhadi/syllable-traa.m4a
-470. त्रि  ->  hi/barakhadi/syllable-tri.m4a
-471. त्री  ->  hi/barakhadi/syllable-trii.m4a
-472. त्रु  ->  hi/barakhadi/syllable-tru.m4a
-473. त्रू  ->  hi/barakhadi/syllable-truu.m4a
-474. त्रे  ->  hi/barakhadi/syllable-tre.m4a
-475. त्रै  ->  hi/barakhadi/syllable-trai.m4a
-476. त्रो  ->  hi/barakhadi/syllable-tro.m4a
-477. त्रौ  ->  hi/barakhadi/syllable-trau.m4a
-478. त्रं  ->  hi/barakhadi/syllable-tram.m4a
-479. त्रः  ->  hi/barakhadi/syllable-trah.m4a
+458. त्र  ->  hi/barakhadi/35-tra/01-tra.m4a
+459. त्रा  ->  hi/barakhadi/35-tra/02-traa.m4a
+460. त्रि  ->  hi/barakhadi/35-tra/03-tri.m4a
+461. त्री  ->  hi/barakhadi/35-tra/04-trii.m4a
+462. त्रु  ->  hi/barakhadi/35-tra/05-tru.m4a
+463. त्रू  ->  hi/barakhadi/35-tra/06-truu.m4a
+464. त्रे  ->  hi/barakhadi/35-tra/07-tre.m4a
+465. त्रै  ->  hi/barakhadi/35-tra/08-trai.m4a
+466. त्रो  ->  hi/barakhadi/35-tra/09-tro.m4a
+467. त्रौ  ->  hi/barakhadi/35-tra/10-trau.m4a
+468. त्रं  ->  hi/barakhadi/35-tra/11-tram.m4a
+469. त्रः  ->  hi/barakhadi/35-tra/12-trah.m4a
 
 -- Barakhadi - ज्ञ --
-480. ज्ञा  ->  hi/barakhadi/syllable-gyaa.m4a
-481. ज्ञि  ->  hi/barakhadi/syllable-gyi.m4a
-482. ज्ञी  ->  hi/barakhadi/syllable-gyii.m4a
-483. ज्ञु  ->  hi/barakhadi/syllable-gyu.m4a
-484. ज्ञू  ->  hi/barakhadi/syllable-gyuu.m4a
-485. ज्ञे  ->  hi/barakhadi/syllable-gye.m4a
-486. ज्ञै  ->  hi/barakhadi/syllable-gyai.m4a
-487. ज्ञो  ->  hi/barakhadi/syllable-gyo.m4a
-488. ज्ञौ  ->  hi/barakhadi/syllable-gyau.m4a
-489. ज्ञं  ->  hi/barakhadi/syllable-gyam.m4a
-490. ज्ञः  ->  hi/barakhadi/syllable-gyah.m4a
+470. ज्ञ  ->  hi/barakhadi/36-gya/01-gya.m4a
+471. ज्ञा  ->  hi/barakhadi/36-gya/02-gyaa.m4a
+472. ज्ञि  ->  hi/barakhadi/36-gya/03-gyi.m4a
+473. ज्ञी  ->  hi/barakhadi/36-gya/04-gyii.m4a
+474. ज्ञु  ->  hi/barakhadi/36-gya/05-gyu.m4a
+475. ज्ञू  ->  hi/barakhadi/36-gya/06-gyuu.m4a
+476. ज्ञे  ->  hi/barakhadi/36-gya/07-gye.m4a
+477. ज्ञै  ->  hi/barakhadi/36-gya/08-gyai.m4a
+478. ज्ञो  ->  hi/barakhadi/36-gya/09-gyo.m4a
+479. ज्ञौ  ->  hi/barakhadi/36-gya/10-gyau.m4a
+480. ज्ञं  ->  hi/barakhadi/36-gya/11-gyam.m4a
+481. ज्ञः  ->  hi/barakhadi/36-gya/12-gyah.m4a
 
 -- Praise and encouragement --
-491. शाबाश!  ->  hi/phrases/praise-1.m4a
-492. बहुत बढ़िया!  ->  hi/phrases/praise-2.m4a
-493. वाह! कमाल कर दिया!  ->  hi/phrases/praise-3.m4a
-494. बिलकुल सही!  ->  hi/phrases/praise-4.m4a
-495. फिर से कोशिश करो।  ->  hi/phrases/try-again.m4a
-496. कोई बात नहीं! फिर कोशिश करते हैं।  ->  hi/phrases/give-up.m4a
-497. पहले लिखो!  ->  hi/phrases/write-first.m4a
+482. शाबाश!  ->  hi/phrases/praise-1.m4a
+483. बहुत बढ़िया!  ->  hi/phrases/praise-2.m4a
+484. वाह! कमाल कर दिया!  ->  hi/phrases/praise-3.m4a
+485. बिलकुल सही!  ->  hi/phrases/praise-4.m4a
+486. फिर से कोशिश करो।  ->  hi/phrases/try-again.m4a
+487. कोई बात नहीं! फिर कोशिश करते हैं।  ->  hi/phrases/give-up.m4a
+488. पहले लिखो!  ->  hi/phrases/write-first.m4a
 
 -- Story - प्यासा कौआ (The Thirsty Crow) --
-498. एक गरम दिन था।  ->  hi/stories/story-thirsty-crow-line-1.m4a
-499. एक कौआ बहुत प्यासा था।  ->  hi/stories/story-thirsty-crow-line-2.m4a
-500. वह इधर-उधर पानी ढूँढने लगा।  ->  hi/stories/story-thirsty-crow-line-3.m4a
-501. उसे एक घड़ा दिखा, जिसमें थोड़ा-सा पानी था।  ->  hi/stories/story-thirsty-crow-line-4.m4a
-502. कौए ने एक-एक करके घड़े में कंकड़ डाले।  ->  hi/stories/story-thirsty-crow-line-5.m4a
-503. पानी ऊपर आ गया और कौए ने पानी पी लिया।  ->  hi/stories/story-thirsty-crow-line-6.m4a
-504. मेहनत और सूझ-बूझ से हर मुश्किल हल हो जाती है।  ->  hi/stories/story-thirsty-crow-moral.m4a
+489. एक गरम दिन था।  ->  hi/stories/story-thirsty-crow-line-1.m4a
+490. एक कौआ बहुत प्यासा था।  ->  hi/stories/story-thirsty-crow-line-2.m4a
+491. वह इधर-उधर पानी ढूँढने लगा।  ->  hi/stories/story-thirsty-crow-line-3.m4a
+492. उसे एक घड़ा दिखा, जिसमें थोड़ा-सा पानी था।  ->  hi/stories/story-thirsty-crow-line-4.m4a
+493. कौए ने एक-एक करके घड़े में कंकड़ डाले।  ->  hi/stories/story-thirsty-crow-line-5.m4a
+494. पानी ऊपर आ गया और कौए ने पानी पी लिया।  ->  hi/stories/story-thirsty-crow-line-6.m4a
+495. मेहनत और सूझ-बूझ से हर मुश्किल हल हो जाती है।  ->  hi/stories/story-thirsty-crow-moral.m4a
 
 -- Story - शेर और चूहा (The Lion and the Mouse) --
-505. एक जंगल में एक शेर सो रहा था।  ->  hi/stories/story-lion-mouse-line-1.m4a
-506. एक छोटा चूहा उसके ऊपर कूदने लगा।  ->  hi/stories/story-lion-mouse-line-2.m4a
-507. शेर जाग गया और चूहे को पकड़ लिया।  ->  hi/stories/story-lion-mouse-line-3.m4a
-508. चूहे ने कहा, मुझे छोड़ दो, मैं भी तुम्हारी मदद करूँगा।  ->  hi/stories/story-lion-mouse-line-4.m4a
-509. शेर हँसा और उसे छोड़ दिया।  ->  hi/stories/story-lion-mouse-line-5.m4a
-510. एक दिन शेर जाल में फँस गया।  ->  hi/stories/story-lion-mouse-line-6.m4a
-511. चूहे ने जाल काट दिया और शेर को बचा लिया।  ->  hi/stories/story-lion-mouse-line-7.m4a
-512. छोटा हो या बड़ा, हर किसी की मदद काम आती है।  ->  hi/stories/story-lion-mouse-moral.m4a
+496. एक जंगल में एक शेर सो रहा था।  ->  hi/stories/story-lion-mouse-line-1.m4a
+497. एक छोटा चूहा उसके ऊपर कूदने लगा।  ->  hi/stories/story-lion-mouse-line-2.m4a
+498. शेर जाग गया और चूहे को पकड़ लिया।  ->  hi/stories/story-lion-mouse-line-3.m4a
+499. चूहे ने कहा, मुझे छोड़ दो, मैं भी तुम्हारी मदद करूँगा।  ->  hi/stories/story-lion-mouse-line-4.m4a
+500. शेर हँसा और उसे छोड़ दिया।  ->  hi/stories/story-lion-mouse-line-5.m4a
+501. एक दिन शेर जाल में फँस गया।  ->  hi/stories/story-lion-mouse-line-6.m4a
+502. चूहे ने जाल काट दिया और शेर को बचा लिया।  ->  hi/stories/story-lion-mouse-line-7.m4a
+503. छोटा हो या बड़ा, हर किसी की मदद काम आती है।  ->  hi/stories/story-lion-mouse-moral.m4a
 
 -- Story - खरगोश और कछुआ (The Hare and the Tortoise) --
-513. एक खरगोश को अपनी तेज़ी पर घमंड था।  ->  hi/stories/story-hare-tortoise-line-1.m4a
-514. उसने कछुए को दौड़ के लिए ललकारा।  ->  hi/stories/story-hare-tortoise-line-2.m4a
-515. दौड़ शुरू हुई और खरगोश बहुत आगे निकल गया।  ->  hi/stories/story-hare-tortoise-line-3.m4a
-516. खरगोश रास्ते में पेड़ के नीचे सो गया।  ->  hi/stories/story-hare-tortoise-line-4.m4a
-517. कछुआ धीरे-धीरे चलता रहा।  ->  hi/stories/story-hare-tortoise-line-5.m4a
-518. कछुआ पहले पहुँच गया और दौड़ जीत गया।  ->  hi/stories/story-hare-tortoise-line-6.m4a
-519. लगातार मेहनत करने वाला ही जीतता है।  ->  hi/stories/story-hare-tortoise-moral.m4a
+504. एक खरगोश को अपनी तेज़ी पर घमंड था।  ->  hi/stories/story-hare-tortoise-line-1.m4a
+505. उसने कछुए को दौड़ के लिए ललकारा।  ->  hi/stories/story-hare-tortoise-line-2.m4a
+506. दौड़ शुरू हुई और खरगोश बहुत आगे निकल गया।  ->  hi/stories/story-hare-tortoise-line-3.m4a
+507. खरगोश रास्ते में पेड़ के नीचे सो गया।  ->  hi/stories/story-hare-tortoise-line-4.m4a
+508. कछुआ धीरे-धीरे चलता रहा।  ->  hi/stories/story-hare-tortoise-line-5.m4a
+509. कछुआ पहले पहुँच गया और दौड़ जीत गया।  ->  hi/stories/story-hare-tortoise-line-6.m4a
+510. लगातार मेहनत करने वाला ही जीतता है।  ->  hi/stories/story-hare-tortoise-moral.m4a
 
 -- Story - एकता में बल (Unity is Strength) --
-520. एक किसान के चार बेटे थे।  ->  hi/stories/story-unity-strength-line-1.m4a
-521. वे हमेशा आपस में लड़ते रहते थे।  ->  hi/stories/story-unity-strength-line-2.m4a
-522. किसान ने उन्हें लकड़ियों का एक गट्ठर दिया।  ->  hi/stories/story-unity-strength-line-3.m4a
-523. अकेली-अकेली लकड़ी सबने आसानी से तोड़ दी।  ->  hi/stories/story-unity-strength-line-4.m4a
-524. पर पूरा गट्ठर कोई नहीं तोड़ पाया।  ->  hi/stories/story-unity-strength-line-5.m4a
-525. किसान ने कहा, मिलकर रहोगे तो मज़बूत रहोगे।  ->  hi/stories/story-unity-strength-line-6.m4a
-526. एकता में ही बल है।  ->  hi/stories/story-unity-strength-moral.m4a
+511. एक किसान के चार बेटे थे।  ->  hi/stories/story-unity-strength-line-1.m4a
+512. वे हमेशा आपस में लड़ते रहते थे।  ->  hi/stories/story-unity-strength-line-2.m4a
+513. किसान ने उन्हें लकड़ियों का एक गट्ठर दिया।  ->  hi/stories/story-unity-strength-line-3.m4a
+514. अकेली-अकेली लकड़ी सबने आसानी से तोड़ दी।  ->  hi/stories/story-unity-strength-line-4.m4a
+515. पर पूरा गट्ठर कोई नहीं तोड़ पाया।  ->  hi/stories/story-unity-strength-line-5.m4a
+516. किसान ने कहा, मिलकर रहोगे तो मज़बूत रहोगे।  ->  hi/stories/story-unity-strength-line-6.m4a
+517. एकता में ही बल है।  ->  hi/stories/story-unity-strength-moral.m4a
 
 == ENGLISH LETTER SOUNDS ==
 Say only the pure sound, short and crisp. No added "uh" ("b", not "buh").
 Hold sounds that can be held (mmm, sss, fff) for about one second.
 
-527. The sound of A, as at the start of "Apple"  ->  en/phonemes/phoneme-a.m4a
-528. The sound of B, as at the start of "Ball"  ->  en/phonemes/phoneme-b.m4a
-529. The sound of C, as at the start of "Cat"  ->  en/phonemes/phoneme-c.m4a
-530. The sound of D, as at the start of "Dog"  ->  en/phonemes/phoneme-d.m4a
-531. The sound of E, as at the start of "Egg"  ->  en/phonemes/phoneme-e.m4a
-532. The sound of F, as at the start of "Fish"  ->  en/phonemes/phoneme-f.m4a
-533. The sound of G, as at the start of "Goat"  ->  en/phonemes/phoneme-g.m4a
-534. The sound of H, as at the start of "Hat"  ->  en/phonemes/phoneme-h.m4a
-535. The sound of I, as at the start of "Insect"  ->  en/phonemes/phoneme-i.m4a
-536. The sound of J, as at the start of "Jellyfish"  ->  en/phonemes/phoneme-j.m4a
-537. The sound of K, as at the start of "Kite"  ->  en/phonemes/phoneme-k.m4a
-538. The sound of L, as at the start of "Lion"  ->  en/phonemes/phoneme-l.m4a
-539. The sound of M, as at the start of "Moon"  ->  en/phonemes/phoneme-m.m4a
-540. The sound of N, as at the start of "Nose"  ->  en/phonemes/phoneme-n.m4a
-541. The sound of O, as at the start of "Octopus"  ->  en/phonemes/phoneme-o.m4a
-542. The sound of P, as at the start of "Pig"  ->  en/phonemes/phoneme-p.m4a
-543. The sound of Q, as at the start of "Queen"  ->  en/phonemes/phoneme-q.m4a
-544. The sound of R, as at the start of "Rainbow"  ->  en/phonemes/phoneme-r.m4a
-545. The sound of S, as at the start of "Sun"  ->  en/phonemes/phoneme-s.m4a
-546. The sound of T, as at the start of "Tree"  ->  en/phonemes/phoneme-t.m4a
-547. The sound of U, as at the start of "Umbrella"  ->  en/phonemes/phoneme-u.m4a
-548. The sound of V, as at the start of "Violin"  ->  en/phonemes/phoneme-v.m4a
-549. The sound of W, as at the start of "Wolf"  ->  en/phonemes/phoneme-w.m4a
-550. The sound of X, as at the end of "Fox"  ->  en/phonemes/phoneme-x.m4a
-551. The sound of Y, as at the start of "Yo-yo"  ->  en/phonemes/phoneme-y.m4a
-552. The sound of Z, as at the start of "Zebra"  ->  en/phonemes/phoneme-z.m4a
+518. The sound of A, as at the start of "Apple"  ->  en/phonemes/phoneme-a.m4a
+519. The sound of B, as at the start of "Ball"  ->  en/phonemes/phoneme-b.m4a
+520. The sound of C, as at the start of "Cat"  ->  en/phonemes/phoneme-c.m4a
+521. The sound of D, as at the start of "Dog"  ->  en/phonemes/phoneme-d.m4a
+522. The sound of E, as at the start of "Egg"  ->  en/phonemes/phoneme-e.m4a
+523. The sound of F, as at the start of "Fish"  ->  en/phonemes/phoneme-f.m4a
+524. The sound of G, as at the start of "Goat"  ->  en/phonemes/phoneme-g.m4a
+525. The sound of H, as at the start of "Hat"  ->  en/phonemes/phoneme-h.m4a
+526. The sound of I, as at the start of "Insect"  ->  en/phonemes/phoneme-i.m4a
+527. The sound of J, as at the start of "Jellyfish"  ->  en/phonemes/phoneme-j.m4a
+528. The sound of K, as at the start of "Kite"  ->  en/phonemes/phoneme-k.m4a
+529. The sound of L, as at the start of "Lion"  ->  en/phonemes/phoneme-l.m4a
+530. The sound of M, as at the start of "Moon"  ->  en/phonemes/phoneme-m.m4a
+531. The sound of N, as at the start of "Nose"  ->  en/phonemes/phoneme-n.m4a
+532. The sound of O, as at the start of "Octopus"  ->  en/phonemes/phoneme-o.m4a
+533. The sound of P, as at the start of "Pig"  ->  en/phonemes/phoneme-p.m4a
+534. The sound of Q, as at the start of "Queen"  ->  en/phonemes/phoneme-q.m4a
+535. The sound of R, as at the start of "Rainbow"  ->  en/phonemes/phoneme-r.m4a
+536. The sound of S, as at the start of "Sun"  ->  en/phonemes/phoneme-s.m4a
+537. The sound of T, as at the start of "Tree"  ->  en/phonemes/phoneme-t.m4a
+538. The sound of U, as at the start of "Umbrella"  ->  en/phonemes/phoneme-u.m4a
+539. The sound of V, as at the start of "Violin"  ->  en/phonemes/phoneme-v.m4a
+540. The sound of W, as at the start of "Wolf"  ->  en/phonemes/phoneme-w.m4a
+541. The sound of X, as at the end of "Fox"  ->  en/phonemes/phoneme-x.m4a
+542. The sound of Y, as at the start of "Yo-yo"  ->  en/phonemes/phoneme-y.m4a
+543. The sound of Z, as at the start of "Zebra"  ->  en/phonemes/phoneme-z.m4a

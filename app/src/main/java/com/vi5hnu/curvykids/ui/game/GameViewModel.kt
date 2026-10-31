@@ -295,7 +295,7 @@ class GameViewModel(
         if (letter == null) {
             phonics.speak(char, langTag = HINDI_TTS_TAG, flush = !queue, romanized = char); return
         }
-        val line = HindiVoiceScript.letterWithWord(letter)
+        val line = HindiVoiceScript.letter(letter)
         phonics.speak(
             line.text,
             langTag = HINDI_TTS_TAG,

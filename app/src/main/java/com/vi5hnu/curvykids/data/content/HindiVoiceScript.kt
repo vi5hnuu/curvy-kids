@@ -9,6 +9,12 @@ data class VoiceLine(val clip: VoiceClip, val text: String, val usedIn: String)
  * Every Hindi line the app speaks, each with the key its recording is stored under
  * (`assets/voice/hi/<group>/<key>.m4a`).
  *
+ * Letter and barakhadi recordings are numbered in teaching order so the folders read in order:
+ * - `hindi_vowels/01-a`, `hindi_consonants/01-ka`: the letter with its word ("क, क से कबूतर")
+ * - `barakhadi/01-ka/04-kii`: consonant 1, matra 4 (की)
+ * Numbers come from the positions in [HINDI_VOWELS], [HINDI_CONSONANTS] and [BARAKHADI_MATRAS],
+ * so those lists' order must not change without renaming the recordings.
+ *
  * Screens ask this object for a line's clip instead of building keys themselves, so the recording
  * sheet ([all]) and what the app actually plays can't drift apart. Anything not recorded yet
  * falls back to the device's Hindi voice.
@@ -16,7 +22,8 @@ data class VoiceLine(val clip: VoiceClip, val text: String, val usedIn: String)
 object HindiVoiceScript {
 
     // Sub-folders of assets/voice/hi/.
-    private const val LETTERS = "letters"
+    private const val VOWELS = "hindi_vowels"
+    private const val CONSONANTS = "hindi_consonants"
     private const val BARAKHADI = "barakhadi"
     private const val PHRASES = "phrases"
     private const val STORY_FOLDER = "stories"
@@ -32,28 +39,34 @@ object HindiVoiceScript {
 
     // ── Letters and barakhadi ──────────────────────────────────────────────────
 
-    /** The letter on its own ("क"). Also the first barakhadi form, which is the same sound. */
-    fun letter(l: HindiLetter) = VoiceLine(VoiceClip.hindi(LETTERS, "letter-${l.romanized}"), l.char, "Letter name")
+    /**
+     * A letter as it's recorded: the letter with its example word ("क, क से कबूतर"), or the plain
+     * letter when it has no word. There is one recording per letter, used both when a letter is
+     * named and as the tracing prompt.
+     */
+    fun letter(l: HindiLetter): VoiceLine {
+        val vowel = HINDI_VOWELS.indexOf(l)
+        val (group, index) = if (vowel >= 0) VOWELS to vowel else CONSONANTS to HINDI_CONSONANTS.indexOf(l)
+        require(index >= 0) { "${l.char} is not a Hindi letter in the course" }
+        val text = if (l.example.isEmpty()) l.char else "${l.char}, ${l.char} से ${l.example}"
+        return VoiceLine(VoiceClip.hindi(group, numbered(index, l.romanized)), text, "Letter and trace prompt")
+    }
 
-    /** The letter with its example word ("क, क से कबूतर"); the plain letter when there's no word. */
-    fun letterWithWord(l: HindiLetter): VoiceLine =
-        if (l.example.isEmpty()) letter(l)
-        else VoiceLine(
-            VoiceClip.hindi(LETTERS, "letter-${l.romanized}-word"),
-            "${l.char}, ${l.char} से ${l.example}",
-            "Trace prompt",
-        )
-
-    /** One barakhadi form, e.g. की for क + ी. */
+    /** One barakhadi form, e.g. की for क + ी, at `barakhadi/01-ka/04-kii`. */
     fun syllable(consonant: HindiLetter, matra: Matra): VoiceLine {
-        if (matra.sign.isEmpty()) return letter(consonant)
-        val key = consonant.romanized.dropLast(1) + matra.key
+        val c = HINDI_CONSONANTS.indexOf(consonant)
+        val m = BARAKHADI_MATRAS.indexOf(matra)
+        require(c >= 0 && m >= 0) { "no barakhadi form for ${consonant.char} + ${matra.key}" }
+        val folder = "$BARAKHADI/${numbered(c, consonant.romanized)}"
         return VoiceLine(
-            VoiceClip.hindi(BARAKHADI, "syllable-$key"),
+            VoiceClip.hindi(folder, numbered(m, consonant.romanized.dropLast(1) + matra.key)),
             barakhadiSyllable(consonant.char, matra),
             "Barakhadi",
         )
     }
+
+    /** "01-ka" for the first item: 1-based, two digits, so files sort in teaching order. */
+    private fun numbered(index: Int, name: String) = "%02d-%s".format(index + 1, name)
 
     // ── Stories ────────────────────────────────────────────────────────────────
 
@@ -72,16 +85,14 @@ object HindiVoiceScript {
 
     /**
      * The recording sheet, grouped by category in the order a voice artist would record it.
-     * A line that appears in two categories (a letter with no example word) is listed once.
+     * A line that would appear in two categories is listed once.
      */
     val sections: List<Pair<String, List<VoiceLine>>> by lazy {
         val seen = mutableSetOf<String>()
-        fun List<VoiceLine>.fresh() = filter { seen.add(it.clip.key) }
+        fun List<VoiceLine>.fresh() = filter { seen.add(it.clip.relativePath) }
         buildList {
             add("Hindi vowels (स्वर)" to HINDI_VOWELS.map { letter(it) }.fresh())
             add("Hindi consonants (व्यंजन)" to HINDI_CONSONANTS.map { letter(it) }.fresh())
-            add("Hindi vowels with example word" to HINDI_VOWELS.map { letterWithWord(it) }.fresh())
-            add("Hindi consonants with example word" to HINDI_CONSONANTS.map { letterWithWord(it) }.fresh())
             HINDI_CONSONANTS.forEach { c ->
                 add("Barakhadi - ${c.char}" to BARAKHADI_MATRAS.map { syllable(c, it) }.fresh())
             }
