@@ -42,13 +42,13 @@ val SHAPES = listOf(
 data class ColorItem(val name: String, val hex: Long)
 
 val COLOR_ITEMS = listOf(
-    ColorItem("Red",    0xFFFF5A52),
+    ColorItem("Red",    0xFFE53935), // true red and orange, so the two never look alike
     ColorItem("Blue",   0xFF46A6F0),
     ColorItem("Green",  0xFF4FCB94),
     ColorItem("Yellow", 0xFFFFC24A),
     ColorItem("Purple", 0xFFA88BF6),
     ColorItem("Pink",   0xFFFF8FB6),
-    ColorItem("Orange", 0xFFFF8B6B),
+    ColorItem("Orange", 0xFFFB8C00),
     ColorItem("Teal",   0xFF1FC2AE),
     ColorItem("Brown",  0xFF8B5E3C),
     ColorItem("Gray",   0xFF9AA7B2),
