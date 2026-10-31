@@ -237,6 +237,19 @@ fun ParentZone(
 
             Spacer(Modifier.height(16.dp))
 
+            // ── Credits ───────────────────────────────────────────────────
+            // Required by the CC-BY licence of the emoji-based pictures. Remove once every
+            // picture in assets/art/ has been redrawn (see tools/art/unframe.py).
+            Text(
+                text = "Credits: some pictures are based on Twemoji by Twitter, Inc. and other " +
+                    "contributors, licensed under CC-BY 4.0 (creativecommons.org/licenses/by/4.0).",
+                fontWeight = FontWeight.Bold,
+                fontSize = 12.sp,
+                color = Ink.copy(alpha = 0.5f),
+            )
+
+            Spacer(Modifier.height(16.dp))
+
             CandyButton(
                 onClick = onDismiss,
                 modifier = Modifier

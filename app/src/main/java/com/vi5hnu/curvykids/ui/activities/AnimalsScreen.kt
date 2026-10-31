@@ -105,7 +105,7 @@ private fun AnimalsLearnGrid(
                                     }
                                 },
                         ) {
-                            SvgBadge(
+                            SvgBadge(color = topic.color, 
                                 asset = animal.svg,
                                 contentDescription = animal.name,
                                 modifier = Modifier

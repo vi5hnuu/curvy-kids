@@ -494,59 +494,59 @@ data class HindiLetter(
 
 /** 13 vowels (स्वर) in traditional order. */
 val HINDI_VOWELS = listOf(
-    HindiLetter("अ",  "a",  "अनानास", AssetPath("kids/hindi-vowels/hindi-swar-a.svg")),
-    HindiLetter("आ",  "aa", "आम", AssetPath("kids/hindi-vowels/hindi-swar-aa.svg")),
-    HindiLetter("इ",  "i",  "इंजन", AssetPath("kids/hindi-vowels/hindi-swar-i.svg")),
-    HindiLetter("ई",  "ii", "ईंट", AssetPath("kids/hindi-vowels/hindi-swar-ii.svg")),
-    HindiLetter("उ",  "u",  "उल्लू", AssetPath("kids/hindi-vowels/hindi-swar-u.svg")),
-    HindiLetter("ऊ",  "uu", "ऊँट", AssetPath("kids/hindi-vowels/hindi-swar-uu.svg")),
-    HindiLetter("ऋ",  "ri", "ऋषि", AssetPath("kids/hindi-vowels/hindi-swar-ri.svg")),
-    HindiLetter("ए",  "e",  "एड़ी", AssetPath("kids/hindi-vowels/hindi-swar-e.svg")),
-    HindiLetter("ऐ",  "ai", "ऐनक", AssetPath("kids/hindi-vowels/hindi-swar-ai.svg")),
-    HindiLetter("ओ",  "o",  "ओम", AssetPath("kids/hindi-vowels/hindi-swar-o.svg")),
-    HindiLetter("औ",  "au", "औज़ार", AssetPath("kids/hindi-vowels/hindi-swar-au.svg")),
-    HindiLetter("अं", "am", "अंगूर", AssetPath("kids/hindi-vowels/hindi-swar-am.svg")),
-    HindiLetter("अः", "ah", "",   AssetPath("kids/hindi-vowels/hindi-swar-ah.svg")),
+    HindiLetter("अ",  "a",  "अनानास", AssetPath("art/hindi-vowels/hindi-swar-a.svg")),
+    HindiLetter("आ",  "aa", "आम", AssetPath("art/hindi-vowels/hindi-swar-aa.svg")),
+    HindiLetter("इ",  "i",  "इंजन", AssetPath("art/hindi-vowels/hindi-swar-i.svg")),
+    HindiLetter("ई",  "ii", "ईंट", AssetPath("art/hindi-vowels/hindi-swar-ii.svg")),
+    HindiLetter("उ",  "u",  "उल्लू", AssetPath("art/hindi-vowels/hindi-swar-u.svg")),
+    HindiLetter("ऊ",  "uu", "ऊँट", AssetPath("art/hindi-vowels/hindi-swar-uu.svg")),
+    HindiLetter("ऋ",  "ri", "ऋषि", AssetPath("art/hindi-vowels/hindi-swar-ri.svg")),
+    HindiLetter("ए",  "e",  "एड़ी", AssetPath("art/hindi-vowels/hindi-swar-e.svg")),
+    HindiLetter("ऐ",  "ai", "ऐनक", AssetPath("art/hindi-vowels/hindi-swar-ai.svg")),
+    HindiLetter("ओ",  "o",  "ओम", AssetPath("art/hindi-vowels/hindi-swar-o.svg")),
+    HindiLetter("औ",  "au", "औज़ार", AssetPath("art/hindi-vowels/hindi-swar-au.svg")),
+    HindiLetter("अं", "am", "अंगूर", AssetPath("art/hindi-vowels/hindi-swar-am.svg")),
+    HindiLetter("अः", "ah", "",   AssetPath("art/hindi-vowels/hindi-swar-ah.svg")),
 )
 
 /** 36 consonants (व्यंजन) in traditional order, including the common conjuncts क्ष त्र ज्ञ. */
 val HINDI_CONSONANTS = listOf(
-    HindiLetter("क",   "ka",   "कबूतर", AssetPath("kids/hindi-consonants/hindi-vyanjan-ka.svg")),
-    HindiLetter("ख",   "kha",  "खरगोश", AssetPath("kids/hindi-consonants/hindi-vyanjan-kha.svg")),
-    HindiLetter("ग",   "ga",   "गाय", AssetPath("kids/hindi-consonants/hindi-vyanjan-ga.svg")),
-    HindiLetter("घ",   "gha",  "घड़ी", AssetPath("kids/hindi-consonants/hindi-vyanjan-gha.svg")),
-    HindiLetter("ङ",   "nga",  "",   AssetPath("kids/hindi-consonants/hindi-vyanjan-nga.svg")),
-    HindiLetter("च",   "cha",  "चम्मच", AssetPath("kids/hindi-consonants/hindi-vyanjan-cha.svg")),
-    HindiLetter("छ",   "chha", "छाता", AssetPath("kids/hindi-consonants/hindi-vyanjan-chha.svg")),
-    HindiLetter("ज",   "ja",   "जहाज", AssetPath("kids/hindi-consonants/hindi-vyanjan-ja.svg")),
-    HindiLetter("झ",   "jha",  "झंडा", AssetPath("kids/hindi-consonants/hindi-vyanjan-jha.svg")),
-    HindiLetter("ञ",   "nya",  "",   AssetPath("kids/hindi-consonants/hindi-vyanjan-nya.svg")),
-    HindiLetter("ट",   "tta",  "टमाटर", AssetPath("kids/hindi-consonants/hindi-vyanjan-tta.svg")),
-    HindiLetter("ठ",   "ttha", "ठंडा", AssetPath("kids/hindi-consonants/hindi-vyanjan-ttha.svg")),
-    HindiLetter("ड",   "dda",  "डमरू", AssetPath("kids/hindi-consonants/hindi-vyanjan-dda.svg")),
-    HindiLetter("ढ",   "ddha", "ढोल", AssetPath("kids/hindi-consonants/hindi-vyanjan-ddha.svg")),
-    HindiLetter("ण",   "nna",  "बाण", AssetPath("kids/hindi-consonants/hindi-vyanjan-nna.svg")),
-    HindiLetter("त",   "ta",   "तरबूज", AssetPath("kids/hindi-consonants/hindi-vyanjan-ta.svg")),
-    HindiLetter("थ",   "tha",  "थाली", AssetPath("kids/hindi-consonants/hindi-vyanjan-tha.svg")),
-    HindiLetter("द",   "da",   "दूध", AssetPath("kids/hindi-consonants/hindi-vyanjan-da.svg")),
-    HindiLetter("ध",   "dha",  "धनुष", AssetPath("kids/hindi-consonants/hindi-vyanjan-dha.svg")),
-    HindiLetter("न",   "na",   "नाव", AssetPath("kids/hindi-consonants/hindi-vyanjan-na.svg")),
-    HindiLetter("प",   "pa",   "पतंग", AssetPath("kids/hindi-consonants/hindi-vyanjan-pa.svg")),
-    HindiLetter("फ",   "pha",  "फूल", AssetPath("kids/hindi-consonants/hindi-vyanjan-pha.svg")),
-    HindiLetter("ब",   "ba",   "बकरी", AssetPath("kids/hindi-consonants/hindi-vyanjan-ba.svg")),
-    HindiLetter("भ",   "bha",  "भालू", AssetPath("kids/hindi-consonants/hindi-vyanjan-bha.svg")),
-    HindiLetter("म",   "ma",   "मछली", AssetPath("kids/hindi-consonants/hindi-vyanjan-ma.svg")),
-    HindiLetter("य",   "ya",   "योग", AssetPath("kids/hindi-consonants/hindi-vyanjan-ya.svg")),
-    HindiLetter("र",   "ra",   "रेल", AssetPath("kids/hindi-consonants/hindi-vyanjan-ra.svg")),
-    HindiLetter("ल",   "la",   "लोमड़ी", AssetPath("kids/hindi-consonants/hindi-vyanjan-la.svg")),
-    HindiLetter("व",   "va",   "वर्षा", AssetPath("kids/hindi-consonants/hindi-vyanjan-va.svg")),
-    HindiLetter("श",   "sha",  "शेर", AssetPath("kids/hindi-consonants/hindi-vyanjan-sha.svg")),
-    HindiLetter("ष",   "ssa",  "",   AssetPath("kids/hindi-consonants/hindi-vyanjan-ssa.svg")),
-    HindiLetter("स",   "sa",   "सेब", AssetPath("kids/hindi-consonants/hindi-vyanjan-sa.svg")),
-    HindiLetter("ह",   "ha",   "हाथी", AssetPath("kids/hindi-consonants/hindi-vyanjan-ha.svg")),
-    HindiLetter("क्ष", "ksha", "क्षितिज", AssetPath("kids/hindi-consonants/hindi-vyanjan-ksha.svg")),
-    HindiLetter("त्र", "tra",  "त्रिशूल", AssetPath("kids/hindi-consonants/hindi-vyanjan-tra.svg")),
-    HindiLetter("ज्ञ", "gya",  "ज्ञान", AssetPath("kids/hindi-consonants/hindi-vyanjan-gya.svg")),
+    HindiLetter("क",   "ka",   "कबूतर", AssetPath("art/hindi-consonants/hindi-vyanjan-ka.svg")),
+    HindiLetter("ख",   "kha",  "खरगोश", AssetPath("art/hindi-consonants/hindi-vyanjan-kha.svg")),
+    HindiLetter("ग",   "ga",   "गाय", AssetPath("art/hindi-consonants/hindi-vyanjan-ga.svg")),
+    HindiLetter("घ",   "gha",  "घड़ी", AssetPath("art/hindi-consonants/hindi-vyanjan-gha.svg")),
+    HindiLetter("ङ",   "nga",  "",   AssetPath("art/hindi-consonants/hindi-vyanjan-nga.svg")),
+    HindiLetter("च",   "cha",  "चम्मच", AssetPath("art/hindi-consonants/hindi-vyanjan-cha.svg")),
+    HindiLetter("छ",   "chha", "छाता", AssetPath("art/hindi-consonants/hindi-vyanjan-chha.svg")),
+    HindiLetter("ज",   "ja",   "जहाज", AssetPath("art/hindi-consonants/hindi-vyanjan-ja.svg")),
+    HindiLetter("झ",   "jha",  "झंडा", AssetPath("art/hindi-consonants/hindi-vyanjan-jha.svg")),
+    HindiLetter("ञ",   "nya",  "",   AssetPath("art/hindi-consonants/hindi-vyanjan-nya.svg")),
+    HindiLetter("ट",   "tta",  "टमाटर", AssetPath("art/hindi-consonants/hindi-vyanjan-tta.svg")),
+    HindiLetter("ठ",   "ttha", "ठंडा", AssetPath("art/hindi-consonants/hindi-vyanjan-ttha.svg")),
+    HindiLetter("ड",   "dda",  "डमरू", AssetPath("art/hindi-consonants/hindi-vyanjan-dda.svg")),
+    HindiLetter("ढ",   "ddha", "ढोल", AssetPath("art/hindi-consonants/hindi-vyanjan-ddha.svg")),
+    HindiLetter("ण",   "nna",  "बाण", AssetPath("art/hindi-consonants/hindi-vyanjan-nna.svg")),
+    HindiLetter("त",   "ta",   "तरबूज", AssetPath("art/hindi-consonants/hindi-vyanjan-ta.svg")),
+    HindiLetter("थ",   "tha",  "थाली", AssetPath("art/hindi-consonants/hindi-vyanjan-tha.svg")),
+    HindiLetter("द",   "da",   "दूध", AssetPath("art/hindi-consonants/hindi-vyanjan-da.svg")),
+    HindiLetter("ध",   "dha",  "धनुष", AssetPath("art/hindi-consonants/hindi-vyanjan-dha.svg")),
+    HindiLetter("न",   "na",   "नाव", AssetPath("art/hindi-consonants/hindi-vyanjan-na.svg")),
+    HindiLetter("प",   "pa",   "पतंग", AssetPath("art/hindi-consonants/hindi-vyanjan-pa.svg")),
+    HindiLetter("फ",   "pha",  "फूल", AssetPath("art/hindi-consonants/hindi-vyanjan-pha.svg")),
+    HindiLetter("ब",   "ba",   "बकरी", AssetPath("art/hindi-consonants/hindi-vyanjan-ba.svg")),
+    HindiLetter("भ",   "bha",  "भालू", AssetPath("art/hindi-consonants/hindi-vyanjan-bha.svg")),
+    HindiLetter("म",   "ma",   "मछली", AssetPath("art/hindi-consonants/hindi-vyanjan-ma.svg")),
+    HindiLetter("य",   "ya",   "योग", AssetPath("art/hindi-consonants/hindi-vyanjan-ya.svg")),
+    HindiLetter("र",   "ra",   "रेल", AssetPath("art/hindi-consonants/hindi-vyanjan-ra.svg")),
+    HindiLetter("ल",   "la",   "लोमड़ी", AssetPath("art/hindi-consonants/hindi-vyanjan-la.svg")),
+    HindiLetter("व",   "va",   "वर्षा", AssetPath("art/hindi-consonants/hindi-vyanjan-va.svg")),
+    HindiLetter("श",   "sha",  "शेर", AssetPath("art/hindi-consonants/hindi-vyanjan-sha.svg")),
+    HindiLetter("ष",   "ssa",  "",   AssetPath("art/hindi-consonants/hindi-vyanjan-ssa.svg")),
+    HindiLetter("स",   "sa",   "सेब", AssetPath("art/hindi-consonants/hindi-vyanjan-sa.svg")),
+    HindiLetter("ह",   "ha",   "हाथी", AssetPath("art/hindi-consonants/hindi-vyanjan-ha.svg")),
+    HindiLetter("क्ष", "ksha", "क्षितिज", AssetPath("art/hindi-consonants/hindi-vyanjan-ksha.svg")),
+    HindiLetter("त्र", "tra",  "त्रिशूल", AssetPath("art/hindi-consonants/hindi-vyanjan-tra.svg")),
+    HindiLetter("ज्ञ", "gya",  "ज्ञान", AssetPath("art/hindi-consonants/hindi-vyanjan-gya.svg")),
 )
 
 /** Fast lookup of a Hindi letter by its Devanagari character (used by the trace prompt/audio). */
@@ -573,7 +573,7 @@ val BARAKHADI_MATRAS = listOf(
 
 /** Asset path of the illustrated badge for a consonant + matra combination. */
 fun barakhadiSvg(consonantRomanized: String, matra: Matra): AssetPath =
-    AssetPath("kids/hindi-barakhadi/barakhadi-${consonantRomanized.dropLast(1)}${matra.key}.svg")
+    AssetPath("art/hindi-barakhadi/barakhadi-${consonantRomanized.dropLast(1)}${matra.key}.svg")
 
 /**
  * Accent and tint for a consonant's twelve barakhadi forms, as (color, tint).
@@ -605,7 +605,7 @@ fun barakhadiSyllable(consonantChar: String, matra: Matra): String = consonantCh
 data class TimeItem(val hour: Int, val label: String, val svg: AssetPath)
 
 val TIMES: List<TimeItem> = (1..12).map {
-    TimeItem(it, "$it o'clock", AssetPath("kids/telling-time/time-$it.svg"))
+    TimeItem(it, "$it o'clock", AssetPath("art/telling-time/time-$it.svg"))
 }
 
 // ── Fractions ───────────────────────────────────────────────────────────────────
@@ -614,12 +614,12 @@ val TIMES: List<TimeItem> = (1..12).map {
 data class FractionItem(val label: String, val spoken: String, val svg: AssetPath)
 
 val FRACTIONS = listOf(
-    FractionItem("1/2", "one half",       AssetPath("kids/fractions/fraction-1-2.svg")),
-    FractionItem("1/3", "one third",      AssetPath("kids/fractions/fraction-1-3.svg")),
-    FractionItem("1/4", "one quarter",    AssetPath("kids/fractions/fraction-1-4.svg")),
-    FractionItem("1/5", "one fifth",      AssetPath("kids/fractions/fraction-1-5.svg")),
-    FractionItem("1/6", "one sixth",      AssetPath("kids/fractions/fraction-1-6.svg")),
-    FractionItem("1/8", "one eighth",     AssetPath("kids/fractions/fraction-1-8.svg")),
-    FractionItem("2/3", "two thirds",     AssetPath("kids/fractions/fraction-2-3.svg")),
-    FractionItem("3/4", "three quarters", AssetPath("kids/fractions/fraction-3-4.svg")),
+    FractionItem("1/2", "one half",       AssetPath("art/fractions/fraction-1-2.svg")),
+    FractionItem("1/3", "one third",      AssetPath("art/fractions/fraction-1-3.svg")),
+    FractionItem("1/4", "one quarter",    AssetPath("art/fractions/fraction-1-4.svg")),
+    FractionItem("1/5", "one fifth",      AssetPath("art/fractions/fraction-1-5.svg")),
+    FractionItem("1/6", "one sixth",      AssetPath("art/fractions/fraction-1-6.svg")),
+    FractionItem("1/8", "one eighth",     AssetPath("art/fractions/fraction-1-8.svg")),
+    FractionItem("2/3", "two thirds",     AssetPath("art/fractions/fraction-2-3.svg")),
+    FractionItem("3/4", "three quarters", AssetPath("art/fractions/fraction-3-4.svg")),
 )

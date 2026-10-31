@@ -13,6 +13,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -43,7 +44,7 @@ fun EmotionsScreen(
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Feelings Star!",
-        learnContent = { EmotionsLearnGrid() },
+        learnContent = { EmotionsLearnGrid(topic.color) },
         quizPrompt = { emotion ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -65,7 +66,7 @@ fun EmotionsScreen(
 }
 
 @Composable
-private fun EmotionsLearnGrid() {
+private fun EmotionsLearnGrid(color: Color) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         EMOTIONS.chunked(2).forEach { pair ->
             Row(
@@ -79,7 +80,7 @@ private fun EmotionsLearnGrid() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.weight(1f),
                     ) {
-                        SvgBadge(
+                        SvgBadge(color = color, 
                             asset = emotion.svg,
                             contentDescription = emotion.name,
                             modifier = Modifier

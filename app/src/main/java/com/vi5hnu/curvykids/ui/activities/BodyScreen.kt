@@ -20,6 +20,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -54,7 +55,7 @@ fun BodyScreen(
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Body Star!",
-        learnContent = { BodyLearnGrid(onReward = onReward, speaker = feedback?.speaker) },
+        learnContent = { BodyLearnGrid(onReward = onReward, speaker = feedback?.speaker, color = topic.color) },
         quizPrompt = { target ->
             Text(
                 text = target.name,
@@ -76,6 +77,7 @@ fun BodyScreen(
 private fun BodyLearnGrid(
     onReward: (Int) -> Unit,
     speaker: PhonicsSpeaker?,
+    color: Color,
 ) {
     var seen by remember { mutableStateOf(setOf<String>()) }
 
@@ -103,7 +105,7 @@ private fun BodyLearnGrid(
                                     }
                                 },
                         ) {
-                            SvgBadge(
+                            SvgBadge(color = color, 
                                 asset = part.svg,
                                 contentDescription = part.name,
                                 modifier = Modifier

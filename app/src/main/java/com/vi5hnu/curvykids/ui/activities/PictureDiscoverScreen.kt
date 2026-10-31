@@ -104,7 +104,7 @@ private fun PictureLearnGrid(
                     // Outer Box is not clipped, so the star marker is never cut off at the corner;
                     // the clip + tap target live on the badge itself.
                     Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        SvgBadge(
+                        SvgBadge(color = topic.color, 
                             asset = item.svg,
                             contentDescription = item.name,
                             modifier = Modifier

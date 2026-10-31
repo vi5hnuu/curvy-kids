@@ -8,7 +8,7 @@ import org.junit.Test
 
 class PatternsTest {
 
-    private val pics = (0..6).map { AssetPath("kids/test/p-$it.svg") }
+    private val pics = (0..6).map { AssetPath("art/test/p-$it.svg") }
 
     private fun check(unit: List<Int>) {
         val spec = buildPatternSpec(unit, pics)

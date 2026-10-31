@@ -85,7 +85,7 @@ class AssetExistenceTest {
 
     @Test
     fun `every catalog category directory exists`() {
-        val missing = KidAssets.ALL_CATEGORIES.filterNot { File(assetsRoot, "kids/$it").isDirectory }
+        val missing = KidAssets.ALL_CATEGORIES.filterNot { File(assetsRoot, "art/$it").isDirectory }
         assertTrue("Catalog lists categories with no directory: $missing", missing.isEmpty())
     }
 }

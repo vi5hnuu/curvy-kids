@@ -70,7 +70,7 @@ fun FruitsVeggiesScreen(
             Spacer(Modifier.height(14.dp))
             tabs()
             Spacer(Modifier.height(16.dp))
-            FruitsLearnGrid()
+            FruitsLearnGrid(topic.color)
         }
     } else {
         FruitsQuiz(topic, onBack, onReward, feedback, tabs)
@@ -110,7 +110,7 @@ private fun FruitsQuiz(
         celebrateTitle = "Super Sorter!",
         promptLabel = "FRUIT OR VEGETABLE?",
         prompt = {
-            SvgBadge(current.svg, contentDescription = current.name, modifier = Modifier.size(120.dp))
+            SvgBadge(current.svg, color = topic.color, contentDescription = current.name, modifier = Modifier.size(120.dp))
             Text(current.name, fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 24.sp,
                 color = topic.color)
         },
@@ -121,7 +121,7 @@ private fun FruitsQuiz(
 }
 
 @Composable
-private fun FruitsLearnGrid() {
+private fun FruitsLearnGrid(color: Color) {
     val fruits = FRUITS_VEGGIES.filter { it.isFruit }
     val veggies = FRUITS_VEGGIES.filter { !it.isFruit }
 
@@ -150,7 +150,7 @@ private fun FruitsLearnGrid() {
                             .padding(4.dp),
                     ) {
                         // SVG badge carries the item name already; rendered on its own (no card).
-                        SvgBadge(
+                        SvgBadge(color = color, 
                             asset = item.svg,
                             contentDescription = item.name,
                             modifier = Modifier

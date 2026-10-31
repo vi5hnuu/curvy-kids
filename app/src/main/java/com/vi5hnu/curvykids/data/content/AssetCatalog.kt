@@ -3,8 +3,8 @@ package com.vi5hnu.curvykids.data.content
 /**
  * The single source of truth for illustrated-asset paths.
  *
- * Every picture in the app comes from the hand-drawn SVG library under `assets/kids/`, laid out
- * as `kids/<category>/<prefix>-<name>.svg`. Content lists used to embed those strings literally,
+ * Every picture in the app comes from the SVG library under `assets/art/`, laid out
+ * as `art/<category>/<prefix>-<name>.svg`. Content lists used to embed those strings literally,
  * which meant a renamed or missing file surfaced only as a blank badge at runtime, in one screen,
  * on one topic.
  *
@@ -13,7 +13,7 @@ package com.vi5hnu.curvykids.data.content
  * concrete to check the library against.
  *
  * Names are the file's own suffix, lowercase and hyphenated — `animal("polar-bear")` resolves to
- * `kids/animals/animal-polar-bear.svg`.
+ * `art/animals/animal-polar-bear.svg`.
  */
 /**
  * The location of an illustration inside `assets/`.
@@ -28,7 +28,7 @@ value class AssetPath(val path: String)
 
 object KidAssets {
 
-    private const val ROOT = "kids"
+    private const val ROOT = "art"
 
     /** Builds a path from a category directory and its filename prefix. */
     private fun path(category: String, prefix: String, name: String) =

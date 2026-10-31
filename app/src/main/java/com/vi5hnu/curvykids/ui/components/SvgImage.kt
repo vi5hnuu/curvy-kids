@@ -1,7 +1,27 @@
 package com.vi5hnu.curvykids.ui.components
 
 import android.content.Context
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Text
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.dp
+import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import androidx.compose.foundation.layout.Box
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,12 +45,11 @@ import java.nio.ByteBuffer
 private val PLACEHOLDER = Color(0xFFE4EDF4)
 
 /**
- * Renders a kids-asset SVG from `assets/kids/…` verbatim, using the app-wide Coil loader
+ * Renders an SVG from `assets/art/…` verbatim, using the app-wide Coil loader
  * (configured with the SVG decoder in [com.vi5hnu.curvykids.CurvyKidsApp]).
  *
- * The badge SVGs are self-contained, hand-drawn illustrations — they carry their own rounded
- * frame, artwork and name label — so they're rendered exactly as authored (`ContentScale.Fit`)
- * and must be placed on their own, never inside another card.
+ * Pictures are bare artwork with no frame or name (see tools/art/unframe.py); use [SvgBadge] for
+ * the framed, named card look.
  *
  * There is deliberately no *emoji* fallback: emoji render differently on every OEM and Android
  * version, ignore the colour they are given, and scale with the user's font setting rather than
@@ -41,7 +60,7 @@ private val PLACEHOLDER = Color(0xFFE4EDF4)
  * the SVG renderer has to resolve a font for those, and for Devanagari it may not manage it.
  * Without a fallback the child is shown an empty card. Default is a quiet placeholder.
  *
- * @param asset Asset-relative path, e.g. `"kids/animals/animal-cat.svg"` (no leading slash).
+ * @param asset Asset-relative path, e.g. `"art/animals/animal-cat.svg"` (no leading slash).
  *              Build these with [com.vi5hnu.curvykids.data.content.KidAssets], not by hand.
  * @param contentDescription Accessibility label.
  * @param fallback Drawn instead when [asset] is null or fails to load.
@@ -81,25 +100,75 @@ fun SvgImage(
 }
 
 /**
- * Semantic alias for a kids-asset badge. The asset SVGs already carry their frame, art and name
- * and size themselves to the (square) space the caller gives them — use e.g.
- * `Modifier.fillMaxWidth().aspectRatio(1f)`. Kept as a named wrapper so call sites read as
- * "badge" and so any future badge-only treatment lives in one place.
+ * A picture as a card: a rounded tile in [color] with the picture and its [label] underneath.
+ *
+ * Pictures in `assets/art/` are bare artwork, so the frame and the name are drawn here, where
+ * they can follow the screen's colour and size, instead of being baked into every file. A few
+ * assets (numbers, barakhadi, days, colours, math symbols) still carry their own frame and text
+ * until those screens draw them in Compose; those are shown as they are, so they never get a
+ * second frame.
+ *
+ * Size it square, e.g. `Modifier.fillMaxWidth().aspectRatio(1f)`. The label is left out on very
+ * small badges, where it couldn't be read anyway.
  */
 @Composable
 fun SvgBadge(
     asset: AssetPath?,
     modifier: Modifier = Modifier,
     contentDescription: String? = null,
+    color: Color = BADGE_DEFAULT,
+    label: String? = contentDescription,
     fallback: (@Composable () -> Unit)? = null,
 ) {
-    SvgImage(
-        asset = asset,
-        modifier = modifier,
-        contentDescription = contentDescription,
-        fallback = fallback,
-    )
+    val context = LocalContext.current
+    val bare by produceState<Boolean?>(initialValue = null, asset) {
+        value = asset?.let { a ->
+            withContext(Dispatchers.IO) { runCatching { isBarePicture(context, a.path) }.getOrDefault(false) }
+        } ?: false
+    }
+    when (bare) {
+        null -> Box(modifier) // still reading; hold the space
+        false -> SvgImage(asset, modifier, contentDescription, fallback)
+        true -> BoxWithConstraints(
+            modifier
+                .clip(RoundedCornerShape(22))
+                .background(Color.White)
+                .background(color.copy(alpha = 0.14f))
+                .border(BorderStroke(4.dp, color), RoundedCornerShape(22))
+                .semantics { if (contentDescription != null) this.contentDescription = contentDescription },
+        ) {
+            val showLabel = label != null && maxWidth >= 72.dp
+            val labelSize = with(LocalDensity.current) { (maxWidth * 0.14f).toSp() }
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxSize().padding(maxWidth * 0.1f),
+            ) {
+                SvgImage(asset, Modifier.fillMaxWidth().weight(1f), contentDescription = null, fallback = fallback)
+                if (showLabel) {
+                    Text(
+                        label!!,
+                        fontFamily = FontDisplay,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = labelSize,
+                        lineHeight = labelSize,
+                        color = color,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis,
+                        textAlign = TextAlign.Center,
+                    )
+                }
+            }
+        }
+    }
 }
+
+private val BADGE_DEFAULT = Color(0xFF1FC2AE)
+
+/** Bare pictures are the 36×36 emoji-derived art written by tools/art/unframe.py. */
+private fun isBarePicture(context: Context, path: String): Boolean =
+    context.assets.open(path).bufferedReader().use { r ->
+        CharArray(200).let { buf -> String(buf, 0, r.read(buf)) }
+    }.contains("viewBox=\"0 0 36 36\"")
 
 /**
  * Renders a badge with its printed name removed.
