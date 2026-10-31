@@ -7,7 +7,7 @@ data class VoiceLine(val clip: VoiceClip, val text: String, val usedIn: String)
 
 /**
  * Every Hindi line the app speaks, each with the key its recording is stored under
- * (`assets/voice/hi/<key>.m4a`).
+ * (`assets/voice/hi/<group>/<key>.m4a`).
  *
  * Screens ask this object for a line's clip instead of building keys themselves, so the recording
  * sheet ([all]) and what the app actually plays can't drift apart. Anything not recorded yet
@@ -15,25 +15,31 @@ data class VoiceLine(val clip: VoiceClip, val text: String, val usedIn: String)
  */
 object HindiVoiceScript {
 
+    // Sub-folders of assets/voice/hi/.
+    private const val LETTERS = "letters"
+    private const val BARAKHADI = "barakhadi"
+    private const val PHRASES = "phrases"
+    private const val STORY_FOLDER = "stories"
+
     // ── Phrases spoken while tracing Hindi letters ─────────────────────────────
 
     val PRAISE: List<VoiceLine> = listOf("शाबाश!", "बहुत बढ़िया!", "वाह! कमाल कर दिया!", "बिलकुल सही!")
-        .mapIndexed { i, text -> VoiceLine(VoiceClip.hindi("praise-${i + 1}"), text, "Trace: correct") }
+        .mapIndexed { i, text -> VoiceLine(VoiceClip.hindi(PHRASES, "praise-${i + 1}"), text, "Trace: correct") }
 
-    val TRY_AGAIN = VoiceLine(VoiceClip.hindi("try-again"), "फिर से कोशिश करो।", "Trace: wrong")
-    val GIVE_UP = VoiceLine(VoiceClip.hindi("give-up"), "कोई बात नहीं! फिर कोशिश करते हैं।", "Trace: out of tries")
-    val WRITE_FIRST = VoiceLine(VoiceClip.hindi("write-first"), "पहले लिखो!", "Trace: Check with nothing drawn")
+    val TRY_AGAIN = VoiceLine(VoiceClip.hindi(PHRASES, "try-again"), "फिर से कोशिश करो।", "Trace: wrong")
+    val GIVE_UP = VoiceLine(VoiceClip.hindi(PHRASES, "give-up"), "कोई बात नहीं! फिर कोशिश करते हैं।", "Trace: out of tries")
+    val WRITE_FIRST = VoiceLine(VoiceClip.hindi(PHRASES, "write-first"), "पहले लिखो!", "Trace: Check with nothing drawn")
 
     // ── Letters and barakhadi ──────────────────────────────────────────────────
 
     /** The letter on its own ("क"). Also the first barakhadi form, which is the same sound. */
-    fun letter(l: HindiLetter) = VoiceLine(VoiceClip.hindi("letter-${l.romanized}"), l.char, "Letter name")
+    fun letter(l: HindiLetter) = VoiceLine(VoiceClip.hindi(LETTERS, "letter-${l.romanized}"), l.char, "Letter name")
 
     /** The letter with its example word ("क, क से कबूतर"); the plain letter when there's no word. */
     fun letterWithWord(l: HindiLetter): VoiceLine =
         if (l.example.isEmpty()) letter(l)
         else VoiceLine(
-            VoiceClip.hindi("letter-${l.romanized}-word"),
+            VoiceClip.hindi(LETTERS, "letter-${l.romanized}-word"),
             "${l.char}, ${l.char} से ${l.example}",
             "Trace prompt",
         )
@@ -43,7 +49,7 @@ object HindiVoiceScript {
         if (matra.sign.isEmpty()) return letter(consonant)
         val key = consonant.romanized.dropLast(1) + matra.key
         return VoiceLine(
-            VoiceClip.hindi("syllable-$key"),
+            VoiceClip.hindi(BARAKHADI, "syllable-$key"),
             barakhadiSyllable(consonant.char, matra),
             "Barakhadi",
         )
@@ -53,13 +59,13 @@ object HindiVoiceScript {
 
     /** Line [index] (0-based) of [story]; recorded one sentence per file so reading can highlight it. */
     fun storyLine(story: Story, index: Int) = VoiceLine(
-        VoiceClip.hindi("story-${story.id}-line-${index + 1}"),
+        VoiceClip.hindi(STORY_FOLDER, "story-${story.id}-line-${index + 1}"),
         story.lines[index],
         "Story: ${story.subtitle}",
     )
 
     fun storyMoral(story: Story) = VoiceLine(
-        VoiceClip.hindi("story-${story.id}-moral"),
+        VoiceClip.hindi(STORY_FOLDER, "story-${story.id}-moral"),
         story.moral,
         "Story: ${story.subtitle} (moral)",
     )

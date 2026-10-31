@@ -386,8 +386,8 @@ data class LetterPhonic(
     val soundGroup: String = letter,
     val position: SoundPosition = SoundPosition.START,
 ) {
-    /** Recording of the pure sound, e.g. `assets/voice/en/phoneme-m.m4a`. */
-    val clip: VoiceClip get() = VoiceClip.english("phoneme-${letter.lowercase()}")
+    /** Recording of the pure sound, e.g. `assets/voice/en/phonemes/phoneme-m.m4a`. */
+    val clip: VoiceClip get() = VoiceClip.english("phonemes", "phoneme-${letter.lowercase()}")
 }
 
 enum class SoundPosition { START, END }

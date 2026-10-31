@@ -6,23 +6,27 @@ import android.media.MediaPlayer
 import android.util.Log
 
 /**
- * One recorded line of narration, stored at `assets/voice/<lang>/<key>.<ext>`.
+ * One recorded line of narration, stored at `assets/voice/<lang>/<group>/<key>.<ext>`.
  *
  * Text-to-speech is fine for English prompts, but a device without a Hindi voice reads Devanagari
  * through an English voice, which is wrong in a literacy app. So every Hindi line has a stable key
  * that a human recording can be dropped in for. See
  * [com.vi5hnu.curvykids.data.content.HindiVoiceScript] for the full list of keys.
  *
- * @param lang Folder under `assets/voice/` ("hi", "en").
- * @param key  File name without extension, lowercase ASCII and hyphens (e.g. "letter-ka").
+ * @param lang  Folder under `assets/voice/` ("hi", "en").
+ * @param group Sub-folder that keeps the recordings browsable ("letters", "barakhadi", "stories").
+ * @param key   File name without extension, lowercase ASCII and hyphens (e.g. "letter-ka").
  */
-data class VoiceClip(val lang: String, val key: String) {
+data class VoiceClip(val lang: String, val group: String, val key: String) {
+    /** Path under `assets/voice/`, without an extension: "hi/letters/letter-ka". */
+    val relativePath: String get() = "$lang/$group/$key"
+
     /** Asset path without an extension; [ClipPlayer] tries each supported extension in turn. */
-    val basePath: String get() = "voice/$lang/$key"
+    val basePath: String get() = "voice/$relativePath"
 
     companion object {
-        fun hindi(key: String) = VoiceClip("hi", key)
-        fun english(key: String) = VoiceClip("en", key)
+        fun hindi(group: String, key: String) = VoiceClip("hi", group, key)
+        fun english(group: String, key: String) = VoiceClip("en", group, key)
     }
 }
 
