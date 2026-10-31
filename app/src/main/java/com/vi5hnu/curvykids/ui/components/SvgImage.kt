@@ -165,11 +165,17 @@ fun SvgBadge(
 
 private val BADGE_DEFAULT = Color(0xFF1FC2AE)
 
-/** Bare pictures are the 36×36 emoji-derived art written by tools/art/unframe.py. */
-private fun isBarePicture(context: Context, path: String): Boolean =
-    context.assets.open(path).bufferedReader().use { r ->
-        CharArray(200).let { buf -> String(buf, 0, r.read(buf)) }
-    }.contains("viewBox=\"0 0 36 36\"")
+/**
+ * Whether [path] is a bare picture that needs a frame drawn around it: either one drawn by
+ * tools/art/draw (marked `data-bare="1"`) or an emoji-derived one from tools/art/unframe.py
+ * (the 36×36 box) that has not been redrawn yet.
+ */
+private fun isBarePicture(context: Context, path: String): Boolean {
+    val head = context.assets.open(path).bufferedReader().use { r ->
+        CharArray(200).let { buf -> String(buf, 0, r.read(buf).coerceAtLeast(0)) }
+    }
+    return "data-bare=\"1\"" in head || "viewBox=\"0 0 36 36\"" in head
+}
 
 /**
  * Renders a badge with its printed name removed.
