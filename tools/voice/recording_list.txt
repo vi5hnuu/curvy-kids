@@ -1,7 +1,8 @@
 CurvyKids - voice recording list
 
-Format: one file per numbered line, saved under app/src/main/assets/voice/ at
-exactly the path after the arrow.
+Format: one file per numbered line, saved at exactly the path after the arrow,
+under the assets/voice/ folder of the pack that owns it (see audio/packs/VoicePack.kt):
+voice_hi_letters/ or voice_hi_barakhadi/src/main/assets/voice/, else app/src/main/assets/voice/.
 Mono, 44.1 kHz, AAC .m4a (or .mp3), 64-96 kbps. Trim the silence at both ends.
 Warm, slow, clear voice for young children. Lines not recorded yet use the
 phone's built-in voice, so recordings can be added a few at a time.

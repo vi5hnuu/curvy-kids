@@ -76,9 +76,12 @@ class PlayVoicePackRepository(
         if (needed.isEmpty()) return
         needed.forEach { set(it, PackState.Downloading(0, 0)) }
         scope.launch {
-            // Progress after this arrives through [listener].
+            // Progress after this arrives through [listener]; the reply covers packs that were
+            // already complete, for which no update would follow.
             try {
-                manager.requestFetch(needed.map { it.packName })
+                manager.requestFetch(needed.map { it.packName }).packStates().forEach { (name, state) ->
+                    VoicePack.named(name)?.let { set(it, state.toPackState()) }
+                }
             } catch (e: Exception) {
                 fail(needed, e)
             }

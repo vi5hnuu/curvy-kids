@@ -1,5 +1,6 @@
 package com.vi5hnu.curvykids.ui.parent
 
+import androidx.compose.runtime.saveable.listSaver
 import kotlin.random.Random
 
 /**
@@ -13,6 +14,9 @@ data class GateQuestion(val a: Int, val b: Int) {
     val text: String get() = "${numberInWords(a)} plus ${numberInWords(b)}"
 
     companion object {
+        /** Keeps the question across rotation (as its two numbers). */
+        val Saver = listSaver<GateQuestion, Int>(save = { listOf(it.a, it.b) }, restore = { GateQuestion(it[0], it[1]) })
+
         fun random(random: Random = Random): GateQuestion =
             GateQuestion(random.nextInt(21, 80), random.nextInt(12, 80))
     }

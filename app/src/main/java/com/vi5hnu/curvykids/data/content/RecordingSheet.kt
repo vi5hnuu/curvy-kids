@@ -12,8 +12,9 @@ object RecordingSheet {
     fun render(): String = buildString {
         appendLine("CurvyKids - voice recording list")
         appendLine()
-        appendLine("Format: one file per numbered line, saved under app/src/main/assets/voice/ at")
-        appendLine("exactly the path after the arrow.")
+        appendLine("Format: one file per numbered line, saved at exactly the path after the arrow,")
+        appendLine("under the assets/voice/ folder of the pack that owns it (see audio/packs/VoicePack.kt):")
+        appendLine("voice_hi_letters/ or voice_hi_barakhadi/src/main/assets/voice/, else app/src/main/assets/voice/.")
         appendLine("Mono, 44.1 kHz, AAC .m4a (or .mp3), 64-96 kbps. Trim the silence at both ends.")
         appendLine("Warm, slow, clear voice for young children. Lines not recorded yet use the")
         appendLine("phone's built-in voice, so recordings can be added a few at a time.")

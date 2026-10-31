@@ -14,7 +14,6 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
@@ -45,10 +44,7 @@ fun ParentGate(
     onDismiss: () -> Unit,
 ) {
     // Saveable so a rotation does not swap the question out from under a parent mid-answer.
-    var a by rememberSaveable { mutableIntStateOf(0) }
-    var b by rememberSaveable { mutableIntStateOf(0) }
-    if (a == 0) GateQuestion.random().let { a = it.a; b = it.b }
-    val question = GateQuestion(a, b)
+    var question by rememberSaveable(stateSaver = GateQuestion.Saver) { mutableStateOf(GateQuestion.random()) }
 
     var input by rememberSaveable { mutableStateOf("") }
     var showWrong by rememberSaveable { mutableStateOf(false) }
@@ -119,7 +115,7 @@ fun ParentGate(
                     } else {
                         showWrong = true
                         input = ""
-                        GateQuestion.random().let { a = it.a; b = it.b }
+                        question = GateQuestion.random()
                     }
                 },
                 modifier = Modifier
