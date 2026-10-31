@@ -10,10 +10,16 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
+import com.vi5hnu.curvykids.ui.theme.SceneHillFront
+import com.vi5hnu.curvykids.ui.theme.SceneSkyBottom
+import com.vi5hnu.curvykids.ui.theme.SceneSkyTop
 import com.vi5hnu.curvykids.audio.packs.VoicePack
 import com.vi5hnu.curvykids.audio.packs.VoicePackRepository
 import com.vi5hnu.curvykids.audio.packs.allReady
 import com.vi5hnu.curvykids.ui.voice.VoicePackGate
+import com.vi5hnu.curvykids.ui.world.WorldScreen
+import com.vi5hnu.curvykids.data.content.World
+import com.vi5hnu.curvykids.data.content.Topic
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
@@ -68,9 +74,7 @@ import com.vi5hnu.curvykids.ui.app.LocalDifficulty
 import com.vi5hnu.curvykids.ui.game.GameViewModel
 import com.vi5hnu.curvykids.ui.home.HomeScreen
 import com.vi5hnu.curvykids.ui.parent.ParentGate
-import com.vi5hnu.curvykids.ui.parent.ParentTab
 import com.vi5hnu.curvykids.ui.parent.ParentZone
-import com.vi5hnu.curvykids.ui.play.PlayScreen
 import com.vi5hnu.curvykids.ui.rewards.RewardsScreen
 import com.vi5hnu.curvykids.ui.theme.BgBottom
 import com.vi5hnu.curvykids.ui.theme.BgTop
@@ -80,7 +84,7 @@ import com.vi5hnu.curvykids.ui.trace.TraceScreen
  * Root navigation graph. Hosts the 4 bottom tabs and topic full-screens.
  * - AppViewModel is passed in from MainActivity (activity-scoped, lives across all screens).
  * - GameViewModel is activity-scoped too; selectLevel() is called on trace topic open.
- * - BottomTabBar floats over tab content as an overlay — hidden on topic full-screens.
+ * - Home → world → topic. Rewards is reached from Home; grown-ups from the lock on Home.
  * - A topic whose voice packs aren't downloaded shows [VoicePackGate] until they are.
  */
 @Composable
@@ -103,20 +107,20 @@ fun AppNavGraph(
         gameViewModel.setDifficulty(appSettings.difficulty)
     }
 
-    // Gradient background applied to the full screen at all times
-    val bgGradient = Brush.verticalGradient(listOf(BgTop, BgBottom))
+    // Behind the system bars: sky above, grass below, so it continues the child screens' scene.
+    val bgGradient = Brush.verticalGradient(listOf(SceneSkyTop, SceneSkyBottom, SceneHillFront))
 
-    // Determine visibility of bottom tab bar
-    val navBackEntry by navController.currentBackStackEntryAsState()
-    val currentRoute = navBackEntry?.destination?.route
-    val tabRoutes = AppTab.entries.map { it.route }.toSet()
-    val onTabScreen = currentRoute in tabRoutes
-    val currentTab = AppTab.entries.firstOrNull { it.route == currentRoute } ?: AppTab.HOME
+    // Grown-ups area: opened from the lock on Home, behind the parent gate. Saveable so a
+    // rotation doesn't close an open sheet.
+    var showGate by rememberSaveable { mutableStateOf(false) }
+    var showZone by rememberSaveable { mutableStateOf(false) }
 
-    // The tab bar floats over the content, so tab screens are given the full height and each
-    // one ends its scrollable content with enough bottom padding to clear the bar. Insetting the
-    // screen here as well stacked the two, leaving ~180dp of dead space below every list.
-    val tabContentPadding = Modifier
+    // Say the name aloud as an activity opens: the child this app is for can't read the label.
+    val openTopic: (Topic) -> Unit = { topic ->
+        gameViewModel.speaker.speak(topic.title)
+        appViewModel.setLastTopic(topic.id)
+        navController.navigate(Screen.Topic.createRoute(topic.id))
+    }
 
     CompositionLocalProvider(LocalDifficulty provides appSettings.difficulty) {
         Box(
@@ -127,95 +131,51 @@ fun AppNavGraph(
             NavHost(
                 navController = navController,
                 startDestination = Screen.Home.route,
-                // Keep the gradient full-bleed behind the bars, but inset content below the
+                // Keep the background full-bleed behind the bars, but inset content below the
                 // status bar (top) and above the gesture/navigation bar (bottom).
                 modifier = Modifier
                     .fillMaxSize()
                     .windowInsetsPadding(WindowInsets.systemBars),
             ) {
-                // ── Home tab ───────────────────────────────────────────────────
+                // ── Home: the six worlds ───────────────────────────────────────
                 composable(Screen.Home.route) {
                     HomeScreen(
                         appState = appState,
-                        onOpenTopic = { topic ->
-                            // Say the name aloud. The child this app is for cannot read the
-                            // label under the picture, so without this they have no way to learn
-                            // what a card is — they are navigating an app that teaches reading.
-                            gameViewModel.speaker.speak(topic.title)
-                            appViewModel.setLastTopic(topic.id)
-                            navController.navigate(Screen.Topic.createRoute(topic.id))
+                        onOpenWorld = { world ->
+                            gameViewModel.speaker.speak(world.title)
+                            navController.navigate(Screen.World.createRoute(world.id))
                         },
-                        onSeeAll = {
-                            navController.navigate(AppTab.PLAY.route) {
-                                popUpTo(navController.graph.startDestinationId) { saveState = true }
-                                launchSingleTop = true
-                                restoreState = true
-                            }
+                        onOpenTopic = openTopic,
+                        onOpenStickers = {
+                            gameViewModel.speaker.speak("My stickers")
+                            navController.navigate(Screen.Rewards.route)
                         },
-                        modifier = tabContentPadding,
+                        onOpenGrownUps = { showGate = true },
+                        onSpeak = { gameViewModel.speaker.speak(it, flush = false) },
                     )
                 }
 
-                // ── Play tab ───────────────────────────────────────────────────
-                composable(Screen.Play.route) {
-                    PlayScreen(
-                        onSpeak = { gameViewModel.speaker.speak(it) },
-                        onOpenTopic = { topic ->
-                            // Say the name aloud. The child this app is for cannot read the
-                            // label under the picture, so without this they have no way to learn
-                            // what a card is — they are navigating an app that teaches reading.
-                            gameViewModel.speaker.speak(topic.title)
-                            appViewModel.setLastTopic(topic.id)
-                            navController.navigate(Screen.Topic.createRoute(topic.id))
-                        },
-                        modifier = tabContentPadding,
+                // ── One world's activities ─────────────────────────────────────
+                composable(
+                    route = Screen.World.route,
+                    arguments = listOf(navArgument("worldId") { type = NavType.StringType }),
+                ) { entry ->
+                    val world = World.byId(entry.arguments?.getString("worldId").orEmpty()) ?: return@composable
+                    WorldScreen(
+                        world = world,
+                        onBack = { navController.popBackStack() },
+                        onOpenTopic = openTopic,
+                        // Queued, so it follows the name said as the world was tapped.
+                        onSpeak = { },
                     )
                 }
 
-                // ── Rewards tab ────────────────────────────────────────────────
+                // ── Sticker book ───────────────────────────────────────────────
                 composable(Screen.Rewards.route) {
                     RewardsScreen(
                         appState = appState,
-                        modifier = tabContentPadding,
+                        onBack = { navController.popBackStack() },
                     )
-                }
-
-                // ── Parent tab ─────────────────────────────────────────────────
-                composable(Screen.Parent.route) {
-                    // rememberSaveable so config changes (rotation) don't dismiss an open sheet
-                    var showGate by rememberSaveable { mutableStateOf(false) }
-                    var showZone by rememberSaveable { mutableStateOf(false) }
-
-                    ParentTab(
-                        onUnlock = { showGate = true },
-                        modifier = tabContentPadding,
-                    )
-
-                    if (showGate) {
-                        ParentGate(
-                            onPass = {
-                                showGate = false
-                                showZone = true
-                            },
-                            onDismiss = { showGate = false },
-                        )
-                    }
-
-                    if (showZone) {
-                        ParentZone(
-                            appState = appState,
-                            settings = appSettings,
-                            onSoundEffects = appViewModel::setSoundEffects,
-                            onDifficulty = appViewModel::setDifficulty,
-                            voicePacks = voicePacks,
-                            onResetProgress = {
-                                // Stars/badges and tracing progress live in separate stores.
-                                appViewModel.resetProgress()
-                                gameViewModel.resetProgress()
-                            },
-                            onDismiss = { showZone = false },
-                        )
-                    }
                 }
 
                 // ── Topic full-screen ──────────────────────────────────────────
@@ -469,22 +429,29 @@ fun AppNavGraph(
                 }
             }
 
-            // ── Floating bottom tab bar (hidden inside topic screens) ──────────
-            if (onTabScreen) {
-                BottomTabBar(
-                    currentTab = currentTab,
-                    onTabSelected = { tab ->
-                        navController.navigate(tab.route) {
-                            // Avoid building up a large back stack
-                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                            launchSingleTop = true
-                            restoreState = true
-                        }
+            if (showGate) {
+                ParentGate(
+                    onPass = {
+                        showGate = false
+                        showZone = true
                     },
-                    modifier = Modifier
-                        .align(Alignment.BottomCenter)
-                        .navigationBarsPadding()
-                        .padding(bottom = 12.dp),
+                    onDismiss = { showGate = false },
+                )
+            }
+
+            if (showZone) {
+                ParentZone(
+                    appState = appState,
+                    settings = appSettings,
+                    onSoundEffects = appViewModel::setSoundEffects,
+                    onDifficulty = appViewModel::setDifficulty,
+                    voicePacks = voicePacks,
+                    onResetProgress = {
+                        // Stars/badges and tracing progress live in separate stores.
+                        appViewModel.resetProgress()
+                        gameViewModel.resetProgress()
+                    },
+                    onDismiss = { showZone = false },
                 )
             }
         }

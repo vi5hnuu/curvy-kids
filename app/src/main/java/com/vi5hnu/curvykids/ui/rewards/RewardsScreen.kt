@@ -16,6 +16,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import com.vi5hnu.curvykids.ui.kit.KidBackButton
+import com.vi5hnu.curvykids.ui.theme.KidSun
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -68,6 +70,7 @@ private data class Sticker(
 @Composable
 fun RewardsScreen(
     appState: AppUiState,
+    onBack: () -> Unit,
     modifier: Modifier = Modifier,
 ) {
     val mastered = appState.mastered
@@ -96,6 +99,8 @@ fun RewardsScreen(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier.fillMaxWidth(),
         ) {
+            KidBackButton(onClick = onBack, color = KidSun)
+            Spacer(Modifier.size(12.dp))
             CurvyMascot(size = 62.dp, mood = CurvyMood.Cheer)
             Spacer(Modifier.size(12.dp))
             Column {

@@ -3,9 +3,11 @@ package com.vi5hnu.curvykids.ui.home
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
@@ -14,284 +16,197 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.data.content.Topic
+import com.vi5hnu.curvykids.data.content.World
+import com.vi5hnu.curvykids.data.content.art
 import com.vi5hnu.curvykids.data.content.dailyPicks
 import com.vi5hnu.curvykids.ui.app.AppUiState
 import com.vi5hnu.curvykids.ui.components.CurvyMascot
 import com.vi5hnu.curvykids.ui.components.CurvyMood
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.KidIconImage
-import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.StarGold
-import com.vi5hnu.curvykids.ui.components.TopicCard
-import com.vi5hnu.curvykids.ui.components.TopicGlyph
+import com.vi5hnu.curvykids.ui.kit.CandyCard
+import com.vi5hnu.curvykids.ui.kit.HoldToOpenLock
+import com.vi5hnu.curvykids.ui.kit.SceneBackground
+import com.vi5hnu.curvykids.ui.kit.TopicArtView
 import com.vi5hnu.curvykids.ui.theme.Coral
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
-import com.vi5hnu.curvykids.ui.theme.Ink
-import com.vi5hnu.curvykids.ui.theme.InkSoft
-import com.vi5hnu.curvykids.ui.theme.Teal
+import com.vi5hnu.curvykids.ui.theme.KidDimens
+import com.vi5hnu.curvykids.ui.theme.KidInk
 import java.time.LocalDate
-import java.util.Calendar
 
 /**
- * Home tab — mascot greeting, star/streak pills, an optional "Continue" card, and a short set of
- * suggested activities.
+ * Home: the mascot, the six worlds, and the sticker book.
  *
- * Deliberately not the full catalogue: every topic lives on the Play tab, grouped. Home is the
- * "what shall I do now?" screen, and a small number of large targets is what a pre-reader can
- * actually choose between.
+ * Built for a child who can't read yet: every choice is a big coloured picture that says its
+ * name when tapped, and there is nothing else to choose between. The one exception is the
+ * "play again" bubble, which reopens the last activity (or suggests today's pick before there
+ * is one). Grown-ups get in through the lock in the corner, which needs a press and hold.
  *
- * @param onSeeAll Opens the Play tab, where all activities are browsable.
+ * On a short window (phone on its side) the screen scrolls instead of squeezing the worlds.
  */
 @Composable
 fun HomeScreen(
     appState: AppUiState,
+    onOpenWorld: (World) -> Unit,
     onOpenTopic: (Topic) -> Unit,
-    onSeeAll: () -> Unit,
-    modifier: Modifier = Modifier,
+    onOpenStickers: () -> Unit,
+    onOpenGrownUps: () -> Unit,
+    onSpeak: (String) -> Unit,
 ) {
-    val hour = Calendar.getInstance().get(Calendar.HOUR_OF_DAY)
-    val greeting = when {
-        hour < 12 -> "Good morning"
-        hour < 18 -> "Good afternoon"
-        else -> "Good evening"
+    // Greet once per visit to the app, not on every return from an activity.
+    var greeted = rememberSaveable { mutableStateOf(false) }
+    LaunchedEffect(Unit) {
+        if (!greeted.value) { greeted.value = true; onSpeak("Hi! Where shall we play?") }
     }
 
-    val lastTopic = appState.lastTopic
     val today = LocalDate.now().toEpochDay()
-    // Keyed on the day only. The Continue topic is filtered out of an order that does not
-    // itself depend on it, so opening an activity never reshuffles the rest of the cards.
-    val picks = remember(today, appState.lastTopicId) {
-        dailyPicks(lastTopicId = appState.lastTopicId, seed = today)
-    }
+    val playAgain: Topic? = appState.lastTopic
+        ?: remember(today) { dailyPicks(lastTopicId = null, seed = today).firstOrNull() }
 
-    Column(
-        modifier = modifier
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 18.dp, vertical = 18.dp)
-            .padding(bottom = 96.dp), // clears the floating tab bar
-    ) {
-        // ── Mascot + greeting ──────────────────────────────────────────────
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            CurvyMascot(size = 66.dp, mood = CurvyMood.Happy, floating = true)
-            Spacer(Modifier.width(12.dp))
-            Column {
-                Text(
-                    text = "$greeting, friend!",
-                    fontWeight = FontWeight.Bold,
-                    fontSize = 15.sp,
-                    color = InkSoft,
-                )
-                Text(
-                    text = "Let's play & learn",
-                    fontFamily = FontDisplay,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 30.sp,
-                    color = Ink,
-                )
-            }
-        }
-
-        Spacer(Modifier.height(18.dp))
-
-        // ── Stat pills ────────────────────────────────────────────────────
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(10.dp),
-            modifier = Modifier.fillMaxWidth(),
-        ) {
-            StatPill(
-                icon = KidIcon.Star,
-                tint = StarGold,
-                text = "${appState.stars}",
-                label = "${appState.stars} stars collected",
-                modifier = Modifier.weight(1f),
-            )
-            StatPill(
-                icon = KidIcon.Flame,
-                tint = Coral,
-                text = "${appState.streak} day${if (appState.streak == 1) "" else "s"}",
-                label = "${appState.streak} day streak",
-                modifier = Modifier.weight(1f),
-            )
-        }
-
-        // ── Continue card ─────────────────────────────────────────────────
-        if (lastTopic != null) {
-            Spacer(Modifier.height(18.dp))
-            Surface(
-                onClick = { onOpenTopic(lastTopic) },
-                shape = RoundedCornerShape(26.dp),
-                shadowElevation = 8.dp,
-                modifier = Modifier.fillMaxWidth(),
+    SceneBackground {
+        BoxWithConstraints(Modifier.fillMaxSize()) {
+            val compact = maxHeight < 640.dp
+            Column(
+                Modifier
+                    .fillMaxSize()
+                    .then(if (compact) Modifier.verticalScroll(rememberScrollState()) else Modifier)
+                    .padding(KidDimens.ScreenPadding),
             ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(Brush.horizontalGradient(listOf(Teal, Color(0xFF36D0C0)))),
-                ) {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        modifier = Modifier.padding(16.dp),
-                    ) {
-                        Surface(
-                            shape = RoundedCornerShape(16.dp),
-                            color = Color.White.copy(alpha = 0.25f),
-                            modifier = Modifier.size(52.dp),
-                        ) {
-                            TopicGlyph(
-                                topicId = lastTopic.id,
-                                fallback = lastTopic.glyph,
-                                color = Color.White,
-                            )
-                        }
-                        Spacer(Modifier.width(14.dp))
-                        Column(modifier = Modifier.weight(1f)) {
-                            Text(
-                                text = "CONTINUE",
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 12.5.sp,
-                                color = Color.White.copy(alpha = 0.85f),
-                            )
-                            Text(
-                                text = lastTopic.title,
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 20.sp,
-                                color = Color.White,
-                            )
-                        }
-                        Surface(
-                            shape = RoundedCornerShape(999.dp),
-                            color = Color.White,
-                            modifier = Modifier.size(48.dp),
-                        ) {
-                            Box(contentAlignment = Alignment.Center) {
-                                KidIconImage(
-                                    icon = KidIcon.ArrowForward,
-                                    modifier = Modifier.size(24.dp),
-                                    color = Teal,
-                                )
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        Spacer(Modifier.height(22.dp))
-
-        Text(
-            text = "Today's picks",
-            fontFamily = FontDisplay,
-            fontWeight = FontWeight.ExtraBold,
-            fontSize = 19.sp,
-            color = Ink,
-            modifier = Modifier.padding(horizontal = 2.dp),
-        )
-
-        Spacer(Modifier.height(12.dp))
-
-        // A short, fixed set — small enough to lay out eagerly without a lazy grid, and small
-        // enough for a child to compare every option at a glance.
-        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
-            picks.chunked(2).forEach { pair ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    TopicCard(
-                        topic = pair[0],
-                        onClick = { onOpenTopic(pair[0]) },
-                        modifier = Modifier.weight(1f),
-                    )
-                    if (pair.size > 1) {
-                        TopicCard(
-                            topic = pair[1],
-                            onClick = { onOpenTopic(pair[1]) },
-                            modifier = Modifier.weight(1f),
-                        )
-                    } else {
-                        Spacer(Modifier.weight(1f))
-                    }
-                }
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        // ── Route into the full catalogue ─────────────────────────────────
-        Surface(
-            onClick = onSeeAll,
-            shape = RoundedCornerShape(22.dp),
-            color = Color.White,
-            shadowElevation = 3.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(58.dp),
-        ) {
-            Row(
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Text(
-                    text = "See all activities",
-                    fontFamily = FontDisplay,
-                    fontWeight = FontWeight.ExtraBold,
-                    fontSize = 17.sp,
-                    color = Teal,
+                TopBar(appState, onOpenGrownUps)
+                Spacer(Modifier.height(8.dp))
+                Greeting(playAgain, isReturn = appState.lastTopic != null, onOpenTopic)
+                Spacer(Modifier.height(KidDimens.Gap))
+                WorldGrid(
+                    onOpenWorld = onOpenWorld,
+                    modifier = if (compact) Modifier.height(560.dp) else Modifier.weight(1f),
                 )
-                Spacer(Modifier.width(8.dp))
-                KidIconImage(
-                    icon = KidIcon.ArrowForward,
-                    modifier = Modifier.size(20.dp),
-                    color = Teal,
-                )
+                Spacer(Modifier.height(KidDimens.Gap))
+                StickerBookButton(onOpenStickers)
             }
         }
     }
 }
 
-/** One of the two headline counters. [label] is what a screen reader announces for the whole pill. */
 @Composable
-private fun StatPill(
-    icon: KidIcon,
-    tint: Color,
-    text: String,
-    label: String,
-    modifier: Modifier = Modifier,
-) {
-    Pill(modifier = modifier.clearAndSetSemantics { contentDescription = label }) {
-        Row(
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-            modifier = Modifier
-                .padding(horizontal = 14.dp, vertical = 9.dp)
-                .fillMaxWidth(),
+private fun TopBar(appState: AppUiState, onOpenGrownUps: () -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        Counter(KidIcon.Star, StarGold, "${appState.stars}", "${appState.stars} stars")
+        Spacer(Modifier.width(10.dp))
+        Counter(KidIcon.Flame, Coral, "${appState.streak}", "${appState.streak} days in a row")
+        Spacer(Modifier.weight(1f))
+        HoldToOpenLock(onOpen = onOpenGrownUps)
+    }
+}
+
+/** A chunky number with its picture. The words are for TalkBack only. */
+@Composable
+private fun Counter(icon: KidIcon, tint: Color, value: String, label: String) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier
+            .clip(RoundedCornerShape(50))
+            .background(Color.White)
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clearAndSetSemantics { contentDescription = label },
+    ) {
+        KidIconImage(icon = icon, modifier = Modifier.size(26.dp), color = tint)
+        Spacer(Modifier.width(6.dp))
+        Text(value, fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp, color = tint)
+    }
+}
+
+/** The mascot, and next to it a bubble that jumps straight back into an activity. */
+@Composable
+private fun Greeting(playAgain: Topic?, isReturn: Boolean, onOpenTopic: (Topic) -> Unit) {
+    Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
+        CurvyMascot(size = 104.dp, mood = CurvyMood.Happy, floating = true)
+        Spacer(Modifier.width(12.dp))
+        if (playAgain != null) {
+            val world = World.of(playAgain)
+            CandyCard(
+                color = Color.White,
+                onClick = { onOpenTopic(playAgain) },
+                label = (if (isReturn) "Play again: " else "Try this: ") + playAgain.title,
+                radius = 26.dp,
+                modifier = Modifier.weight(1f).height(92.dp),
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(horizontal = 12.dp)) {
+                    TopicArtView(playAgain.art(), world.color, Modifier.size(62.dp))
+                    Spacer(Modifier.width(10.dp))
+                    Text(
+                        playAgain.title,
+                        fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 20.sp,
+                        color = KidInk, maxLines = 2, overflow = TextOverflow.Ellipsis,
+                        modifier = Modifier.weight(1f),
+                    )
+                    KidIconImage(KidIcon.ArrowForward, Modifier.size(30.dp), color = world.color)
+                }
+            }
+        }
+    }
+}
+
+/** The six worlds, two per row, sharing whatever height is left. */
+@Composable
+private fun WorldGrid(onOpenWorld: (World) -> Unit, modifier: Modifier) {
+    Column(modifier, verticalArrangement = Arrangement.spacedBy(KidDimens.Gap)) {
+        World.entries.chunked(2).forEach { row ->
+            Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(KidDimens.Gap)) {
+                row.forEach { world -> WorldTile(world, { onOpenWorld(world) }, Modifier.weight(1f).fillMaxSize()) }
+            }
+        }
+    }
+}
+
+@Composable
+private fun WorldTile(world: World, onClick: () -> Unit, modifier: Modifier) {
+    CandyCard(color = world.color, onClick = onClick, label = world.title, modifier = modifier) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            modifier = Modifier.fillMaxSize().padding(12.dp),
         ) {
-            KidIconImage(icon = icon, modifier = Modifier.size(18.dp), color = tint)
-            Spacer(Modifier.width(6.dp))
-            Text(
-                text = text,
-                fontFamily = FontDisplay,
-                fontWeight = FontWeight.ExtraBold,
-                fontSize = 16.sp,
-                color = tint,
-            )
+            Box(
+                Modifier.weight(1f).fillMaxWidth().clip(RoundedCornerShape(22.dp))
+                    .background(Color.White.copy(alpha = 0.25f)).padding(10.dp),
+                contentAlignment = Alignment.Center,
+            ) {
+                TopicArtView(world.art, Color.White, Modifier.fillMaxSize())
+            }
+            Spacer(Modifier.height(6.dp))
+            Text(world.title, fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,
+                fontSize = KidDimens.TileTitle, color = Color.White, maxLines = 1)
+        }
+    }
+}
+
+@Composable
+private fun StickerBookButton(onClick: () -> Unit, height: Dp = 76.dp) {
+    CandyCard(color = Color.White, onClick = onClick, label = "My stickers",
+        modifier = Modifier.fillMaxWidth().height(height)) {
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            KidIconImage(KidIcon.Star, Modifier.size(38.dp), color = StarGold)
+            Spacer(Modifier.width(10.dp))
+            Text("My stickers", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,
+                fontSize = 24.sp, color = KidInk)
         }
     }
 }

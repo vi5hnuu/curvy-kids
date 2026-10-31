@@ -34,7 +34,7 @@ import com.vi5hnu.curvykids.ui.theme.InkSoft
 
 /**
  * ParentGate bottom sheet — a sum written in words (see [GateQuestion]) that only adults can
- * solve. Opened from ParentTab; calls [onPass] when the correct answer is entered. A wrong answer
+ * solve. Opened from the lock on Home; calls [onPass] when the correct answer is entered. A wrong answer
  * brings a new question, so the gate can't be passed by guessing the same one over and over.
  */
 @OptIn(ExperimentalMaterial3Api::class)

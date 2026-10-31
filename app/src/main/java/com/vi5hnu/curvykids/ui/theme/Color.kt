@@ -36,3 +36,20 @@ val TintPink  = Color(0xFFFFE9F1)
 val TintGreen = Color(0xFFE2F8EC)
 val TintSun   = Color(0xFFFFF3D9)
 val TintAqua  = Color(0xFFDFF6F9)
+
+// ── Kid world palette (redesign) ─────────────────────────────────────────────
+// Saturated and warm, so screens read as play rather than as a settings page. Each world owns
+// one of these (see data/content/Worlds.kt); grown-up screens keep the softer tones above.
+val KidSky    = Color(0xFF4FC3F7)
+val KidSun    = Color(0xFFFFC93C)
+val KidGrass  = Color(0xFF7ED957)
+val KidBerry  = Color(0xFFFF5C8A)
+val KidGrape  = Color(0xFF9B6BFF)
+val KidOrange = Color(0xFFFF9F43)
+val KidInk    = Color(0xFF2D2A4A)
+
+// Scene backdrop
+val SceneSkyTop    = Color(0xFF8ED8FF)
+val SceneSkyBottom = Color(0xFFD9F3FF)
+val SceneHillBack  = Color(0xFFA6E58C)
+val SceneHillFront = Color(0xFF7ED957)
