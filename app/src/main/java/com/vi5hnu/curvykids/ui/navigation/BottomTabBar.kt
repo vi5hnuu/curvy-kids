@@ -35,15 +35,16 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import kotlinx.coroutines.delay
-import com.vi5hnu.curvykids.ui.theme.InkFaint
+import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.theme.Teal
 import com.vi5hnu.curvykids.ui.theme.TintTeal
 
 /**
- * Floating frosted-glass bottom tab bar.
+ * Floating bottom tab bar.
  * Positioned inside a Box with padding: left/right 14dp, bottom 12dp, height 68dp.
  *
- * Spec from styles.css: borderRadius=26dp, background rgba(255,255,255,.86), blur(16px).
+ * The design asks for frosted glass, but Compose has no backdrop blur, so a translucent bar just
+ * lets list text show through. It is drawn opaque instead.
  */
 @Composable
 fun BottomTabBar(
@@ -57,7 +58,7 @@ fun BottomTabBar(
             .height(68.dp)
             .padding(horizontal = 14.dp),
         shape = RoundedCornerShape(26.dp),
-        color = Color.White.copy(alpha = 0.86f),
+        color = Color.White,
         shadowElevation = 10.dp,
     ) {
         Row(
@@ -120,7 +121,7 @@ private fun TabItem(
             Icon(
                 imageVector = tab.icon.toVector(),
                 contentDescription = tab.label,
-                tint = if (selected) Teal else InkFaint,
+                tint = if (selected) Teal else InkSoft,
                 modifier = Modifier.size(26.dp),
             )
             Spacer(Modifier.height(3.dp))
@@ -128,8 +129,8 @@ private fun TabItem(
                 text = if (hinting) "Hold" else tab.label,
                 fontFamily = FontDisplay,
                 fontWeight = FontWeight.Bold,
-                fontSize = 11.sp,
-                color = if (selected || hinting) Teal else InkFaint,
+                fontSize = 12.sp,
+                color = if (selected || hinting) Teal else InkSoft,
             )
         }
     }
