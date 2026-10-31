@@ -8,7 +8,7 @@ phone's built-in voice, so recordings can be added a few at a time.
 
 == HINDI ==
 
--- Letter name --
+-- Hindi vowels (स्वर) --
 1. अ  ->  hi/letters/letter-a.m4a
 2. आ  ->  hi/letters/letter-aa.m4a
 3. इ  ->  hi/letters/letter-i.m4a
@@ -22,6 +22,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 11. औ  ->  hi/letters/letter-au.m4a
 12. अं  ->  hi/letters/letter-am.m4a
 13. अः  ->  hi/letters/letter-ah.m4a
+
+-- Hindi consonants (व्यंजन) --
 14. क  ->  hi/letters/letter-ka.m4a
 15. ख  ->  hi/letters/letter-kha.m4a
 16. ग  ->  hi/letters/letter-ga.m4a
@@ -59,7 +61,7 @@ phone's built-in voice, so recordings can be added a few at a time.
 48. त्र  ->  hi/letters/letter-tra.m4a
 49. ज्ञ  ->  hi/letters/letter-gya.m4a
 
--- Trace prompt --
+-- Hindi vowels with example word --
 50. अ, अ से अनानास  ->  hi/letters/letter-a-word.m4a
 51. आ, आ से आम  ->  hi/letters/letter-aa-word.m4a
 52. इ, इ से इंजन  ->  hi/letters/letter-i-word.m4a
@@ -72,6 +74,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 59. ओ, ओ से ओम  ->  hi/letters/letter-o-word.m4a
 60. औ, औ से औज़ार  ->  hi/letters/letter-au-word.m4a
 61. अं, अं से अंगूर  ->  hi/letters/letter-am-word.m4a
+
+-- Hindi consonants with example word --
 62. क, क से कबूतर  ->  hi/letters/letter-ka-word.m4a
 63. ख, ख से खरगोश  ->  hi/letters/letter-kha-word.m4a
 64. ग, ग से गाय  ->  hi/letters/letter-ga-word.m4a
@@ -106,7 +110,7 @@ phone's built-in voice, so recordings can be added a few at a time.
 93. त्र, त्र से त्रिशूल  ->  hi/letters/letter-tra-word.m4a
 94. ज्ञ, ज्ञ से ज्ञान  ->  hi/letters/letter-gya-word.m4a
 
--- Barakhadi --
+-- Barakhadi - क --
 95. का  ->  hi/barakhadi/syllable-kaa.m4a
 96. कि  ->  hi/barakhadi/syllable-ki.m4a
 97. की  ->  hi/barakhadi/syllable-kii.m4a
@@ -118,6 +122,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 103. कौ  ->  hi/barakhadi/syllable-kau.m4a
 104. कं  ->  hi/barakhadi/syllable-kam.m4a
 105. कः  ->  hi/barakhadi/syllable-kah.m4a
+
+-- Barakhadi - ख --
 106. खा  ->  hi/barakhadi/syllable-khaa.m4a
 107. खि  ->  hi/barakhadi/syllable-khi.m4a
 108. खी  ->  hi/barakhadi/syllable-khii.m4a
@@ -129,6 +135,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 114. खौ  ->  hi/barakhadi/syllable-khau.m4a
 115. खं  ->  hi/barakhadi/syllable-kham.m4a
 116. खः  ->  hi/barakhadi/syllable-khah.m4a
+
+-- Barakhadi - ग --
 117. गा  ->  hi/barakhadi/syllable-gaa.m4a
 118. गि  ->  hi/barakhadi/syllable-gi.m4a
 119. गी  ->  hi/barakhadi/syllable-gii.m4a
@@ -140,6 +148,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 125. गौ  ->  hi/barakhadi/syllable-gau.m4a
 126. गं  ->  hi/barakhadi/syllable-gam.m4a
 127. गः  ->  hi/barakhadi/syllable-gah.m4a
+
+-- Barakhadi - घ --
 128. घा  ->  hi/barakhadi/syllable-ghaa.m4a
 129. घि  ->  hi/barakhadi/syllable-ghi.m4a
 130. घी  ->  hi/barakhadi/syllable-ghii.m4a
@@ -151,6 +161,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 136. घौ  ->  hi/barakhadi/syllable-ghau.m4a
 137. घं  ->  hi/barakhadi/syllable-gham.m4a
 138. घः  ->  hi/barakhadi/syllable-ghah.m4a
+
+-- Barakhadi - ङ --
 139. ङा  ->  hi/barakhadi/syllable-ngaa.m4a
 140. ङि  ->  hi/barakhadi/syllable-ngi.m4a
 141. ङी  ->  hi/barakhadi/syllable-ngii.m4a
@@ -162,6 +174,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 147. ङौ  ->  hi/barakhadi/syllable-ngau.m4a
 148. ङं  ->  hi/barakhadi/syllable-ngam.m4a
 149. ङः  ->  hi/barakhadi/syllable-ngah.m4a
+
+-- Barakhadi - च --
 150. चा  ->  hi/barakhadi/syllable-chaa.m4a
 151. चि  ->  hi/barakhadi/syllable-chi.m4a
 152. ची  ->  hi/barakhadi/syllable-chii.m4a
@@ -173,6 +187,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 158. चौ  ->  hi/barakhadi/syllable-chau.m4a
 159. चं  ->  hi/barakhadi/syllable-cham.m4a
 160. चः  ->  hi/barakhadi/syllable-chah.m4a
+
+-- Barakhadi - छ --
 161. छा  ->  hi/barakhadi/syllable-chhaa.m4a
 162. छि  ->  hi/barakhadi/syllable-chhi.m4a
 163. छी  ->  hi/barakhadi/syllable-chhii.m4a
@@ -184,6 +200,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 169. छौ  ->  hi/barakhadi/syllable-chhau.m4a
 170. छं  ->  hi/barakhadi/syllable-chham.m4a
 171. छः  ->  hi/barakhadi/syllable-chhah.m4a
+
+-- Barakhadi - ज --
 172. जा  ->  hi/barakhadi/syllable-jaa.m4a
 173. जि  ->  hi/barakhadi/syllable-ji.m4a
 174. जी  ->  hi/barakhadi/syllable-jii.m4a
@@ -195,6 +213,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 180. जौ  ->  hi/barakhadi/syllable-jau.m4a
 181. जं  ->  hi/barakhadi/syllable-jam.m4a
 182. जः  ->  hi/barakhadi/syllable-jah.m4a
+
+-- Barakhadi - झ --
 183. झा  ->  hi/barakhadi/syllable-jhaa.m4a
 184. झि  ->  hi/barakhadi/syllable-jhi.m4a
 185. झी  ->  hi/barakhadi/syllable-jhii.m4a
@@ -206,6 +226,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 191. झौ  ->  hi/barakhadi/syllable-jhau.m4a
 192. झं  ->  hi/barakhadi/syllable-jham.m4a
 193. झः  ->  hi/barakhadi/syllable-jhah.m4a
+
+-- Barakhadi - ञ --
 194. ञा  ->  hi/barakhadi/syllable-nyaa.m4a
 195. ञि  ->  hi/barakhadi/syllable-nyi.m4a
 196. ञी  ->  hi/barakhadi/syllable-nyii.m4a
@@ -217,6 +239,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 202. ञौ  ->  hi/barakhadi/syllable-nyau.m4a
 203. ञं  ->  hi/barakhadi/syllable-nyam.m4a
 204. ञः  ->  hi/barakhadi/syllable-nyah.m4a
+
+-- Barakhadi - ट --
 205. टा  ->  hi/barakhadi/syllable-ttaa.m4a
 206. टि  ->  hi/barakhadi/syllable-tti.m4a
 207. टी  ->  hi/barakhadi/syllable-ttii.m4a
@@ -228,6 +252,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 213. टौ  ->  hi/barakhadi/syllable-ttau.m4a
 214. टं  ->  hi/barakhadi/syllable-ttam.m4a
 215. टः  ->  hi/barakhadi/syllable-ttah.m4a
+
+-- Barakhadi - ठ --
 216. ठा  ->  hi/barakhadi/syllable-tthaa.m4a
 217. ठि  ->  hi/barakhadi/syllable-tthi.m4a
 218. ठी  ->  hi/barakhadi/syllable-tthii.m4a
@@ -239,6 +265,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 224. ठौ  ->  hi/barakhadi/syllable-tthau.m4a
 225. ठं  ->  hi/barakhadi/syllable-ttham.m4a
 226. ठः  ->  hi/barakhadi/syllable-tthah.m4a
+
+-- Barakhadi - ड --
 227. डा  ->  hi/barakhadi/syllable-ddaa.m4a
 228. डि  ->  hi/barakhadi/syllable-ddi.m4a
 229. डी  ->  hi/barakhadi/syllable-ddii.m4a
@@ -250,6 +278,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 235. डौ  ->  hi/barakhadi/syllable-ddau.m4a
 236. डं  ->  hi/barakhadi/syllable-ddam.m4a
 237. डः  ->  hi/barakhadi/syllable-ddah.m4a
+
+-- Barakhadi - ढ --
 238. ढा  ->  hi/barakhadi/syllable-ddhaa.m4a
 239. ढि  ->  hi/barakhadi/syllable-ddhi.m4a
 240. ढी  ->  hi/barakhadi/syllable-ddhii.m4a
@@ -261,6 +291,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 246. ढौ  ->  hi/barakhadi/syllable-ddhau.m4a
 247. ढं  ->  hi/barakhadi/syllable-ddham.m4a
 248. ढः  ->  hi/barakhadi/syllable-ddhah.m4a
+
+-- Barakhadi - ण --
 249. णा  ->  hi/barakhadi/syllable-nnaa.m4a
 250. णि  ->  hi/barakhadi/syllable-nni.m4a
 251. णी  ->  hi/barakhadi/syllable-nnii.m4a
@@ -272,6 +304,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 257. णौ  ->  hi/barakhadi/syllable-nnau.m4a
 258. णं  ->  hi/barakhadi/syllable-nnam.m4a
 259. णः  ->  hi/barakhadi/syllable-nnah.m4a
+
+-- Barakhadi - त --
 260. ता  ->  hi/barakhadi/syllable-taa.m4a
 261. ति  ->  hi/barakhadi/syllable-ti.m4a
 262. ती  ->  hi/barakhadi/syllable-tii.m4a
@@ -283,6 +317,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 268. तौ  ->  hi/barakhadi/syllable-tau.m4a
 269. तं  ->  hi/barakhadi/syllable-tam.m4a
 270. तः  ->  hi/barakhadi/syllable-tah.m4a
+
+-- Barakhadi - थ --
 271. था  ->  hi/barakhadi/syllable-thaa.m4a
 272. थि  ->  hi/barakhadi/syllable-thi.m4a
 273. थी  ->  hi/barakhadi/syllable-thii.m4a
@@ -294,6 +330,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 279. थौ  ->  hi/barakhadi/syllable-thau.m4a
 280. थं  ->  hi/barakhadi/syllable-tham.m4a
 281. थः  ->  hi/barakhadi/syllable-thah.m4a
+
+-- Barakhadi - द --
 282. दा  ->  hi/barakhadi/syllable-daa.m4a
 283. दि  ->  hi/barakhadi/syllable-di.m4a
 284. दी  ->  hi/barakhadi/syllable-dii.m4a
@@ -305,6 +343,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 290. दौ  ->  hi/barakhadi/syllable-dau.m4a
 291. दं  ->  hi/barakhadi/syllable-dam.m4a
 292. दः  ->  hi/barakhadi/syllable-dah.m4a
+
+-- Barakhadi - ध --
 293. धा  ->  hi/barakhadi/syllable-dhaa.m4a
 294. धि  ->  hi/barakhadi/syllable-dhi.m4a
 295. धी  ->  hi/barakhadi/syllable-dhii.m4a
@@ -316,6 +356,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 301. धौ  ->  hi/barakhadi/syllable-dhau.m4a
 302. धं  ->  hi/barakhadi/syllable-dham.m4a
 303. धः  ->  hi/barakhadi/syllable-dhah.m4a
+
+-- Barakhadi - न --
 304. ना  ->  hi/barakhadi/syllable-naa.m4a
 305. नि  ->  hi/barakhadi/syllable-ni.m4a
 306. नी  ->  hi/barakhadi/syllable-nii.m4a
@@ -327,6 +369,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 312. नौ  ->  hi/barakhadi/syllable-nau.m4a
 313. नं  ->  hi/barakhadi/syllable-nam.m4a
 314. नः  ->  hi/barakhadi/syllable-nah.m4a
+
+-- Barakhadi - प --
 315. पा  ->  hi/barakhadi/syllable-paa.m4a
 316. पि  ->  hi/barakhadi/syllable-pi.m4a
 317. पी  ->  hi/barakhadi/syllable-pii.m4a
@@ -338,6 +382,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 323. पौ  ->  hi/barakhadi/syllable-pau.m4a
 324. पं  ->  hi/barakhadi/syllable-pam.m4a
 325. पः  ->  hi/barakhadi/syllable-pah.m4a
+
+-- Barakhadi - फ --
 326. फा  ->  hi/barakhadi/syllable-phaa.m4a
 327. फि  ->  hi/barakhadi/syllable-phi.m4a
 328. फी  ->  hi/barakhadi/syllable-phii.m4a
@@ -349,6 +395,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 334. फौ  ->  hi/barakhadi/syllable-phau.m4a
 335. फं  ->  hi/barakhadi/syllable-pham.m4a
 336. फः  ->  hi/barakhadi/syllable-phah.m4a
+
+-- Barakhadi - ब --
 337. बा  ->  hi/barakhadi/syllable-baa.m4a
 338. बि  ->  hi/barakhadi/syllable-bi.m4a
 339. बी  ->  hi/barakhadi/syllable-bii.m4a
@@ -360,6 +408,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 345. बौ  ->  hi/barakhadi/syllable-bau.m4a
 346. बं  ->  hi/barakhadi/syllable-bam.m4a
 347. बः  ->  hi/barakhadi/syllable-bah.m4a
+
+-- Barakhadi - भ --
 348. भा  ->  hi/barakhadi/syllable-bhaa.m4a
 349. भि  ->  hi/barakhadi/syllable-bhi.m4a
 350. भी  ->  hi/barakhadi/syllable-bhii.m4a
@@ -371,6 +421,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 356. भौ  ->  hi/barakhadi/syllable-bhau.m4a
 357. भं  ->  hi/barakhadi/syllable-bham.m4a
 358. भः  ->  hi/barakhadi/syllable-bhah.m4a
+
+-- Barakhadi - म --
 359. मा  ->  hi/barakhadi/syllable-maa.m4a
 360. मि  ->  hi/barakhadi/syllable-mi.m4a
 361. मी  ->  hi/barakhadi/syllable-mii.m4a
@@ -382,6 +434,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 367. मौ  ->  hi/barakhadi/syllable-mau.m4a
 368. मं  ->  hi/barakhadi/syllable-mam.m4a
 369. मः  ->  hi/barakhadi/syllable-mah.m4a
+
+-- Barakhadi - य --
 370. या  ->  hi/barakhadi/syllable-yaa.m4a
 371. यि  ->  hi/barakhadi/syllable-yi.m4a
 372. यी  ->  hi/barakhadi/syllable-yii.m4a
@@ -393,6 +447,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 378. यौ  ->  hi/barakhadi/syllable-yau.m4a
 379. यं  ->  hi/barakhadi/syllable-yam.m4a
 380. यः  ->  hi/barakhadi/syllable-yah.m4a
+
+-- Barakhadi - र --
 381. रा  ->  hi/barakhadi/syllable-raa.m4a
 382. रि  ->  hi/barakhadi/syllable-ri.m4a
 383. री  ->  hi/barakhadi/syllable-rii.m4a
@@ -404,6 +460,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 389. रौ  ->  hi/barakhadi/syllable-rau.m4a
 390. रं  ->  hi/barakhadi/syllable-ram.m4a
 391. रः  ->  hi/barakhadi/syllable-rah.m4a
+
+-- Barakhadi - ल --
 392. ला  ->  hi/barakhadi/syllable-laa.m4a
 393. लि  ->  hi/barakhadi/syllable-li.m4a
 394. ली  ->  hi/barakhadi/syllable-lii.m4a
@@ -415,6 +473,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 400. लौ  ->  hi/barakhadi/syllable-lau.m4a
 401. लं  ->  hi/barakhadi/syllable-lam.m4a
 402. लः  ->  hi/barakhadi/syllable-lah.m4a
+
+-- Barakhadi - व --
 403. वा  ->  hi/barakhadi/syllable-vaa.m4a
 404. वि  ->  hi/barakhadi/syllable-vi.m4a
 405. वी  ->  hi/barakhadi/syllable-vii.m4a
@@ -426,6 +486,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 411. वौ  ->  hi/barakhadi/syllable-vau.m4a
 412. वं  ->  hi/barakhadi/syllable-vam.m4a
 413. वः  ->  hi/barakhadi/syllable-vah.m4a
+
+-- Barakhadi - श --
 414. शा  ->  hi/barakhadi/syllable-shaa.m4a
 415. शि  ->  hi/barakhadi/syllable-shi.m4a
 416. शी  ->  hi/barakhadi/syllable-shii.m4a
@@ -437,6 +499,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 422. शौ  ->  hi/barakhadi/syllable-shau.m4a
 423. शं  ->  hi/barakhadi/syllable-sham.m4a
 424. शः  ->  hi/barakhadi/syllable-shah.m4a
+
+-- Barakhadi - ष --
 425. षा  ->  hi/barakhadi/syllable-ssaa.m4a
 426. षि  ->  hi/barakhadi/syllable-ssi.m4a
 427. षी  ->  hi/barakhadi/syllable-ssii.m4a
@@ -448,6 +512,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 433. षौ  ->  hi/barakhadi/syllable-ssau.m4a
 434. षं  ->  hi/barakhadi/syllable-ssam.m4a
 435. षः  ->  hi/barakhadi/syllable-ssah.m4a
+
+-- Barakhadi - स --
 436. सा  ->  hi/barakhadi/syllable-saa.m4a
 437. सि  ->  hi/barakhadi/syllable-si.m4a
 438. सी  ->  hi/barakhadi/syllable-sii.m4a
@@ -459,6 +525,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 444. सौ  ->  hi/barakhadi/syllable-sau.m4a
 445. सं  ->  hi/barakhadi/syllable-sam.m4a
 446. सः  ->  hi/barakhadi/syllable-sah.m4a
+
+-- Barakhadi - ह --
 447. हा  ->  hi/barakhadi/syllable-haa.m4a
 448. हि  ->  hi/barakhadi/syllable-hi.m4a
 449. ही  ->  hi/barakhadi/syllable-hii.m4a
@@ -470,6 +538,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 455. हौ  ->  hi/barakhadi/syllable-hau.m4a
 456. हं  ->  hi/barakhadi/syllable-ham.m4a
 457. हः  ->  hi/barakhadi/syllable-hah.m4a
+
+-- Barakhadi - क्ष --
 458. क्षा  ->  hi/barakhadi/syllable-kshaa.m4a
 459. क्षि  ->  hi/barakhadi/syllable-kshi.m4a
 460. क्षी  ->  hi/barakhadi/syllable-kshii.m4a
@@ -481,6 +551,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 466. क्षौ  ->  hi/barakhadi/syllable-kshau.m4a
 467. क्षं  ->  hi/barakhadi/syllable-ksham.m4a
 468. क्षः  ->  hi/barakhadi/syllable-kshah.m4a
+
+-- Barakhadi - त्र --
 469. त्रा  ->  hi/barakhadi/syllable-traa.m4a
 470. त्रि  ->  hi/barakhadi/syllable-tri.m4a
 471. त्री  ->  hi/barakhadi/syllable-trii.m4a
@@ -492,6 +564,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 477. त्रौ  ->  hi/barakhadi/syllable-trau.m4a
 478. त्रं  ->  hi/barakhadi/syllable-tram.m4a
 479. त्रः  ->  hi/barakhadi/syllable-trah.m4a
+
+-- Barakhadi - ज्ञ --
 480. ज्ञा  ->  hi/barakhadi/syllable-gyaa.m4a
 481. ज्ञि  ->  hi/barakhadi/syllable-gyi.m4a
 482. ज्ञी  ->  hi/barakhadi/syllable-gyii.m4a
@@ -504,7 +578,7 @@ phone's built-in voice, so recordings can be added a few at a time.
 489. ज्ञं  ->  hi/barakhadi/syllable-gyam.m4a
 490. ज्ञः  ->  hi/barakhadi/syllable-gyah.m4a
 
--- Trace --
+-- Praise and encouragement --
 491. शाबाश!  ->  hi/phrases/praise-1.m4a
 492. बहुत बढ़िया!  ->  hi/phrases/praise-2.m4a
 493. वाह! कमाल कर दिया!  ->  hi/phrases/praise-3.m4a
@@ -513,7 +587,7 @@ phone's built-in voice, so recordings can be added a few at a time.
 496. कोई बात नहीं! फिर कोशिश करते हैं।  ->  hi/phrases/give-up.m4a
 497. पहले लिखो!  ->  hi/phrases/write-first.m4a
 
--- Story --
+-- Story - प्यासा कौआ (The Thirsty Crow) --
 498. एक गरम दिन था।  ->  hi/stories/story-thirsty-crow-line-1.m4a
 499. एक कौआ बहुत प्यासा था।  ->  hi/stories/story-thirsty-crow-line-2.m4a
 500. वह इधर-उधर पानी ढूँढने लगा।  ->  hi/stories/story-thirsty-crow-line-3.m4a
@@ -521,6 +595,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 502. कौए ने एक-एक करके घड़े में कंकड़ डाले।  ->  hi/stories/story-thirsty-crow-line-5.m4a
 503. पानी ऊपर आ गया और कौए ने पानी पी लिया।  ->  hi/stories/story-thirsty-crow-line-6.m4a
 504. मेहनत और सूझ-बूझ से हर मुश्किल हल हो जाती है।  ->  hi/stories/story-thirsty-crow-moral.m4a
+
+-- Story - शेर और चूहा (The Lion and the Mouse) --
 505. एक जंगल में एक शेर सो रहा था।  ->  hi/stories/story-lion-mouse-line-1.m4a
 506. एक छोटा चूहा उसके ऊपर कूदने लगा।  ->  hi/stories/story-lion-mouse-line-2.m4a
 507. शेर जाग गया और चूहे को पकड़ लिया।  ->  hi/stories/story-lion-mouse-line-3.m4a
@@ -529,6 +605,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 510. एक दिन शेर जाल में फँस गया।  ->  hi/stories/story-lion-mouse-line-6.m4a
 511. चूहे ने जाल काट दिया और शेर को बचा लिया।  ->  hi/stories/story-lion-mouse-line-7.m4a
 512. छोटा हो या बड़ा, हर किसी की मदद काम आती है।  ->  hi/stories/story-lion-mouse-moral.m4a
+
+-- Story - खरगोश और कछुआ (The Hare and the Tortoise) --
 513. एक खरगोश को अपनी तेज़ी पर घमंड था।  ->  hi/stories/story-hare-tortoise-line-1.m4a
 514. उसने कछुए को दौड़ के लिए ललकारा।  ->  hi/stories/story-hare-tortoise-line-2.m4a
 515. दौड़ शुरू हुई और खरगोश बहुत आगे निकल गया।  ->  hi/stories/story-hare-tortoise-line-3.m4a
@@ -536,6 +614,8 @@ phone's built-in voice, so recordings can be added a few at a time.
 517. कछुआ धीरे-धीरे चलता रहा।  ->  hi/stories/story-hare-tortoise-line-5.m4a
 518. कछुआ पहले पहुँच गया और दौड़ जीत गया।  ->  hi/stories/story-hare-tortoise-line-6.m4a
 519. लगातार मेहनत करने वाला ही जीतता है।  ->  hi/stories/story-hare-tortoise-moral.m4a
+
+-- Story - एकता में बल (Unity is Strength) --
 520. एक किसान के चार बेटे थे।  ->  hi/stories/story-unity-strength-line-1.m4a
 521. वे हमेशा आपस में लड़ते रहते थे।  ->  hi/stories/story-unity-strength-line-2.m4a
 522. किसान ने उन्हें लकड़ियों का एक गट्ठर दिया।  ->  hi/stories/story-unity-strength-line-3.m4a

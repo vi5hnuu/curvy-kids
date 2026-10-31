@@ -22,12 +22,11 @@ object RecordingSheet {
         var n = 1
         appendLine("== HINDI ==")
         appendLine()
-        HindiVoiceScript.all.groupBy { it.usedIn.substringBefore(':').substringBefore(" (") }
-            .forEach { (section, lines) ->
-                appendLine("-- $section --")
-                lines.forEach { appendLine("${n++}. ${it.text}  ->  ${it.clip.relativePath}.m4a") }
-                appendLine()
-            }
+        HindiVoiceScript.sections.forEach { (section, lines) ->
+            appendLine("-- $section --")
+            lines.forEach { appendLine("${n++}. ${it.text}  ->  ${it.clip.relativePath}.m4a") }
+            appendLine()
+        }
 
         appendLine("== ENGLISH LETTER SOUNDS ==")
         appendLine("Say only the pure sound, short and crisp. No added \"uh\" (\"b\", not \"buh\").")

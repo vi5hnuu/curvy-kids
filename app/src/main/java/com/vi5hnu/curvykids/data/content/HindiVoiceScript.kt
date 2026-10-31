@@ -70,14 +70,29 @@ object HindiVoiceScript {
         "Story: ${story.subtitle} (moral)",
     )
 
-    /** The complete recording sheet, in a sensible order to record in. Keys are unique. */
-    val all: List<VoiceLine> by lazy {
+    /**
+     * The recording sheet, grouped by category in the order a voice artist would record it.
+     * A line that appears in two categories (a letter with no example word) is listed once.
+     */
+    val sections: List<Pair<String, List<VoiceLine>>> by lazy {
+        val seen = mutableSetOf<String>()
+        fun List<VoiceLine>.fresh() = filter { seen.add(it.clip.key) }
         buildList {
-            HINDI_VOWELS.forEach { add(letter(it)); add(letterWithWord(it)) }
-            HINDI_CONSONANTS.forEach { add(letter(it)); add(letterWithWord(it)) }
-            HINDI_CONSONANTS.forEach { c -> BARAKHADI_MATRAS.forEach { m -> add(syllable(c, m)) } }
-            addAll(PRAISE); add(TRY_AGAIN); add(GIVE_UP); add(WRITE_FIRST)
-            STORIES.forEach { s -> s.lines.indices.forEach { add(storyLine(s, it)) }; add(storyMoral(s)) }
-        }.distinctBy { it.clip.key }
+            add("Hindi vowels (स्वर)" to HINDI_VOWELS.map { letter(it) }.fresh())
+            add("Hindi consonants (व्यंजन)" to HINDI_CONSONANTS.map { letter(it) }.fresh())
+            add("Hindi vowels with example word" to HINDI_VOWELS.map { letterWithWord(it) }.fresh())
+            add("Hindi consonants with example word" to HINDI_CONSONANTS.map { letterWithWord(it) }.fresh())
+            HINDI_CONSONANTS.forEach { c ->
+                add("Barakhadi - ${c.char}" to BARAKHADI_MATRAS.map { syllable(c, it) }.fresh())
+            }
+            add("Praise and encouragement" to (PRAISE + TRY_AGAIN + GIVE_UP + WRITE_FIRST).fresh())
+            STORIES.forEach { st ->
+                add("Story - ${st.title} (${st.subtitle})" to
+                    (st.lines.indices.map { storyLine(st, it) } + storyMoral(st)).fresh())
+            }
+        }.filter { it.second.isNotEmpty() }
     }
+
+    /** Every line, once each. */
+    val all: List<VoiceLine> by lazy { sections.flatMap { it.second } }
 }
