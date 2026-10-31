@@ -100,23 +100,28 @@ fun HomeScreen(
                     .then(if (compact) Modifier.verticalScroll(rememberScrollState()) else Modifier)
                     .padding(KidDimens.ScreenPadding),
             ) {
-                TopBar(appState, onOpenGrownUps)
-                Spacer(Modifier.height(8.dp))
                 if (twoPane) {
-                    // Landscape: the mascot, play-again and stickers down the left, and all
-                    // six worlds in view on the right, so nothing hides below the fold.
+                    // Landscape: counters, mascot, play-again and stickers down the left, and the
+                    // six worlds over the full height on the right, so nothing hides below the fold.
                     Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(KidDimens.Gap)) {
-                        Column(Modifier.weight(0.32f).fillMaxHeight()) {
-                            CurvyMascot(size = 96.dp, mood = CurvyMood.Happy, floating = true,
-                                modifier = Modifier.align(Alignment.CenterHorizontally))
-                            Spacer(Modifier.height(KidDimens.Gap))
-                            PlayAgainCard(playAgain, isReturn, onOpenTopic, Modifier.fillMaxWidth())
-                            Spacer(Modifier.weight(1f))
-                            StickerBookButton(onOpenStickers)
+                        BoxWithConstraints(Modifier.weight(0.32f).fillMaxHeight()) {
+                            val mascot = if (maxHeight < 380.dp) 64.dp else 96.dp
+                            Column(Modifier.fillMaxSize()) {
+                                TopBar(appState, onOpenGrownUps)
+                                Spacer(Modifier.weight(1f))
+                                CurvyMascot(size = mascot, mood = CurvyMood.Happy, floating = true,
+                                    modifier = Modifier.align(Alignment.CenterHorizontally))
+                                Spacer(Modifier.weight(1f))
+                                PlayAgainCard(playAgain, isReturn, onOpenTopic, Modifier.fillMaxWidth())
+                                Spacer(Modifier.height(KidDimens.Gap))
+                                StickerBookButton(onOpenStickers)
+                            }
                         }
                         WorldGrid(onOpenWorld, columns = 3, modifier = Modifier.weight(0.68f).fillMaxHeight())
                     }
                 } else {
+                    TopBar(appState, onOpenGrownUps)
+                    Spacer(Modifier.height(8.dp))
                     Greeting(playAgain, isReturn, onOpenTopic)
                     Spacer(Modifier.height(KidDimens.Gap))
                     WorldGrid(
@@ -208,6 +213,7 @@ private fun WorldGrid(onOpenWorld: (World) -> Unit, columns: Int, modifier: Modi
     }
 }
 
+/** One world: its picture on a lighter panel, and its name underneath. */
 @Composable
 private fun WorldTile(world: World, onClick: () -> Unit, modifier: Modifier) {
     CandyCard(color = world.color, onClick = onClick, label = world.title, modifier = modifier) {
