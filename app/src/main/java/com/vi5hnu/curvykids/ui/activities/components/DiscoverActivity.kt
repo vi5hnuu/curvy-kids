@@ -1,55 +1,28 @@
 package com.vi5hnu.curvykids.ui.activities.components
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.data.app.Difficulty
 import com.vi5hnu.curvykids.ui.app.LocalDifficulty
-import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
-import com.vi5hnu.curvykids.ui.components.Chip
-import com.vi5hnu.curvykids.ui.components.CurvyMascot
-import com.vi5hnu.curvykids.ui.components.CurvyMood
-import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
-import com.vi5hnu.curvykids.ui.theme.FontDisplay
-import com.vi5hnu.curvykids.ui.theme.Green
-import com.vi5hnu.curvykids.ui.theme.InkSoft
-import com.vi5hnu.curvykids.ui.components.KidIconImage
-import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
-import kotlinx.coroutines.delay
 
 /**
  * Shared scaffold for the four "Discover" activities (Shapes, Animals, Body, Days).
@@ -87,217 +60,66 @@ fun <T> DiscoverActivity(
     celebrateEvery: Int = 5,
     celebrateTitle: String = "Great job!",
 ) {
-    var mode by rememberSaveable { mutableStateOf(0) } // 0 = Learn, 1 = Play
-
-    // Quiz state — session-scoped; resets only when the screen leaves composition.
-    var score by rememberSaveable { mutableIntStateOf(0) }
-    var target by remember { mutableStateOf(quizItems.random()) }
-    var options by remember { mutableStateOf(buildOptions(quizItems, target, keyOf, optionCount)) }
-    var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) } // key -> correct?
-    var showCelebrate by rememberSaveable { mutableStateOf(false) }
-
-    // Wrong guesses on the current target. After a couple of misses the answer is shown rather
-    // than leaving a stuck child tapping the same tiles forever with no way forward.
-    var misses by remember { mutableIntStateOf(0) }
-    var revealAnswer by remember { mutableStateOf(false) }
-
-    fun newRound() {
-        val next = quizItems.filter { keyOf(it) != keyOf(target) }.randomOrNull() ?: target
-        target = next
-        options = buildOptions(quizItems, next, keyOf, optionCount)
-        misses = 0
-        revealAnswer = false
-        // Queue (don't flush) so the "Yes!" praise finishes before the next prompt is spoken.
-        feedback?.speaker?.speak(speakFor(next), flush = false)
+    var mode by rememberSaveable { mutableIntStateOf(0) } // 0 = Learn, 1 = Play
+    val tabs: @Composable () -> Unit = {
+        SegmentedTabs(
+            tabs = listOf("Learn", "Play"),
+            icons = listOf(KidIcon.Sparkle, KidIcon.Pointer),
+            selected = mode,
+            accent = topic.color,
+            onSelect = { mode = it },
+        )
     }
 
-    // Mascot mood reacts to the latest answer.
-    val mascotMood = when (flash?.second) {
-        true -> CurvyMood.Cheer
-        false -> CurvyMood.Wow
-        null -> CurvyMood.Happy
-    }
-
-    // Speak the prompt whenever the Play tab is shown.
-    LaunchedEffect(mode) {
-        if (mode == 1) feedback?.speaker?.speak(speakFor(target))
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
+    if (mode == 0) {
         Column(
             modifier = Modifier
+                .fillMaxSize()
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 18.dp, vertical = 18.dp)
                 .padding(bottom = 24.dp),
         ) {
-            ScreenHeader(
-                title = topic.title,
-                color = topic.color,
-                onBack = onBack,
-                trailing = if (mode == 1) {
-                    {
-                        Pill {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
-                            ) {
-                                StarCount(score)
-                            }
-                        }
-                    }
-                } else null,
-            )
-
+            ScreenHeader(title = topic.title, color = topic.color, onBack = onBack)
             Spacer(Modifier.height(14.dp))
-            SegmentedTabs(
-                tabs = listOf("Learn", "Play"),
-                icons = listOf(KidIcon.Sparkle, KidIcon.Pointer),
-                selected = mode,
-                accent = topic.color,
-                onSelect = { mode = it },
-            )
+            tabs()
             Spacer(Modifier.height(16.dp))
-
-            if (mode == 0) {
-                learnContent()
-            } else {
-                // ── Prompt card ────────────────────────────────────────────
-                CardSurface(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(22.dp, 18.dp, 22.dp, 18.dp),
-                    ) {
-                        CurvyMascot(size = 52.dp, mood = mascotMood)
-                        Spacer(Modifier.height(8.dp))
-                        Text(
-                            text = quizPromptLabel,
-                            fontFamily = FontDisplay,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 14.sp,
-                            color = InkSoft,
-                        )
-                        Spacer(Modifier.height(8.dp))
-                        quizPrompt(target)
-                        Spacer(Modifier.height(12.dp))
-                        Chip(
-                            onClick = { feedback?.speaker?.speak(speakFor(target)) },
-                            modifier = Modifier.size(48.dp),
-                        ) {
-                            KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
-                        }
-                    }
-                }
-
-                Spacer(Modifier.height(20.dp))
-
-                // ── Option grid (2 columns) ────────────────────────────────
-                val rows = options.chunked(2)
-                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    rows.forEach { pair ->
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(14.dp),
-                            modifier = Modifier.fillMaxWidth(),
-                        ) {
-                            pair.forEach { item ->
-                                val key = keyOf(item)
-                                val isFlash = flash?.first == key
-                                val flashOk = isFlash && flash?.second == true
-                                val flashBad = isFlash && flash?.second == false
-                                // After too many misses the right tile is outlined so the child
-                                // can see, and copy, the answer instead of guessing blindly.
-                                val hinted = revealAnswer && key == keyOf(target)
-                                Surface(
-                                    onClick = {
-                                        if (flash != null) return@Surface
-                                        if (keyOf(item) == keyOf(target)) {
-                                            flash = key to true
-                                            score += 1
-                                            onReward(rewardPerCorrect)
-                                            feedback?.correct()
-                                            feedback?.speaker?.speak("Yes!")
-                                        } else {
-                                            flash = key to false
-                                            misses += 1
-                                            feedback?.wrong()
-                                            if (misses >= MISSES_BEFORE_REVEAL) {
-                                                revealAnswer = true
-                                                feedback?.speaker?.speak("Here it is. ${speakFor(target)}")
-                                            } else {
-                                                feedback?.speaker?.speak("Try again")
-                                            }
-                                        }
-                                    },
-                                    modifier = Modifier
-                                        .weight(1f)
-                                        .height(108.dp)
-                                        .then(
-                                            when {
-                                                flashOk -> Modifier.border(4.dp, Green, RoundedCornerShape(24.dp))
-                                                flashBad -> Modifier.border(4.dp, Color(0xFFFF6B6B), RoundedCornerShape(24.dp))
-                                                hinted -> Modifier.border(4.dp, topic.color, RoundedCornerShape(24.dp))
-                                                else -> Modifier
-                                            }
-                                        ),
-                                    shape = RoundedCornerShape(24.dp),
-                                    color = Color.White,
-                                    shadowElevation = 4.dp,
-                                ) {
-                                    Box(
-                                        contentAlignment = Alignment.Center,
-                                        modifier = Modifier
-                                            .fillMaxSize()
-                                            .semantics { contentDescription = keyOf(item) },
-                                    ) {
-                                        quizOption(item)
-                                        if (flashOk) {
-                                            KidIconImage(KidIcon.Check, Modifier.size(34.dp), Green)
-                                        }
-                                    }
-                                }
-                            }
-                            if (pair.size < 2) Spacer(Modifier.weight(1f))
-                        }
-                    }
-                }
-            }
+            learnContent()
         }
-
-        // Once the answer has been shown, give the child a moment to look, then move on.
-        LaunchedEffect(revealAnswer) {
-            if (revealAnswer) {
-                delay(2200)
-                newRound()
-            }
-        }
-
-        // Advance / celebrate after a correct flash.
-        LaunchedEffect(flash) {
-            if (flash != null) {
-                delay(700)
-                if (flash?.second == true) {
-                    if (score > 0 && score % celebrateEvery == 0) {
-                        showCelebrate = true
-                    } else {
-                        newRound()
-                    }
-                }
-                flash = null
-            }
-        }
-
-        if (showCelebrate) {
-            Celebrate(
-                title = celebrateTitle,
-                sub = "$score correct!",
-                stars = 3,
-                onDone = { showCelebrate = false; newRound() },
-            )
-        }
+        return
     }
-}
 
-/** Wrong guesses tolerated before the correct tile is pointed out. */
-private const val MISSES_BEFORE_REVEAL = 2
+    val session = rememberQuizSession(
+        feedback, onReward, rewardPerCorrect,
+        rules = remember(celebrateEvery) { QuizRules(celebrateEvery = celebrateEvery) },
+    )
+    // Never the same target twice in a row.
+    var previous by remember { mutableStateOf<T?>(null) }
+    val question = remember(session.round) {
+        val target = quizItems.filter { previous == null || keyOf(it) != keyOf(previous!!) }
+            .randomOrNull() ?: quizItems.random()
+        previous = target
+        target to buildOptions(quizItems, target, keyOf, optionCount)
+    }
+    val (target, options) = question
+
+    QuizScaffold(
+        topic = topic,
+        session = session,
+        onBack = onBack,
+        choices = options,
+        correct = target,
+        keyOf = keyOf,
+        nameOf = keyOf,
+        praiseFor = { "Yes! ${keyOf(it)}!" },
+        speakPrompt = { flush -> feedback?.speaker?.speak(speakFor(target), flush = flush) },
+        celebrateTitle = celebrateTitle,
+        promptLabel = quizPromptLabel,
+        prompt = { quizPrompt(target) },
+        choiceContent = { quizOption(it) },
+        columns = 2,
+        belowHeader = tabs,
+    )
+}
 
 /** Builds [optionCount] options — the [target] plus distinct distractors — in shuffled order. */
 private fun <T> buildOptions(items: List<T>, target: T, keyOf: (T) -> String, optionCount: Int): List<T> {

@@ -53,6 +53,8 @@ import com.vi5hnu.curvykids.ui.theme.InkSoft
  * - progress is shown as beads rather than numbers.
  *
  * On a short window (a phone on its side) the screen scrolls and the tiles get a fixed height.
+ *
+ * @param belowHeader Optional row under the header, e.g. the Learn / Play tabs of a topic.
  */
 @Composable
 fun <T> QuizScaffold(
@@ -70,6 +72,7 @@ fun <T> QuizScaffold(
     promptLabel: String? = null,
     praiseFor: (T) -> String = { "Yes! ${nameOf(it)}!" },
     columns: Int = if (choices.size <= 3) choices.size else 2,
+    belowHeader: (@Composable () -> Unit)? = null,
 ) {
     // The first question cuts in; later ones wait for the praise before them to finish.
     val firstRound = remember { session.round }
@@ -107,6 +110,10 @@ fun <T> QuizScaffold(
                 },
             )
             Spacer(Modifier.height(14.dp))
+            if (belowHeader != null) {
+                belowHeader()
+                Spacer(Modifier.height(14.dp))
+            }
 
             CardSurface(modifier = Modifier.fillMaxWidth()) {
                 Column(

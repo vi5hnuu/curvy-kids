@@ -1,53 +1,22 @@
 package com.vi5hnu.curvykids.ui.activities
 
-import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
+import com.vi5hnu.curvykids.data.content.AssetPath
 import com.vi5hnu.curvykids.data.content.GAME_PICTURES
 import com.vi5hnu.curvykids.data.content.Topic
-import com.vi5hnu.curvykids.ui.components.CardSurface
-import com.vi5hnu.curvykids.ui.components.Celebrate
-import com.vi5hnu.curvykids.ui.components.Chip
-import com.vi5hnu.curvykids.ui.components.Pill
-import com.vi5hnu.curvykids.ui.components.ScreenHeader
-import com.vi5hnu.curvykids.ui.theme.FontDisplay
-import com.vi5hnu.curvykids.ui.theme.Green
-import com.vi5hnu.curvykids.ui.theme.InkSoft
-import com.vi5hnu.curvykids.ui.components.SvgBadge
-import com.vi5hnu.curvykids.ui.components.KidIconImage
-import com.vi5hnu.curvykids.ui.components.StarCount
-import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.activities.components.ChoiceText
+import com.vi5hnu.curvykids.ui.activities.components.QuizScaffold
+import com.vi5hnu.curvykids.ui.activities.components.rememberQuizSession
+import com.vi5hnu.curvykids.ui.components.CurvyMascot
+import com.vi5hnu.curvykids.ui.components.CurvyMood
 import com.vi5hnu.curvykids.ui.components.SvgArt
-import com.vi5hnu.curvykids.data.content.AssetPath
-import kotlinx.coroutines.delay
+import androidx.compose.ui.unit.dp
 
 private enum class BigSmallMode { SIZE, NUMBER }
 
@@ -97,7 +66,7 @@ private fun buildSpec(round: Int): BigSmallSpec {
     }
 }
 
-/** Big or Small — compare sizes (svg) or compare numbers, tap the correct side. */
+/** Big or Small — compare two sizes of a picture, or two numbers, and tap the one asked for. */
 @Composable
 fun BigSmallScreen(
     topic: Topic,
@@ -105,183 +74,37 @@ fun BigSmallScreen(
     onReward: (Int) -> Unit,
     feedback: PlayFeedback? = null,
 ) {
-    var score by rememberSaveable { mutableIntStateOf(0) }
-    var round by rememberSaveable { mutableIntStateOf(0) }
-    // Wrong answers on the current question, so a child who cannot get it is
-    // moved on instead of being left tapping forever.
-    var misses by remember { mutableIntStateOf(0) }
-    var flash by remember(round) { mutableStateOf<Pair<Boolean, Boolean>?>(null) }
-    var showCelebrate by rememberSaveable { mutableStateOf(false) }
+    val session = rememberQuizSession(feedback, onReward)
+    val spec = remember(session.round) { buildSpec(session.round) }
+    val correctSide = if (spec.askBig == spec.bigOnLeft) "left" else "right"
+    fun numberOn(side: String) = if (side == "left") spec.numLeft else spec.numRight
 
-    val spec = remember(round) { buildSpec(round) }
-    val correctLeft = spec.askBig == spec.bigOnLeft
-
-    LaunchedEffect(round) { feedback?.speaker?.speak(spec.spokenPrompt()) }
-
-    fun choose(left: Boolean) {
-        if (flash != null) return
-        val ok = left == correctLeft
-        flash = left to ok
-        if (ok) {
-            score += 1
-            onReward(3)
-            feedback?.correct()
-            feedback?.speaker?.speak("Yes!")
-        } else {
-            misses += 1
-            feedback?.wrong()
-            feedback?.speaker?.speak(
-                if (misses >= MISSES_BEFORE_MOVING_ON) "That one is tricky. Let's try another."
-                else "Try again"
-            )
-        }
-    }
-
-    LaunchedEffect(round) { misses = 0 }
-
-    LaunchedEffect(flash) {
-        if (flash != null) {
-            delay(700)
-            if (flash?.second == true) {
-                if (score > 0 && score % 5 == 0) showCelebrate = true else round++
-            } else if (misses >= MISSES_BEFORE_MOVING_ON) {
-                round++
-            }
-            flash = null
-        }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 18.dp, vertical = 18.dp)
-                .padding(bottom = 24.dp),
-        ) {
-            ScreenHeader(
-                title = topic.title,
-                color = topic.color,
-                onBack = onBack,
-                trailing = {
-                    Pill {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
-                        ) {
-                            StarCount(score)
-                        }
-                    }
-                },
-            )
-            Spacer(Modifier.height(16.dp))
-
-            CardSurface(modifier = Modifier.fillMaxWidth()) {
-                Column(
-                    horizontalAlignment = Alignment.CenterHorizontally,
-                    modifier = Modifier.padding(20.dp),
-                ) {
-                    Text(
-                        text = spec.prompt(),
-                        fontFamily = FontDisplay,
-                        fontWeight = FontWeight.ExtraBold,
-                        fontSize = 16.sp,
-                        color = topic.color,
-                    )
-                    Spacer(Modifier.height(10.dp))
-                    Chip(
-                        onClick = { feedback?.speaker?.speak(spec.spokenPrompt()) },
-                        modifier = Modifier.size(48.dp),
-                    ) {
-                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
-                    }
+    QuizScaffold(
+        topic = topic,
+        session = session,
+        onBack = onBack,
+        choices = listOf("left", "right"),
+        correct = correctSide,
+        keyOf = { it },
+        nameOf = { side ->
+            if (spec.mode == BigSmallMode.NUMBER) numberOn(side).toString()
+            else if (spec.askBig) "the big one" else "the small one"
+        },
+        praiseFor = { "Yes!" },
+        speakPrompt = { flush -> feedback?.speaker?.speak(spec.spokenPrompt(), flush = flush) },
+        celebrateTitle = "Size Star!",
+        promptLabel = spec.prompt(),
+        prompt = { CurvyMascot(size = 72.dp, mood = CurvyMood.Happy) },
+        columns = 2,
+        choiceContent = { side ->
+            if (spec.mode == BigSmallMode.NUMBER) {
+                ChoiceText(numberOn(side).toString(), topic.color)
+            } else {
+                val big = (side == "left") == spec.bigOnLeft
+                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    SvgArt(spec.svg, modifier = Modifier.fillMaxSize(if (big) 0.95f else 0.4f))
                 }
             }
-
-            Spacer(Modifier.height(20.dp))
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(14.dp),
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                ChoiceCard(
-                    flashOk = flash?.first == true && flash?.second == true,
-                    flashBad = flash?.first == true && flash?.second == false,
-                    onTap = { choose(true) },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    if (spec.mode == BigSmallMode.SIZE) {
-                        SvgArt(spec.svg, modifier = Modifier.size(if (spec.bigOnLeft) 110.dp else 52.dp))
-                    } else {
-                        NumberDisplay(spec.numLeft, topic.color)
-                    }
-                }
-                ChoiceCard(
-                    flashOk = flash?.first == false && flash?.second == true,
-                    flashBad = flash?.first == false && flash?.second == false,
-                    onTap = { choose(false) },
-                    modifier = Modifier.weight(1f),
-                ) {
-                    if (spec.mode == BigSmallMode.SIZE) {
-                        SvgArt(spec.svg, modifier = Modifier.size(if (!spec.bigOnLeft) 110.dp else 52.dp))
-                    } else {
-                        NumberDisplay(spec.numRight, topic.color)
-                    }
-                }
-            }
-        }
-
-        if (showCelebrate) {
-            Celebrate(
-                title = "Size Star!",
-                sub = "$score correct!",
-                stars = 3,
-                onDone = { showCelebrate = false; round++ },
-            )
-        }
-    }
+        },
+    )
 }
-
-@Composable
-private fun NumberDisplay(number: Int, color: Color) {
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-        Text(
-            "$number",
-            fontFamily = FontDisplay,
-            fontWeight = FontWeight.ExtraBold,
-            fontSize = 80.sp,
-            color = color,
-        )
-    }
-}
-
-@Composable
-private fun ChoiceCard(
-    flashOk: Boolean,
-    flashBad: Boolean,
-    onTap: () -> Unit,
-    modifier: Modifier = Modifier,
-    content: @Composable () -> Unit,
-) {
-    Surface(
-        onClick = onTap,
-        modifier = modifier
-            .height(180.dp)
-            .then(
-                when {
-                    flashOk -> Modifier.border(4.dp, Green, RoundedCornerShape(26.dp))
-                    flashBad -> Modifier.border(4.dp, Color(0xFFFF6B6B), RoundedCornerShape(26.dp))
-                    else -> Modifier
-                }
-            ),
-        shape = RoundedCornerShape(26.dp),
-        color = Color.White,
-        shadowElevation = 4.dp,
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            content()
-        }
-    }
-}
-
-/** Wrong answers tolerated before the question is changed for the child. */
-private const val MISSES_BEFORE_MOVING_ON = 3

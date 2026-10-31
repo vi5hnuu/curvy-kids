@@ -1,8 +1,8 @@
 package com.vi5hnu.curvykids.ui.activities
 
-import androidx.compose.foundation.border
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -12,45 +12,33 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
-import com.vi5hnu.curvykids.data.content.SeasonItem
 import com.vi5hnu.curvykids.data.content.SEASONS_LIST
 import com.vi5hnu.curvykids.data.content.Topic
+import com.vi5hnu.curvykids.ui.activities.components.ChoiceArt
+import com.vi5hnu.curvykids.ui.activities.components.QuizScaffold
 import com.vi5hnu.curvykids.ui.activities.components.SegmentedTabs
+import com.vi5hnu.curvykids.ui.activities.components.rememberQuizSession
 import com.vi5hnu.curvykids.ui.components.CardSurface
-import com.vi5hnu.curvykids.ui.components.Celebrate
-import com.vi5hnu.curvykids.ui.components.Chip
-import com.vi5hnu.curvykids.ui.components.Pill
-import com.vi5hnu.curvykids.ui.components.ScreenHeader
-import com.vi5hnu.curvykids.ui.theme.FontDisplay
-import com.vi5hnu.curvykids.ui.theme.Green
-import com.vi5hnu.curvykids.ui.theme.InkSoft
-import com.vi5hnu.curvykids.ui.components.SvgBadge
-import com.vi5hnu.curvykids.ui.components.KidIconImage
-import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.components.SvgArt
-import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.ui.theme.InkSoft
 
-/** Seasons — learn the 4 seasons and their weather, then quiz on season recognition. */
+/** Seasons — learn the four seasons and their weather, then pick the season for a weather clue. */
 @Composable
 fun SeasonsScreen(
     topic: Topic,
@@ -58,213 +46,88 @@ fun SeasonsScreen(
     onReward: (Int) -> Unit,
     feedback: PlayFeedback? = null,
 ) {
-    var mode by rememberSaveable { mutableStateOf(0) }
-    var score by rememberSaveable { mutableIntStateOf(0) }
-    var round by rememberSaveable { mutableIntStateOf(0) }
-    // Wrong answers on the current question, so a child who cannot get it is
-    // moved on instead of being left tapping forever.
-    var misses by remember { mutableIntStateOf(0) }
-    var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) }
-    var showCelebrate by rememberSaveable { mutableStateOf(false) }
-
-    // Quiz target: show a weather clue svg, child picks which season it belongs to.
-    val quizState = remember(round) {
-        val season = SEASONS_LIST.random()
-        val clueEmoji = season.weatherSvgs.random()
-        Pair(season, clueEmoji)
+    var mode by rememberSaveable { mutableIntStateOf(0) }
+    val tabs: @Composable () -> Unit = {
+        SegmentedTabs(
+            tabs = listOf("Learn", "Play"),
+            icons = listOf(KidIcon.Sparkle, KidIcon.Pointer),
+            selected = mode,
+            accent = topic.color,
+            onSelect = { mode = it },
+        )
     }
-    val targetSeason = quizState.first
-    val clue = quizState.second
+    if (mode == 0) SeasonsLearn(topic, onBack, feedback, tabs) else SeasonsQuiz(topic, onBack, onReward, feedback, tabs)
+}
 
-    LaunchedEffect(mode) {
-        if (mode == 1) feedback?.speaker?.speak("Which season has ${targetSeason.weather}?")
-    }
-
-    LaunchedEffect(round) { misses = 0 }
-
-    LaunchedEffect(flash) {
-        if (flash != null) {
-            delay(700)
-            if (flash?.second == true) {
-                if (score > 0 && score % 5 == 0) showCelebrate = true else round++
-            } else if (misses >= MISSES_BEFORE_MOVING_ON) {
-                round++
-            }
-            flash = null
-        }
-    }
-
-    fun choose(season: SeasonItem) {
-        if (flash != null) return
-        val ok = season.name == targetSeason.name
-        flash = season.name to ok
-        if (ok) {
-            score += 1
-            onReward(3)
-            feedback?.correct()
-            feedback?.speaker?.speak("Yes! ${season.name}!")
-        } else {
-            misses += 1
-            feedback?.wrong()
-            feedback?.speaker?.speak(
-                if (misses >= MISSES_BEFORE_MOVING_ON) "That one is tricky. Let's try another."
-                else "Try again"
-            )
-        }
-    }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .verticalScroll(rememberScrollState())
-                .padding(horizontal = 18.dp, vertical = 18.dp)
-                .padding(bottom = 24.dp),
-        ) {
-            ScreenHeader(
-                title = topic.title,
-                color = topic.color,
-                onBack = onBack,
-                trailing = if (mode == 1) {
-                    {
-                        Pill {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
-                            ) {
-                                StarCount(score)
-                            }
-                        }
-                    }
-                } else null,
-            )
-            Spacer(Modifier.height(14.dp))
-            SegmentedTabs(tabs = listOf("Learn", "Play"),
-                icons = listOf(KidIcon.Sparkle, KidIcon.Pointer), selected = mode, accent = topic.color, onSelect = { mode = it })
-            Spacer(Modifier.height(16.dp))
-
-            if (mode == 0) {
-                // Learn — 4 season cards showing name, main svg, and weather clue emojis
-                Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
-                    SEASONS_LIST.chunked(2).forEach { pair ->
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(14.dp),
-                            modifier = Modifier.fillMaxWidth(),
+@Composable
+private fun SeasonsLearn(topic: Topic, onBack: () -> Unit, feedback: PlayFeedback?, tabs: @Composable () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+            .padding(18.dp),
+    ) {
+        ScreenHeader(title = topic.title, color = topic.color, onBack = onBack)
+        Spacer(Modifier.height(14.dp))
+        tabs()
+        Spacer(Modifier.height(16.dp))
+        Column(verticalArrangement = Arrangement.spacedBy(14.dp)) {
+            SEASONS_LIST.chunked(2).forEach { pair ->
+                Row(horizontalArrangement = Arrangement.spacedBy(14.dp), modifier = Modifier.fillMaxWidth()) {
+                    pair.forEach { season ->
+                        CardSurface(
+                            modifier = Modifier.weight(1f),
+                            onClick = { feedback?.speaker?.speak("${season.name}! ${season.weather}") },
                         ) {
-                            pair.forEach { season ->
-                                CardSurface(
-                                    modifier = Modifier.weight(1f),
-                                    onClick = { feedback?.speaker?.speak("${season.name}! ${season.weather}") },
-                                ) {
-                                    Column(
-                                        horizontalAlignment = Alignment.CenterHorizontally,
-                                        modifier = Modifier.padding(14.dp),
-                                    ) {
-                                        SvgArt(season.svg, modifier = Modifier.size(64.dp))
-                                        Text(
-                                            season.name,
-                                            fontFamily = FontDisplay,
-                                            fontWeight = FontWeight.ExtraBold,
-                                            fontSize = 16.sp,
-                                            color = season.color,
-                                        )
-                                        Spacer(Modifier.height(6.dp))
-                                        Text(
-                                            season.weather,
-                                            fontWeight = FontWeight.Bold,
-                                            fontSize = 11.sp,
-                                            color = InkSoft,
-                                        )
-                                        Spacer(Modifier.height(6.dp))
-                                        Row(horizontalArrangement = Arrangement.spacedBy(4.dp)) {
-                                            season.weatherSvgs.forEach { clue -> SvgArt(clue, modifier = Modifier.size(26.dp)) }
-                                        }
-                                    }
-                                }
-                            }
-                        }
-                    }
-                }
-            } else {
-                // Play — show a clue svg, pick the matching season
-                CardSurface(modifier = Modifier.fillMaxWidth()) {
-                    Column(
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        modifier = Modifier.padding(22.dp),
-                    ) {
-                        Text(
-                            "WHICH SEASON IS THIS?",
-                            fontFamily = FontDisplay,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 14.sp,
-                            color = InkSoft,
-                        )
-                        Spacer(Modifier.height(12.dp))
-                        SvgArt(clue, modifier = Modifier.size(84.dp))
-                        Spacer(Modifier.height(8.dp))
-                        Chip(
-                            onClick = { feedback?.speaker?.speak("Which season has ${targetSeason.weather}?") },
-                            modifier = Modifier.size(48.dp),
-                        ) { KidIconImage(KidIcon.Speaker, Modifier.size(20.dp)) }
-                    }
-                }
-
-                Spacer(Modifier.height(20.dp))
-
-                SEASONS_LIST.chunked(2).forEach { pair ->
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(14.dp),
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(bottom = 14.dp),
-                    ) {
-                        pair.forEach { season ->
-                            val flashOk = flash?.first == season.name && flash?.second == true
-                            val flashBad = flash?.first == season.name && flash?.second == false
-                            Surface(
-                                onClick = { choose(season) },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .height(108.dp)
-                                    .then(
-                                        when {
-                                            flashOk -> Modifier.border(4.dp, Green, RoundedCornerShape(24.dp))
-                                            flashBad -> Modifier.border(4.dp, Color(0xFFFF6B6B), RoundedCornerShape(24.dp))
-                                            else -> Modifier
-                                        }
-                                    ),
-                                shape = RoundedCornerShape(24.dp),
-                                color = Color.White,
-                                shadowElevation = 4.dp,
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                modifier = Modifier.padding(14.dp),
                             ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                                        SvgArt(season.svg, modifier = Modifier.size(52.dp))
-                                        Text(
-                                            season.name,
-                                            fontFamily = FontDisplay,
-                                            fontWeight = FontWeight.ExtraBold,
-                                            fontSize = 14.sp,
-                                            color = season.color,
-                                        )
-                                    }
+                                SvgArt(season.svg, modifier = Modifier.size(80.dp))
+                                Text(season.name, fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,
+                                    fontSize = 20.sp, color = season.color)
+                                Text(season.weather, fontWeight = FontWeight.Bold, fontSize = 14.sp, color = InkSoft,
+                                    textAlign = TextAlign.Center)
+                                Spacer(Modifier.height(8.dp))
+                                Row(horizontalArrangement = Arrangement.spacedBy(6.dp)) {
+                                    season.weatherSvgs.forEach { SvgArt(it, modifier = Modifier.size(40.dp)) }
                                 }
                             }
                         }
                     }
                 }
             }
-        }
-
-        if (showCelebrate) {
-            Celebrate(
-                title = "Season Explorer!",
-                sub = "$score correct!",
-                stars = 3,
-                onDone = { showCelebrate = false; round++ },
-            )
         }
     }
 }
 
-/** Wrong answers tolerated before the question is changed for the child. */
-private const val MISSES_BEFORE_MOVING_ON = 3
+@Composable
+private fun SeasonsQuiz(
+    topic: Topic,
+    onBack: () -> Unit,
+    onReward: (Int) -> Unit,
+    feedback: PlayFeedback?,
+    tabs: @Composable () -> Unit,
+) {
+    val session = rememberQuizSession(feedback, onReward)
+    val (target, clue) = remember(session.round) {
+        val season = SEASONS_LIST.random()
+        season to season.weatherSvgs.random()
+    }
+    QuizScaffold(
+        topic = topic,
+        session = session,
+        onBack = onBack,
+        choices = SEASONS_LIST,
+        correct = target,
+        keyOf = { it.name },
+        nameOf = { it.name },
+        speakPrompt = { flush -> feedback?.speaker?.speak("Which season is ${target.weather}?", flush = flush) },
+        celebrateTitle = "Season Explorer!",
+        promptLabel = "WHICH SEASON IS THIS?",
+        prompt = { SvgArt(clue, modifier = Modifier.size(96.dp)) },
+        choiceContent = { ChoiceArt(it.svg, it.name, it.color) },
+        columns = 2,
+        belowHeader = tabs,
+    )
+}
