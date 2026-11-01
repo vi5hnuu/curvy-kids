@@ -79,6 +79,11 @@ class DrawingController(initial: List<Stroke> = emptyList()) {
     /** Immutable snapshot of the strokes, safe to pass to the recogniser. */
     fun snapshot(): List<Stroke> = renderable.map { Stroke(it.stroke.points.toList()) }
 
+    /** Rubs out the most recent finished line; does nothing on an empty page. */
+    fun undo() {
+        finished.removeLastOrNull()
+    }
+
     fun clear() {
         isDrawing = false
         finished.clear()

@@ -72,6 +72,9 @@ object KidAssets {
     fun mathSymbol(name: String) = path("math-symbols", "math", name)
     fun fraction(name: String) = path("fractions", "fraction", name)
 
+    /** Drawing tools (eraser, new page, tick, frame, crayon-<colour>) as the real objects. */
+    fun tool(name: String) = path("drawing-tools", "tool", name)
+
     /** Counting sets illustrate 1–10 as grouped objects. */
     fun counting(n: Int) = path("counting", "count", n.toString())
 

@@ -208,6 +208,7 @@ fun BarakhadiScreen(
             onNext = { writingForm = (writingForm + 1) % count; active = writingForm },
             onClose = { writingForm = -1 },
             onDrawn = { markHeard(matra, reward = true) },
+            onTool = { word -> speaker?.speak(word, langTag = "en-US") },
         )
         return
     }

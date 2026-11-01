@@ -9,6 +9,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.TextUnit
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.data.content.HindiLetter
@@ -55,22 +56,7 @@ fun SyllableExplainer(
         val joined = hint is SyllableHint.Joined || hint == null
         MatraEquation(consonant.char, matra, syllable, tile = if (joined) tile * 1.18f else tile)
 
-        val word = when (hint) {
-            is SyllableHint.Word -> hint.word
-            is SyllableHint.AsIn -> hint.word
-            // The equation above already says it: ख + ऐ = खै.
-            is SyllableHint.Joined, null -> null
-        }
-        if (word != null) {
-            // Picture beside the word, not above it: keeps the card short, and reads as "this
-            // is the word" either way.
-            Row(verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(KidDimens.Gap)) {
-                hindiWordPicture(word)?.let {
-                    SvgArt(it, Modifier.size(if (compact) 84.dp else 120.dp), contentDescription = word)
-                }
-                MarkedWord(word, markOf(word, syllable, consonant.char), color, fontSize = if (compact) 34.sp else 44.sp)
-            }
-        }
+        SyllableWord(consonant, matra, pictureSize = if (compact) 84.dp else 120.dp, fontSize = if (compact) 34.sp else 44.sp)
     }
     val actions: @Composable () -> Unit = {
         ActionButton(KidIcon.Speaker, color, syllable, onSpeak)
@@ -96,6 +82,33 @@ fun SyllableExplainer(
             lesson()
             Row(horizontalArrangement = Arrangement.spacedBy(KidDimens.Gap)) { actions() }
         }
+    }
+}
+
+/**
+ * The word the syllable's recording pairs it with, shown beside its picture with the syllable
+ * marked: (ear) **का**न. Nothing for a "joined" syllable, which has no everyday word; there the
+ * equation is the lesson. Shared by the explainer and the write sheet so both show the same.
+ */
+@Composable
+fun SyllableWord(
+    consonant: HindiLetter,
+    matra: Matra,
+    modifier: Modifier = Modifier,
+    pictureSize: Dp = 120.dp,
+    fontSize: TextUnit = 44.sp,
+) {
+    val syllable = barakhadiSyllable(consonant.char, matra)
+    val word = when (val hint = barakhadiHint(syllable)) {
+        is SyllableHint.Word -> hint.word
+        is SyllableHint.AsIn -> hint.word
+        is SyllableHint.Joined, null -> null
+    } ?: return
+    // Picture beside the word, not above it: keeps the card short, and reads as "this is the
+    // word" either way.
+    Row(modifier, verticalAlignment = Alignment.CenterVertically, horizontalArrangement = Arrangement.spacedBy(KidDimens.Gap)) {
+        hindiWordPicture(word)?.let { SvgArt(it, Modifier.size(pictureSize), contentDescription = word) }
+        MarkedWord(word, markOf(word, syllable, consonant.char), matraColor(matra), fontSize = fontSize)
     }
 }
 

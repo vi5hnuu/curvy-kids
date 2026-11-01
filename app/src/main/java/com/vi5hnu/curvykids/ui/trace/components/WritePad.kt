@@ -1,12 +1,11 @@
 package com.vi5hnu.curvykids.ui.trace.components
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
@@ -28,6 +27,10 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.game.components.DrawingCanvas
 import com.vi5hnu.curvykids.ui.game.components.rememberDrawingController
+import com.vi5hnu.curvykids.ui.kit.tools.DrawingPage
+import com.vi5hnu.curvykids.ui.kit.tools.ToolArt
+import com.vi5hnu.curvykids.ui.kit.tools.ToolButton
+import com.vi5hnu.curvykids.ui.kit.tools.ToolVoice
 import kotlinx.coroutines.launch
 
 /**
@@ -41,6 +44,9 @@ import kotlinx.coroutines.launch
  *                 check is simply not offered, rather than the child being told they are wrong
  *                 by something that never looked.
  * @param onResult Called with the verdict, for the sound, the buzz and the reward.
+ * @param onFirstStroke Called on the first line drawn for each character, so the screen can say
+ *                 the character while it is being written.
+ * @param onTool   Called with the short word for a tool the child tapped ([ToolVoice]), to say.
  */
 @Composable
 fun WritePad(
@@ -50,6 +56,8 @@ fun WritePad(
     onDrawn: () -> Unit = {},
     onCheck: (suspend (List<Stroke>) -> Boolean?)? = null,
     onResult: (Boolean) -> Unit = {},
+    onFirstStroke: () -> Unit = {},
+    onTool: (String) -> Unit = {},
 ) {
     val controller = rememberDrawingController()
     var drawnHere by rememberSaveable(char) { mutableIntStateOf(0) }
@@ -68,33 +76,21 @@ fun WritePad(
         shadowElevation = 6.dp,
         modifier = modifier,
     ) {
-        Box(modifier = Modifier.fillMaxSize()) {
-            GhostLetter(char = char, modifier = Modifier.fillMaxSize())
-
-            DrawingCanvas(
-                controller = controller,
-                modifier = Modifier.fillMaxSize(),
-                inkColor = color,
-                onDrawStart = {
-                    if (drawnHere == 0) {
-                        drawnHere = 1
-                        onDrawn()
-                    }
-                },
-            )
-
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(10.dp),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(12.dp),
-            ) {
-                PadButton(KidIcon.Eraser, color) {
-                    controller.clear()
-                    verdict = null
-                }
+        DrawingPage(
+            modifier = Modifier.fillMaxSize(),
+            onErase = {
+                controller.undo()
+                verdict = null
+                onTool(ToolVoice.ERASER)
+            },
+            onNewPage = {
+                controller.clear()
+                verdict = null
+                onTool(ToolVoice.NEW_PAGE)
+            },
+            trailing = {
                 if (onCheck != null) {
-                    PadButton(KidIcon.Check, color) {
+                    ToolButton(ToolArt.Tick, "Check my writing", onClick = {
                         if (!checking && controller.hasDrawing) {
                             checking = true
                             scope.launch {
@@ -106,11 +102,26 @@ fun WritePad(
                                 }
                             }
                         }
-                    }
+                    })
                 }
-            }
+            },
+        ) {
+            GhostLetter(char = char, modifier = Modifier.fillMaxSize())
 
-            // The verdict, as a face rather than a word.
+            DrawingCanvas(
+                controller = controller,
+                modifier = Modifier.fillMaxSize(),
+                inkColor = color,
+                onDrawStart = {
+                    if (drawnHere == 0) {
+                        drawnHere = 1
+                        onDrawn()
+                        onFirstStroke()
+                    }
+                },
+            )
+
+            // The verdict, as a picture rather than a word.
             verdict?.let { correct ->
                 KidIconImage(
                     if (correct) KidIcon.Star else KidIcon.Pointer,
@@ -121,21 +132,6 @@ fun WritePad(
                     if (correct) StarGold else color,
                 )
             }
-        }
-    }
-}
-
-/** A round control on the writing surface, sized for a small hand. */
-@Composable
-private fun PadButton(icon: KidIcon, color: Color, onClick: () -> Unit) {
-    Surface(
-        onClick = onClick,
-        shape = CircleShape,
-        color = color.copy(alpha = 0.14f),
-        modifier = Modifier.size(48.dp),
-    ) {
-        Box(contentAlignment = Alignment.Center) {
-            KidIconImage(icon, Modifier.size(22.dp), color)
         }
     }
 }

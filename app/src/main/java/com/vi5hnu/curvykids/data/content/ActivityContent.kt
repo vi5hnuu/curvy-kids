@@ -234,16 +234,33 @@ val GAME_PICTURES: List<AssetPath> = listOf(
     KidAssets.nature("tulip"), KidAssets.nature("cactus"), KidAssets.toy("teddy-bear"),
 )
 
-// ── Crayon colors for the drawing canvas ─────────────────────────────────────
+// ── Crayons for the drawing canvas ───────────────────────────────────────────
 
-val CRAYON_COLORS = listOf(
-    Color(0xFF4F6BED), // indigo (default)
-    Color(0xFFFF5A52), // red
-    Color(0xFF4FCB94), // green
-    Color(0xFFFF9F1C), // orange
-    Color(0xFFA855F7), // purple
-    Color(0xFF1FC2AE), // teal
+/**
+ * A crayon: its ink [color], the colour [name] said aloud when the child picks it, and its
+ * picture ([art], assets/art/drawing-tools/tool-crayon-<name>.svg, drawn in the same colour).
+ */
+data class Crayon(val color: Color, val name: String) {
+    val art: AssetPath get() = KidAssets.tool("crayon-${name.lowercase()}")
+}
+
+/** Every crayon in the box, in rainbow order; Free Draw offers them all. */
+val CRAYON_BOX = listOf(
+    Crayon(Color(0xFFFF5A52), "Red"),
+    Crayon(Color(0xFFFF9F1C), "Orange"),
+    Crayon(Color(0xFFFFC24A), "Yellow"),
+    Crayon(Color(0xFF4FCB94), "Green"),
+    Crayon(Color(0xFF1FC2AE), "Teal"),
+    Crayon(Color(0xFF4F6BED), "Blue"),
+    Crayon(Color(0xFFA855F7), "Purple"),
+    Crayon(Color(0xFFFF8FB6), "Pink"),
+    Crayon(Color(0xFF2B3A4A), "Black"),
+    Crayon(Color(0xFF8B5E3C), "Brown"),
 )
+
+/** The tracing crayons, blue (the default ink) first: dark enough to show on the faint letter. */
+val CRAYONS: List<Crayon> = listOf("Blue", "Red", "Green", "Orange", "Purple", "Teal")
+    .map { n -> CRAYON_BOX.first { it.name == n } }
 
 // ── Months of the Year ────────────────────────────────────────────────────────
 

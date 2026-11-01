@@ -17,6 +17,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.data.content.HindiLetter
 import com.vi5hnu.curvykids.data.content.Matra
 import com.vi5hnu.curvykids.data.content.barakhadiSyllable
@@ -31,8 +32,9 @@ import com.vi5hnu.curvykids.ui.trace.components.WritePad
  * One syllable, opened for writing from the explainer's pencil.
  *
  * A full sheet rather than a mode on the grid, so it needs no label to be understood. The
- * equation stays at the top as a reminder of what is being written (क + आ = का); arrows at the
- * foot move along the twelve forms so a child can work through them without going back.
+ * equation stays at the top as a reminder of what is being written (क + आ = का), with the word
+ * the syllable starts and its picture under it; the line is said as the child starts writing.
+ * Arrows at the foot move along the twelve forms so a child can work through them.
  */
 @Composable
 fun WriteSheet(
@@ -45,6 +47,8 @@ fun WriteSheet(
     onNext: () -> Unit,
     onClose: () -> Unit,
     onDrawn: () -> Unit,
+    /** Says a tool's word ("Rubbed out!") when the child taps it. */
+    onTool: (String) -> Unit = {},
 ) {
     val syllable = barakhadiSyllable(consonant.char, matra)
     val color = matraColor(matra)
@@ -66,6 +70,12 @@ fun WriteSheet(
                 Spacer(Modifier.width(14.dp))
                 RoundButton(KidIcon.Speaker, color, tint, onSpeak)
             }
+            // The word this syllable starts, with its picture: what the voice says while writing.
+            SyllableWord(
+                consonant, matra,
+                pictureSize = 64.dp, fontSize = 30.sp,
+                modifier = Modifier.align(Alignment.CenterHorizontally).padding(top = 10.dp),
+            )
             Spacer(Modifier.size(14.dp))
             WritePad(
                 char = syllable,
@@ -76,6 +86,9 @@ fun WriteSheet(
                 onDrawn = onDrawn,
                 onCheck = onCheck,
                 onResult = onResult,
+                // Say the syllable's line as the child starts writing it.
+                onFirstStroke = onSpeak,
+                onTool = onTool,
             )
             Spacer(Modifier.size(14.dp))
             Row(

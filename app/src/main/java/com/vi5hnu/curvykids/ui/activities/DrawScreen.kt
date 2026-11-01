@@ -1,5 +1,12 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import com.vi5hnu.curvykids.audio.PlayFeedback
+import com.vi5hnu.curvykids.data.content.CRAYON_BOX
+import com.vi5hnu.curvykids.ui.components.SvgImage
+import com.vi5hnu.curvykids.ui.kit.tools.CrayonTray
+import com.vi5hnu.curvykids.ui.kit.tools.ToolArt
+import com.vi5hnu.curvykids.ui.kit.tools.ToolButton
+import com.vi5hnu.curvykids.ui.kit.tools.ToolVoice
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.BorderStroke
@@ -80,15 +87,9 @@ private data class StampMark(
 
 // ── Palette / brushes / content ─────────────────────────────────────────────────
 
-private val PALETTE = listOf(
-    Color(0xFFFF5A52), Color(0xFFFF9F1C), Color(0xFFFFC24A), Color(0xFF4FCB94),
-    Color(0xFF1FC2AE), Color(0xFF46A6F0), Color(0xFFA855F7), Color(0xFFFF8FB6),
-    Color(0xFF2B3A4A), Color(0xFF8B5E3C),
-)
-
 private val BRUSH_SIZES = listOf(10.dp, 16.dp, 26.dp)
 
-/** @param svg Picture for the picker chip; null for "blank", which shows a pencil instead. */
+/** @param svg Picture for the picker chip; null for "blank", which shows a blank page instead. */
 private data class Template(val id: String, val name: String, val svg: AssetPath?)
 
 /** "Blank" plus colour-in outline pictures. */
@@ -121,15 +122,19 @@ private val GUIDE_COLOR = Color(0xFFCBD9E3)
  *  - **Colour-in templates**: pick a picture (sun, house, fish…) to trace and fill.
  *  - **Stamps**: tap to place fun stickers.
  *  - **Draw**: crayon strokes with a 10-colour palette and 3 brush sizes.
- *  - **Undo / Clear** so mistakes are never scary.
+ *  - **Eraser / New page** so mistakes are never scary; a frame keeps the picture.
  */
 @Composable
 fun DrawScreen(
     topic: Topic,
     onBack: () -> Unit,
     onAddBadge: (String) -> Unit = {},
+    /** Speaks each tool's word ("Red!", "Rubbed out!"); null when there is no speaker. */
+    feedback: PlayFeedback? = null,
 ) {
-    var selectedColor by remember { mutableStateOf(PALETTE[0]) }
+    var selectedCrayon by remember { mutableStateOf(CRAYON_BOX.first()) }
+    val selectedColor = selectedCrayon.color
+    val say: (String) -> Unit = { word -> feedback?.speaker?.speak(word, langTag = "en-US") }
     var selectedSize by remember { mutableStateOf(BRUSH_SIZES[1]) }
     var templateId by remember { mutableStateOf("blank") }
     var stampMode by remember { mutableStateOf(false) }
@@ -164,37 +169,31 @@ fun DrawScreen(
             color = topic.color,
             onBack = onBack,
             trailing = {
+                // The real objects, not abstract symbols: the eraser rubs out the last thing
+                // drawn, the new page wipes it all, the frame keeps the picture.
                 Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-                    Chip(
-                        onClick = { marks.removeLastOrNull() },
-                        modifier = Modifier.size(48.dp),
-                        containerColor = Color(0xFFEAF1F6),
-                        contentColor = InkSoft,
-                    ) { KidIconImage(KidIcon.Undo, Modifier.size(22.dp)) }
-                    Chip(
-                        onClick = { marks.clear() },
-                        modifier = Modifier.size(48.dp),
-                        containerColor = Color(0xFFFFE9E4),
-                        contentColor = Color(0xFFFF8B6B),
-                    ) { KidIconImage(KidIcon.Eraser, Modifier.size(18.dp)) }
-                    Chip(
-                        onClick = {
-                            if (marks.isEmpty()) {
-                                savedUri = null
-                                saveMessage = "Draw something first!"
-                            } else {
-                                scope.launch {
-                                    val uri = store.save(artLayer.toImageBitmap().asAndroidBitmap())
-                                    savedUri = uri
-                                    saveMessage = if (uri != null) "Saved to your photos!"
-                                                  else "Could not save right now."
-                                }
+                    ToolButton(ToolArt.Eraser, "Eraser: rub out the last thing", onClick = {
+                        marks.removeLastOrNull()
+                        say(ToolVoice.ERASER)
+                    })
+                    ToolButton(ToolArt.NewPage, "New page: start again", onClick = {
+                        marks.clear()
+                        say(ToolVoice.NEW_PAGE)
+                    })
+                    ToolButton(ToolArt.Frame, "Keep my picture", onClick = {
+                        if (marks.isEmpty()) {
+                            savedUri = null
+                            saveMessage = "Draw something first!"
+                        } else {
+                            scope.launch {
+                                val uri = store.save(artLayer.toImageBitmap().asAndroidBitmap())
+                                savedUri = uri
+                                saveMessage = if (uri != null) "Saved to your photos!"
+                                              else "Could not save right now."
+                                if (uri != null) say(ToolVoice.SAVED)
                             }
-                        },
-                        modifier = Modifier.size(48.dp),
-                        containerColor = TintTeal,
-                        contentColor = Color(0xFF1FC2AE),
-                    ) { KidIconImage(KidIcon.Check, Modifier.size(20.dp)) }
+                        }
+                    })
                 }
             },
         )
@@ -224,11 +223,8 @@ fun DrawScreen(
                         horizontalArrangement = Arrangement.spacedBy(4.dp),
                         modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                     ) {
-                        if (t.svg != null) {
-                            SvgArt(t.svg, modifier = Modifier.size(18.dp))
-                        } else {
-                            KidIconImage(KidIcon.Pencil, Modifier.size(16.dp), InkSoft)
-                        }
+                        // "Blank" is pictured as a blank sheet of paper.
+                        SvgArt(t.svg ?: ToolArt.NewPage.asset, modifier = Modifier.size(18.dp))
                         Text(
                             t.name,
                             fontFamily = FontDisplay,
@@ -363,7 +359,7 @@ fun DrawScreen(
         ) {
             // Pencil = draw mode
             ToolDot(selected = !stampMode, onClick = { stampMode = false }) {
-                KidIconImage(KidIcon.Pencil, Modifier.size(20.dp), selectedColor)
+                SvgImage(selectedCrayon.art, Modifier.size(30.dp))
             }
             Spacer(Modifier.width(2.dp))
             STAMPS.forEach { s ->
@@ -396,16 +392,16 @@ fun DrawScreen(
                 }
             }
             Spacer(Modifier.width(4.dp))
-            PALETTE.forEach { c ->
-                Surface(
-                    onClick = { selectedColor = c; stampMode = false },
-                    shape = CircleShape,
-                    color = c,
-                    modifier = Modifier.size(38.dp),
-                    shadowElevation = if (c == selectedColor) 6.dp else 2.dp,
-                    border = if (c == selectedColor) BorderStroke(3.dp, Color.White) else null,
-                ) {}
-            }
+            CrayonTray(
+                crayons = CRAYON_BOX,
+                selected = selectedColor,
+                crayonSize = 40.dp,
+                onPick = { c ->
+                    selectedCrayon = c
+                    stampMode = false
+                    say(ToolVoice.crayon(c))
+                },
+            )
         }
     }
 }

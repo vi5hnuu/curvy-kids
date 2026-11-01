@@ -130,6 +130,9 @@ class GameViewModel(
             if (matched) {
                 sound.playCorrect()
                 speakPraise()
+                // Then the letter's own line again ("A for Apple"), so the shape just written is
+                // heard with its sound at the moment it is praised.
+                speakLetterLine(state.character)
                 viewModelScope.launch { progress.markMastered(state.level, state.character) }
                 val newMastered = state.masteredCharacters + state.character
                 _correctAnswers.tryEmit(
@@ -251,6 +254,14 @@ class GameViewModel(
             speakHindiLetter(state.character); return
         }
         phonics.speak(Phonics.phraseFor(state.character))
+    }
+
+    /** Queues [char]'s spoken line after whatever is playing ("A for Apple", "क से कबूतर"). */
+    private fun speakLetterLine(char: String) {
+        if (_uiState.value.level.script == Script.DEVANAGARI) {
+            speakHindiLetter(char, queue = true); return
+        }
+        phonics.speak(Phonics.phraseFor(char), flush = false)
     }
 
     /** Guides the child on what to draw, e.g. "Draw the letter A. A for Apple." */

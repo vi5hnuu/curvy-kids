@@ -289,6 +289,7 @@ fun AppNavGraph(
                             topic = topic,
                             onBack = { navController.popBackStack() },
                             onAddBadge = appViewModel::addBadge,
+                            feedback = gameViewModel.feedback,
                         )
 
                         TopicKind.MEMORY -> MemoryMatchScreen(

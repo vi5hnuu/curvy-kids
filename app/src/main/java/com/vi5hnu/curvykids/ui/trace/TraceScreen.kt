@@ -56,9 +56,10 @@ import com.vi5hnu.curvykids.ui.game.components.rememberDrawingController
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
 import com.vi5hnu.curvykids.ui.theme.Ink
-import com.vi5hnu.curvykids.ui.theme.InkFaint
 import com.vi5hnu.curvykids.ui.theme.InkSoft
-import com.vi5hnu.curvykids.data.content.CRAYON_COLORS
+import com.vi5hnu.curvykids.data.content.CRAYONS
+import com.vi5hnu.curvykids.ui.kit.tools.ToolVoice
+import com.vi5hnu.curvykids.ui.kit.tools.DrawingPage
 import com.vi5hnu.curvykids.ui.trace.components.CharStrip
 import com.vi5hnu.curvykids.ui.trace.components.GhostLetter
 import com.vi5hnu.curvykids.ui.trace.components.LetterReferenceCard
@@ -88,7 +89,10 @@ fun TraceScreen(
     val modelFailed = recognizerState?.error != null
 
     val controller = rememberDrawingController()
-    var inkColor by remember { mutableStateOf(CRAYON_COLORS.first()) }
+    var inkColor by remember { mutableStateOf(CRAYONS.first()) }
+    // The letter whose line was last said on the first stroke, so it's said once per letter.
+    var spokenFor by remember { mutableStateOf<String?>(null) }
+    val say: (String) -> Unit = { word -> viewModel.feedback.speaker.speak(word, langTag = "en-US") }
     var showCharStrip by remember { mutableStateOf(false) }
 
     // Find the topic for this level
@@ -130,60 +134,37 @@ fun TraceScreen(
                 shadowElevation = 6.dp,
                 modifier = modifier,
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
+                DrawingPage(
+                    modifier = Modifier.fillMaxSize(),
+                    crayon = inkColor,
+                    onCrayon = { c -> inkColor = c; say(ToolVoice.crayon(c)) },
+                    onErase = {
+                        controller.undo()
+                        viewModel.clearFeedback()
+                        say(ToolVoice.ERASER)
+                    },
+                    onNewPage = {
+                        controller.clear()
+                        viewModel.clearFeedback()
+                        say(ToolVoice.NEW_PAGE)
+                    },
+                ) {
                     // The letter to trace, shown plainly underneath the child's ink.
                     GhostLetter(char = ch, modifier = Modifier.fillMaxSize())
 
-                    // Drawing canvas (on top) — pure ink layer over the letter
+                    // Drawing canvas (on top) — pure ink layer over the letter. The first line
+                    // drawn on each letter says it aloud, so the shape is learned with its sound.
                     DrawingCanvas(
                         controller = controller,
-                        inkColor = inkColor,
+                        inkColor = inkColor.color,
                         modifier = Modifier.fillMaxSize(),
-                    )
-
-                    // Erase chip (top-left)
-                    Chip(
-                        onClick = {
-                            controller.clear()
-                            viewModel.clearFeedback()
-                        },
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(12.dp)
-                            .size(46.dp),
-                        containerColor = Color(0xFFFFE9E4),
-                        contentColor = Color(0xFFFF8B6B),
-                    ) {
-                        KidIconImage(KidIcon.Eraser, Modifier.size(20.dp))
-                    }
-
-                    // Crayon tray (bottom-center)
-                    if (!controller.isDrawing) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(9.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(bottom = 12.dp)
-                                .background(
-                                    Color.White.copy(alpha = 0.8f),
-                                    RoundedCornerShape(999.dp),
-                                )
-                                .padding(horizontal = 12.dp, vertical = 8.dp),
-                        ) {
-                            CRAYON_COLORS.forEach { c ->
-                                Surface(
-                                    onClick = { inkColor = c },
-                                    shape = CircleShape,
-                                    color = c,
-                                    modifier = Modifier.size(if (c == inkColor) 30.dp else 26.dp),
-                                    border = if (c == inkColor)
-                                        androidx.compose.foundation.BorderStroke(3.dp, Color.White)
-                                    else null,
-                                ) {}
+                        onDrawStart = {
+                            if (spokenFor != ch) {
+                                spokenFor = ch
+                                viewModel.speakCurrent()
                             }
-                        }
-                    }
+                        },
+                    )
 
                     // Wrong banner
                     if (uiState.lastResult == AnswerResult.WRONG) {
@@ -219,7 +200,7 @@ fun TraceScreen(
                             onDone = { if (uiState.levelJustCompleted) viewModel.dismissLevelComplete() },
                         )
                     }
-                }
+            }
             }
         }
         val controlsRow: @Composable () -> Unit = {
@@ -232,7 +213,7 @@ fun TraceScreen(
                 Chip(
                     onClick = viewModel::previous,
                     modifier = Modifier.size(58.dp),
-                    contentColor = InkFaint,
+                    contentColor = topic.color,
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
@@ -294,7 +275,7 @@ fun TraceScreen(
                 Chip(
                     onClick = viewModel::next,
                     modifier = Modifier.size(58.dp),
-                    contentColor = InkFaint,
+                    contentColor = topic.color,
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
