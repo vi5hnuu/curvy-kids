@@ -78,6 +78,9 @@ object KidAssets {
     /** Counting sets illustrate 1–10 as grouped objects. */
     fun counting(n: Int) = path("counting", "count", n.toString())
 
+    /** Apples for the number tiles: "apples-3" (123), "apples-add" (1+2), "apples-take" (3−1). */
+    fun countingPicture(name: String) = path("counting", "count", name)
+
     /** Clock faces, one per o'clock hour (1–12). */
     fun time(hour: Int) = path("telling-time", "time", hour.toString())
 

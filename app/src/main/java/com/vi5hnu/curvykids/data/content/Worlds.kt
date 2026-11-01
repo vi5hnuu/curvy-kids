@@ -42,7 +42,7 @@ enum class World(
 ) {
     LETTERS("letters", "Letters", KidBerry, lettered("ABC", "A"),
         listOf("upper", "lower", "phonics", "words", "rhyming", "opposites")),
-    NUMBERS("numbers", "Numbers", KidSky, TopicArt.LetterPicture("123", KidAssets.counting(3)),
+    NUMBERS("numbers", "Numbers", KidSky, TopicArt.LetterPicture("123", KidAssets.countingPicture("apples-3")),
         listOf("numbers", "count", "addition", "subtraction", "shapes", "patterns", "bigsmall", "fractions", "time")),
     HINDI("hindi", "Hindi", KidOrange, lettered("अ आ", "अ"),
         listOf("hindi_vowels", "hindi_consonants", "barakhadi", "stories")),
@@ -72,10 +72,10 @@ val TOPIC_ART: Map<String, TopicArt> = mapOf(
     "rhyming" to TopicArt.Picture(KidAssets.animal("cat")),
     "opposites" to TopicArt.Picture(KidAssets.weather("fire")),
     // Numbers
-    "numbers" to TopicArt.LetterPicture("123", KidAssets.counting(3)),
+    "numbers" to TopicArt.LetterPicture("123", KidAssets.countingPicture("apples-3")),
     "count" to TopicArt.Picture(KidAssets.counting(3)),
-    "addition" to TopicArt.LetterPicture("1+2", KidAssets.counting(3)),
-    "subtraction" to TopicArt.LetterPicture("3−1", KidAssets.counting(2)),
+    "addition" to TopicArt.LetterPicture("1+2", KidAssets.countingPicture("apples-add")),
+    "subtraction" to TopicArt.LetterPicture("3−1", KidAssets.countingPicture("apples-take")),
     "shapes" to TopicArt.Picture(KidAssets.shape("star")),
     "patterns" to TopicArt.Picture(KidAssets.pattern("dots")),
     "bigsmall" to TopicArt.Picture(KidAssets.animal("elephant")),
