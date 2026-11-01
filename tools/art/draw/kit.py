@@ -146,3 +146,8 @@ def zigzag(cx, cy, r, n, depth, a0, a1) -> str:
         rr = r + (depth if i % 2 else 0)
         out.append(f"{cx + rr * math.cos(a):.1f} {cy + rr * math.sin(a):.1f}")
     return "M" + " L".join(out)
+
+
+def tube(d: str, fill: str, w: float = 8) -> str:
+    """A thick outlined stroke (necks, tails, handles, stems): the outline drawn under the fill."""
+    return L(d, OL, w + 6) + L(d, fill, w)
