@@ -98,6 +98,9 @@ object KidAssets {
     fun hindiConsonant(romanized: String) = path("hindi-consonants", "hindi-vyanjan", romanized)
     fun barakhadi(romanized: String) = path("hindi-barakhadi", "barakhadi", romanized)
 
+    /** Pictures drawn for barakhadi example words no other category covers (कंघी, किताब...). */
+    fun hindiWord(name: String) = path("hindi-words", "hindi-word", name)
+
     /**
      * Every category directory the library defines. Used by tests to assert that the shipped
      * asset folders and this catalog have not drifted apart.
@@ -105,7 +108,7 @@ object KidAssets {
     val ALL_CATEGORIES = listOf(
         "animals", "around-home", "birds", "body", "clothes", "colors", "counting", "drawing-tools",
         "days-months", "feelings", "food", "fractions", "fruits", "hindi-barakhadi",
-        "hindi-consonants", "hindi-vowels", "insects", "instruments", "jobs", "lowercase",
+        "hindi-consonants", "hindi-vowels", "hindi-words", "insects", "instruments", "jobs", "lowercase",
         "math-symbols", "nature", "numbers", "patterns", "places", "sea-animals", "shapes",
         "sports", "telling-time", "toys", "transport", "uppercase", "vegetables", "weather",
     )
