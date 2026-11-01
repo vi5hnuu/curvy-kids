@@ -44,7 +44,7 @@ import com.vi5hnu.curvykids.data.content.TopicKind
 import com.vi5hnu.curvykids.ui.activities.AdditionScreen
 import com.vi5hnu.curvykids.ui.activities.AnimalsScreen
 import com.vi5hnu.curvykids.ui.activities.BigSmallScreen
-import com.vi5hnu.curvykids.ui.activities.BarakhadiScreen
+import com.vi5hnu.curvykids.ui.activities.barakhadi.BarakhadiScreen
 import com.vi5hnu.curvykids.ui.activities.BodyScreen
 import com.vi5hnu.curvykids.ui.activities.ColorsScreen
 import com.vi5hnu.curvykids.ui.activities.CountCatchScreen
