@@ -21,6 +21,11 @@ import com.vi5hnu.curvykids.data.content.STORIES
 import com.vi5hnu.curvykids.data.content.VEHICLES
 import com.vi5hnu.curvykids.data.content.WORD_LIST
 import com.vi5hnu.curvykids.data.content.Level
+import com.vi5hnu.curvykids.data.content.CRAYON_BOX
+import com.vi5hnu.curvykids.data.content.TOPIC_ART
+import com.vi5hnu.curvykids.data.content.TopicArt
+import com.vi5hnu.curvykids.data.content.World
+import com.vi5hnu.curvykids.ui.kit.tools.ToolArt
 import org.junit.Assert.assertTrue
 import org.junit.Test
 import java.io.File
@@ -87,5 +92,14 @@ class AssetExistenceTest {
     fun `every catalog category directory exists`() {
         val missing = KidAssets.ALL_CATEGORIES.filterNot { File(assetsRoot, "art/$it").isDirectory }
         assertTrue("Catalog lists categories with no directory: $missing", missing.isEmpty())
+    }
+
+    @Test
+    fun `tile pictures and drawing tool pictures all exist`() {
+        val tiles = (World.entries.map { it.art } + TOPIC_ART.values)
+            .filterIsInstance<TopicArt.LetterPicture>().map { it.asset }
+        assertAllExist("Letter tiles", tiles)
+        assertAllExist("Crayons", CRAYON_BOX.map { it.art })
+        assertAllExist("Tools", ToolArt.entries.map { it.asset })
     }
 }

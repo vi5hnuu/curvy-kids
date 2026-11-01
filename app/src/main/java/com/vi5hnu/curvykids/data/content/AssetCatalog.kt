@@ -100,7 +100,7 @@ object KidAssets {
      * asset folders and this catalog have not drifted apart.
      */
     val ALL_CATEGORIES = listOf(
-        "animals", "around-home", "birds", "body", "clothes", "colors", "counting",
+        "animals", "around-home", "birds", "body", "clothes", "colors", "counting", "drawing-tools",
         "days-months", "feelings", "food", "fractions", "fruits", "hindi-barakhadi",
         "hindi-consonants", "hindi-vowels", "insects", "instruments", "jobs", "lowercase",
         "math-symbols", "nature", "numbers", "patterns", "places", "sea-animals", "shapes",

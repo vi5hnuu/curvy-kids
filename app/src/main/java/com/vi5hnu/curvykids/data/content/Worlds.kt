@@ -8,11 +8,23 @@ import com.vi5hnu.curvykids.ui.theme.KidOrange
 import com.vi5hnu.curvykids.ui.theme.KidSky
 import com.vi5hnu.curvykids.ui.theme.KidSun
 
-/** What a tile shows: a picture, or big characters for topics that are about characters. */
+/**
+ * What a tile shows: a picture; big characters with a picture of a word they start
+ * ([LetterPicture], "A" with an apple), for topics about characters; or bare characters
+ * ([Glyph]) where no picture fits.
+ *
+ * Characters on their own don't hold a small child's interest, and a letter learned with a
+ * picture of its word is remembered better, so character topics use [LetterPicture].
+ */
 sealed interface TopicArt {
     data class Picture(val asset: AssetPath) : TopicArt
     data class Glyph(val text: String) : TopicArt
+    data class LetterPicture(val text: String, val asset: AssetPath) : TopicArt
 }
+
+/** [text] with the picture of [letter]'s example word ("A" → apple, "क" → pigeon). */
+private fun lettered(text: String, letter: String): TopicArt =
+    letterExample(letter)?.let { TopicArt.LetterPicture(text, it.picture) } ?: TopicArt.Glyph(text)
 
 /**
  * The six places a child chooses between on Home. Every topic belongs to exactly one, which is
@@ -28,11 +40,11 @@ enum class World(
     val art: TopicArt,
     val topicIds: List<String>,
 ) {
-    LETTERS("letters", "Letters", KidBerry, TopicArt.Glyph("ABC"),
+    LETTERS("letters", "Letters", KidBerry, lettered("ABC", "A"),
         listOf("upper", "lower", "phonics", "words", "rhyming", "opposites")),
-    NUMBERS("numbers", "Numbers", KidSky, TopicArt.Glyph("123"),
+    NUMBERS("numbers", "Numbers", KidSky, TopicArt.LetterPicture("123", KidAssets.counting(3)),
         listOf("numbers", "count", "addition", "subtraction", "shapes", "patterns", "bigsmall", "fractions", "time")),
-    HINDI("hindi", "Hindi", KidOrange, TopicArt.Glyph("अ आ"),
+    HINDI("hindi", "Hindi", KidOrange, lettered("अ आ", "अ"),
         listOf("hindi_vowels", "hindi_consonants", "barakhadi", "stories")),
     NATURE("nature", "Animals", KidGrass, TopicArt.Picture(KidAssets.animal("lion")),
         listOf("animals", "birds", "sea", "insects", "nature", "weather", "seasons", "fruitsveggies")),
@@ -50,29 +62,29 @@ enum class World(
     }
 }
 
-/** The picture on each activity's tile. Characters for character topics, pictures for the rest. */
+/** The picture on each activity's tile: characters with a word picture for character topics, pictures for the rest. */
 val TOPIC_ART: Map<String, TopicArt> = mapOf(
     // Letters
-    "upper" to TopicArt.Glyph("ABC"),
-    "lower" to TopicArt.Glyph("abc"),
+    "upper" to lettered("ABC", "A"),
+    "lower" to lettered("abc", "b"),
     "phonics" to TopicArt.Picture(KidAssets.instrument("microphone")),
     "words" to TopicArt.Picture(KidAssets.fruit("apple")),
     "rhyming" to TopicArt.Picture(KidAssets.animal("cat")),
     "opposites" to TopicArt.Picture(KidAssets.weather("fire")),
     // Numbers
-    "numbers" to TopicArt.Glyph("123"),
+    "numbers" to TopicArt.LetterPicture("123", KidAssets.counting(3)),
     "count" to TopicArt.Picture(KidAssets.counting(3)),
-    "addition" to TopicArt.Glyph("1+2"),
-    "subtraction" to TopicArt.Glyph("3−1"),
+    "addition" to TopicArt.LetterPicture("1+2", KidAssets.counting(3)),
+    "subtraction" to TopicArt.LetterPicture("3−1", KidAssets.counting(2)),
     "shapes" to TopicArt.Picture(KidAssets.shape("star")),
     "patterns" to TopicArt.Picture(KidAssets.pattern("dots")),
     "bigsmall" to TopicArt.Picture(KidAssets.animal("elephant")),
     "fractions" to TopicArt.Picture(KidAssets.fraction("1-2")),
     "time" to TopicArt.Picture(KidAssets.time(3)),
     // Hindi
-    "hindi_vowels" to TopicArt.Glyph("अ"),
-    "hindi_consonants" to TopicArt.Glyph("क"),
-    "barakhadi" to TopicArt.Glyph("का"),
+    "hindi_vowels" to lettered("अ", "अ"),
+    "hindi_consonants" to lettered("क", "क"),
+    "barakhadi" to (hindiWordPicture("कान")?.let { TopicArt.LetterPicture("का", it) } ?: TopicArt.Glyph("का")),
     "stories" to TopicArt.Picture(KidAssets.bird("blackbird")),
     // Animals & nature
     "animals" to TopicArt.Picture(KidAssets.animal("lion")),

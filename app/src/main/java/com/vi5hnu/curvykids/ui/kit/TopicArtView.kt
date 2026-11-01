@@ -1,6 +1,14 @@
 package com.vi5hnu.curvykids.ui.kit
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -28,20 +36,42 @@ private const val HEIGHT_SHARE = 0.7f
 fun TopicArtView(art: TopicArt, glyphColor: Color, modifier: Modifier = Modifier) {
     when (art) {
         is TopicArt.Picture -> SvgImage(art.asset, modifier)
-        is TopicArt.Glyph -> BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
-            // Measure the real text once, then scale it to the box: an estimate from the
-            // character count breaks on wide scripts such as Devanagari ("अ आ" wrapped and clipped).
-            val measurer = rememberTextMeasurer()
-            val style = TextStyle(fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = MEASURE_SIZE)
-            val measuredWidth = remember(art.text) { measurer.measure(art.text, style, softWrap = false).size.width }
-            val size = with(LocalDensity.current) {
-                val byWidth = MEASURE_SIZE.value * (maxWidth.toPx() / measuredWidth.coerceAtLeast(1)) * 0.92f
-                val byHeight = (maxHeight * HEIGHT_SHARE).toSp().value
-                minOf(byWidth, byHeight).sp
+        is TopicArt.Glyph -> FittedGlyph(art.text, glyphColor, modifier)
+        // The characters fill the upper left; the word's picture sits on a white disc in the
+        // lower right like a sticker, overlapping a little so the two read as one.
+        is TopicArt.LetterPicture -> Box(modifier) {
+            FittedGlyph(art.text, glyphColor, Modifier.fillMaxWidth(0.78f).fillMaxHeight(0.72f).align(Alignment.TopStart))
+            Box(
+                Modifier
+                    .fillMaxHeight(0.6f)
+                    .aspectRatio(1f, matchHeightConstraintsFirst = true)
+                    .align(Alignment.BottomEnd)
+                    .clip(CircleShape)
+                    .background(Color.White),
+                contentAlignment = Alignment.Center,
+            ) {
+                SvgImage(art.asset, Modifier.fillMaxSize(0.86f))
             }
-            Text(art.text, fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = size,
-                lineHeight = size, color = glyphColor, textAlign = TextAlign.Center,
-                maxLines = 1, softWrap = false)
         }
+    }
+}
+
+/** [text] as large as fits the box, measured for real so wide scripts (Devanagari) never clip. */
+@Composable
+private fun FittedGlyph(text: String, color: Color, modifier: Modifier) {
+    BoxWithConstraints(modifier, contentAlignment = Alignment.Center) {
+        // Measure the real text once, then scale it to the box: an estimate from the
+        // character count breaks on wide scripts such as Devanagari ("अ आ" wrapped and clipped).
+        val measurer = rememberTextMeasurer()
+        val style = TextStyle(fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = MEASURE_SIZE)
+        val measuredWidth = remember(text) { measurer.measure(text, style, softWrap = false).size.width }
+        val size = with(LocalDensity.current) {
+            val byWidth = MEASURE_SIZE.value * (maxWidth.toPx() / measuredWidth.coerceAtLeast(1)) * 0.92f
+            val byHeight = (maxHeight * HEIGHT_SHARE).toSp().value
+            minOf(byWidth, byHeight).sp
+        }
+        Text(text, fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = size,
+            lineHeight = size, color = color, textAlign = TextAlign.Center,
+            maxLines = 1, softWrap = false)
     }
 }

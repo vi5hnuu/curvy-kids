@@ -1,5 +1,15 @@
 package com.vi5hnu.curvykids.ui.trace.components
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.ui.draw.clip
+import com.vi5hnu.curvykids.data.content.AssetPath
+import com.vi5hnu.curvykids.data.content.KidAssets
+import com.vi5hnu.curvykids.data.content.letterExample
+import com.vi5hnu.curvykids.ui.components.SvgImage
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,9 +43,10 @@ import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.components.KidIcon
 
 /**
- * Bottom sheet showing all characters for the current topic in a 5-column grid.
- * Current character is highlighted in topic.color; mastered chars show a star;
- * others are white with dark text. Matches CharStrip from trace.jsx.
+ * Bottom sheet showing every character of the current topic as an alphabet chart: each card is
+ * the character with a picture of its word (A with an apple, क with a pigeon, 3 with three dots),
+ * since a bare character means little to a child who can't read yet. The current character is
+ * filled with topic.color; mastered ones are tinted and starred.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -78,66 +89,102 @@ fun CharStrip(
             )
             Spacer(Modifier.height(14.dp))
 
-            // 5-column grid
-            val rows = chars.chunked(5)
-            Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
-                rows.forEachIndexed { chunkIdx, row ->
-                    Row(
-                        horizontalArrangement = Arrangement.spacedBy(10.dp),
-                        modifier = Modifier.fillMaxWidth(),
-                    ) {
-                        row.forEachIndexed { rowIdx, ch ->
-                            // Use positional index (chunk * 5 + offset) rather than indexOf()
-                            // so duplicate characters (if any) navigate to the correct slot.
-                            val globalIdx = chunkIdx * 5 + rowIdx
-                            val isCurrent = globalIdx == currentIndex
-                            val isMastered = mastered.contains(ch)
-
-                            Surface(
-                                onClick = { onPick(globalIdx) },
-                                modifier = Modifier
-                                    .weight(1f)
-                                    .size(56.dp),
-                                shape = RoundedCornerShape(16.dp),
-                                color = when {
-                                    isCurrent  -> topic.color
-                                    isMastered -> topic.tint
-                                    else       -> Color.White
-                                },
-                                shadowElevation = 3.dp,
-                            ) {
-                                Box(contentAlignment = Alignment.Center) {
-                                    Text(
-                                        text = ch,
-                                        fontFamily = FontDisplay,
-                                        fontWeight = FontWeight.ExtraBold,
-                                        fontSize = 24.sp,
-                                        color = when {
-                                            isCurrent  -> Color.White
-                                            isMastered -> topic.color
-                                            else       -> Ink
-                                        },
-                                    )
-                                    if (isMastered && !isCurrent) {
-                                        KidIconImage(
-                                            icon = KidIcon.Star,
-                                            modifier = Modifier
-                                                .align(Alignment.TopEnd)
-                                                .padding(end = 4.dp, top = 2.dp)
-                                                .size(12.dp),
-                                            color = StarGold,
-                                        )
-                                    }
-                                }
+            // Alphabet-chart grid: each card is the character with a picture of its word.
+            BoxWithConstraints {
+                val columns = if (maxWidth >= 600.dp) 6 else 4
+                Column(verticalArrangement = Arrangement.spacedBy(10.dp)) {
+                    chars.chunked(columns).forEachIndexed { chunkIdx, row ->
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(10.dp),
+                            modifier = Modifier.fillMaxWidth(),
+                        ) {
+                            row.forEachIndexed { rowIdx, ch ->
+                                // Use positional index rather than indexOf() so duplicate
+                                // characters (if any) navigate to the correct slot.
+                                val globalIdx = chunkIdx * columns + rowIdx
+                                ChartCard(
+                                    ch = ch,
+                                    topic = topic,
+                                    isCurrent = globalIdx == currentIndex,
+                                    isMastered = mastered.contains(ch),
+                                    onClick = { onPick(globalIdx) },
+                                    modifier = Modifier.weight(1f),
+                                )
                             }
+                            // Fill remainder of last row
+                            repeat(columns - row.size) { Spacer(Modifier.weight(1f)) }
                         }
-                        // Fill remainder of last row
-                        repeat(5 - row.size) { Spacer(Modifier.weight(1f)) }
                     }
                 }
             }
 
             Spacer(Modifier.height(16.dp))
+        }
+    }
+}
+
+/** The picture for [ch] on the chart: its example word's picture, or a counting card for a digit. */
+private fun chartPicture(ch: String): AssetPath? =
+    letterExample(ch)?.picture
+        ?: ch.toIntOrNull()?.takeIf { it in 1..10 }?.let { KidAssets.counting(it) }
+
+@Composable
+private fun ChartCard(
+    ch: String,
+    topic: Topic,
+    isCurrent: Boolean,
+    isMastered: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
+    Surface(
+        onClick = onClick,
+        modifier = modifier.aspectRatio(0.82f),
+        shape = RoundedCornerShape(18.dp),
+        color = when {
+            isCurrent -> topic.color
+            isMastered -> topic.tint
+            else -> Color.White
+        },
+        shadowElevation = 3.dp,
+    ) {
+        Box {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.SpaceEvenly,
+                modifier = Modifier.fillMaxSize().padding(6.dp),
+            ) {
+                Text(
+                    text = ch,
+                    fontFamily = FontDisplay,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 28.sp,
+                    color = when {
+                        isCurrent -> Color.White
+                        isMastered -> topic.color
+                        else -> Ink
+                    },
+                )
+                chartPicture(ch)?.let { pic ->
+                    // A white disc keeps the picture readable on the coloured current card.
+                    Box(
+                        Modifier.fillMaxWidth(0.62f).aspectRatio(1f).clip(CircleShape).background(Color.White),
+                        contentAlignment = Alignment.Center,
+                    ) {
+                        SvgImage(pic, Modifier.fillMaxSize(0.82f), contentDescription = null)
+                    }
+                }
+            }
+            if (isMastered && !isCurrent) {
+                KidIconImage(
+                    icon = KidIcon.Star,
+                    modifier = Modifier
+                        .align(Alignment.TopEnd)
+                        .padding(end = 6.dp, top = 6.dp)
+                        .size(14.dp),
+                    color = StarGold,
+                )
+            }
         }
     }
 }
