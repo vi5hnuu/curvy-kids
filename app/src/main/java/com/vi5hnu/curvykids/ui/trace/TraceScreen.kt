@@ -3,6 +3,8 @@ package com.vi5hnu.curvykids.ui.trace
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -59,6 +61,8 @@ import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.data.content.CRAYON_COLORS
 import com.vi5hnu.curvykids.ui.trace.components.CharStrip
 import com.vi5hnu.curvykids.ui.trace.components.GhostLetter
+import com.vi5hnu.curvykids.ui.trace.components.LetterReferenceCard
+import com.vi5hnu.curvykids.ui.kit.Responsive
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.KidIcon
 
@@ -92,8 +96,6 @@ fun TraceScreen(
     val chars = uiState.level.characters
 
     val ch = uiState.character
-    val word = Phonics.wordFor(ch)
-    val svg = Phonics.assetFor(ch)
 
     // Clear the canvas on every new character
     LaunchedEffect(uiState.level, uiState.index) {
@@ -116,114 +118,17 @@ fun TraceScreen(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 18.dp, vertical = 18.dp)
-                .padding(bottom = 24.dp),
-        ) {
-            // ── Header ────────────────────────────────────────────────────
-            ScreenHeader(
-                title = topic.title,
-                color = topic.color,
-                onBack = onBack,
-                trailing = {
-                    Pill(onClick = { showCharStrip = true }) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
-                        ) {
-                            ProgressTrack(
-                                current = uiState.index + 1,
-                                total = chars.size,
-                                color = topic.color,
-                            )
-                        }
-                    }
-                },
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            // ── Reference card ────────────────────────────────────────────
-            Surface(
-                shape = RoundedCornerShape(30.dp),
-                color = Color.White,
-                shadowElevation = 6.dp,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(14.dp),
-                ) {
-                    // Character badge
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = topic.tint,
-                        modifier = Modifier.size(74.dp),
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = ch,
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 44.sp,
-                                color = topic.color,
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.width(14.dp))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = if (word != null) "SAY IT" else "TRACE IT",
-                            fontFamily = FontDisplay,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 13.sp,
-                            color = InkSoft,
-                        )
-                        // Picture beside the word, not the asset path inside the string.
-                        Row(verticalAlignment = Alignment.CenterVertically) {
-                            if (svg != null) {
-                                SvgArt(svg, modifier = Modifier.size(34.dp))
-                                Spacer(Modifier.width(8.dp))
-                            }
-                            Text(
-                                text = word ?: ch,
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 23.sp,
-                            )
-                        }
-                    }
-
-                    // Listen button (pulsing chip)
-                    Surface(
-                        onClick = { viewModel.speakCurrent() },
-                        shape = CircleShape,
-                        color = topic.tint,
-                        modifier = Modifier.size(50.dp),
-                        shadowElevation = 2.dp,
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            KidIconImage(KidIcon.Speaker, Modifier.size(22.dp))
-                        }
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(14.dp))
-
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        // Landscape: the reference card and controls in a column beside the writing area, so the
+        // area keeps its height instead of being squeezed to a strip under the card.
+        val twoPane = Responsive.isTwoPane(maxWidth, maxHeight)
+        val drawingCard: @Composable (Modifier) -> Unit = { modifier ->
             // ── Drawing card ──────────────────────────────────────────────
             Surface(
                 shape = RoundedCornerShape(30.dp),
                 color = Color.White,
                 shadowElevation = 6.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier = modifier,
             ) {
                 Box(modifier = Modifier.fillMaxSize()) {
                     // The letter to trace, shown plainly underneath the child's ink.
@@ -316,9 +221,8 @@ fun TraceScreen(
                     }
                 }
             }
-
-            Spacer(Modifier.height(14.dp))
-
+        }
+        val controlsRow: @Composable () -> Unit = {
             // ── Controls row ──────────────────────────────────────────────
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -398,6 +302,62 @@ fun TraceScreen(
                         modifier = Modifier.size(26.dp),
                     )
                 }
+            }
+        }
+        val reference: @Composable (Modifier, Boolean) -> Unit = { modifier, tall ->
+            LetterReferenceCard(
+                ch = ch,
+                color = topic.color,
+                tint = topic.tint,
+                onSpeak = { viewModel.speakCurrent() },
+                tall = tall,
+                modifier = modifier,
+            )
+        }
+
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 18.dp, vertical = 18.dp)
+                .padding(bottom = if (twoPane) 0.dp else 24.dp),
+        ) {
+            // ── Header ────────────────────────────────────────────────────
+            ScreenHeader(
+                title = topic.title,
+                color = topic.color,
+                onBack = onBack,
+                trailing = {
+                    Pill(onClick = { showCharStrip = true }) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                        ) {
+                            ProgressTrack(
+                                current = uiState.index + 1,
+                                total = chars.size,
+                                color = topic.color,
+                            )
+                        }
+                    }
+                },
+            )
+
+            Spacer(Modifier.height(14.dp))
+
+            if (twoPane) {
+                Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Column(Modifier.weight(0.42f), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                        reference(Modifier.fillMaxWidth().weight(1f), true)
+                        controlsRow()
+                    }
+                    drawingCard(Modifier.weight(0.58f).fillMaxHeight())
+                }
+            } else {
+                reference(Modifier.fillMaxWidth(), false)
+                Spacer(Modifier.height(14.dp))
+                drawingCard(Modifier.fillMaxWidth().weight(1f))
+                Spacer(Modifier.height(14.dp))
+                controlsRow()
             }
         }
 
