@@ -18,7 +18,7 @@ import sys
 
 HERE = pathlib.Path(__file__).resolve().parent
 ART = HERE.parents[2] / "app/src/main/assets/art"
-MODULES = ["animals", "birds", "sea", "insects"]
+MODULES = ["animals", "birds", "sea", "insects", "fruits", "vegetables", "food"]
 
 sys.path.insert(0, str(HERE))
 

@@ -151,3 +151,8 @@ def zigzag(cx, cy, r, n, depth, a0, a1) -> str:
 def tube(d: str, fill: str, w: float = 8) -> str:
     """A thick outlined stroke (necks, tails, handles, stems): the outline drawn under the fill."""
     return L(d, OL, w + 6) + L(d, fill, w)
+
+
+def clip(cid: str, shape: str, markup: str) -> str:
+    """Draws markup only inside shape (an outline-free path/ellipse), e.g. a pattern on a fruit."""
+    return f'<defs><clipPath id="{cid}">{shape}</clipPath></defs><g clip-path="url(#{cid})">{markup}</g>'
