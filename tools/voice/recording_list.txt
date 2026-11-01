@@ -63,508 +63,508 @@ phone's built-in voice, so recordings can be added a few at a time.
 49. ज्ञ, ज्ञ से ज्ञान  ->  hi/hindi_consonants/36-gya.m4a
 
 -- Barakhadi - क --
-50. क  ->  hi/barakhadi/01-ka/01-ka.m4a
-51. का  ->  hi/barakhadi/01-ka/02-kaa.m4a
-52. कि  ->  hi/barakhadi/01-ka/03-ki.m4a
-53. की  ->  hi/barakhadi/01-ka/04-kii.m4a
-54. कु  ->  hi/barakhadi/01-ka/05-ku.m4a
-55. कू  ->  hi/barakhadi/01-ka/06-kuu.m4a
-56. के  ->  hi/barakhadi/01-ka/07-ke.m4a
-57. कै  ->  hi/barakhadi/01-ka/08-kai.m4a
-58. को  ->  hi/barakhadi/01-ka/09-ko.m4a
-59. कौ  ->  hi/barakhadi/01-ka/10-kau.m4a
-60. कं  ->  hi/barakhadi/01-ka/11-kam.m4a
-61. कः  ->  hi/barakhadi/01-ka/12-kah.m4a
+50. क, क से कबूतर  ->  hi/barakhadi/01-ka/01-ka.m4a
+51. का, का से कान  ->  hi/barakhadi/01-ka/02-kaa.m4a
+52. कि, कि से किताब  ->  hi/barakhadi/01-ka/03-ki.m4a
+53. की, की से कीड़ा  ->  hi/barakhadi/01-ka/04-kii.m4a
+54. कु, कु से कुत्ता  ->  hi/barakhadi/01-ka/05-ku.m4a
+55. कू, कू से कूदना  ->  hi/barakhadi/01-ka/06-kuu.m4a
+56. के, के से केला  ->  hi/barakhadi/01-ka/07-ke.m4a
+57. कै, कै से कैंची  ->  hi/barakhadi/01-ka/08-kai.m4a
+58. को, को से कोयल  ->  hi/barakhadi/01-ka/09-ko.m4a
+59. कौ, कौ से कौआ  ->  hi/barakhadi/01-ka/10-kau.m4a
+60. कं, कं से कंघी  ->  hi/barakhadi/01-ka/11-kam.m4a
+61. कः, क और अः मिलकर बना कः  ->  hi/barakhadi/01-ka/12-kah.m4a
 
 -- Barakhadi - ख --
-62. ख  ->  hi/barakhadi/02-kha/01-kha.m4a
-63. खा  ->  hi/barakhadi/02-kha/02-khaa.m4a
-64. खि  ->  hi/barakhadi/02-kha/03-khi.m4a
-65. खी  ->  hi/barakhadi/02-kha/04-khii.m4a
-66. खु  ->  hi/barakhadi/02-kha/05-khu.m4a
-67. खू  ->  hi/barakhadi/02-kha/06-khuu.m4a
-68. खे  ->  hi/barakhadi/02-kha/07-khe.m4a
-69. खै  ->  hi/barakhadi/02-kha/08-khai.m4a
-70. खो  ->  hi/barakhadi/02-kha/09-kho.m4a
-71. खौ  ->  hi/barakhadi/02-kha/10-khau.m4a
-72. खं  ->  hi/barakhadi/02-kha/11-kham.m4a
-73. खः  ->  hi/barakhadi/02-kha/12-khah.m4a
+62. ख, ख से खरगोश  ->  hi/barakhadi/02-kha/01-kha.m4a
+63. खा, खा से खाना  ->  hi/barakhadi/02-kha/02-khaa.m4a
+64. खि, खि से खिलौना  ->  hi/barakhadi/02-kha/03-khi.m4a
+65. खी, खी से खीर  ->  hi/barakhadi/02-kha/04-khii.m4a
+66. खु, खु से खुशी  ->  hi/barakhadi/02-kha/05-khu.m4a
+67. खू, खू से खूँटी  ->  hi/barakhadi/02-kha/06-khuu.m4a
+68. खे, खे से खेत  ->  hi/barakhadi/02-kha/07-khe.m4a
+69. खै, ख और ऐ मिलकर बना खै  ->  hi/barakhadi/02-kha/08-khai.m4a
+70. खो, खो से खोलना  ->  hi/barakhadi/02-kha/09-kho.m4a
+71. खौ, ख और औ मिलकर बना खौ  ->  hi/barakhadi/02-kha/10-khau.m4a
+72. खं, खं से खंभा  ->  hi/barakhadi/02-kha/11-kham.m4a
+73. खः, ख और अः मिलकर बना खः  ->  hi/barakhadi/02-kha/12-khah.m4a
 
 -- Barakhadi - ग --
-74. ग  ->  hi/barakhadi/03-ga/01-ga.m4a
-75. गा  ->  hi/barakhadi/03-ga/02-gaa.m4a
-76. गि  ->  hi/barakhadi/03-ga/03-gi.m4a
-77. गी  ->  hi/barakhadi/03-ga/04-gii.m4a
-78. गु  ->  hi/barakhadi/03-ga/05-gu.m4a
-79. गू  ->  hi/barakhadi/03-ga/06-guu.m4a
-80. गे  ->  hi/barakhadi/03-ga/07-ge.m4a
-81. गै  ->  hi/barakhadi/03-ga/08-gai.m4a
-82. गो  ->  hi/barakhadi/03-ga/09-go.m4a
-83. गौ  ->  hi/barakhadi/03-ga/10-gau.m4a
-84. गं  ->  hi/barakhadi/03-ga/11-gam.m4a
-85. गः  ->  hi/barakhadi/03-ga/12-gah.m4a
+74. ग, ग से गमला  ->  hi/barakhadi/03-ga/01-ga.m4a
+75. गा, गा से गाय  ->  hi/barakhadi/03-ga/02-gaa.m4a
+76. गि, गि से गिलहरी  ->  hi/barakhadi/03-ga/03-gi.m4a
+77. गी, गी से गीत  ->  hi/barakhadi/03-ga/04-gii.m4a
+78. गु, गु से गुब्बारा  ->  hi/barakhadi/03-ga/05-gu.m4a
+79. गू, ग और ऊ मिलकर बना गू  ->  hi/barakhadi/03-ga/06-guu.m4a
+80. गे, गे से गेंद  ->  hi/barakhadi/03-ga/07-ge.m4a
+81. गै, गै से गैंडा  ->  hi/barakhadi/03-ga/08-gai.m4a
+82. गो, गो से गोभी  ->  hi/barakhadi/03-ga/09-go.m4a
+83. गौ, गौ से गौरैया  ->  hi/barakhadi/03-ga/10-gau.m4a
+84. गं, गं से गंगा  ->  hi/barakhadi/03-ga/11-gam.m4a
+85. गः, ग और अः मिलकर बना गः  ->  hi/barakhadi/03-ga/12-gah.m4a
 
 -- Barakhadi - घ --
-86. घ  ->  hi/barakhadi/04-gha/01-gha.m4a
-87. घा  ->  hi/barakhadi/04-gha/02-ghaa.m4a
-88. घि  ->  hi/barakhadi/04-gha/03-ghi.m4a
-89. घी  ->  hi/barakhadi/04-gha/04-ghii.m4a
-90. घु  ->  hi/barakhadi/04-gha/05-ghu.m4a
-91. घू  ->  hi/barakhadi/04-gha/06-ghuu.m4a
-92. घे  ->  hi/barakhadi/04-gha/07-ghe.m4a
-93. घै  ->  hi/barakhadi/04-gha/08-ghai.m4a
-94. घो  ->  hi/barakhadi/04-gha/09-gho.m4a
-95. घौ  ->  hi/barakhadi/04-gha/10-ghau.m4a
-96. घं  ->  hi/barakhadi/04-gha/11-gham.m4a
-97. घः  ->  hi/barakhadi/04-gha/12-ghah.m4a
+86. घ, घ से घर  ->  hi/barakhadi/04-gha/01-gha.m4a
+87. घा, घा से घास  ->  hi/barakhadi/04-gha/02-ghaa.m4a
+88. घि, घ और इ मिलकर बना घि  ->  hi/barakhadi/04-gha/03-ghi.m4a
+89. घी, घी से घी  ->  hi/barakhadi/04-gha/04-ghii.m4a
+90. घु, घु से घुटना  ->  hi/barakhadi/04-gha/05-ghu.m4a
+91. घू, घू से घूमना  ->  hi/barakhadi/04-gha/06-ghuu.m4a
+92. घे, घे से घेरा  ->  hi/barakhadi/04-gha/07-ghe.m4a
+93. घै, घ और ऐ मिलकर बना घै  ->  hi/barakhadi/04-gha/08-ghai.m4a
+94. घो, घो से घोड़ा  ->  hi/barakhadi/04-gha/09-gho.m4a
+95. घौ, घ और औ मिलकर बना घौ  ->  hi/barakhadi/04-gha/10-ghau.m4a
+96. घं, घं से घंटी  ->  hi/barakhadi/04-gha/11-gham.m4a
+97. घः, घ और अः मिलकर बना घः  ->  hi/barakhadi/04-gha/12-ghah.m4a
 
 -- Barakhadi - ङ --
-98. ङ  ->  hi/barakhadi/05-nga/01-nga.m4a
-99. ङा  ->  hi/barakhadi/05-nga/02-ngaa.m4a
-100. ङि  ->  hi/barakhadi/05-nga/03-ngi.m4a
-101. ङी  ->  hi/barakhadi/05-nga/04-ngii.m4a
-102. ङु  ->  hi/barakhadi/05-nga/05-ngu.m4a
-103. ङू  ->  hi/barakhadi/05-nga/06-nguu.m4a
-104. ङे  ->  hi/barakhadi/05-nga/07-nge.m4a
-105. ङै  ->  hi/barakhadi/05-nga/08-ngai.m4a
-106. ङो  ->  hi/barakhadi/05-nga/09-ngo.m4a
-107. ङौ  ->  hi/barakhadi/05-nga/10-ngau.m4a
-108. ङं  ->  hi/barakhadi/05-nga/11-ngam.m4a
-109. ङः  ->  hi/barakhadi/05-nga/12-ngah.m4a
+98. ङ, ङ जैसे गङ्गा में  ->  hi/barakhadi/05-nga/01-nga.m4a
+99. ङा, ङ और आ मिलकर बना ङा  ->  hi/barakhadi/05-nga/02-ngaa.m4a
+100. ङि, ङ और इ मिलकर बना ङि  ->  hi/barakhadi/05-nga/03-ngi.m4a
+101. ङी, ङ और ई मिलकर बना ङी  ->  hi/barakhadi/05-nga/04-ngii.m4a
+102. ङु, ङ और उ मिलकर बना ङु  ->  hi/barakhadi/05-nga/05-ngu.m4a
+103. ङू, ङ और ऊ मिलकर बना ङू  ->  hi/barakhadi/05-nga/06-nguu.m4a
+104. ङे, ङ और ए मिलकर बना ङे  ->  hi/barakhadi/05-nga/07-nge.m4a
+105. ङै, ङ और ऐ मिलकर बना ङै  ->  hi/barakhadi/05-nga/08-ngai.m4a
+106. ङो, ङ और ओ मिलकर बना ङो  ->  hi/barakhadi/05-nga/09-ngo.m4a
+107. ङौ, ङ और औ मिलकर बना ङौ  ->  hi/barakhadi/05-nga/10-ngau.m4a
+108. ङं, ङ और अं मिलकर बना ङं  ->  hi/barakhadi/05-nga/11-ngam.m4a
+109. ङः, ङ और अः मिलकर बना ङः  ->  hi/barakhadi/05-nga/12-ngah.m4a
 
 -- Barakhadi - च --
-110. च  ->  hi/barakhadi/06-cha/01-cha.m4a
-111. चा  ->  hi/barakhadi/06-cha/02-chaa.m4a
-112. चि  ->  hi/barakhadi/06-cha/03-chi.m4a
-113. ची  ->  hi/barakhadi/06-cha/04-chii.m4a
-114. चु  ->  hi/barakhadi/06-cha/05-chu.m4a
-115. चू  ->  hi/barakhadi/06-cha/06-chuu.m4a
-116. चे  ->  hi/barakhadi/06-cha/07-che.m4a
-117. चै  ->  hi/barakhadi/06-cha/08-chai.m4a
-118. चो  ->  hi/barakhadi/06-cha/09-cho.m4a
-119. चौ  ->  hi/barakhadi/06-cha/10-chau.m4a
-120. चं  ->  hi/barakhadi/06-cha/11-cham.m4a
-121. चः  ->  hi/barakhadi/06-cha/12-chah.m4a
+110. च, च से चम्मच  ->  hi/barakhadi/06-cha/01-cha.m4a
+111. चा, चा से चाय  ->  hi/barakhadi/06-cha/02-chaa.m4a
+112. चि, चि से चिड़िया  ->  hi/barakhadi/06-cha/03-chi.m4a
+113. ची, ची से चींटी  ->  hi/barakhadi/06-cha/04-chii.m4a
+114. चु, चु से चुकंदर  ->  hi/barakhadi/06-cha/05-chu.m4a
+115. चू, चू से चूहा  ->  hi/barakhadi/06-cha/06-chuu.m4a
+116. चे, चे से चेहरा  ->  hi/barakhadi/06-cha/07-che.m4a
+117. चै, च और ऐ मिलकर बना चै  ->  hi/barakhadi/06-cha/08-chai.m4a
+118. चो, चो से चोटी  ->  hi/barakhadi/06-cha/09-cho.m4a
+119. चौ, चौ से चौकोर  ->  hi/barakhadi/06-cha/10-chau.m4a
+120. चं, चं से चंदा  ->  hi/barakhadi/06-cha/11-cham.m4a
+121. चः, च और अः मिलकर बना चः  ->  hi/barakhadi/06-cha/12-chah.m4a
 
 -- Barakhadi - छ --
-122. छ  ->  hi/barakhadi/07-chha/01-chha.m4a
-123. छा  ->  hi/barakhadi/07-chha/02-chhaa.m4a
-124. छि  ->  hi/barakhadi/07-chha/03-chhi.m4a
-125. छी  ->  hi/barakhadi/07-chha/04-chhii.m4a
-126. छु  ->  hi/barakhadi/07-chha/05-chhu.m4a
-127. छू  ->  hi/barakhadi/07-chha/06-chhuu.m4a
-128. छे  ->  hi/barakhadi/07-chha/07-chhe.m4a
-129. छै  ->  hi/barakhadi/07-chha/08-chhai.m4a
-130. छो  ->  hi/barakhadi/07-chha/09-chho.m4a
-131. छौ  ->  hi/barakhadi/07-chha/10-chhau.m4a
-132. छं  ->  hi/barakhadi/07-chha/11-chham.m4a
-133. छः  ->  hi/barakhadi/07-chha/12-chhah.m4a
+122. छ, छ से छतरी  ->  hi/barakhadi/07-chha/01-chha.m4a
+123. छा, छा से छाता  ->  hi/barakhadi/07-chha/02-chhaa.m4a
+124. छि, छि से छिपकली  ->  hi/barakhadi/07-chha/03-chhi.m4a
+125. छी, छी से छींक  ->  hi/barakhadi/07-chha/04-chhii.m4a
+126. छु, छु से छुट्टी  ->  hi/barakhadi/07-chha/05-chhu.m4a
+127. छू, छू से छूना  ->  hi/barakhadi/07-chha/06-chhuu.m4a
+128. छे, छे से छेद  ->  hi/barakhadi/07-chha/07-chhe.m4a
+129. छै, छ और ऐ मिलकर बना छै  ->  hi/barakhadi/07-chha/08-chhai.m4a
+130. छो, छो से छोटा  ->  hi/barakhadi/07-chha/09-chho.m4a
+131. छौ, छ और औ मिलकर बना छौ  ->  hi/barakhadi/07-chha/10-chhau.m4a
+132. छं, छ और अं मिलकर बना छं  ->  hi/barakhadi/07-chha/11-chham.m4a
+133. छः, छ और अः मिलकर बना छः  ->  hi/barakhadi/07-chha/12-chhah.m4a
 
 -- Barakhadi - ज --
-134. ज  ->  hi/barakhadi/08-ja/01-ja.m4a
-135. जा  ->  hi/barakhadi/08-ja/02-jaa.m4a
-136. जि  ->  hi/barakhadi/08-ja/03-ji.m4a
-137. जी  ->  hi/barakhadi/08-ja/04-jii.m4a
-138. जु  ->  hi/barakhadi/08-ja/05-ju.m4a
-139. जू  ->  hi/barakhadi/08-ja/06-juu.m4a
-140. जे  ->  hi/barakhadi/08-ja/07-je.m4a
-141. जै  ->  hi/barakhadi/08-ja/08-jai.m4a
-142. जो  ->  hi/barakhadi/08-ja/09-jo.m4a
-143. जौ  ->  hi/barakhadi/08-ja/10-jau.m4a
-144. जं  ->  hi/barakhadi/08-ja/11-jam.m4a
-145. जः  ->  hi/barakhadi/08-ja/12-jah.m4a
+134. ज, ज से जहाज  ->  hi/barakhadi/08-ja/01-ja.m4a
+135. जा, जा से जामुन  ->  hi/barakhadi/08-ja/02-jaa.m4a
+136. जि, जि से जिराफ़  ->  hi/barakhadi/08-ja/03-ji.m4a
+137. जी, जी से जीभ  ->  hi/barakhadi/08-ja/04-jii.m4a
+138. जु, जु से जुगनू  ->  hi/barakhadi/08-ja/05-ju.m4a
+139. जू, जू से जूता  ->  hi/barakhadi/08-ja/06-juu.m4a
+140. जे, जे से जेब  ->  hi/barakhadi/08-ja/07-je.m4a
+141. जै, ज और ऐ मिलकर बना जै  ->  hi/barakhadi/08-ja/08-jai.m4a
+142. जो, जो से जोकर  ->  hi/barakhadi/08-ja/09-jo.m4a
+143. जौ, जौ से जौ  ->  hi/barakhadi/08-ja/10-jau.m4a
+144. जं, जं से जंगल  ->  hi/barakhadi/08-ja/11-jam.m4a
+145. जः, ज और अः मिलकर बना जः  ->  hi/barakhadi/08-ja/12-jah.m4a
 
 -- Barakhadi - झ --
-146. झ  ->  hi/barakhadi/09-jha/01-jha.m4a
-147. झा  ->  hi/barakhadi/09-jha/02-jhaa.m4a
-148. झि  ->  hi/barakhadi/09-jha/03-jhi.m4a
-149. झी  ->  hi/barakhadi/09-jha/04-jhii.m4a
-150. झु  ->  hi/barakhadi/09-jha/05-jhu.m4a
-151. झू  ->  hi/barakhadi/09-jha/06-jhuu.m4a
-152. झे  ->  hi/barakhadi/09-jha/07-jhe.m4a
-153. झै  ->  hi/barakhadi/09-jha/08-jhai.m4a
-154. झो  ->  hi/barakhadi/09-jha/09-jho.m4a
-155. झौ  ->  hi/barakhadi/09-jha/10-jhau.m4a
-156. झं  ->  hi/barakhadi/09-jha/11-jham.m4a
-157. झः  ->  hi/barakhadi/09-jha/12-jhah.m4a
+146. झ, झ से झरना  ->  hi/barakhadi/09-jha/01-jha.m4a
+147. झा, झा से झाड़ू  ->  hi/barakhadi/09-jha/02-jhaa.m4a
+148. झि, झि से झिलमिल  ->  hi/barakhadi/09-jha/03-jhi.m4a
+149. झी, झी से झील  ->  hi/barakhadi/09-jha/04-jhii.m4a
+150. झु, झु से झुनझुना  ->  hi/barakhadi/09-jha/05-jhu.m4a
+151. झू, झू से झूला  ->  hi/barakhadi/09-jha/06-jhuu.m4a
+152. झे, झ और ए मिलकर बना झे  ->  hi/barakhadi/09-jha/07-jhe.m4a
+153. झै, झ और ऐ मिलकर बना झै  ->  hi/barakhadi/09-jha/08-jhai.m4a
+154. झो, झो से झोला  ->  hi/barakhadi/09-jha/09-jho.m4a
+155. झौ, झ और औ मिलकर बना झौ  ->  hi/barakhadi/09-jha/10-jhau.m4a
+156. झं, झं से झंडा  ->  hi/barakhadi/09-jha/11-jham.m4a
+157. झः, झ और अः मिलकर बना झः  ->  hi/barakhadi/09-jha/12-jhah.m4a
 
 -- Barakhadi - ञ --
-158. ञ  ->  hi/barakhadi/10-nya/01-nya.m4a
-159. ञा  ->  hi/barakhadi/10-nya/02-nyaa.m4a
-160. ञि  ->  hi/barakhadi/10-nya/03-nyi.m4a
-161. ञी  ->  hi/barakhadi/10-nya/04-nyii.m4a
-162. ञु  ->  hi/barakhadi/10-nya/05-nyu.m4a
-163. ञू  ->  hi/barakhadi/10-nya/06-nyuu.m4a
-164. ञे  ->  hi/barakhadi/10-nya/07-nye.m4a
-165. ञै  ->  hi/barakhadi/10-nya/08-nyai.m4a
-166. ञो  ->  hi/barakhadi/10-nya/09-nyo.m4a
-167. ञौ  ->  hi/barakhadi/10-nya/10-nyau.m4a
-168. ञं  ->  hi/barakhadi/10-nya/11-nyam.m4a
-169. ञः  ->  hi/barakhadi/10-nya/12-nyah.m4a
+158. ञ, ञ जैसे चञ्चल में  ->  hi/barakhadi/10-nya/01-nya.m4a
+159. ञा, ञ और आ मिलकर बना ञा  ->  hi/barakhadi/10-nya/02-nyaa.m4a
+160. ञि, ञ और इ मिलकर बना ञि  ->  hi/barakhadi/10-nya/03-nyi.m4a
+161. ञी, ञ और ई मिलकर बना ञी  ->  hi/barakhadi/10-nya/04-nyii.m4a
+162. ञु, ञ और उ मिलकर बना ञु  ->  hi/barakhadi/10-nya/05-nyu.m4a
+163. ञू, ञ और ऊ मिलकर बना ञू  ->  hi/barakhadi/10-nya/06-nyuu.m4a
+164. ञे, ञ और ए मिलकर बना ञे  ->  hi/barakhadi/10-nya/07-nye.m4a
+165. ञै, ञ और ऐ मिलकर बना ञै  ->  hi/barakhadi/10-nya/08-nyai.m4a
+166. ञो, ञ और ओ मिलकर बना ञो  ->  hi/barakhadi/10-nya/09-nyo.m4a
+167. ञौ, ञ और औ मिलकर बना ञौ  ->  hi/barakhadi/10-nya/10-nyau.m4a
+168. ञं, ञ और अं मिलकर बना ञं  ->  hi/barakhadi/10-nya/11-nyam.m4a
+169. ञः, ञ और अः मिलकर बना ञः  ->  hi/barakhadi/10-nya/12-nyah.m4a
 
 -- Barakhadi - ट --
-170. ट  ->  hi/barakhadi/11-tta/01-tta.m4a
-171. टा  ->  hi/barakhadi/11-tta/02-ttaa.m4a
-172. टि  ->  hi/barakhadi/11-tta/03-tti.m4a
-173. टी  ->  hi/barakhadi/11-tta/04-ttii.m4a
-174. टु  ->  hi/barakhadi/11-tta/05-ttu.m4a
-175. टू  ->  hi/barakhadi/11-tta/06-ttuu.m4a
-176. टे  ->  hi/barakhadi/11-tta/07-tte.m4a
-177. टै  ->  hi/barakhadi/11-tta/08-ttai.m4a
-178. टो  ->  hi/barakhadi/11-tta/09-tto.m4a
-179. टौ  ->  hi/barakhadi/11-tta/10-ttau.m4a
-180. टं  ->  hi/barakhadi/11-tta/11-ttam.m4a
-181. टः  ->  hi/barakhadi/11-tta/12-ttah.m4a
+170. ट, ट से टमाटर  ->  hi/barakhadi/11-tta/01-tta.m4a
+171. टा, टा से टापू  ->  hi/barakhadi/11-tta/02-ttaa.m4a
+172. टि, टि से टिड्डा  ->  hi/barakhadi/11-tta/03-tti.m4a
+173. टी, टी से टीका  ->  hi/barakhadi/11-tta/04-ttii.m4a
+174. टु, टु से टुकड़ा  ->  hi/barakhadi/11-tta/05-ttu.m4a
+175. टू, ट और ऊ मिलकर बना टू  ->  hi/barakhadi/11-tta/06-ttuu.m4a
+176. टे, टे से टेढ़ा  ->  hi/barakhadi/11-tta/07-tte.m4a
+177. टै, ट और ऐ मिलकर बना टै  ->  hi/barakhadi/11-tta/08-ttai.m4a
+178. टो, टो से टोपी  ->  hi/barakhadi/11-tta/09-tto.m4a
+179. टौ, ट और औ मिलकर बना टौ  ->  hi/barakhadi/11-tta/10-ttau.m4a
+180. टं, टं से टंकी  ->  hi/barakhadi/11-tta/11-ttam.m4a
+181. टः, ट और अः मिलकर बना टः  ->  hi/barakhadi/11-tta/12-ttah.m4a
 
 -- Barakhadi - ठ --
-182. ठ  ->  hi/barakhadi/12-ttha/01-ttha.m4a
-183. ठा  ->  hi/barakhadi/12-ttha/02-tthaa.m4a
-184. ठि  ->  hi/barakhadi/12-ttha/03-tthi.m4a
-185. ठी  ->  hi/barakhadi/12-ttha/04-tthii.m4a
-186. ठु  ->  hi/barakhadi/12-ttha/05-tthu.m4a
-187. ठू  ->  hi/barakhadi/12-ttha/06-tthuu.m4a
-188. ठे  ->  hi/barakhadi/12-ttha/07-tthe.m4a
-189. ठै  ->  hi/barakhadi/12-ttha/08-tthai.m4a
-190. ठो  ->  hi/barakhadi/12-ttha/09-ttho.m4a
-191. ठौ  ->  hi/barakhadi/12-ttha/10-tthau.m4a
-192. ठं  ->  hi/barakhadi/12-ttha/11-ttham.m4a
-193. ठः  ->  hi/barakhadi/12-ttha/12-tthah.m4a
+182. ठ, ठ से ठप्पा  ->  hi/barakhadi/12-ttha/01-ttha.m4a
+183. ठा, ठ और आ मिलकर बना ठा  ->  hi/barakhadi/12-ttha/02-tthaa.m4a
+184. ठि, ठि से ठिठुरना  ->  hi/barakhadi/12-ttha/03-tthi.m4a
+185. ठी, ठी से ठीक  ->  hi/barakhadi/12-ttha/04-tthii.m4a
+186. ठु, ठ और उ मिलकर बना ठु  ->  hi/barakhadi/12-ttha/05-tthu.m4a
+187. ठू, ठ और ऊ मिलकर बना ठू  ->  hi/barakhadi/12-ttha/06-tthuu.m4a
+188. ठे, ठे से ठेला  ->  hi/barakhadi/12-ttha/07-tthe.m4a
+189. ठै, ठ और ऐ मिलकर बना ठै  ->  hi/barakhadi/12-ttha/08-tthai.m4a
+190. ठो, ठो से ठोड़ी  ->  hi/barakhadi/12-ttha/09-ttho.m4a
+191. ठौ, ठ और औ मिलकर बना ठौ  ->  hi/barakhadi/12-ttha/10-tthau.m4a
+192. ठं, ठं से ठंडा  ->  hi/barakhadi/12-ttha/11-ttham.m4a
+193. ठः, ठ और अः मिलकर बना ठः  ->  hi/barakhadi/12-ttha/12-tthah.m4a
 
 -- Barakhadi - ड --
-194. ड  ->  hi/barakhadi/13-dda/01-dda.m4a
-195. डा  ->  hi/barakhadi/13-dda/02-ddaa.m4a
-196. डि  ->  hi/barakhadi/13-dda/03-ddi.m4a
-197. डी  ->  hi/barakhadi/13-dda/04-ddii.m4a
-198. डु  ->  hi/barakhadi/13-dda/05-ddu.m4a
-199. डू  ->  hi/barakhadi/13-dda/06-dduu.m4a
-200. डे  ->  hi/barakhadi/13-dda/07-dde.m4a
-201. डै  ->  hi/barakhadi/13-dda/08-ddai.m4a
-202. डो  ->  hi/barakhadi/13-dda/09-ddo.m4a
-203. डौ  ->  hi/barakhadi/13-dda/10-ddau.m4a
-204. डं  ->  hi/barakhadi/13-dda/11-ddam.m4a
-205. डः  ->  hi/barakhadi/13-dda/12-ddah.m4a
+194. ड, ड से डमरू  ->  hi/barakhadi/13-dda/01-dda.m4a
+195. डा, डा से डाकिया  ->  hi/barakhadi/13-dda/02-ddaa.m4a
+196. डि, डि से डिब्बा  ->  hi/barakhadi/13-dda/03-ddi.m4a
+197. डी, ड और ई मिलकर बना डी  ->  hi/barakhadi/13-dda/04-ddii.m4a
+198. डु, डु से डुबकी  ->  hi/barakhadi/13-dda/05-ddu.m4a
+199. डू, ड और ऊ मिलकर बना डू  ->  hi/barakhadi/13-dda/06-dduu.m4a
+200. डे, ड और ए मिलकर बना डे  ->  hi/barakhadi/13-dda/07-dde.m4a
+201. डै, ड और ऐ मिलकर बना डै  ->  hi/barakhadi/13-dda/08-ddai.m4a
+202. डो, डो से डोरी  ->  hi/barakhadi/13-dda/09-ddo.m4a
+203. डौ, ड और औ मिलकर बना डौ  ->  hi/barakhadi/13-dda/10-ddau.m4a
+204. डं, डं से डंडा  ->  hi/barakhadi/13-dda/11-ddam.m4a
+205. डः, ड और अः मिलकर बना डः  ->  hi/barakhadi/13-dda/12-ddah.m4a
 
 -- Barakhadi - ढ --
-206. ढ  ->  hi/barakhadi/14-ddha/01-ddha.m4a
-207. ढा  ->  hi/barakhadi/14-ddha/02-ddhaa.m4a
-208. ढि  ->  hi/barakhadi/14-ddha/03-ddhi.m4a
-209. ढी  ->  hi/barakhadi/14-ddha/04-ddhii.m4a
-210. ढु  ->  hi/barakhadi/14-ddha/05-ddhu.m4a
-211. ढू  ->  hi/barakhadi/14-ddha/06-ddhuu.m4a
-212. ढे  ->  hi/barakhadi/14-ddha/07-ddhe.m4a
-213. ढै  ->  hi/barakhadi/14-ddha/08-ddhai.m4a
-214. ढो  ->  hi/barakhadi/14-ddha/09-ddho.m4a
-215. ढौ  ->  hi/barakhadi/14-ddha/10-ddhau.m4a
-216. ढं  ->  hi/barakhadi/14-ddha/11-ddham.m4a
-217. ढः  ->  hi/barakhadi/14-ddha/12-ddhah.m4a
+206. ढ, ढ से ढक्कन  ->  hi/barakhadi/14-ddha/01-ddha.m4a
+207. ढा, ढा से ढाल  ->  hi/barakhadi/14-ddha/02-ddhaa.m4a
+208. ढि, ढ और इ मिलकर बना ढि  ->  hi/barakhadi/14-ddha/03-ddhi.m4a
+209. ढी, ढी से ढीला  ->  hi/barakhadi/14-ddha/04-ddhii.m4a
+210. ढु, ढ और उ मिलकर बना ढु  ->  hi/barakhadi/14-ddha/05-ddhu.m4a
+211. ढू, ढू से ढूँढना  ->  hi/barakhadi/14-ddha/06-ddhuu.m4a
+212. ढे, ढे से ढेर  ->  hi/barakhadi/14-ddha/07-ddhe.m4a
+213. ढै, ढ और ऐ मिलकर बना ढै  ->  hi/barakhadi/14-ddha/08-ddhai.m4a
+214. ढो, ढो से ढोल  ->  hi/barakhadi/14-ddha/09-ddho.m4a
+215. ढौ, ढ और औ मिलकर बना ढौ  ->  hi/barakhadi/14-ddha/10-ddhau.m4a
+216. ढं, ढ और अं मिलकर बना ढं  ->  hi/barakhadi/14-ddha/11-ddham.m4a
+217. ढः, ढ और अः मिलकर बना ढः  ->  hi/barakhadi/14-ddha/12-ddhah.m4a
 
 -- Barakhadi - ण --
-218. ण  ->  hi/barakhadi/15-nna/01-nna.m4a
-219. णा  ->  hi/barakhadi/15-nna/02-nnaa.m4a
-220. णि  ->  hi/barakhadi/15-nna/03-nni.m4a
-221. णी  ->  hi/barakhadi/15-nna/04-nnii.m4a
-222. णु  ->  hi/barakhadi/15-nna/05-nnu.m4a
-223. णू  ->  hi/barakhadi/15-nna/06-nnuu.m4a
-224. णे  ->  hi/barakhadi/15-nna/07-nne.m4a
-225. णै  ->  hi/barakhadi/15-nna/08-nnai.m4a
-226. णो  ->  hi/barakhadi/15-nna/09-nno.m4a
-227. णौ  ->  hi/barakhadi/15-nna/10-nnau.m4a
-228. णं  ->  hi/barakhadi/15-nna/11-nnam.m4a
-229. णः  ->  hi/barakhadi/15-nna/12-nnah.m4a
+218. ण, ण जैसे बाण में  ->  hi/barakhadi/15-nna/01-nna.m4a
+219. णा, ण और आ मिलकर बना णा  ->  hi/barakhadi/15-nna/02-nnaa.m4a
+220. णि, ण और इ मिलकर बना णि  ->  hi/barakhadi/15-nna/03-nni.m4a
+221. णी, ण और ई मिलकर बना णी  ->  hi/barakhadi/15-nna/04-nnii.m4a
+222. णु, ण और उ मिलकर बना णु  ->  hi/barakhadi/15-nna/05-nnu.m4a
+223. णू, ण और ऊ मिलकर बना णू  ->  hi/barakhadi/15-nna/06-nnuu.m4a
+224. णे, ण और ए मिलकर बना णे  ->  hi/barakhadi/15-nna/07-nne.m4a
+225. णै, ण और ऐ मिलकर बना णै  ->  hi/barakhadi/15-nna/08-nnai.m4a
+226. णो, ण और ओ मिलकर बना णो  ->  hi/barakhadi/15-nna/09-nno.m4a
+227. णौ, ण और औ मिलकर बना णौ  ->  hi/barakhadi/15-nna/10-nnau.m4a
+228. णं, ण और अं मिलकर बना णं  ->  hi/barakhadi/15-nna/11-nnam.m4a
+229. णः, ण और अः मिलकर बना णः  ->  hi/barakhadi/15-nna/12-nnah.m4a
 
 -- Barakhadi - त --
-230. त  ->  hi/barakhadi/16-ta/01-ta.m4a
-231. ता  ->  hi/barakhadi/16-ta/02-taa.m4a
-232. ति  ->  hi/barakhadi/16-ta/03-ti.m4a
-233. ती  ->  hi/barakhadi/16-ta/04-tii.m4a
-234. तु  ->  hi/barakhadi/16-ta/05-tu.m4a
-235. तू  ->  hi/barakhadi/16-ta/06-tuu.m4a
-236. ते  ->  hi/barakhadi/16-ta/07-te.m4a
-237. तै  ->  hi/barakhadi/16-ta/08-tai.m4a
-238. तो  ->  hi/barakhadi/16-ta/09-to.m4a
-239. तौ  ->  hi/barakhadi/16-ta/10-tau.m4a
-240. तं  ->  hi/barakhadi/16-ta/11-tam.m4a
-241. तः  ->  hi/barakhadi/16-ta/12-tah.m4a
+230. त, त से तरबूज  ->  hi/barakhadi/16-ta/01-ta.m4a
+231. ता, ता से तारा  ->  hi/barakhadi/16-ta/02-taa.m4a
+232. ति, ति से तितली  ->  hi/barakhadi/16-ta/03-ti.m4a
+233. ती, ती से तीर  ->  hi/barakhadi/16-ta/04-tii.m4a
+234. तु, तु से तुलसी  ->  hi/barakhadi/16-ta/05-tu.m4a
+235. तू, तू से तूफ़ान  ->  hi/barakhadi/16-ta/06-tuu.m4a
+236. ते, ते से तेल  ->  hi/barakhadi/16-ta/07-te.m4a
+237. तै, तै से तैरना  ->  hi/barakhadi/16-ta/08-tai.m4a
+238. तो, तो से तोता  ->  hi/barakhadi/16-ta/09-to.m4a
+239. तौ, तौ से तौलिया  ->  hi/barakhadi/16-ta/10-tau.m4a
+240. तं, तं से तंबू  ->  hi/barakhadi/16-ta/11-tam.m4a
+241. तः, त और अः मिलकर बना तः  ->  hi/barakhadi/16-ta/12-tah.m4a
 
 -- Barakhadi - थ --
-242. थ  ->  hi/barakhadi/17-tha/01-tha.m4a
-243. था  ->  hi/barakhadi/17-tha/02-thaa.m4a
-244. थि  ->  hi/barakhadi/17-tha/03-thi.m4a
-245. थी  ->  hi/barakhadi/17-tha/04-thii.m4a
-246. थु  ->  hi/barakhadi/17-tha/05-thu.m4a
-247. थू  ->  hi/barakhadi/17-tha/06-thuu.m4a
-248. थे  ->  hi/barakhadi/17-tha/07-the.m4a
-249. थै  ->  hi/barakhadi/17-tha/08-thai.m4a
-250. थो  ->  hi/barakhadi/17-tha/09-tho.m4a
-251. थौ  ->  hi/barakhadi/17-tha/10-thau.m4a
-252. थं  ->  hi/barakhadi/17-tha/11-tham.m4a
-253. थः  ->  hi/barakhadi/17-tha/12-thah.m4a
+242. थ, थ से थपकी  ->  hi/barakhadi/17-tha/01-tha.m4a
+243. था, था से थाली  ->  hi/barakhadi/17-tha/02-thaa.m4a
+244. थि, थ और इ मिलकर बना थि  ->  hi/barakhadi/17-tha/03-thi.m4a
+245. थी, थ और ई मिलकर बना थी  ->  hi/barakhadi/17-tha/04-thii.m4a
+246. थु, थ और उ मिलकर बना थु  ->  hi/barakhadi/17-tha/05-thu.m4a
+247. थू, थ और ऊ मिलकर बना थू  ->  hi/barakhadi/17-tha/06-thuu.m4a
+248. थे, थ और ए मिलकर बना थे  ->  hi/barakhadi/17-tha/07-the.m4a
+249. थै, थै से थैला  ->  hi/barakhadi/17-tha/08-thai.m4a
+250. थो, थो से थोड़ा  ->  hi/barakhadi/17-tha/09-tho.m4a
+251. थौ, थ और औ मिलकर बना थौ  ->  hi/barakhadi/17-tha/10-thau.m4a
+252. थं, थ और अं मिलकर बना थं  ->  hi/barakhadi/17-tha/11-tham.m4a
+253. थः, थ और अः मिलकर बना थः  ->  hi/barakhadi/17-tha/12-thah.m4a
 
 -- Barakhadi - द --
-254. द  ->  hi/barakhadi/18-da/01-da.m4a
-255. दा  ->  hi/barakhadi/18-da/02-daa.m4a
-256. दि  ->  hi/barakhadi/18-da/03-di.m4a
-257. दी  ->  hi/barakhadi/18-da/04-dii.m4a
-258. दु  ->  hi/barakhadi/18-da/05-du.m4a
-259. दू  ->  hi/barakhadi/18-da/06-duu.m4a
-260. दे  ->  hi/barakhadi/18-da/07-de.m4a
-261. दै  ->  hi/barakhadi/18-da/08-dai.m4a
-262. दो  ->  hi/barakhadi/18-da/09-do.m4a
-263. दौ  ->  hi/barakhadi/18-da/10-dau.m4a
-264. दं  ->  hi/barakhadi/18-da/11-dam.m4a
-265. दः  ->  hi/barakhadi/18-da/12-dah.m4a
+254. द, द से दरवाज़ा  ->  hi/barakhadi/18-da/01-da.m4a
+255. दा, दा से दादी  ->  hi/barakhadi/18-da/02-daa.m4a
+256. दि, दि से दिया  ->  hi/barakhadi/18-da/03-di.m4a
+257. दी, दी से दीपक  ->  hi/barakhadi/18-da/04-dii.m4a
+258. दु, दु से दुकान  ->  hi/barakhadi/18-da/05-du.m4a
+259. दू, दू से दूध  ->  hi/barakhadi/18-da/06-duu.m4a
+260. दे, दे से देश  ->  hi/barakhadi/18-da/07-de.m4a
+261. दै, द और ऐ मिलकर बना दै  ->  hi/barakhadi/18-da/08-dai.m4a
+262. दो, दो से दोस्त  ->  hi/barakhadi/18-da/09-do.m4a
+263. दौ, दौ से दौड़  ->  hi/barakhadi/18-da/10-dau.m4a
+264. दं, द और अं मिलकर बना दं  ->  hi/barakhadi/18-da/11-dam.m4a
+265. दः, द और अः मिलकर बना दः  ->  hi/barakhadi/18-da/12-dah.m4a
 
 -- Barakhadi - ध --
-266. ध  ->  hi/barakhadi/19-dha/01-dha.m4a
-267. धा  ->  hi/barakhadi/19-dha/02-dhaa.m4a
-268. धि  ->  hi/barakhadi/19-dha/03-dhi.m4a
-269. धी  ->  hi/barakhadi/19-dha/04-dhii.m4a
-270. धु  ->  hi/barakhadi/19-dha/05-dhu.m4a
-271. धू  ->  hi/barakhadi/19-dha/06-dhuu.m4a
-272. धे  ->  hi/barakhadi/19-dha/07-dhe.m4a
-273. धै  ->  hi/barakhadi/19-dha/08-dhai.m4a
-274. धो  ->  hi/barakhadi/19-dha/09-dho.m4a
-275. धौ  ->  hi/barakhadi/19-dha/10-dhau.m4a
-276. धं  ->  hi/barakhadi/19-dha/11-dham.m4a
-277. धः  ->  hi/barakhadi/19-dha/12-dhah.m4a
+266. ध, ध से धनुष  ->  hi/barakhadi/19-dha/01-dha.m4a
+267. धा, धा से धागा  ->  hi/barakhadi/19-dha/02-dhaa.m4a
+268. धि, ध और इ मिलकर बना धि  ->  hi/barakhadi/19-dha/03-dhi.m4a
+269. धी, धी से धीरे  ->  hi/barakhadi/19-dha/04-dhii.m4a
+270. धु, ध और उ मिलकर बना धु  ->  hi/barakhadi/19-dha/05-dhu.m4a
+271. धू, धू से धूप  ->  hi/barakhadi/19-dha/06-dhuu.m4a
+272. धे, ध और ए मिलकर बना धे  ->  hi/barakhadi/19-dha/07-dhe.m4a
+273. धै, ध और ऐ मिलकर बना धै  ->  hi/barakhadi/19-dha/08-dhai.m4a
+274. धो, धो से धोबी  ->  hi/barakhadi/19-dha/09-dho.m4a
+275. धौ, ध और औ मिलकर बना धौ  ->  hi/barakhadi/19-dha/10-dhau.m4a
+276. धं, ध और अं मिलकर बना धं  ->  hi/barakhadi/19-dha/11-dham.m4a
+277. धः, ध और अः मिलकर बना धः  ->  hi/barakhadi/19-dha/12-dhah.m4a
 
 -- Barakhadi - न --
-278. न  ->  hi/barakhadi/20-na/01-na.m4a
-279. ना  ->  hi/barakhadi/20-na/02-naa.m4a
-280. नि  ->  hi/barakhadi/20-na/03-ni.m4a
-281. नी  ->  hi/barakhadi/20-na/04-nii.m4a
-282. नु  ->  hi/barakhadi/20-na/05-nu.m4a
-283. नू  ->  hi/barakhadi/20-na/06-nuu.m4a
-284. ने  ->  hi/barakhadi/20-na/07-ne.m4a
-285. नै  ->  hi/barakhadi/20-na/08-nai.m4a
-286. नो  ->  hi/barakhadi/20-na/09-no.m4a
-287. नौ  ->  hi/barakhadi/20-na/10-nau.m4a
-288. नं  ->  hi/barakhadi/20-na/11-nam.m4a
-289. नः  ->  hi/barakhadi/20-na/12-nah.m4a
+278. न, न से नल  ->  hi/barakhadi/20-na/01-na.m4a
+279. ना, ना से नाव  ->  hi/barakhadi/20-na/02-naa.m4a
+280. नि, नि से निशान  ->  hi/barakhadi/20-na/03-ni.m4a
+281. नी, नी से नींबू  ->  hi/barakhadi/20-na/04-nii.m4a
+282. नु, नु से नुकीला  ->  hi/barakhadi/20-na/05-nu.m4a
+283. नू, न और ऊ मिलकर बना नू  ->  hi/barakhadi/20-na/06-nuu.m4a
+284. ने, ने से नेवला  ->  hi/barakhadi/20-na/07-ne.m4a
+285. नै, नै से नैया  ->  hi/barakhadi/20-na/08-nai.m4a
+286. नो, न और ओ मिलकर बना नो  ->  hi/barakhadi/20-na/09-no.m4a
+287. नौ, नौ से नौ  ->  hi/barakhadi/20-na/10-nau.m4a
+288. नं, न और अं मिलकर बना नं  ->  hi/barakhadi/20-na/11-nam.m4a
+289. नः, न और अः मिलकर बना नः  ->  hi/barakhadi/20-na/12-nah.m4a
 
 -- Barakhadi - प --
-290. प  ->  hi/barakhadi/21-pa/01-pa.m4a
-291. पा  ->  hi/barakhadi/21-pa/02-paa.m4a
-292. पि  ->  hi/barakhadi/21-pa/03-pi.m4a
-293. पी  ->  hi/barakhadi/21-pa/04-pii.m4a
-294. पु  ->  hi/barakhadi/21-pa/05-pu.m4a
-295. पू  ->  hi/barakhadi/21-pa/06-puu.m4a
-296. पे  ->  hi/barakhadi/21-pa/07-pe.m4a
-297. पै  ->  hi/barakhadi/21-pa/08-pai.m4a
-298. पो  ->  hi/barakhadi/21-pa/09-po.m4a
-299. पौ  ->  hi/barakhadi/21-pa/10-pau.m4a
-300. पं  ->  hi/barakhadi/21-pa/11-pam.m4a
-301. पः  ->  hi/barakhadi/21-pa/12-pah.m4a
+290. प, प से पतंग  ->  hi/barakhadi/21-pa/01-pa.m4a
+291. पा, पा से पानी  ->  hi/barakhadi/21-pa/02-paa.m4a
+292. पि, पि से पिंजरा  ->  hi/barakhadi/21-pa/03-pi.m4a
+293. पी, पी से पीला  ->  hi/barakhadi/21-pa/04-pii.m4a
+294. पु, पु से पुल  ->  hi/barakhadi/21-pa/05-pu.m4a
+295. पू, पू से पूरी  ->  hi/barakhadi/21-pa/06-puu.m4a
+296. पे, पे से पेड़  ->  hi/barakhadi/21-pa/07-pe.m4a
+297. पै, पै से पैर  ->  hi/barakhadi/21-pa/08-pai.m4a
+298. पो, पो से पोशाक  ->  hi/barakhadi/21-pa/09-po.m4a
+299. पौ, पौ से पौधा  ->  hi/barakhadi/21-pa/10-pau.m4a
+300. पं, पं से पंखा  ->  hi/barakhadi/21-pa/11-pam.m4a
+301. पः, प और अः मिलकर बना पः  ->  hi/barakhadi/21-pa/12-pah.m4a
 
 -- Barakhadi - फ --
-302. फ  ->  hi/barakhadi/22-pha/01-pha.m4a
-303. फा  ->  hi/barakhadi/22-pha/02-phaa.m4a
-304. फि  ->  hi/barakhadi/22-pha/03-phi.m4a
-305. फी  ->  hi/barakhadi/22-pha/04-phii.m4a
-306. फु  ->  hi/barakhadi/22-pha/05-phu.m4a
-307. फू  ->  hi/barakhadi/22-pha/06-phuu.m4a
-308. फे  ->  hi/barakhadi/22-pha/07-phe.m4a
-309. फै  ->  hi/barakhadi/22-pha/08-phai.m4a
-310. फो  ->  hi/barakhadi/22-pha/09-pho.m4a
-311. फौ  ->  hi/barakhadi/22-pha/10-phau.m4a
-312. फं  ->  hi/barakhadi/22-pha/11-pham.m4a
-313. फः  ->  hi/barakhadi/22-pha/12-phah.m4a
+302. फ, फ से फल  ->  hi/barakhadi/22-pha/01-pha.m4a
+303. फा, फा से फाटक  ->  hi/barakhadi/22-pha/02-phaa.m4a
+304. फि, फि से फिसलपट्टी  ->  hi/barakhadi/22-pha/03-phi.m4a
+305. फी, फी से फीता  ->  hi/barakhadi/22-pha/04-phii.m4a
+306. फु, फु से फुटबॉल  ->  hi/barakhadi/22-pha/05-phu.m4a
+307. फू, फू से फूल  ->  hi/barakhadi/22-pha/06-phuu.m4a
+308. फे, फ और ए मिलकर बना फे  ->  hi/barakhadi/22-pha/07-phe.m4a
+309. फै, फ और ऐ मिलकर बना फै  ->  hi/barakhadi/22-pha/08-phai.m4a
+310. फो, फ और ओ मिलकर बना फो  ->  hi/barakhadi/22-pha/09-pho.m4a
+311. फौ, फौ से फौजी  ->  hi/barakhadi/22-pha/10-phau.m4a
+312. फं, फ और अं मिलकर बना फं  ->  hi/barakhadi/22-pha/11-pham.m4a
+313. फः, फ और अः मिलकर बना फः  ->  hi/barakhadi/22-pha/12-phah.m4a
 
 -- Barakhadi - ब --
-314. ब  ->  hi/barakhadi/23-ba/01-ba.m4a
-315. बा  ->  hi/barakhadi/23-ba/02-baa.m4a
-316. बि  ->  hi/barakhadi/23-ba/03-bi.m4a
-317. बी  ->  hi/barakhadi/23-ba/04-bii.m4a
-318. बु  ->  hi/barakhadi/23-ba/05-bu.m4a
-319. बू  ->  hi/barakhadi/23-ba/06-buu.m4a
-320. बे  ->  hi/barakhadi/23-ba/07-be.m4a
-321. बै  ->  hi/barakhadi/23-ba/08-bai.m4a
-322. बो  ->  hi/barakhadi/23-ba/09-bo.m4a
-323. बौ  ->  hi/barakhadi/23-ba/10-bau.m4a
-324. बं  ->  hi/barakhadi/23-ba/11-bam.m4a
-325. बः  ->  hi/barakhadi/23-ba/12-bah.m4a
+314. ब, ब से बकरी  ->  hi/barakhadi/23-ba/01-ba.m4a
+315. बा, बा से बादल  ->  hi/barakhadi/23-ba/02-baa.m4a
+316. बि, बि से बिल्ली  ->  hi/barakhadi/23-ba/03-bi.m4a
+317. बी, बी से बीज  ->  hi/barakhadi/23-ba/04-bii.m4a
+318. बु, बु से बुलबुल  ->  hi/barakhadi/23-ba/05-bu.m4a
+319. बू, बू से बूँद  ->  hi/barakhadi/23-ba/06-buu.m4a
+320. बे, बे से बेलन  ->  hi/barakhadi/23-ba/07-be.m4a
+321. बै, बै से बैल  ->  hi/barakhadi/23-ba/08-bai.m4a
+322. बो, बो से बोतल  ->  hi/barakhadi/23-ba/09-bo.m4a
+323. बौ, बौ से बौछार  ->  hi/barakhadi/23-ba/10-bau.m4a
+324. बं, बं से बंदर  ->  hi/barakhadi/23-ba/11-bam.m4a
+325. बः, ब और अः मिलकर बना बः  ->  hi/barakhadi/23-ba/12-bah.m4a
 
 -- Barakhadi - भ --
-326. भ  ->  hi/barakhadi/24-bha/01-bha.m4a
-327. भा  ->  hi/barakhadi/24-bha/02-bhaa.m4a
-328. भि  ->  hi/barakhadi/24-bha/03-bhi.m4a
-329. भी  ->  hi/barakhadi/24-bha/04-bhii.m4a
-330. भु  ->  hi/barakhadi/24-bha/05-bhu.m4a
-331. भू  ->  hi/barakhadi/24-bha/06-bhuu.m4a
-332. भे  ->  hi/barakhadi/24-bha/07-bhe.m4a
-333. भै  ->  hi/barakhadi/24-bha/08-bhai.m4a
-334. भो  ->  hi/barakhadi/24-bha/09-bho.m4a
-335. भौ  ->  hi/barakhadi/24-bha/10-bhau.m4a
-336. भं  ->  hi/barakhadi/24-bha/11-bham.m4a
-337. भः  ->  hi/barakhadi/24-bha/12-bhah.m4a
+326. भ, भ से भटूरा  ->  hi/barakhadi/24-bha/01-bha.m4a
+327. भा, भा से भालू  ->  hi/barakhadi/24-bha/02-bhaa.m4a
+328. भि, भि से भिंडी  ->  hi/barakhadi/24-bha/03-bhi.m4a
+329. भी, भी से भीड़  ->  hi/barakhadi/24-bha/04-bhii.m4a
+330. भु, भु से भुट्टा  ->  hi/barakhadi/24-bha/05-bhu.m4a
+331. भू, भू से भूरा  ->  hi/barakhadi/24-bha/06-bhuu.m4a
+332. भे, भे से भेड़  ->  hi/barakhadi/24-bha/07-bhe.m4a
+333. भै, भै से भैंस  ->  hi/barakhadi/24-bha/08-bhai.m4a
+334. भो, भो से भोजन  ->  hi/barakhadi/24-bha/09-bho.m4a
+335. भौ, भौ से भौंरा  ->  hi/barakhadi/24-bha/10-bhau.m4a
+336. भं, भ और अं मिलकर बना भं  ->  hi/barakhadi/24-bha/11-bham.m4a
+337. भः, भ और अः मिलकर बना भः  ->  hi/barakhadi/24-bha/12-bhah.m4a
 
 -- Barakhadi - म --
-338. म  ->  hi/barakhadi/25-ma/01-ma.m4a
-339. मा  ->  hi/barakhadi/25-ma/02-maa.m4a
-340. मि  ->  hi/barakhadi/25-ma/03-mi.m4a
-341. मी  ->  hi/barakhadi/25-ma/04-mii.m4a
-342. मु  ->  hi/barakhadi/25-ma/05-mu.m4a
-343. मू  ->  hi/barakhadi/25-ma/06-muu.m4a
-344. मे  ->  hi/barakhadi/25-ma/07-me.m4a
-345. मै  ->  hi/barakhadi/25-ma/08-mai.m4a
-346. मो  ->  hi/barakhadi/25-ma/09-mo.m4a
-347. मौ  ->  hi/barakhadi/25-ma/10-mau.m4a
-348. मं  ->  hi/barakhadi/25-ma/11-mam.m4a
-349. मः  ->  hi/barakhadi/25-ma/12-mah.m4a
+338. म, म से मछली  ->  hi/barakhadi/25-ma/01-ma.m4a
+339. मा, मा से माला  ->  hi/barakhadi/25-ma/02-maa.m4a
+340. मि, मि से मिठाई  ->  hi/barakhadi/25-ma/03-mi.m4a
+341. मी, मी से मीठा  ->  hi/barakhadi/25-ma/04-mii.m4a
+342. मु, मु से मुर्गा  ->  hi/barakhadi/25-ma/05-mu.m4a
+343. मू, मू से मूली  ->  hi/barakhadi/25-ma/06-muu.m4a
+344. मे, मे से मेज़  ->  hi/barakhadi/25-ma/07-me.m4a
+345. मै, मै से मैदान  ->  hi/barakhadi/25-ma/08-mai.m4a
+346. मो, मो से मोर  ->  hi/barakhadi/25-ma/09-mo.m4a
+347. मौ, मौ से मौसम  ->  hi/barakhadi/25-ma/10-mau.m4a
+348. मं, मं से मंदिर  ->  hi/barakhadi/25-ma/11-mam.m4a
+349. मः, म और अः मिलकर बना मः  ->  hi/barakhadi/25-ma/12-mah.m4a
 
 -- Barakhadi - य --
-350. य  ->  hi/barakhadi/26-ya/01-ya.m4a
-351. या  ->  hi/barakhadi/26-ya/02-yaa.m4a
-352. यि  ->  hi/barakhadi/26-ya/03-yi.m4a
-353. यी  ->  hi/barakhadi/26-ya/04-yii.m4a
-354. यु  ->  hi/barakhadi/26-ya/05-yu.m4a
-355. यू  ->  hi/barakhadi/26-ya/06-yuu.m4a
-356. ये  ->  hi/barakhadi/26-ya/07-ye.m4a
-357. यै  ->  hi/barakhadi/26-ya/08-yai.m4a
-358. यो  ->  hi/barakhadi/26-ya/09-yo.m4a
-359. यौ  ->  hi/barakhadi/26-ya/10-yau.m4a
-360. यं  ->  hi/barakhadi/26-ya/11-yam.m4a
-361. यः  ->  hi/barakhadi/26-ya/12-yah.m4a
+350. य, य से यमुना  ->  hi/barakhadi/26-ya/01-ya.m4a
+351. या, या से याक  ->  hi/barakhadi/26-ya/02-yaa.m4a
+352. यि, य और इ मिलकर बना यि  ->  hi/barakhadi/26-ya/03-yi.m4a
+353. यी, य और ई मिलकर बना यी  ->  hi/barakhadi/26-ya/04-yii.m4a
+354. यु, य और उ मिलकर बना यु  ->  hi/barakhadi/26-ya/05-yu.m4a
+355. यू, य और ऊ मिलकर बना यू  ->  hi/barakhadi/26-ya/06-yuu.m4a
+356. ये, य और ए मिलकर बना ये  ->  hi/barakhadi/26-ya/07-ye.m4a
+357. यै, य और ऐ मिलकर बना यै  ->  hi/barakhadi/26-ya/08-yai.m4a
+358. यो, यो से योग  ->  hi/barakhadi/26-ya/09-yo.m4a
+359. यौ, य और औ मिलकर बना यौ  ->  hi/barakhadi/26-ya/10-yau.m4a
+360. यं, यं से यंत्र  ->  hi/barakhadi/26-ya/11-yam.m4a
+361. यः, य और अः मिलकर बना यः  ->  hi/barakhadi/26-ya/12-yah.m4a
 
 -- Barakhadi - र --
-362. र  ->  hi/barakhadi/27-ra/01-ra.m4a
-363. रा  ->  hi/barakhadi/27-ra/02-raa.m4a
-364. रि  ->  hi/barakhadi/27-ra/03-ri.m4a
-365. री  ->  hi/barakhadi/27-ra/04-rii.m4a
-366. रु  ->  hi/barakhadi/27-ra/05-ru.m4a
-367. रू  ->  hi/barakhadi/27-ra/06-ruu.m4a
-368. रे  ->  hi/barakhadi/27-ra/07-re.m4a
-369. रै  ->  hi/barakhadi/27-ra/08-rai.m4a
-370. रो  ->  hi/barakhadi/27-ra/09-ro.m4a
-371. रौ  ->  hi/barakhadi/27-ra/10-rau.m4a
-372. रं  ->  hi/barakhadi/27-ra/11-ram.m4a
-373. रः  ->  hi/barakhadi/27-ra/12-rah.m4a
+362. र, र से रथ  ->  hi/barakhadi/27-ra/01-ra.m4a
+363. रा, रा से राजा  ->  hi/barakhadi/27-ra/02-raa.m4a
+364. रि, रि से रिक्शा  ->  hi/barakhadi/27-ra/03-ri.m4a
+365. री, री से रीछ  ->  hi/barakhadi/27-ra/04-rii.m4a
+366. रु, रु से रुपया  ->  hi/barakhadi/27-ra/05-ru.m4a
+367. रू, रू से रूमाल  ->  hi/barakhadi/27-ra/06-ruu.m4a
+368. रे, रे से रेल  ->  hi/barakhadi/27-ra/07-re.m4a
+369. रै, र और ऐ मिलकर बना रै  ->  hi/barakhadi/27-ra/08-rai.m4a
+370. रो, रो से रोटी  ->  hi/barakhadi/27-ra/09-ro.m4a
+371. रौ, र और औ मिलकर बना रौ  ->  hi/barakhadi/27-ra/10-rau.m4a
+372. रं, रं से रंग  ->  hi/barakhadi/27-ra/11-ram.m4a
+373. रः, र और अः मिलकर बना रः  ->  hi/barakhadi/27-ra/12-rah.m4a
 
 -- Barakhadi - ल --
-374. ल  ->  hi/barakhadi/28-la/01-la.m4a
-375. ला  ->  hi/barakhadi/28-la/02-laa.m4a
-376. लि  ->  hi/barakhadi/28-la/03-li.m4a
-377. ली  ->  hi/barakhadi/28-la/04-lii.m4a
-378. लु  ->  hi/barakhadi/28-la/05-lu.m4a
-379. लू  ->  hi/barakhadi/28-la/06-luu.m4a
-380. ले  ->  hi/barakhadi/28-la/07-le.m4a
-381. लै  ->  hi/barakhadi/28-la/08-lai.m4a
-382. लो  ->  hi/barakhadi/28-la/09-lo.m4a
-383. लौ  ->  hi/barakhadi/28-la/10-lau.m4a
-384. लं  ->  hi/barakhadi/28-la/11-lam.m4a
-385. लः  ->  hi/barakhadi/28-la/12-lah.m4a
+374. ल, ल से लड्डू  ->  hi/barakhadi/28-la/01-la.m4a
+375. ला, ला से लाल  ->  hi/barakhadi/28-la/02-laa.m4a
+376. लि, लि से लिफ़ाफ़ा  ->  hi/barakhadi/28-la/03-li.m4a
+377. ली, ली से लीची  ->  hi/barakhadi/28-la/04-lii.m4a
+378. लु, ल और उ मिलकर बना लु  ->  hi/barakhadi/28-la/05-lu.m4a
+379. लू, ल और ऊ मिलकर बना लू  ->  hi/barakhadi/28-la/06-luu.m4a
+380. ले, ले से लेटना  ->  hi/barakhadi/28-la/07-le.m4a
+381. लै, ल और ऐ मिलकर बना लै  ->  hi/barakhadi/28-la/08-lai.m4a
+382. लो, लो से लोमड़ी  ->  hi/barakhadi/28-la/09-lo.m4a
+383. लौ, लौ से लौकी  ->  hi/barakhadi/28-la/10-lau.m4a
+384. लं, लं से लंगूर  ->  hi/barakhadi/28-la/11-lam.m4a
+385. लः, ल और अः मिलकर बना लः  ->  hi/barakhadi/28-la/12-lah.m4a
 
 -- Barakhadi - व --
-386. व  ->  hi/barakhadi/29-va/01-va.m4a
-387. वा  ->  hi/barakhadi/29-va/02-vaa.m4a
-388. वि  ->  hi/barakhadi/29-va/03-vi.m4a
-389. वी  ->  hi/barakhadi/29-va/04-vii.m4a
-390. वु  ->  hi/barakhadi/29-va/05-vu.m4a
-391. वू  ->  hi/barakhadi/29-va/06-vuu.m4a
-392. वे  ->  hi/barakhadi/29-va/07-ve.m4a
-393. वै  ->  hi/barakhadi/29-va/08-vai.m4a
-394. वो  ->  hi/barakhadi/29-va/09-vo.m4a
-395. वौ  ->  hi/barakhadi/29-va/10-vau.m4a
-396. वं  ->  hi/barakhadi/29-va/11-vam.m4a
-397. वः  ->  hi/barakhadi/29-va/12-vah.m4a
+386. व, व से वन  ->  hi/barakhadi/29-va/01-va.m4a
+387. वा, वा से वाहन  ->  hi/barakhadi/29-va/02-vaa.m4a
+388. वि, वि से विमान  ->  hi/barakhadi/29-va/03-vi.m4a
+389. वी, वी से वीणा  ->  hi/barakhadi/29-va/04-vii.m4a
+390. वु, व और उ मिलकर बना वु  ->  hi/barakhadi/29-va/05-vu.m4a
+391. वू, व और ऊ मिलकर बना वू  ->  hi/barakhadi/29-va/06-vuu.m4a
+392. वे, व और ए मिलकर बना वे  ->  hi/barakhadi/29-va/07-ve.m4a
+393. वै, व और ऐ मिलकर बना वै  ->  hi/barakhadi/29-va/08-vai.m4a
+394. वो, व और ओ मिलकर बना वो  ->  hi/barakhadi/29-va/09-vo.m4a
+395. वौ, व और औ मिलकर बना वौ  ->  hi/barakhadi/29-va/10-vau.m4a
+396. वं, व और अं मिलकर बना वं  ->  hi/barakhadi/29-va/11-vam.m4a
+397. वः, व और अः मिलकर बना वः  ->  hi/barakhadi/29-va/12-vah.m4a
 
 -- Barakhadi - श --
-398. श  ->  hi/barakhadi/30-sha/01-sha.m4a
-399. शा  ->  hi/barakhadi/30-sha/02-shaa.m4a
-400. शि  ->  hi/barakhadi/30-sha/03-shi.m4a
-401. शी  ->  hi/barakhadi/30-sha/04-shii.m4a
-402. शु  ->  hi/barakhadi/30-sha/05-shu.m4a
-403. शू  ->  hi/barakhadi/30-sha/06-shuu.m4a
-404. शे  ->  hi/barakhadi/30-sha/07-she.m4a
-405. शै  ->  hi/barakhadi/30-sha/08-shai.m4a
-406. शो  ->  hi/barakhadi/30-sha/09-sho.m4a
-407. शौ  ->  hi/barakhadi/30-sha/10-shau.m4a
-408. शं  ->  hi/barakhadi/30-sha/11-sham.m4a
-409. शः  ->  hi/barakhadi/30-sha/12-shah.m4a
+398. श, श से शरबत  ->  hi/barakhadi/30-sha/01-sha.m4a
+399. शा, शा से शाम  ->  hi/barakhadi/30-sha/02-shaa.m4a
+400. शि, शि से शिक्षक  ->  hi/barakhadi/30-sha/03-shi.m4a
+401. शी, शी से शीशा  ->  hi/barakhadi/30-sha/04-shii.m4a
+402. शु, शु से शुक्रिया  ->  hi/barakhadi/30-sha/05-shu.m4a
+403. शू, श और ऊ मिलकर बना शू  ->  hi/barakhadi/30-sha/06-shuu.m4a
+404. शे, शे से शेर  ->  hi/barakhadi/30-sha/07-she.m4a
+405. शै, श और ऐ मिलकर बना शै  ->  hi/barakhadi/30-sha/08-shai.m4a
+406. शो, शो से शोर  ->  hi/barakhadi/30-sha/09-sho.m4a
+407. शौ, श और औ मिलकर बना शौ  ->  hi/barakhadi/30-sha/10-shau.m4a
+408. शं, शं से शंख  ->  hi/barakhadi/30-sha/11-sham.m4a
+409. शः, श और अः मिलकर बना शः  ->  hi/barakhadi/30-sha/12-shah.m4a
 
 -- Barakhadi - ष --
-410. ष  ->  hi/barakhadi/31-ssa/01-ssa.m4a
-411. षा  ->  hi/barakhadi/31-ssa/02-ssaa.m4a
-412. षि  ->  hi/barakhadi/31-ssa/03-ssi.m4a
-413. षी  ->  hi/barakhadi/31-ssa/04-ssii.m4a
-414. षु  ->  hi/barakhadi/31-ssa/05-ssu.m4a
-415. षू  ->  hi/barakhadi/31-ssa/06-ssuu.m4a
-416. षे  ->  hi/barakhadi/31-ssa/07-sse.m4a
-417. षै  ->  hi/barakhadi/31-ssa/08-ssai.m4a
-418. षो  ->  hi/barakhadi/31-ssa/09-sso.m4a
-419. षौ  ->  hi/barakhadi/31-ssa/10-ssau.m4a
-420. षं  ->  hi/barakhadi/31-ssa/11-ssam.m4a
-421. षः  ->  hi/barakhadi/31-ssa/12-ssah.m4a
+410. ष, ष से षट्कोण  ->  hi/barakhadi/31-ssa/01-ssa.m4a
+411. षा, ष और आ मिलकर बना षा  ->  hi/barakhadi/31-ssa/02-ssaa.m4a
+412. षि, ष और इ मिलकर बना षि  ->  hi/barakhadi/31-ssa/03-ssi.m4a
+413. षी, ष और ई मिलकर बना षी  ->  hi/barakhadi/31-ssa/04-ssii.m4a
+414. षु, ष और उ मिलकर बना षु  ->  hi/barakhadi/31-ssa/05-ssu.m4a
+415. षू, ष और ऊ मिलकर बना षू  ->  hi/barakhadi/31-ssa/06-ssuu.m4a
+416. षे, ष और ए मिलकर बना षे  ->  hi/barakhadi/31-ssa/07-sse.m4a
+417. षै, ष और ऐ मिलकर बना षै  ->  hi/barakhadi/31-ssa/08-ssai.m4a
+418. षो, ष और ओ मिलकर बना षो  ->  hi/barakhadi/31-ssa/09-sso.m4a
+419. षौ, ष और औ मिलकर बना षौ  ->  hi/barakhadi/31-ssa/10-ssau.m4a
+420. षं, ष और अं मिलकर बना षं  ->  hi/barakhadi/31-ssa/11-ssam.m4a
+421. षः, ष और अः मिलकर बना षः  ->  hi/barakhadi/31-ssa/12-ssah.m4a
 
 -- Barakhadi - स --
-422. स  ->  hi/barakhadi/32-sa/01-sa.m4a
-423. सा  ->  hi/barakhadi/32-sa/02-saa.m4a
-424. सि  ->  hi/barakhadi/32-sa/03-si.m4a
-425. सी  ->  hi/barakhadi/32-sa/04-sii.m4a
-426. सु  ->  hi/barakhadi/32-sa/05-su.m4a
-427. सू  ->  hi/barakhadi/32-sa/06-suu.m4a
-428. से  ->  hi/barakhadi/32-sa/07-se.m4a
-429. सै  ->  hi/barakhadi/32-sa/08-sai.m4a
-430. सो  ->  hi/barakhadi/32-sa/09-so.m4a
-431. सौ  ->  hi/barakhadi/32-sa/10-sau.m4a
-432. सं  ->  hi/barakhadi/32-sa/11-sam.m4a
-433. सः  ->  hi/barakhadi/32-sa/12-sah.m4a
+422. स, स से सड़क  ->  hi/barakhadi/32-sa/01-sa.m4a
+423. सा, सा से साँप  ->  hi/barakhadi/32-sa/02-saa.m4a
+424. सि, सि से सितारा  ->  hi/barakhadi/32-sa/03-si.m4a
+425. सी, सी से सीटी  ->  hi/barakhadi/32-sa/04-sii.m4a
+426. सु, सु से सुई  ->  hi/barakhadi/32-sa/05-su.m4a
+427. सू, सू से सूरज  ->  hi/barakhadi/32-sa/06-suu.m4a
+428. से, से से सेब  ->  hi/barakhadi/32-sa/07-se.m4a
+429. सै, सै से सैनिक  ->  hi/barakhadi/32-sa/08-sai.m4a
+430. सो, सो से सोना  ->  hi/barakhadi/32-sa/09-so.m4a
+431. सौ, सौ से सौ  ->  hi/barakhadi/32-sa/10-sau.m4a
+432. सं, सं से संतरा  ->  hi/barakhadi/32-sa/11-sam.m4a
+433. सः, स और अः मिलकर बना सः  ->  hi/barakhadi/32-sa/12-sah.m4a
 
 -- Barakhadi - ह --
-434. ह  ->  hi/barakhadi/33-ha/01-ha.m4a
-435. हा  ->  hi/barakhadi/33-ha/02-haa.m4a
-436. हि  ->  hi/barakhadi/33-ha/03-hi.m4a
-437. ही  ->  hi/barakhadi/33-ha/04-hii.m4a
-438. हु  ->  hi/barakhadi/33-ha/05-hu.m4a
-439. हू  ->  hi/barakhadi/33-ha/06-huu.m4a
-440. हे  ->  hi/barakhadi/33-ha/07-he.m4a
-441. है  ->  hi/barakhadi/33-ha/08-hai.m4a
-442. हो  ->  hi/barakhadi/33-ha/09-ho.m4a
-443. हौ  ->  hi/barakhadi/33-ha/10-hau.m4a
-444. हं  ->  hi/barakhadi/33-ha/11-ham.m4a
-445. हः  ->  hi/barakhadi/33-ha/12-hah.m4a
+434. ह, ह से हवा  ->  hi/barakhadi/33-ha/01-ha.m4a
+435. हा, हा से हाथी  ->  hi/barakhadi/33-ha/02-haa.m4a
+436. हि, हि से हिरन  ->  hi/barakhadi/33-ha/03-hi.m4a
+437. ही, ही से हीरा  ->  hi/barakhadi/33-ha/04-hii.m4a
+438. हु, ह और उ मिलकर बना हु  ->  hi/barakhadi/33-ha/05-hu.m4a
+439. हू, ह और ऊ मिलकर बना हू  ->  hi/barakhadi/33-ha/06-huu.m4a
+440. हे, ह और ए मिलकर बना हे  ->  hi/barakhadi/33-ha/07-he.m4a
+441. है, ह और ऐ मिलकर बना है  ->  hi/barakhadi/33-ha/08-hai.m4a
+442. हो, हो से होंठ  ->  hi/barakhadi/33-ha/09-ho.m4a
+443. हौ, ह और औ मिलकर बना हौ  ->  hi/barakhadi/33-ha/10-hau.m4a
+444. हं, हं से हंस  ->  hi/barakhadi/33-ha/11-ham.m4a
+445. हः, ह और अः मिलकर बना हः  ->  hi/barakhadi/33-ha/12-hah.m4a
 
 -- Barakhadi - क्ष --
-446. क्ष  ->  hi/barakhadi/34-ksha/01-ksha.m4a
-447. क्षा  ->  hi/barakhadi/34-ksha/02-kshaa.m4a
-448. क्षि  ->  hi/barakhadi/34-ksha/03-kshi.m4a
-449. क्षी  ->  hi/barakhadi/34-ksha/04-kshii.m4a
-450. क्षु  ->  hi/barakhadi/34-ksha/05-kshu.m4a
-451. क्षू  ->  hi/barakhadi/34-ksha/06-kshuu.m4a
-452. क्षे  ->  hi/barakhadi/34-ksha/07-kshe.m4a
-453. क्षै  ->  hi/barakhadi/34-ksha/08-kshai.m4a
-454. क्षो  ->  hi/barakhadi/34-ksha/09-ksho.m4a
-455. क्षौ  ->  hi/barakhadi/34-ksha/10-kshau.m4a
-456. क्षं  ->  hi/barakhadi/34-ksha/11-ksham.m4a
-457. क्षः  ->  hi/barakhadi/34-ksha/12-kshah.m4a
+446. क्ष, क्ष से क्षमा  ->  hi/barakhadi/34-ksha/01-ksha.m4a
+447. क्षा, क्ष और आ मिलकर बना क्षा  ->  hi/barakhadi/34-ksha/02-kshaa.m4a
+448. क्षि, क्षि से क्षितिज  ->  hi/barakhadi/34-ksha/03-kshi.m4a
+449. क्षी, क्ष और ई मिलकर बना क्षी  ->  hi/barakhadi/34-ksha/04-kshii.m4a
+450. क्षु, क्ष और उ मिलकर बना क्षु  ->  hi/barakhadi/34-ksha/05-kshu.m4a
+451. क्षू, क्ष और ऊ मिलकर बना क्षू  ->  hi/barakhadi/34-ksha/06-kshuu.m4a
+452. क्षे, क्ष और ए मिलकर बना क्षे  ->  hi/barakhadi/34-ksha/07-kshe.m4a
+453. क्षै, क्ष और ऐ मिलकर बना क्षै  ->  hi/barakhadi/34-ksha/08-kshai.m4a
+454. क्षो, क्ष और ओ मिलकर बना क्षो  ->  hi/barakhadi/34-ksha/09-ksho.m4a
+455. क्षौ, क्ष और औ मिलकर बना क्षौ  ->  hi/barakhadi/34-ksha/10-kshau.m4a
+456. क्षं, क्ष और अं मिलकर बना क्षं  ->  hi/barakhadi/34-ksha/11-ksham.m4a
+457. क्षः, क्ष और अः मिलकर बना क्षः  ->  hi/barakhadi/34-ksha/12-kshah.m4a
 
 -- Barakhadi - त्र --
-458. त्र  ->  hi/barakhadi/35-tra/01-tra.m4a
-459. त्रा  ->  hi/barakhadi/35-tra/02-traa.m4a
-460. त्रि  ->  hi/barakhadi/35-tra/03-tri.m4a
-461. त्री  ->  hi/barakhadi/35-tra/04-trii.m4a
-462. त्रु  ->  hi/barakhadi/35-tra/05-tru.m4a
-463. त्रू  ->  hi/barakhadi/35-tra/06-truu.m4a
-464. त्रे  ->  hi/barakhadi/35-tra/07-tre.m4a
-465. त्रै  ->  hi/barakhadi/35-tra/08-trai.m4a
-466. त्रो  ->  hi/barakhadi/35-tra/09-tro.m4a
-467. त्रौ  ->  hi/barakhadi/35-tra/10-trau.m4a
-468. त्रं  ->  hi/barakhadi/35-tra/11-tram.m4a
-469. त्रः  ->  hi/barakhadi/35-tra/12-trah.m4a
+458. त्र, त्र जैसे मित्र में  ->  hi/barakhadi/35-tra/01-tra.m4a
+459. त्रा, त्र और आ मिलकर बना त्रा  ->  hi/barakhadi/35-tra/02-traa.m4a
+460. त्रि, त्रि से त्रिशूल  ->  hi/barakhadi/35-tra/03-tri.m4a
+461. त्री, त्र और ई मिलकर बना त्री  ->  hi/barakhadi/35-tra/04-trii.m4a
+462. त्रु, त्र और उ मिलकर बना त्रु  ->  hi/barakhadi/35-tra/05-tru.m4a
+463. त्रू, त्र और ऊ मिलकर बना त्रू  ->  hi/barakhadi/35-tra/06-truu.m4a
+464. त्रे, त्र और ए मिलकर बना त्रे  ->  hi/barakhadi/35-tra/07-tre.m4a
+465. त्रै, त्र और ऐ मिलकर बना त्रै  ->  hi/barakhadi/35-tra/08-trai.m4a
+466. त्रो, त्र और ओ मिलकर बना त्रो  ->  hi/barakhadi/35-tra/09-tro.m4a
+467. त्रौ, त्र और औ मिलकर बना त्रौ  ->  hi/barakhadi/35-tra/10-trau.m4a
+468. त्रं, त्र और अं मिलकर बना त्रं  ->  hi/barakhadi/35-tra/11-tram.m4a
+469. त्रः, त्र और अः मिलकर बना त्रः  ->  hi/barakhadi/35-tra/12-trah.m4a
 
 -- Barakhadi - ज्ञ --
-470. ज्ञ  ->  hi/barakhadi/36-gya/01-gya.m4a
-471. ज्ञा  ->  hi/barakhadi/36-gya/02-gyaa.m4a
-472. ज्ञि  ->  hi/barakhadi/36-gya/03-gyi.m4a
-473. ज्ञी  ->  hi/barakhadi/36-gya/04-gyii.m4a
-474. ज्ञु  ->  hi/barakhadi/36-gya/05-gyu.m4a
-475. ज्ञू  ->  hi/barakhadi/36-gya/06-gyuu.m4a
-476. ज्ञे  ->  hi/barakhadi/36-gya/07-gye.m4a
-477. ज्ञै  ->  hi/barakhadi/36-gya/08-gyai.m4a
-478. ज्ञो  ->  hi/barakhadi/36-gya/09-gyo.m4a
-479. ज्ञौ  ->  hi/barakhadi/36-gya/10-gyau.m4a
-480. ज्ञं  ->  hi/barakhadi/36-gya/11-gyam.m4a
-481. ज्ञः  ->  hi/barakhadi/36-gya/12-gyah.m4a
+470. ज्ञ, ज्ञ जैसे यज्ञ में  ->  hi/barakhadi/36-gya/01-gya.m4a
+471. ज्ञा, ज्ञा से ज्ञान  ->  hi/barakhadi/36-gya/02-gyaa.m4a
+472. ज्ञि, ज्ञ और इ मिलकर बना ज्ञि  ->  hi/barakhadi/36-gya/03-gyi.m4a
+473. ज्ञी, ज्ञ और ई मिलकर बना ज्ञी  ->  hi/barakhadi/36-gya/04-gyii.m4a
+474. ज्ञु, ज्ञ और उ मिलकर बना ज्ञु  ->  hi/barakhadi/36-gya/05-gyu.m4a
+475. ज्ञू, ज्ञ और ऊ मिलकर बना ज्ञू  ->  hi/barakhadi/36-gya/06-gyuu.m4a
+476. ज्ञे, ज्ञ और ए मिलकर बना ज्ञे  ->  hi/barakhadi/36-gya/07-gye.m4a
+477. ज्ञै, ज्ञ और ऐ मिलकर बना ज्ञै  ->  hi/barakhadi/36-gya/08-gyai.m4a
+478. ज्ञो, ज्ञ और ओ मिलकर बना ज्ञो  ->  hi/barakhadi/36-gya/09-gyo.m4a
+479. ज्ञौ, ज्ञ और औ मिलकर बना ज्ञौ  ->  hi/barakhadi/36-gya/10-gyau.m4a
+480. ज्ञं, ज्ञ और अं मिलकर बना ज्ञं  ->  hi/barakhadi/36-gya/11-gyam.m4a
+481. ज्ञः, ज्ञ और अः मिलकर बना ज्ञः  ->  hi/barakhadi/36-gya/12-gyah.m4a
 
 -- Praise and encouragement --
 482. शाबाश!  ->  hi/phrases/praise-1.m4a

@@ -1,44 +1,13 @@
 package com.vi5hnu.curvykids.data.content
 
 /**
- * Maps each character to a child-friendly example word and its illustration, used to build the
- * phonics phrase spoken via Text-To-Speech ("A for Apple", "1 is One") and the picture shown
- * beside the letter on the trace screen.
+ * The phrase spoken for a letter or digit on the trace screen ("A for Apple", "1 is One") and the
+ * picture beside it.
  *
- * Example words are chosen so every one has artwork in the asset library; a few differ from the
- * usual primer choices (Nest, Xylophone, Yak) because those have no illustration, and a letter
- * with no picture is no help to a child who cannot read the word yet.
+ * Letters come from [letterExample] (that is, [PHONICS_DATA]), the same list the Phonics game and
+ * the letter pictures use, so what the child sees is always what the voice says.
  */
 object Phonics {
-
-    private val letterWords = mapOf(
-        'a' to ("Apple" to KidAssets.fruit("apple")),
-        'b' to ("Ball" to KidAssets.sport("soccer")),
-        'c' to ("Cat" to KidAssets.animal("cat")),
-        'd' to ("Dog" to KidAssets.animal("dog")),
-        'e' to ("Egg" to KidAssets.food("egg")),
-        'f' to ("Fish" to KidAssets.seaAnimal("fish")),
-        'g' to ("Goat" to KidAssets.animal("goat")),
-        'h' to ("Hat" to KidAssets.clothes("top-hat")),
-        'i' to ("Insect" to KidAssets.insect("ladybug")),
-        'j' to ("Jet" to KidAssets.transport("airplane")),
-        'k' to ("Kite" to KidAssets.toy("kite")),
-        'l' to ("Lion" to KidAssets.animal("lion")),
-        'm' to ("Moon" to KidAssets.weather("moon")),
-        'n' to ("Nose" to KidAssets.body("nose")),
-        'o' to ("Orange" to KidAssets.fruit("orange")),
-        'p' to ("Parrot" to KidAssets.bird("parrot")),
-        'q' to ("Queen" to KidAssets.clothes("crown")),
-        'r' to ("Rabbit" to KidAssets.animal("rabbit")),
-        's' to ("Sun" to KidAssets.weather("sun")),
-        't' to ("Tiger" to KidAssets.animal("tiger")),
-        'u' to ("Umbrella" to KidAssets.weather("umbrella")),
-        'v' to ("Violin" to KidAssets.instrument("violin")),
-        'w' to ("Wolf" to KidAssets.animal("wolf")),
-        'x' to ("Box" to KidAssets.toy("gift")),
-        'y' to ("Yo-yo" to KidAssets.toy("yo-yo")),
-        'z' to ("Zebra" to KidAssets.animal("zebra")),
-    )
 
     private val numberWords = mapOf(
         '0' to ("Zero" to KidAssets.number(0)),
@@ -56,17 +25,21 @@ object Phonics {
     private fun entryFor(character: String): Pair<String, AssetPath>? {
         val c = character.singleOrNull() ?: return null
         return when {
-            c.isLetter() -> letterWords[c.lowercaseChar()]
             c.isDigit() -> numberWords[c]
+            c.isLatin() -> letterExample(character)?.let { it.word to it.picture }
             else -> null
         }
     }
 
-    /** Builds the spoken phrase for [character], or just the character if unmapped. */
+    /**
+     * Builds the spoken phrase for [character]: "1 is One", "A for Apple", or "X, as in Fox" for
+     * a letter taught by its ending sound. Just the character if unmapped.
+     */
     fun phraseFor(character: String): String {
         val c = character.singleOrNull() ?: return character
-        val word = entryFor(character)?.first ?: return character
-        return if (c.isDigit()) "$character is $word" else "$character for $word"
+        if (c.isDigit()) return numberWords[c]?.let { "$character is ${it.first}" } ?: character
+        val ex = letterExample(character)?.takeIf { c.isLatin() } ?: return character
+        return if (ex.position == SoundPosition.END) "$character, as in ${ex.word}" else "$character for ${ex.word}"
     }
 
     /** The example/spoken word alone (e.g. "Apple", "Five"), or null if unmapped. */
@@ -74,4 +47,7 @@ object Phonics {
 
     /** Asset path of the picture for [character]'s example word, or null if unmapped. */
     fun assetFor(character: String): AssetPath? = entryFor(character)?.second
+
+    /** Hindi letters have their own spoken line (HindiVoiceScript), never an English phrase. */
+    private fun Char.isLatin() = this in 'a'..'z' || this in 'A'..'Z'
 }

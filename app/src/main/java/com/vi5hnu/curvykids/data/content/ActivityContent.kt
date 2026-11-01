@@ -556,17 +556,17 @@ val HINDI_BY_CHAR: Map<String, HindiLetter> =
 // ── Hindi Barakhadi (बारहखड़ी — consonant × the 12 vowel matras) ──────────────────
 
 /**
- * One vowel matra used to form barakhadi: its filename [key] (matches `barakhadi-<cons><key>.svg`)
- * and the combining [sign] appended to a consonant to render the syllable (empty for the base form,
- * which carries the inherent 'a').
+ * One vowel matra used to form barakhadi: its filename [key] (matches `barakhadi-<cons><key>.svg`),
+ * the combining [sign] appended to a consonant to render the syllable (empty for the base form,
+ * which carries the inherent 'a'), and the [vowel] that sign stands for (क + ा is क + आ).
  */
-data class Matra(val key: String, val sign: String)
+data class Matra(val key: String, val sign: String, val vowel: String)
 
 /** The 12 matras in traditional barakhadi order (क का कि की कु कू के कै को कौ कं कः). */
 val BARAKHADI_MATRAS = listOf(
-    Matra("a", ""),  Matra("aa", "ा"), Matra("i", "ि"), Matra("ii", "ी"),
-    Matra("u", "ु"), Matra("uu", "ू"), Matra("e", "े"), Matra("ai", "ै"),
-    Matra("o", "ो"), Matra("au", "ौ"), Matra("am", "ं"), Matra("ah", "ः"),
+    Matra("a", "", "अ"), Matra("aa", "ा", "आ"), Matra("i", "ि", "इ"), Matra("ii", "ी", "ई"),
+    Matra("u", "ु", "उ"), Matra("uu", "ू", "ऊ"), Matra("e", "े", "ए"), Matra("ai", "ै", "ऐ"),
+    Matra("o", "ो", "ओ"), Matra("au", "ौ", "औ"), Matra("am", "ं", "अं"), Matra("ah", "ः", "अः"),
 )
 
 /** Asset path of the barakhadi badge for a consonant (by its romanized name) and a [Matra]. */

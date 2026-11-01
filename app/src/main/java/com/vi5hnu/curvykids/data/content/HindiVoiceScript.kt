@@ -52,7 +52,10 @@ object HindiVoiceScript {
         return VoiceLine(VoiceClip.hindi(group, numbered(index, l.romanized)), text, "Letter and trace prompt")
     }
 
-    /** One barakhadi form, e.g. की for क + ी, at `barakhadi/01-ka/04-kii`. */
+    /**
+     * One barakhadi form, e.g. की for क + ी, at `barakhadi/01-ka/04-kii`. Its text is the whole
+     * recorded line ("की, की से कीड़ा"), so the device voice says the same when a clip is missing.
+     */
     fun syllable(consonant: HindiLetter, matra: Matra): VoiceLine {
         val c = HINDI_CONSONANTS.indexOf(consonant)
         val m = BARAKHADI_MATRAS.indexOf(matra)
@@ -60,7 +63,7 @@ object HindiVoiceScript {
         val folder = "$BARAKHADI/${numbered(c, consonant.romanized)}"
         return VoiceLine(
             VoiceClip.hindi(folder, numbered(m, consonant.romanized.dropLast(1) + matra.key)),
-            barakhadiSyllable(consonant.char, matra),
+            barakhadiLine(barakhadiSyllable(consonant.char, matra)),
             "Barakhadi",
         )
     }
