@@ -26,3 +26,6 @@ key.properties
 # Kotlin compiler scratch output
 .kotlin/
 .idea/appInsightsSettings.xml
+
+# Local generation scripts (art drawing, voice lists): kept on disk, never committed
+/tools/

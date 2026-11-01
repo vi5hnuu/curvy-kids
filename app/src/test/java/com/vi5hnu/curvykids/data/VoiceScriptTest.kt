@@ -56,11 +56,12 @@ class VoiceScriptTest {
     }
 
     /**
-     * The recording list handed to the voice artist is committed under tools/voice. It's written
-     * when missing; when content changes and it no longer matches, delete it and rerun the tests.
+     * The recording list handed to the voice artist lives locally under tools/voice (not in git).
+     * It's written when missing; when content changes and it no longer matches, delete it and
+     * rerun the tests.
      */
     @Test
-    fun `committed recording list matches the content`() {
+    fun `local recording list matches the content`() {
         val file = File("../tools/voice/recording_list.txt")
         val expected = RecordingSheet.render()
         if (!file.exists()) {
