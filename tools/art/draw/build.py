@@ -7,7 +7,8 @@ Writes the drawn pictures into app/src/main/assets/art/ and optionally a contact
     python3 tools/art/draw/build.py animals --dry --sheet DIR  # preview only, assets untouched
 
 Each category module (animals.py, ...) defines CATEGORY (the assets folder) and DRAWINGS
-({file name without .svg: svg markup}). Only files that already exist are replaced, so a typo in a
+({file name without .svg: svg markup}); a module that fills several folders (letters.py) defines
+CATEGORIES ({folder: drawings}) instead. Only files that already exist are replaced, so a typo in a
 name fails loudly instead of adding a picture nothing points at. Kotlin paths never change.
 """
 import importlib
@@ -19,26 +20,28 @@ import sys
 HERE = pathlib.Path(__file__).resolve().parent
 ART = HERE.parents[2] / "app/src/main/assets/art"
 MODULES = ["animals", "birds", "sea", "insects", "fruits", "vegetables", "food", "feelings", "body", "jobs",
-           "clothes", "toys", "instruments", "sports", "transport", "places", "home", "nature", "weather"]
+           "clothes", "toys", "instruments", "sports", "transport", "places", "home", "nature", "weather", "letters"]
 
 sys.path.insert(0, str(HERE))
 
 
 def write(module_name: str, dry: bool = False) -> dict:
-    """Replaces the category's files (or, with dry, only checks the names) and returns the drawings."""
+    """Replaces the module's files (or, with dry, only checks the names) and returns all its drawings."""
     mod = importlib.import_module(module_name)
-    folder = ART / mod.CATEGORY
-    existing = {p.stem for p in folder.glob("*.svg")}
-    unknown = set(mod.DRAWINGS) - existing
-    if unknown:
-        sys.exit(f"{module_name}: no such files in {folder}: {sorted(unknown)}")
-    if dry:
-        return mod.DRAWINGS
-    for name, markup in mod.DRAWINGS.items():
-        (folder / f"{name}.svg").write_text(markup + "\n")
-    missing = sorted(existing - set(mod.DRAWINGS))
-    print(f"{mod.CATEGORY}: wrote {len(mod.DRAWINGS)}" + (f", not drawn yet: {missing}" if missing else ""))
-    return mod.DRAWINGS
+    categories = getattr(mod, "CATEGORIES", None) or {mod.CATEGORY: mod.DRAWINGS}
+    for category, drawings in categories.items():
+        folder = ART / category
+        existing = {p.stem for p in folder.glob("*.svg")}
+        unknown = set(drawings) - existing
+        if unknown:
+            sys.exit(f"{module_name}: no such files in {folder}: {sorted(unknown)}")
+        if dry:
+            continue
+        for name, markup in drawings.items():
+            (folder / f"{name}.svg").write_text(markup + "\n")
+        missing = sorted(existing - set(drawings))
+        print(f"{category}: wrote {len(drawings)}" + (f", not drawn here: {missing}" if missing else ""))
+    return {name: markup for drawings in categories.values() for name, markup in drawings.items()}
 
 
 def sheet(name: str, drawings: dict, out: pathlib.Path) -> pathlib.Path:
