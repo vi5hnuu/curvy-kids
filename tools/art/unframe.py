@@ -12,7 +12,9 @@ and the name can be spoken, styled and translated). This strips them:
   * everything else (shapes, patterns, and text-only badges that screens will draw in Compose):
     copied unchanged
 
-Idempotent: re-running overwrites art/ from kids/. Usage: python3 tools/art/unframe.py
+Pictures drawn by tools/art/draw (marked data-bare="1") have replaced every emoji-based one and
+are never overwritten here, so re-running only refreshes the non-picture files.
+Usage: python3 tools/art/unframe.py
 """
 import pathlib
 import re
@@ -38,15 +40,18 @@ def convert(category: str, svg: str) -> str:
 
 
 def main() -> None:
-    counts = {"picture": 0, "unframed": 0, "copied": 0}
+    counts = {"picture": 0, "unframed": 0, "copied": 0, "kept drawn": 0}
     for src in sorted(SRC.rglob("*.svg")):
         category = src.parent.name
         svg = src.read_text(encoding="utf-8")
         out = convert(category, svg)
         kind = "picture" if out.startswith('<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 36 36"') \
             else "unframed" if out != svg else "copied"
-        counts[kind] += 1
         dst = DST / category / src.name
+        if dst.exists() and 'data-bare="1"' in dst.read_text(encoding="utf-8")[:200]:
+            counts["kept drawn"] += 1
+            continue
+        counts[kind] += 1
         dst.parent.mkdir(parents=True, exist_ok=True)
         dst.write_text(out, encoding="utf-8")
     print(counts)
