@@ -56,22 +56,20 @@ class VoiceScriptTest {
     }
 
     /**
-     * The recording list handed to the voice artist lives locally under tools/voice (not in git).
-     * It's written when missing; when content changes and it no longer matches, delete it and
-     * rerun the tests.
+     * Writes the local recording list (tools/voice, not in git) with only the lines that have no
+     * recording yet, so the list is always "what's left to record". A clip counts as recorded when
+     * its file is in the app's assets or in the voice pack that owns it.
      */
     @Test
-    fun `local recording list matches the content`() {
+    fun `local recording list holds only the lines still to record`() {
+        val voiceRoots = listOf("../app", "../voice_hi_letters", "../voice_hi_barakhadi")
+            .map { File(it, "src/main/assets/voice") }
+        fun recorded(clip: com.vi5hnu.curvykids.audio.VoiceClip) =
+            voiceRoots.any { root -> listOf("m4a", "mp3").any { File(root, "${clip.relativePath}.$it").exists() } }
+
         val file = File("../tools/voice/recording_list.txt")
-        val expected = RecordingSheet.render()
-        if (!file.exists()) {
-            file.parentFile?.mkdirs()
-            file.writeText(expected)
-        }
-        assertEquals(
-            "tools/voice/recording_list.txt is stale: delete it and rerun the unit tests",
-            expected,
-            file.readText(),
-        )
+        file.parentFile?.mkdirs()
+        file.writeText(RecordingSheet.render(::recorded))
+        assertTrue(file.readText().startsWith("CurvyKids"))
     }
 }

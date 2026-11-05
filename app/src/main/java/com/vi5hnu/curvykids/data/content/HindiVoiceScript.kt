@@ -73,18 +73,18 @@ object HindiVoiceScript {
 
     // ── Stories ────────────────────────────────────────────────────────────────
 
-    /** Line [index] (0-based) of [story]; recorded one sentence per file so reading can highlight it. */
-    fun storyLine(story: Story, index: Int) = VoiceLine(
-        VoiceClip.hindi(STORY_FOLDER, "story-${story.id}-line-${index + 1}"),
-        story.lines[index],
+    /**
+     * The whole of [story], its lines and then the moral, as one recording: read in a single take
+     * it flows like a real reading instead of a string of separate sentences.
+     */
+    fun story(story: Story) = VoiceLine(
+        VoiceClip.hindi(STORY_FOLDER, "story-${story.id}"),
+        storyText(story),
         "Story: ${story.subtitle}",
     )
 
-    fun storyMoral(story: Story) = VoiceLine(
-        VoiceClip.hindi(STORY_FOLDER, "story-${story.id}-moral"),
-        story.moral,
-        "Story: ${story.subtitle} (moral)",
-    )
+    /** The text the story recording says, also read by the device voice when it isn't recorded. */
+    fun storyText(story: Story): String = (story.lines + story.moral).joinToString(" ")
 
     /**
      * The recording sheet, grouped by category in the order a voice artist would record it.
@@ -100,10 +100,7 @@ object HindiVoiceScript {
                 add("Barakhadi - ${c.char}" to BARAKHADI_MATRAS.map { syllable(c, it) }.fresh())
             }
             add("Praise and encouragement" to (PRAISE + TRY_AGAIN + GIVE_UP + WRITE_FIRST).fresh())
-            STORIES.forEach { st ->
-                add("Story - ${st.title} (${st.subtitle})" to
-                    (st.lines.indices.map { storyLine(st, it) } + storyMoral(st)).fresh())
-            }
+            add("Stories (one recording each, the whole story and its moral)" to STORIES.map { story(it) }.fresh())
         }.filter { it.second.isNotEmpty() }
     }
 

@@ -137,7 +137,10 @@ private fun StoryList(topic: Topic, onBack: () -> Unit, onPick: (Story) -> Unit)
     }
 }
 
-/** Reads a single story aloud, highlighting each line as it's spoken. */
+/**
+ * Reads a single story aloud. A recorded story plays as one clip straight through; otherwise the
+ * device voice reads it and the line being spoken is highlighted.
+ */
 @Composable
 private fun StoryReader(
     story: Story,
@@ -155,22 +158,19 @@ private fun StoryReader(
     // callbacks can light up the segment being read.
     val moralIndex = story.lines.size
     val segments = remember(story.id) { story.lines + story.moral }
-    val fullText = remember(story.id) { segments.joinToString(" ") }
+    val fullText = remember(story.id) { HindiVoiceScript.storyText(story) }
     val ranges = remember(story.id) {
         var idx = 0
         segments.map { seg -> val start = idx; idx += seg.length + 1; start until (start + seg.length) }
     }
 
-    // Each segment's recording. When every one is bundled the story is played clip by clip (a
-    // human voice, highlighted a sentence at a time); otherwise the synthetic voice reads it.
-    val voiceLines = remember(story.id) {
-        story.lines.indices.map { HindiVoiceScript.storyLine(story, it) } + HindiVoiceScript.storyMoral(story)
-    }
-    val recorded = remember(story.id) { speaker != null && voiceLines.all { speaker.hasClip(it.clip) } }
+    // The story's recording: the whole story in one clip. A clip reports no reading position,
+    // so a recorded story plays without the line highlight.
+    val recording = remember(story.id) { HindiVoiceScript.story(story).clip }
 
-    /** Speaks one segment on its own (a tapped line or the moral). */
+    /** Speaks one segment on its own (a tapped line or the moral), in the device voice. */
     fun speakSegment(i: Int) {
-        speaker?.speak(segments[i], langTag = "hi-IN", utteranceId = "tap-$i", clip = voiceLines[i].clip)
+        speaker?.speak(segments[i], langTag = "hi-IN", utteranceId = "tap-$i")
     }
 
     fun resetVoice() {
@@ -193,13 +193,9 @@ private fun StoryReader(
         sp.setSpeechRate(STORY_RATE)
         reading = true
         current = -1
-        if (recorded) {
-            voiceLines.forEachIndexed { i, line ->
-                sp.speak(line.text, langTag = "hi-IN", flush = i == 0, utteranceId = "story-$i", clip = line.clip)
-            }
-        } else {
-            sp.speak(fullText, langTag = "hi-IN", flush = true, utteranceId = "story")
-        }
+        // One utterance either way: the recording when there is one, else the device voice
+        // (whose range callbacks drive the highlight).
+        sp.speak(fullText, langTag = "hi-IN", flush = true, utteranceId = "story", clip = recording)
     }
 
     // Highlight follows the spoken character range; clean up (and stop audio) on leave / story change.
@@ -210,13 +206,8 @@ private fun StoryReader(
                 if (seg >= 0) current = seg
             }
         }
-        // Recorded reading reports each sentence as it starts.
-        speaker?.onUtteranceStart = { id ->
-            id.removePrefix("story-").toIntOrNull()?.takeIf { id.startsWith("story-") }?.let { current = it }
-        }
         speaker?.onUtteranceDone = { id ->
-            val finishedStory = id == "story" || id == "story-$moralIndex"
-            // Mid-story sentences of a recorded reading end here too; only the last one ends it.
+            val finishedStory = id == "story"
             if (finishedStory || id.startsWith("tap-")) {
                 current = -1
                 reading = false
@@ -225,7 +216,6 @@ private fun StoryReader(
             if (finishedStory) onReward(3) // reward for listening to a whole story
         }
         onDispose {
-            speaker?.onUtteranceStart = null
             speaker?.onUtteranceRange = null
             speaker?.onUtteranceDone = null
             resetVoice()

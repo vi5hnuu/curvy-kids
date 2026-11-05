@@ -1,15 +1,20 @@
 package com.vi5hnu.curvykids.data.content
 
+import com.vi5hnu.curvykids.audio.VoiceClip
+
 /**
- * Builds the list of every line to record, for the voice artist.
+ * Builds the list of lines still to record, for the voice artist (or the local TTS script).
  *
  * Generated from [HindiVoiceScript] and [PHONICS_DATA], the same sources the app plays from, so a
- * new story line or letter shows up here automatically. A unit test keeps the committed copy at
- * `tools/voice/recording_list.txt` in step with this.
+ * new story or letter shows up here automatically. A unit test writes it to the local
+ * `tools/voice/recording_list.txt`, leaving out every line that already has a recording.
+ *
+ * @param isRecorded whether a clip's file already exists; those lines are left out. Numbering
+ *   covers only the lines listed.
  */
 object RecordingSheet {
 
-    fun render(): String = buildString {
+    fun render(isRecorded: (VoiceClip) -> Boolean = { false }): String = buildString {
         appendLine("CurvyKids - voice recording list")
         appendLine()
         appendLine("Format: one file per numbered line, saved at exactly the path after the arrow,")
@@ -23,7 +28,9 @@ object RecordingSheet {
         var n = 1
         appendLine("== HINDI ==")
         appendLine()
-        HindiVoiceScript.sections.forEach { (section, lines) ->
+        HindiVoiceScript.sections.forEach { (section, all) ->
+            val lines = all.filterNot { isRecorded(it.clip) }
+            if (lines.isEmpty()) return@forEach
             appendLine("-- $section --")
             lines.forEach { appendLine("${n++}. ${it.text}  ->  ${it.clip.relativePath}.m4a") }
             appendLine()
@@ -33,7 +40,7 @@ object RecordingSheet {
         appendLine("Say only the pure sound, short and crisp. No added \"uh\" (\"b\", not \"buh\").")
         appendLine("Hold sounds that can be held (mmm, sss, fff) for about one second.")
         appendLine()
-        PHONICS_DATA.forEach { p ->
+        PHONICS_DATA.filterNot { isRecorded(it.clip) }.forEach { p ->
             val where = if (p.position == SoundPosition.END) "at the end of" else "at the start of"
             appendLine("${n++}. The sound of ${p.letter}, as $where \"${p.example}\"  ->  ${p.clip.relativePath}.m4a")
         }
