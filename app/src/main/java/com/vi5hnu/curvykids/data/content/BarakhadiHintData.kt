@@ -53,7 +53,7 @@ internal val BARAKHADI_HINT_DATA: Map<String, SyllableHint> = mapOf(
     "घौ" to SyllableHint.Joined("घ", "औ"),
     "घं" to SyllableHint.Word("घंटी"),
     "घः" to SyllableHint.Joined("घ", "अः"),
-    "ङ" to SyllableHint.AsIn("गङ्गा"),
+    "ङ" to SyllableHint.AsIn("पङ्खा"),
     "ङा" to SyllableHint.Joined("ङ", "आ"),
     "ङि" to SyllableHint.Joined("ङ", "इ"),
     "ङी" to SyllableHint.Joined("ङ", "ई"),

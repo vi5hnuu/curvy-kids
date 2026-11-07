@@ -12,7 +12,7 @@ sealed interface SyllableHint {
     /** "खै, ख और ऐ मिलकर बना खै": no everyday word, so the consonant and vowel that make it. */
     data class Joined(val consonant: String, val vowel: String) : SyllableHint
 
-    /** "ङ, ङ जैसे गङ्गा में": the letter only appears inside words, as in [word]. */
+    /** "ङ, ङ जैसे पङ्खा में": the letter only appears inside words, as in [word]. */
     data class AsIn(val word: String) : SyllableHint
 }
 

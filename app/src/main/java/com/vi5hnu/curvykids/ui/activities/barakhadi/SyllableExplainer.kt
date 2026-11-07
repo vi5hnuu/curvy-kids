@@ -33,7 +33,7 @@ import com.vi5hnu.curvykids.ui.theme.KidDimens
  *     - "का से कान": the word's picture, when drawn, and the word with का marked;
  *     - "ख और ऐ मिलकर बना खै": no everyday word, so the equation itself is the lesson and is
  *       shown larger;
- *     - "ङ जैसे गङ्गा में": the word with the letter marked where it sits inside it;
+ *     - "ङ जैसे पङ्खा में": the word with the letter marked where it sits inside it;
  *  3. a speaker to hear it again and a pencil to write it.
  *
  * @param compact a shorter layout, for the landscape pane where height is scarce.
@@ -114,7 +114,7 @@ fun SyllableWord(
 
 /**
  * Where [syllable] sits in [word], widened to whole syllables. Falls back to the bare consonant
- * (ङ inside गङ्गा) and then to nothing, so a word the narration spells differently still shows.
+ * (ङ inside पङ्खा) and then to nothing, so a word the narration spells differently still shows.
  */
 private fun markOf(word: String, syllable: String, consonant: String): IntRange {
     val at = word.indexOf(syllable).takeIf { it >= 0 }
