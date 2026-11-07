@@ -37,6 +37,7 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Seasons — learn the four seasons and their weather, then pick the season for a weather clue. */
 @Composable
@@ -77,7 +78,7 @@ private fun SeasonsLearn(topic: Topic, onBack: () -> Unit, feedback: PlayFeedbac
                     pair.forEach { season ->
                         CardSurface(
                             modifier = Modifier.weight(1f),
-                            onClick = { feedback?.speaker?.speak("${season.name}! ${season.weather}") },
+                            onClick = { feedback?.speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.seasonCall(season))) },
                         ) {
                             Column(
                                 horizontalAlignment = Alignment.CenterHorizontally,
@@ -122,7 +123,7 @@ private fun SeasonsQuiz(
         correct = target,
         keyOf = { it.name },
         nameOf = { it.name },
-        speakPrompt = { flush -> feedback?.speaker?.speak("Which season is ${target.weather}?", flush = flush) },
+        speakPrompt = { flush -> feedback?.speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.whichSeason(target)), flush = flush) },
         celebrateTitle = "Season Explorer!",
         promptLabel = "WHICH SEASON IS THIS?",
         prompt = { SvgArt(clue, modifier = Modifier.size(96.dp)) },

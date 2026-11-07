@@ -22,6 +22,7 @@ import com.vi5hnu.curvykids.ui.activities.components.CountingPictures
 import com.vi5hnu.curvykids.ui.activities.components.QuizScaffold
 import com.vi5hnu.curvykids.ui.activities.components.rememberQuizSession
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Score-based difficulty:
@@ -66,7 +67,7 @@ fun AdditionScreen(
         correct = answer,
         keyOf = { it.toString() },
         nameOf = { it.toString() },
-        speakPrompt = { flush -> feedback?.speaker?.speak("${spec.a} plus ${spec.b}. How many in all?", flush = flush) },
+        speakPrompt = { flush -> feedback?.speaker?.say(EnglishVoiceScript.addition(spec.a, spec.b), flush = flush) },
         celebrateTitle = "Math Whiz!",
         promptLabel = "HOW MANY IN ALL?",
         prompt = {

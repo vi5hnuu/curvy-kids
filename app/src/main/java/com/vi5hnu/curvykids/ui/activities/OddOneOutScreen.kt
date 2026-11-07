@@ -17,6 +17,7 @@ import com.vi5hnu.curvykids.ui.components.CurvyMascot
 import com.vi5hnu.curvykids.ui.components.CurvyMood
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import androidx.compose.ui.unit.dp
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 // Separate picture pools used for CATEGORY rounds so kids can spot animal vs food.
 private val ANIMAL_PICTURES = listOf(
@@ -111,8 +112,8 @@ fun OddOneOutScreen(
         correct = state.oddPos,
         keyOf = { it.toString() },
         nameOf = { "this one" },
-        praiseFor = { "Yes! That's the different one!" },
-        speakPrompt = { flush -> feedback?.speaker?.speak(state.prompt, flush = flush) },
+        praiseFor = { EnglishVoiceScript.say("Yes! That's the different one!") },
+        speakPrompt = { flush -> feedback?.speaker?.say(EnglishVoiceScript.say(state.prompt), flush = flush) },
         celebrateTitle = "Sharp Eyes!",
         promptLabel = "FIND THE ODD ONE OUT",
         prompt = { CurvyMascot(size = 72.dp, mood = CurvyMood.Happy) },

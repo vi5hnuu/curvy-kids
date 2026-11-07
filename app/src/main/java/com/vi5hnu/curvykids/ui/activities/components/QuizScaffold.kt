@@ -45,6 +45,8 @@ import com.vi5hnu.curvykids.ui.components.SessionComplete
 import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
+import com.vi5hnu.curvykids.data.content.Speech
 
 /**
  * The layout and flow every "pick the right answer" quiz shares.
@@ -77,7 +79,7 @@ fun <T> QuizScaffold(
     prompt: @Composable ColumnScope.() -> Unit,
     choiceContent: @Composable BoxScope.(T) -> Unit,
     promptLabel: String? = null,
-    praiseFor: (T) -> String = { "Yes! ${nameOf(it)}!" },
+    praiseFor: (T) -> Speech = { EnglishVoiceScript.yes(nameOf(it)) },
     columns: Int = if (choices.size <= 3) choices.size else 2,
     belowHeader: (@Composable () -> Unit)? = null,
 ) {
@@ -166,7 +168,7 @@ fun <T> QuizScaffold(
                 color = topic.color,
                 onPlayAgain = session::playAgain,
                 onHome = onBack,
-                onShown = { session.feedback?.speaker?.speak("All done! Great job!", flush = false) },
+                onShown = { session.feedback?.speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.ALL_DONE), flush = false) },
             )
         }
     }

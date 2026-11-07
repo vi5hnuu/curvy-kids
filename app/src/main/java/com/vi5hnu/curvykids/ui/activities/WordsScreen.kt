@@ -45,6 +45,7 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 private val EXTRA_LETTERS = "ABCDEFGHIJKLMNOPRSTUVWY".toList()
 
@@ -86,7 +87,7 @@ fun WordsScreen(
     LaunchedEffect(pos) {
         filled = 0
         wrong = null   // clear any red-tile state from the previous word
-        speaker?.speak(word.word)
+        speaker?.say(EnglishVoiceScript.say(word.word))
     }
 
     Box {
@@ -122,7 +123,7 @@ fun WordsScreen(
                     SvgArt(word.svg, modifier = Modifier.size(104.dp))
                     Spacer(Modifier.height(10.dp))
                     Chip(
-                        onClick = { speaker?.speak(word.word) },
+                        onClick = { speaker?.say(EnglishVoiceScript.say(word.word)) },
                         modifier = Modifier.size(48.dp),
                         containerColor = topic.tint,
                         contentColor = topic.color,
@@ -183,14 +184,14 @@ fun WordsScreen(
                             if (ch == letters[filled]) {
                                 val nf = filled + 1
                                 filled = nf
-                                speaker?.speak(ch.toString())
+                                speaker?.say(EnglishVoiceScript.say(ch.toString()))
                                 if (nf == letters.size) {
                                     onReward(5)
                                     showCelebrate = true
                                 }
                             } else {
                                 wrong = ch
-                                speaker?.speak("Try again")
+                                speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.TRY_AGAIN))
                             }
                         },
                         modifier = Modifier.size(tileSize),

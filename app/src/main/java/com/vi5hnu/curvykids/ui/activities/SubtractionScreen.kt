@@ -18,6 +18,7 @@ import com.vi5hnu.curvykids.ui.activities.components.CountingPictures
 import com.vi5hnu.curvykids.ui.activities.components.QuizScaffold
 import com.vi5hnu.curvykids.ui.activities.components.rememberQuizSession
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Level-based range:
@@ -65,9 +66,9 @@ fun SubtractionScreen(
         correct = answer,
         keyOf = { it.toString() },
         nameOf = { it.toString() },
-        praiseFor = { "Yes! $it left!" },
+        praiseFor = { EnglishVoiceScript.yesLeft(it) },
         speakPrompt = { flush ->
-            feedback?.speaker?.speak("${spec.total} take away ${spec.remove}. How many are left?", flush = flush)
+            feedback?.speaker?.say(EnglishVoiceScript.subtraction(spec.total, spec.remove), flush = flush)
         },
         celebrateTitle = "Math Whiz!",
         promptLabel = "HOW MANY ARE LEFT?",

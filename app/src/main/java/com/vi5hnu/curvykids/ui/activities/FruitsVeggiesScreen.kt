@@ -40,6 +40,7 @@ import com.vi5hnu.curvykids.ui.activities.components.SegmentedTabs
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 private val FRUIT_COLOR = Color(0xFF4FCB94)
 private val VEGGIE_COLOR = Color(0xFFFF8B6B)
@@ -103,9 +104,9 @@ private fun FruitsQuiz(
         correct = answer,
         keyOf = { it.name },
         nameOf = { "a ${it.label.lowercase()}" },
-        praiseFor = { "Yes! ${current.name} is a ${it.label.lowercase()}!" },
+        praiseFor = { EnglishVoiceScript.yesFruit(current.name, it == Group.FRUIT) },
         speakPrompt = { flush ->
-            feedback?.speaker?.speak("Is ${current.name} a fruit or a vegetable?", flush = flush)
+            feedback?.speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.fruitOrVegetable(current.name)), flush = flush)
         },
         celebrateTitle = "Super Sorter!",
         promptLabel = "FRUIT OR VEGETABLE?",

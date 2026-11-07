@@ -23,6 +23,7 @@ import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.SvgImage
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Telling Time — Learn (tap a clock to hear the hour) + Play (read the clock, tap the hour).
@@ -41,7 +42,8 @@ fun TimeScreen(
         quizItems = TIMES,
         quizPromptLabel = "WHAT TIME IS IT?",
         keyOf = { it.hour.toString() },
-        speakFor = { "Look at the clock. What time is it?" },
+        speakFor = { EnglishVoiceScript.say("Look at the clock. What time is it?") },
+        nameOf = { it.label },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Time Star!",
@@ -85,7 +87,7 @@ private fun TimeLearnGrid(
                 row.forEach { item ->
                     CardSurface(
                         modifier = Modifier.weight(1f),
-                        onClick = { speaker?.speak("${item.label}"); onReward(1) },
+                        onClick = { speaker?.say(EnglishVoiceScript.say(item.label)); onReward(1) },
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,

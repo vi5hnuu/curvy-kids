@@ -44,6 +44,7 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** "Find the Color" matching game. */
 @Composable
@@ -64,10 +65,10 @@ fun ColorsScreen(
         val t = COLOR_ITEMS.random()
         target = t
         options = buildOptions(t)
-        speaker?.speak("Find ${t.name}")
+        speaker?.say(EnglishVoiceScript.find(t.name))
     }
 
-    LaunchedEffect(Unit) { speaker?.speak("Find ${target.name}") }
+    LaunchedEffect(Unit) { speaker?.say(EnglishVoiceScript.find(target.name)) }
 
     Box {
         Column(
@@ -115,7 +116,7 @@ fun ColorsScreen(
                     )
                     Spacer(Modifier.height(10.dp))
                     Chip(
-                        onClick = { speaker?.speak("Find ${target.name}") },
+                        onClick = { speaker?.say(EnglishVoiceScript.find(target.name)) },
                         modifier = Modifier.size(48.dp),
                     ) {
                         KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
@@ -145,10 +146,10 @@ fun ColorsScreen(
                                         score = newScore
                                         onReward(3)
                                         if (newScore == 1) onAddBadge("colors")
-                                        speaker?.speak("Yes! ${item.name}")
+                                        speaker?.say(EnglishVoiceScript.yes(item.name))
                                     } else {
                                         flash = item.name to false
-                                        speaker?.speak("Try again")
+                                        speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.TRY_AGAIN))
                                     }
                                 },
                                 modifier = Modifier

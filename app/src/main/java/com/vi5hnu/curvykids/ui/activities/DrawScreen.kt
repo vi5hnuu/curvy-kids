@@ -71,6 +71,7 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import com.vi5hnu.curvykids.data.content.AssetPath
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 // ── Canvas marks ────────────────────────────────────────────────────────────────
 
@@ -134,7 +135,7 @@ fun DrawScreen(
 ) {
     var selectedCrayon by remember { mutableStateOf(CRAYON_BOX.first()) }
     val selectedColor = selectedCrayon.color
-    val say: (String) -> Unit = { word -> feedback?.speaker?.speak(word, langTag = "en-US") }
+    val say: (String) -> Unit = { word -> feedback?.speaker?.say(EnglishVoiceScript.say(word)) }
     var selectedSize by remember { mutableStateOf(BRUSH_SIZES[1]) }
     var templateId by remember { mutableStateOf("blank") }
     var stampMode by remember { mutableStateOf(false) }

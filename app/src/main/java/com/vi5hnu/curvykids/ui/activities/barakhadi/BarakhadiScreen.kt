@@ -64,6 +64,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Higher pitch so the recite voice sounds like an eager young student reading aloud. */
 private const val RECITE_PITCH = 1.35f
@@ -208,7 +209,7 @@ fun BarakhadiScreen(
             onNext = { writingForm = (writingForm + 1) % count; active = writingForm },
             onClose = { writingForm = -1 },
             onDrawn = { markHeard(matra, reward = true) },
-            onTool = { word -> speaker?.speak(word, langTag = "en-US") },
+            onTool = { word -> speaker?.say(EnglishVoiceScript.say(word)) },
         )
         return
     }

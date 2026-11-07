@@ -25,6 +25,7 @@ import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Feelings — learn emotion names and faces, then identify them in a quiz. */
 @Composable
@@ -40,7 +41,7 @@ fun EmotionsScreen(
         quizItems = EMOTIONS,
         quizPromptLabel = "FIND THE FEELING",
         keyOf = { it.name },
-        speakFor = { "Find ${it.name}" },
+        speakFor = { EnglishVoiceScript.find(it.name) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Feelings Star!",

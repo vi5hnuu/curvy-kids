@@ -36,6 +36,7 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * One reusable screen for every "tap-to-learn + find-it" picture topic (Food, Clothes, Jobs,
@@ -60,7 +61,7 @@ fun PictureDiscoverScreen(
         quizItems = spec.items,
         quizPromptLabel = spec.promptLabel,
         keyOf = { it.name },
-        speakFor = { "Find the ${it.name}" },
+        speakFor = { EnglishVoiceScript.findThe(it.name) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = spec.celebrateTitle,
@@ -112,7 +113,7 @@ private fun PictureLearnGrid(
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(22.dp))
                                 .clickable {
-                                    speaker?.speak(item.name)
+                                    speaker?.say(EnglishVoiceScript.say(item.name))
                                     if (!seen.contains(item.name)) {
                                         seen = seen + item.name
                                         onReward(2)

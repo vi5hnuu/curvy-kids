@@ -18,6 +18,7 @@ import com.vi5hnu.curvykids.ui.activities.components.QuizScaffold
 import com.vi5hnu.curvykids.ui.activities.components.rememberQuizSession
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** One option in the opposite quiz — either word of any pair. */
 private data class OppositeChoice(val word: String, val svg: AssetPath)
@@ -71,7 +72,7 @@ fun OppositeScreen(
         keyOf = { it.word },
         nameOf = { it.word },
         speakPrompt = { flush ->
-            feedback?.speaker?.speak("What is the opposite of ${spec.promptWord}?", flush = flush)
+            feedback?.speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.opposite(spec.promptWord)), flush = flush)
         },
         celebrateTitle = "Opposite Expert!",
         promptLabel = "WHAT IS THE OPPOSITE?",

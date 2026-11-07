@@ -18,6 +18,7 @@ import com.vi5hnu.curvykids.ui.activities.components.QuizScaffold
 import com.vi5hnu.curvykids.ui.activities.components.rememberQuizSession
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 private data class RhymeChoice(val word: String, val svg: AssetPath)
 
@@ -53,12 +54,12 @@ fun RhymingScreen(
         correct = spec.correct,
         keyOf = { it.word },
         nameOf = { it.word.lowercase() },
-        praiseFor = { "Yes! $word and ${it.word.lowercase()} rhyme!" },
+        praiseFor = { EnglishVoiceScript.yesRhyme(word, it.word.lowercase()) },
         // The choices are said as part of the question: a child who can't read the labels
         // still has to hear each word to know whether it rhymes.
         speakPrompt = { flush ->
-            val options = spec.choices.joinToString(", ") { it.word.lowercase() }
-            feedback?.speaker?.speak("Which word rhymes with $word? $options.", flush = flush)
+            val options = spec.choices.map { it.word.lowercase() }
+            feedback?.speaker?.say(EnglishVoiceScript.rhymesWith(word, options), flush = flush)
         },
         celebrateTitle = "Rhyme Master!",
         promptLabel = "WHICH WORD RHYMES?",

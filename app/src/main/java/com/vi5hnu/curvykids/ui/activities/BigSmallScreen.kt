@@ -17,6 +17,7 @@ import com.vi5hnu.curvykids.ui.components.CurvyMascot
 import com.vi5hnu.curvykids.ui.components.CurvyMood
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import androidx.compose.ui.unit.dp
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 private enum class BigSmallMode { SIZE, NUMBER }
 
@@ -90,8 +91,8 @@ fun BigSmallScreen(
             if (spec.mode == BigSmallMode.NUMBER) numberOn(side).toString()
             else if (spec.askBig) "the big one" else "the small one"
         },
-        praiseFor = { "Yes!" },
-        speakPrompt = { flush -> feedback?.speaker?.speak(spec.spokenPrompt(), flush = flush) },
+        praiseFor = { EnglishVoiceScript.yes() },
+        speakPrompt = { flush -> feedback?.speaker?.say(EnglishVoiceScript.say(spec.spokenPrompt()), flush = flush) },
         celebrateTitle = "Size Star!",
         promptLabel = spec.prompt(),
         prompt = { CurvyMascot(size = 72.dp, mood = CurvyMood.Happy) },

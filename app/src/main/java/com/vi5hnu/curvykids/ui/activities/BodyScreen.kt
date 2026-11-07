@@ -36,6 +36,7 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** My Body — Learn (tap to hear the part) + Play ("Find the…" quiz). */
 @Composable
@@ -51,7 +52,7 @@ fun BodyScreen(
         quizItems = BODY_PARTS,
         quizPromptLabel = "FIND…",
         keyOf = { it.name },
-        speakFor = { "Find the ${it.name}" },
+        speakFor = { EnglishVoiceScript.findThe(it.name) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Body Star!",
@@ -98,7 +99,7 @@ private fun BodyLearnGrid(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(22.dp))
                                 .clickable {
-                                    speaker?.speak(part.name)
+                                    speaker?.say(EnglishVoiceScript.say(part.name))
                                     if (!seen.contains(part.name)) {
                                         seen = seen + part.name
                                         onReward(2)

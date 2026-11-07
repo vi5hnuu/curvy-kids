@@ -36,6 +36,7 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Animals — Learn (tap to hear name + sound) + Play ("Who says…?" quiz). */
 @Composable
@@ -51,7 +52,7 @@ fun AnimalsScreen(
         quizItems = ANIMALS,
         quizPromptLabel = "WHO SAYS…",
         keyOf = { it.name },
-        speakFor = { "Who says ${it.sound}" },
+        speakFor = { EnglishVoiceScript.say(EnglishVoiceScript.whoSays(it)) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Animal Star!",
@@ -98,7 +99,7 @@ private fun AnimalsLearnGrid(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(24.dp))
                                 .clickable {
-                                    speaker?.speak("${animal.name}. ${animal.sound}")
+                                    speaker?.say(EnglishVoiceScript.animalCall(animal))
                                     if (!seen.contains(animal.name)) {
                                         seen = seen + animal.name
                                         onReward(2)

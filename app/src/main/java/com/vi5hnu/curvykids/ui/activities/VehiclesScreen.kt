@@ -29,6 +29,7 @@ import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Vehicles — learn transportation names and sounds, then identify them in a quiz. */
 @Composable
@@ -44,11 +45,11 @@ fun VehiclesScreen(
         quizItems = VEHICLES,
         quizPromptLabel = "FIND THE VEHICLE",
         keyOf = { it.name },
-        speakFor = { "Find the ${it.name}" },
+        speakFor = { EnglishVoiceScript.findThe(it.name) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Road Trip!",
-        learnContent = { VehiclesLearnGrid(color = topic.color, onSpeak = { v -> feedback?.speaker?.speak("${v.name}! ${v.sound}") }) },
+        learnContent = { VehiclesLearnGrid(color = topic.color, onSpeak = { v -> feedback?.speaker?.say(EnglishVoiceScript.vehicleCall(v)) }) },
         quizPrompt = { vehicle ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(

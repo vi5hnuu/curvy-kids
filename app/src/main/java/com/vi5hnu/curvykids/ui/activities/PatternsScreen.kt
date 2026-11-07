@@ -21,6 +21,7 @@ import com.vi5hnu.curvykids.ui.activities.components.QuizScaffold
 import com.vi5hnu.curvykids.ui.activities.components.rememberQuizSession
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * The repeating units, as indexes into the pictures picked for a question: AB, AABB, ABB, ABC.
@@ -70,9 +71,9 @@ fun PatternsScreen(
         choices = spec.choices,
         correct = spec.answer,
         keyOf = { it.path },
-        nameOf = { it.path.substringAfterLast('-').substringBefore('.').replace('_', ' ') },
-        praiseFor = { "Yes! That comes next!" },
-        speakPrompt = { flush -> feedback?.speaker?.speak("What comes next?", flush = flush) },
+        nameOf = { EnglishVoiceScript.pictureName(it) },
+        praiseFor = { EnglishVoiceScript.say("Yes! That comes next!") },
+        speakPrompt = { flush -> feedback?.speaker?.say(EnglishVoiceScript.say("What comes next?"), flush = flush) },
         celebrateTitle = "Pattern Pro!",
         promptLabel = "WHAT COMES NEXT?",
         prompt = {

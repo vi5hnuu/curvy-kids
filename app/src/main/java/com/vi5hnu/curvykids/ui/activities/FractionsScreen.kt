@@ -22,6 +22,7 @@ import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.SvgImage
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Fractions — Learn (tap a pie to hear the fraction) + Play (see the shaded pie, tap the label).
@@ -40,7 +41,8 @@ fun FractionsScreen(
         quizItems = FRACTIONS,
         quizPromptLabel = "WHICH FRACTION IS SHADED?",
         keyOf = { it.label },
-        speakFor = { "Which fraction is shaded?" },
+        speakFor = { EnglishVoiceScript.say("Which fraction is shaded?") },
+        nameOf = { it.spoken },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Fraction Star!",
@@ -81,7 +83,7 @@ private fun FractionsLearnGrid(
                 row.forEach { item ->
                     CardSurface(
                         modifier = Modifier.weight(1f),
-                        onClick = { speaker?.speak(item.spoken); onReward(1) },
+                        onClick = { speaker?.say(EnglishVoiceScript.say(item.spoken)); onReward(1) },
                     ) {
                         Column(
                             horizontalAlignment = Alignment.CenterHorizontally,

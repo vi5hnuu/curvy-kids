@@ -42,6 +42,7 @@ import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Shapes — Learn (tap to hear the name) + Play ("Find the Shape" quiz). */
 @Composable
@@ -57,7 +58,8 @@ fun ShapesScreen(
         quizItems = SHAPES,
         quizPromptLabel = "FIND THE SHAPE",
         keyOf = { it.id },
-        speakFor = { "Find the ${it.name}" },
+        speakFor = { EnglishVoiceScript.findThe(it.name) },
+        nameOf = { it.name },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Shape Star!",
@@ -97,7 +99,7 @@ private fun ShapesLearnGrid(
                         shape = shape,
                         seen = seen.contains(shape.id),
                         onTap = {
-                            speaker?.speak(shape.name)
+                            speaker?.say(EnglishVoiceScript.say(shape.name))
                             if (!seen.contains(shape.id)) {
                                 seen = seen + shape.id
                                 onReward(2)

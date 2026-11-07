@@ -79,6 +79,7 @@ import com.vi5hnu.curvykids.ui.rewards.RewardsScreen
 import com.vi5hnu.curvykids.ui.theme.BgBottom
 import com.vi5hnu.curvykids.ui.theme.BgTop
 import com.vi5hnu.curvykids.ui.trace.TraceScreen
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Root navigation graph. Hosts the 4 bottom tabs and topic full-screens.
@@ -117,7 +118,7 @@ fun AppNavGraph(
 
     // Say the name aloud as an activity opens: the child this app is for can't read the label.
     val openTopic: (Topic) -> Unit = { topic ->
-        gameViewModel.speaker.speak(topic.title)
+        gameViewModel.speaker.say(EnglishVoiceScript.say(topic.title))
         appViewModel.setLastTopic(topic.id)
         navController.navigate(Screen.Topic.createRoute(topic.id))
     }
@@ -142,16 +143,16 @@ fun AppNavGraph(
                     HomeScreen(
                         appState = appState,
                         onOpenWorld = { world ->
-                            gameViewModel.speaker.speak(world.title)
+                            gameViewModel.speaker.say(EnglishVoiceScript.say(world.title))
                             navController.navigate(Screen.World.createRoute(world.id))
                         },
                         onOpenTopic = openTopic,
                         onOpenStickers = {
-                            gameViewModel.speaker.speak("My stickers")
+                            gameViewModel.speaker.say(EnglishVoiceScript.say(EnglishVoiceScript.MY_STICKERS))
                             navController.navigate(Screen.Rewards.route)
                         },
                         onOpenGrownUps = { showGate = true },
-                        onSpeak = { gameViewModel.speaker.speak(it, flush = false) },
+                        onSpeak = { gameViewModel.speaker.say(EnglishVoiceScript.say(it), flush = false) },
                     )
                 }
 
@@ -192,8 +193,9 @@ fun AppNavGraph(
                         onDispose { gameViewModel.speaker.stop() }
                     }
 
-                    // Topics that speak recorded voices wait for their packs; a grown-up is asked
-                    // to download them. When they arrive this recomposes straight into the topic.
+                    // Topics that speak recorded voices wait for their packs, which download by
+                    // themselves (a grown-up is asked only if Play needs them). When they arrive
+                    // this recomposes straight into the topic.
                     val requiredPacks = remember(topic) { VoicePack.requiredFor(topic) }
                     val packStates by voicePacks.states.collectAsState()
                     if (!packStates.allReady(requiredPacks)) {
@@ -202,7 +204,7 @@ fun AppNavGraph(
                             packs = requiredPacks,
                             repository = voicePacks,
                             onBack = { navController.popBackStack() },
-                            speak = { gameViewModel.speaker.speak(it) },
+                            speak = { gameViewModel.speaker.say(EnglishVoiceScript.say(it)) },
                         )
                         return@composable
                     }

@@ -8,12 +8,12 @@ import androidx.compose.ui.unit.dp
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.LetterPhonic
 import com.vi5hnu.curvykids.data.content.PHONICS_DATA
-import com.vi5hnu.curvykids.data.content.SoundPosition
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.ChoiceText
 import com.vi5hnu.curvykids.ui.activities.components.QuizScaffold
 import com.vi5hnu.curvykids.ui.activities.components.rememberQuizSession
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 internal data class PhonicSpec(val target: LetterPhonic, val choices: List<LetterPhonic>)
 
@@ -52,8 +52,7 @@ fun PhonicScreen(
         buildPhonicSpec(asked).also { asked.add(it.target.letter) }
     }
     val target = spec.target
-    val hint = if (target.position == SoundPosition.END) "like the end of ${target.example}"
-    else "like ${target.example}"
+    val hint = EnglishVoiceScript.soundHint(target)
 
     QuizScaffold(
         topic = topic,
@@ -63,12 +62,12 @@ fun PhonicScreen(
         correct = target,
         keyOf = { it.letter },
         nameOf = { it.letter },
-        praiseFor = { "Yes! ${it.letter}, $hint!" },
+        praiseFor = { EnglishVoiceScript.yesSound(target) },
         speakPrompt = { flush ->
             val sp = feedback?.speaker
-            sp?.speak("Which letter makes this sound?", flush = flush)
+            sp?.say(EnglishVoiceScript.say("Which letter makes this sound?"), flush = flush)
             sp?.speak(target.sound, flush = false, utteranceId = "phoneme", clip = target.clip)
-            sp?.speak("$hint.", flush = false)
+            sp?.say(EnglishVoiceScript.say(hint), flush = false)
         },
         celebrateTitle = "Sound Expert!",
         promptLabel = "WHICH LETTER MAKES THIS SOUND?",

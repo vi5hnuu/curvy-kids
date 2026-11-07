@@ -14,7 +14,6 @@ import com.vi5hnu.curvykids.data.content.HINDI_BY_CHAR
 import com.vi5hnu.curvykids.data.content.HindiVoiceScript
 import com.vi5hnu.curvykids.data.content.VoiceLine
 import com.vi5hnu.curvykids.data.content.Level
-import com.vi5hnu.curvykids.data.content.Phonics
 import com.vi5hnu.curvykids.data.content.Script
 import com.vi5hnu.curvykids.data.progress.ProgressRepository
 import com.vi5hnu.curvykids.haptics.Haptics
@@ -34,6 +33,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Owns the game loop and state. Depends on the [Recognizer] abstraction plus small platform
@@ -219,7 +219,7 @@ class GameViewModel(
     fun promptToDraw() {
         val state = _uiState.value
         if (state.level.script == Script.DEVANAGARI && speakHindi(HindiVoiceScript.WRITE_FIRST)) return
-        phonics.speak("Draw it first, then tap check.")
+        phonics.say(EnglishVoiceScript.say(EnglishVoiceScript.DRAW_FIRST))
     }
 
     /**
@@ -253,7 +253,7 @@ class GameViewModel(
         if (state.level.script == Script.DEVANAGARI) {
             speakHindiLetter(state.character); return
         }
-        phonics.speak(Phonics.phraseFor(state.character))
+        phonics.say(EnglishVoiceScript.letterPhrase(state.character))
     }
 
     /** Queues [char]'s spoken line after whatever is playing ("A for Apple", "क से कबूतर"). */
@@ -261,7 +261,7 @@ class GameViewModel(
         if (_uiState.value.level.script == Script.DEVANAGARI) {
             speakHindiLetter(char, queue = true); return
         }
-        phonics.speak(Phonics.phraseFor(char), flush = false)
+        phonics.say(EnglishVoiceScript.letterPhrase(char), flush = false)
     }
 
     /** Guides the child on what to draw, e.g. "Draw the letter A. A for Apple." */
@@ -270,10 +270,7 @@ class GameViewModel(
         if (state.level.script == Script.DEVANAGARI) {
             speakHindiLetter(state.character, queue); return
         }
-        val noun = if (state.level == Level.NUMBERS) "number" else "letter"
-        val word = Phonics.wordFor(state.character)
-        val suffix = word?.let { " ${Phonics.phraseFor(state.character)}." } ?: ""
-        phonics.speak("Draw the $noun ${state.character}.$suffix", flush = !queue)
+        phonics.say(EnglishVoiceScript.drawThe(state.character, isNumber = state.level == Level.NUMBERS), flush = !queue)
     }
 
     /**
@@ -330,31 +327,25 @@ class GameViewModel(
     private fun speakPraise() {
         if (_uiState.value.level.script == Script.DEVANAGARI &&
             speakHindi(HindiVoiceScript.PRAISE.random())) return
-        phonics.speak(PRAISE.random())
+        phonics.say(EnglishVoiceScript.say(EnglishVoiceScript.TRACE_PRAISE.random()))
     }
 
     /** Spoken when the child has used all attempts — gentle, not discouraging. */
     private fun speakGiveUp() {
         val state = _uiState.value
         if (state.level.script == Script.DEVANAGARI && speakHindi(HindiVoiceScript.GIVE_UP)) return
-        if (state.level.script == Script.DEVANAGARI) { phonics.speak("That's okay! Let's try the next one."); return }
-        phonics.speak("That's OK! Keep practicing. ${Phonics.phraseFor(state.character)}. Moving on!")
+        if (state.level.script == Script.DEVANAGARI) { phonics.say(EnglishVoiceScript.say(EnglishVoiceScript.HINDI_GIVE_UP)); return }
+        phonics.say(EnglishVoiceScript.traceGiveUp(state.character))
     }
 
     /** Encourages another attempt; gives a clearer hint when nothing was recognised. */
     private fun speakTryAgain(sawNothing: Boolean) {
         val state = _uiState.value
         if (state.level.script == Script.DEVANAGARI) {
-            if (!speakHindi(HindiVoiceScript.TRY_AGAIN)) phonics.speak("Try again!")
+            if (!speakHindi(HindiVoiceScript.TRY_AGAIN)) phonics.say(EnglishVoiceScript.say(EnglishVoiceScript.TRY_AGAIN))
             return
         }
-        val noun = if (state.level == Level.NUMBERS) "number" else "letter"
-        val lead = if (sawNothing) "Hmm, I couldn't see it. Try drawing a bit bigger."
-        else "Almost! Let's try again."
-        val word = Phonics.wordFor(state.character)
-        val hint = word?.let { " This is ${state.character}. ${Phonics.phraseFor(state.character)}." }
-            ?: " This is ${state.character}."
-        phonics.speak("$lead$hint")
+        phonics.say(EnglishVoiceScript.traceTryAgain(state.character, sawNothing))
     }
 
     private fun goTo(
@@ -411,7 +402,6 @@ class GameViewModel(
         private const val MAX_WRONG_ATTEMPTS_NORMAL = 3
         private const val MAX_WRONG_ATTEMPTS_EASY = 5
         private const val GIVE_UP_DELAY_MS = 2000L
-        private val PRAISE = listOf("Yay! Great job!", "Awesome!", "Well done!", "Perfect!", "You did it!")
 
         /** BCP-47 tag for the Hindi TTS voice (India), distinct from the recognizer's "hi" model tag. */
         private const val HINDI_TTS_TAG = "hi-IN"

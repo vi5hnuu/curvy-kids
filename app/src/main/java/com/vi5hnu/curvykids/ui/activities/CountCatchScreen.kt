@@ -46,6 +46,7 @@ import com.vi5hnu.curvykids.ui.components.StarCount
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 private const val COLS = 3
 
@@ -93,7 +94,7 @@ fun CountCatchScreen(
     val pool = spec.second
     val svg = spec.third
 
-    fun speakPrompt() = feedback?.speaker?.speak("Tap $target")
+    fun speakPrompt() = feedback?.speaker?.say(EnglishVoiceScript.tap(target))
 
     LaunchedEffect(round) { speakPrompt() }
 
@@ -102,13 +103,13 @@ fun CountCatchScreen(
         val now = tapped + i
         tapped = now
         if (now.size < target) {
-            feedback?.speaker?.speak(now.size.toString())
+            feedback?.speaker?.say(EnglishVoiceScript.say(now.size.toString()))
         } else {
             solved = true
             score += 1
             onReward(4)
             feedback?.correct()
-            feedback?.speaker?.speak("Yes! ${NUMBER_WORDS[target]}")
+            feedback?.speaker?.say(EnglishVoiceScript.yes(target.toString()))
         }
     }
 

@@ -39,6 +39,7 @@ import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.StarGold
 import com.vi5hnu.curvykids.ui.components.KidIcon
 import java.util.Calendar
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Day before [day] in the week, wrapping Sunday→Saturday. */
 private fun dayBefore(day: String): String {
@@ -60,7 +61,7 @@ fun DaysScreen(
         quizItems = DAYS,
         quizPromptLabel = "WHAT COMES AFTER…",
         keyOf = { it },
-        speakFor = { "What comes after ${dayBefore(it)}?" },
+        speakFor = { EnglishVoiceScript.say(EnglishVoiceScript.whatComesAfter(dayBefore(it))) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Day Star!",
@@ -139,7 +140,7 @@ private fun DaysLearnList(
 
                 Surface(
                     onClick = {
-                        speaker?.speak(day)
+                        speaker?.say(EnglishVoiceScript.say(day))
                         if (!seen.contains(i)) {
                             seen = seen + i
                             onReward(1)

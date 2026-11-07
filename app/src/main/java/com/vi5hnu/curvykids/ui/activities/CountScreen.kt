@@ -43,6 +43,7 @@ import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Teal
 import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Counting activity — tap each svg then pick the number. */
 @Composable
@@ -133,7 +134,7 @@ fun CountScreen(
                                         if (!isTapped && answer == null) {
                                             val newList = tapped + i
                                             tapped = newList
-                                            speaker?.speak(newList.size.toString())
+                                            speaker?.say(EnglishVoiceScript.say(newList.size.toString()))
                                         }
                                     },
                                     color = Color.Transparent,
@@ -186,10 +187,10 @@ fun CountScreen(
                                 answer = v to true
                                 score += 1
                                 onReward(4)
-                                speaker?.speak("Yes! $n")
+                                speaker?.say(EnglishVoiceScript.yes(n.toString()))
                             } else {
                                 answer = v to false
-                                speaker?.speak("Count again")
+                                speaker?.say(EnglishVoiceScript.say("Count again"))
                             }
                         },
                         modifier = Modifier

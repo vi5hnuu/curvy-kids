@@ -55,6 +55,7 @@ import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.KidDimens
 import com.vi5hnu.curvykids.ui.theme.KidInk
 import java.time.LocalDate
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Home: the mascot, the six worlds, and the sticker book.
@@ -79,7 +80,7 @@ fun HomeScreen(
     // Greet once per visit to the app, not on every return from an activity.
     var greeted = rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        if (!greeted.value) { greeted.value = true; onSpeak("Hi! Where shall we play?") }
+        if (!greeted.value) { greeted.value = true; onSpeak(EnglishVoiceScript.GREETING) }
     }
 
     val today = LocalDate.now().toEpochDay()

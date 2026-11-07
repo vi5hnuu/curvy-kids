@@ -12,6 +12,8 @@ import androidx.compose.runtime.saveable.listSaver
 import androidx.compose.runtime.saveable.rememberSaveable
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
+import com.vi5hnu.curvykids.data.content.Speech
 
 /** How one answer tile should look right now. */
 enum class ChoiceState { IDLE, CORRECT, WRONG, REVEALED, DIMMED }
@@ -72,7 +74,7 @@ class QuizSession internal constructor(
      * Records a tap on [tappedKey] when [correctKey] is right. [praise] is said for a right answer
      * ("Yes! Five!"); [correctName] is said when the answer has to be shown ("This one is five").
      */
-    fun answer(tappedKey: String, correctKey: String, praise: String, correctName: String) {
+    fun answer(tappedKey: String, correctKey: String, praise: Speech, correctName: String) {
         if (busy || progress.isFinished(rules)) return
         val outcome = progress.outcomeOf(tappedKey == correctKey, rules)
         progress = progress.after(outcome)
@@ -82,15 +84,15 @@ class QuizSession internal constructor(
             QuizOutcome.CORRECT -> {
                 onReward(rewardPerCorrect)
                 feedback?.correct()
-                speaker?.speak(praise)
+                speaker?.say(praise)
             }
             QuizOutcome.TRY_AGAIN -> {
                 feedback?.wrong()
-                speaker?.speak("Try again!")
+                speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.TRY_AGAIN))
             }
             QuizOutcome.REVEAL -> {
                 feedback?.wrong()
-                speaker?.speak("This one is $correctName.")
+                speaker?.say(EnglishVoiceScript.thisOneIs(correctName))
             }
         }
     }

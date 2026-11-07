@@ -40,6 +40,7 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 private const val COLS = 4
 
@@ -80,7 +81,7 @@ fun MemoryMatchScreen(
     var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(round) {
-        feedback?.speaker?.speak("Find the pairs!")
+        feedback?.speaker?.say(EnglishVoiceScript.say("Find the pairs!"))
     }
 
     // Evaluate a pair once two cards are face-up.
@@ -91,7 +92,7 @@ fun MemoryMatchScreen(
                 kotlinx.coroutines.delay(350)
                 matched.add(a); matched.add(b)
                 feedback?.correct()
-                feedback?.speaker?.speak("Match!")
+                feedback?.speaker?.say(EnglishVoiceScript.say("Match!"))
                 onReward(3)
                 first = null; second = null
                 if (matched.size == board.size) showCelebrate = true

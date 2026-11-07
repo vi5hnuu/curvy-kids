@@ -26,6 +26,7 @@ import com.vi5hnu.curvykids.data.content.MONTHS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.components.SvgImage
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Months of the Year — learn and quiz on all 12 months in order. */
 @Composable
@@ -44,7 +45,7 @@ fun MonthsScreen(
         speakFor = { m ->
             val idx = MONTHS.indexOf(m)
             val prev = MONTHS[(idx - 1 + 12) % 12]
-            "What comes after ${prev.name}?"
+            EnglishVoiceScript.say(EnglishVoiceScript.whatComesAfter(prev.name))
         },
         onReward = onReward,
         feedback = feedback,

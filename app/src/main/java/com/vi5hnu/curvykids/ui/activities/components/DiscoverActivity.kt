@@ -23,6 +23,8 @@ import com.vi5hnu.curvykids.ui.app.LocalDifficulty
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
+import com.vi5hnu.curvykids.data.content.Speech
 
 /**
  * Shared scaffold for the four "Discover" activities (Shapes, Animals, Body, Days).
@@ -37,7 +39,8 @@ import com.vi5hnu.curvykids.ui.components.KidIcon
  * @param quizItems       Pool of items to quiz on; one is the target, the rest supply distractors.
  * @param quizPromptLabel Small uppercase label above the target ("FIND THE SHAPE").
  * @param keyOf           Stable unique key per item (used for matching + distractor de-duping).
- * @param speakFor        Spoken prompt for the current target ("Find the Circle").
+ * @param speakFor        Spoken prompt for the current target ("Find the Circle"), from [EnglishVoiceScript].
+ * @param nameOf          The item's spoken name, for praise ("Yes! Circle") and reveals; defaults to [keyOf].
  * @param learnContent    The explore-mode UI (preserves the original tap-to-learn grid).
  * @param quizPrompt      Renders the large target inside the prompt card.
  * @param quizOption      Renders one option tile's inner visual (shape/svg/day).
@@ -49,7 +52,7 @@ fun <T> DiscoverActivity(
     quizItems: List<T>,
     quizPromptLabel: String,
     keyOf: (T) -> String,
-    speakFor: (T) -> String,
+    speakFor: (T) -> Speech,
     onReward: (Int) -> Unit,
     feedback: PlayFeedback?,
     learnContent: @Composable () -> Unit,
@@ -59,6 +62,7 @@ fun <T> DiscoverActivity(
     optionCount: Int = LocalDifficulty.current.optionCount(),
     celebrateEvery: Int = 5,
     celebrateTitle: String = "Great job!",
+    nameOf: (T) -> String = keyOf,
 ) {
     var mode by rememberSaveable { mutableIntStateOf(0) } // 0 = Learn, 1 = Play
     val tabs: @Composable () -> Unit = {
@@ -109,9 +113,8 @@ fun <T> DiscoverActivity(
         choices = options,
         correct = target,
         keyOf = keyOf,
-        nameOf = keyOf,
-        praiseFor = { "Yes! ${keyOf(it)}!" },
-        speakPrompt = { flush -> feedback?.speaker?.speak(speakFor(target), flush = flush) },
+        nameOf = nameOf,
+        speakPrompt = { flush -> feedback?.speaker?.say(speakFor(target), flush = flush) },
         celebrateTitle = celebrateTitle,
         promptLabel = quizPromptLabel,
         prompt = { quizPrompt(target) },

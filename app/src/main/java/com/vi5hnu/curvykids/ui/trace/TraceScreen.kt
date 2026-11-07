@@ -66,6 +66,7 @@ import com.vi5hnu.curvykids.ui.trace.components.LetterReferenceCard
 import com.vi5hnu.curvykids.ui.kit.Responsive
 import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Redesigned tracing screen matching trace.jsx design.
@@ -92,7 +93,7 @@ fun TraceScreen(
     var inkColor by remember { mutableStateOf(CRAYONS.first()) }
     // The letter whose line was last said on the first stroke, so it's said once per letter.
     var spokenFor by remember { mutableStateOf<String?>(null) }
-    val say: (String) -> Unit = { word -> viewModel.feedback.speaker.speak(word, langTag = "en-US") }
+    val say: (String) -> Unit = { word -> viewModel.feedback.speaker.say(EnglishVoiceScript.say(word)) }
     var showCharStrip by remember { mutableStateOf(false) }
 
     // Find the topic for this level
