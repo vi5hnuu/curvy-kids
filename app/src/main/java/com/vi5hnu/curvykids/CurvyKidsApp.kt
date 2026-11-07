@@ -12,6 +12,7 @@ import com.vi5hnu.curvykids.audio.packs.VoicePackRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import com.vi5hnu.curvykids.audio.packs.VoicePack
 
 /**
  * Application entry point. Provides the singleton Coil [ImageLoader] used by every [coil.compose.AsyncImage]
@@ -21,7 +22,7 @@ import kotlinx.coroutines.SupervisorJob
  * cache, so a badge that appears on many screens is decoded once.
  *
  * Also owns the app-wide voice pack state ([voicePacks]), shared by the speaker that plays the
- * clips and the screens that ask a grown-up to download them.
+ * clips and the screens that wait for them to download.
  */
 class CurvyKidsApp : Application(), ImageLoaderFactory {
 
@@ -32,6 +33,16 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
 
     /** Where recordings are looked for: built into the app first, then downloaded packs. */
     val clipSources: List<ClipSource> by lazy { listOf(BundledClipSource(assets), PackClipSource(voicePacks)) }
+
+    /**
+     * Makes sure the voice packs are coming. Play starts them after install by itself, but that
+     * download can still be running, have failed, or never have happened (a sideloaded app), so
+     * the app asks again each start. Packs already here or on their way are left alone.
+     */
+    override fun onCreate() {
+        super.onCreate()
+        voicePacks.download(VoicePack.entries)
+    }
 
     override fun newImageLoader(): ImageLoader =
         ImageLoader.Builder(this)
