@@ -6,6 +6,7 @@ import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
 import android.util.Log
+import com.vi5hnu.curvykids.data.content.Speech
 import java.util.Locale
 
 /**
@@ -196,6 +197,27 @@ class PhonicsSpeaker(context: Context, clipSources: List<ClipSource>) {
         val mode = if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
         ttsTail = utteranceId
         tts.speak(spoken, mode, null, utteranceId)
+    }
+
+    /**
+     * Says an English [speech] in our own voice: its recorded parts back to back. If any part is
+     * not recorded yet, the device voice says the whole sentence instead, so a child never hears
+     * a sentence that switches voice halfway. [utteranceId] is reported when the last part ends.
+     */
+    fun say(speech: Speech, flush: Boolean = true, utteranceId: String = speech.text) {
+        if (speech.parts.isEmpty() || muted) return
+        if (speech.fullyRecorded(clips::has)) {
+            speech.parts.forEachIndexed { i, part ->
+                speak(
+                    part.text,
+                    flush = flush && i == 0,
+                    utteranceId = if (i == speech.parts.lastIndex) utteranceId else "$utteranceId#$i",
+                    clip = part.clip,
+                )
+            }
+        } else {
+            speak(speech.text, flush = flush, utteranceId = utteranceId)
+        }
     }
 
     /**

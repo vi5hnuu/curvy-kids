@@ -5,8 +5,8 @@ import com.vi5hnu.curvykids.audio.VoiceClip
 /**
  * Builds the list of lines still to record, for the voice artist (or the local TTS script).
  *
- * Generated from [HindiVoiceScript] and [PHONICS_DATA], the same sources the app plays from, so a
- * new story or letter shows up here automatically. A unit test writes it to the local
+ * Generated from [HindiVoiceScript], [EnglishVoiceScript] and [PHONICS_DATA], the same sources the
+ * app plays from, so a new story, letter or English line shows up here automatically. A unit test writes it to the local
  * `tools/voice/recording_list.txt`, leaving out every line that already has a recording.
  *
  * @param isRecorded whether a clip's file already exists; those lines are left out. Numbering
@@ -43,6 +43,20 @@ object RecordingSheet {
         PHONICS_DATA.filterNot { isRecorded(it.clip) }.forEach { p ->
             val where = if (p.position == SoundPosition.END) "at the end of" else "at the start of"
             appendLine("${n++}. The sound of ${p.letter}, as $where \"${p.example}\"  ->  ${p.clip.relativePath}.m4a")
+        }
+
+        appendLine()
+        appendLine("== ENGLISH ==")
+        appendLine("Read each line exactly as written, in a cheerful, warm voice. Short lines (\"Find the\",")
+        appendLine("\"plus\", a single name) are joined to others in the app, so say them evenly, with no")
+        appendLine("rise or fall at the end, and keep the same pace and loudness throughout.")
+        appendLine()
+        EnglishVoiceScript.sections.forEach { (section, all) ->
+            val lines = all.filterNot { isRecorded(it.clip) }
+            if (lines.isEmpty()) return@forEach
+            appendLine("-- $section --")
+            lines.forEach { appendLine("${n++}. ${it.text}  ->  ${it.clip.relativePath}.m4a") }
+            appendLine()
         }
     }
 }
