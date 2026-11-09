@@ -48,7 +48,11 @@ object HindiVoiceScript {
         val vowel = HINDI_VOWELS.indexOf(l)
         val (group, index) = if (vowel >= 0) VOWELS to vowel else CONSONANTS to HINDI_CONSONANTS.indexOf(l)
         require(index >= 0) { "${l.char} is not a Hindi letter in the course" }
-        val text = if (l.example.isEmpty()) l.char else "${l.char}, ${l.char} से ${l.example}"
+        val text = when {
+            l.example.isEmpty() -> l.char
+            l.inside -> "${l.char}, ${l.char} जैसे ${l.example} में"
+            else -> "${l.char}, ${l.char} से ${l.example}"
+        }
         return VoiceLine(VoiceClip.hindi(group, numbered(index, l.romanized)), text, "Letter and trace prompt")
     }
 

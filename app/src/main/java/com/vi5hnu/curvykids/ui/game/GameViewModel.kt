@@ -296,7 +296,7 @@ class GameViewModel(
     }
 
     /**
-     * Speaks a Hindi letter naturally ("अ, अ से अनानास"): the recording if bundled, else the Hindi
+     * Speaks a Hindi letter naturally ("अ, अ से अनार"): the recording if bundled, else the Hindi
      * voice, else the romanized name in English so the child always hears something.
      */
     private fun speakHindiLetter(char: String, queue: Boolean = false) {

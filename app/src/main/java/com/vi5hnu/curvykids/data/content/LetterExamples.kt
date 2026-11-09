@@ -28,9 +28,12 @@ fun letterExample(letter: String): LetterExample? {
         return LetterExample(letter, p.example, p.svg, at..at, p.position)
     }
     val h = HINDI_BY_CHAR[letter]?.takeIf { it.example.isNotEmpty() } ?: return null
-    val at = h.example.indexOf(h.char)
+    // A vowel written as a sign inside words (अः in छः) is found by its sign (ः).
+    val (at, length) = h.example.indexOf(h.char).takeIf { it >= 0 }?.let { it to h.char.length }
+        ?: h.char.drop(1).takeIf { it.isNotEmpty() }?.let { sign -> h.example.indexOf(sign) to sign.length }
+        ?: return null
     if (at < 0) return null
-    return LetterExample(letter, h.example, h.svg, syllableSpan(h.example, at, h.char.length))
+    return LetterExample(letter, h.example, h.svg, syllableSpan(h.example, at, length))
 }
 
 private const val VIRAMA = '्'

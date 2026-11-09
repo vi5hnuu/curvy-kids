@@ -8,6 +8,9 @@ package com.vi5hnu.curvykids.data.content
  * as the word alone. Words without art are drawn in batches by tools/art/draw and added here.
  */
 val HINDI_WORD_PICTURES: Map<String, AssetPath> = mapOf(
+    // Drawn for the letter recordings (ञ जैसे चञ्चल में, क्ष से क्षमा) and used by barakhadi too.
+    "चञ्चल" to KidAssets.hindiWord("playful"),
+    "क्षमा" to KidAssets.hindiWord("sorry"),
     // Animals, birds and small creatures
     "कबूतर" to KidAssets.hindiConsonant("ka"),
     "कुत्ता" to KidAssets.animal("dog"),
