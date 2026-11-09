@@ -34,6 +34,9 @@ import com.vi5hnu.curvykids.audio.PhonicsSpeaker
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.data.content.HindiVoiceScript
 import com.vi5hnu.curvykids.data.content.STORIES
+import com.vi5hnu.curvykids.billing.ContentLocks
+import com.vi5hnu.curvykids.billing.Lockable
+import com.vi5hnu.curvykids.ui.pro.LockBadge
 import com.vi5hnu.curvykids.data.content.Story
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
@@ -58,12 +61,14 @@ fun StoriesScreen(
     onBack: () -> Unit,
     onReward: (Int) -> Unit,
     feedback: PlayFeedback? = null,
+    /** Stories past the free ones are part of Pro; a tap on a locked one goes to [ContentLocks.onLocked]. */
+    locks: ContentLocks = ContentLocks.NONE,
 ) {
     var selected by remember { mutableStateOf<Story?>(null) }
 
     val story = selected
     if (story == null) {
-        StoryList(topic = topic, onBack = onBack, onPick = { selected = it })
+        StoryList(topic = topic, locks = locks, onBack = onBack, onPick = { selected = it })
     } else {
         StoryReader(
             story = story,
@@ -76,7 +81,7 @@ fun StoriesScreen(
 
 /** The list of available stories as tappable cards. */
 @Composable
-private fun StoryList(topic: Topic, onBack: () -> Unit, onPick: (Story) -> Unit) {
+private fun StoryList(topic: Topic, locks: ContentLocks, onBack: () -> Unit, onPick: (Story) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -94,12 +99,14 @@ private fun StoryList(topic: Topic, onBack: () -> Unit, onPick: (Story) -> Unit)
         )
         Spacer(Modifier.height(16.dp))
 
-        STORIES.forEach { story ->
+        STORIES.forEachIndexed { index, story ->
+            val item = Lockable.Story(index)
+            val locked = locks.isLocked(item)
             CardSurface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp),
-                onClick = { onPick(story) },
+                onClick = { locks.open(item) { onPick(story) } },
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -130,7 +137,7 @@ private fun StoryList(topic: Topic, onBack: () -> Unit, onPick: (Story) -> Unit)
                             color = InkSoft,
                         )
                     }
-                    Text("▶", fontSize = 18.sp, color = story.color)
+                    if (locked) LockBadge() else Text("▶", fontSize = 18.sp, color = story.color)
                 }
             }
         }

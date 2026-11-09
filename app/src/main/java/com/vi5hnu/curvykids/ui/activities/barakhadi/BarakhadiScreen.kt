@@ -65,6 +65,8 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
 import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
+import com.vi5hnu.curvykids.billing.ContentLocks
+import com.vi5hnu.curvykids.billing.Lockable
 
 /** Higher pitch so the recite voice sounds like an eager young student reading aloud. */
 private const val RECITE_PITCH = 1.35f
@@ -98,6 +100,8 @@ fun BarakhadiScreen(
     feedback: PlayFeedback? = null,
     /** Reads a child's writing and says whether it is the syllable; null when nothing can. */
     readsAs: (suspend (List<Stroke>, String) -> Boolean?)? = null,
+    /** Letters past the free ones are part of Pro; a tap on a locked one goes to [ContentLocks.onLocked]. */
+    locks: ContentLocks = ContentLocks.NONE,
 ) {
     var selected by rememberSaveable { mutableIntStateOf(0) }
     // The form being explained, or -1. On a phone, -1 also means the sheet is closed.
@@ -233,12 +237,13 @@ fun BarakhadiScreen(
                 tint = topic.tint,
                 vertical = vertical,
                 modifier = modifier,
-                onPick = { i ->
+                isLocked = { locks.isLocked(Lockable.BarakhadiLetter(it)) },
+                onPick = { i -> locks.open(Lockable.BarakhadiLetter(i)) {
                     stopRecite() // switching letters cancels any running recitation
                     selected = i
                     active = -1
                     HINDI_CONSONANTS[i].let { speakHi(HindiVoiceScript.letter(it), it.romanized) }
-                },
+                } },
             )
         }
 

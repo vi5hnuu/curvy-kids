@@ -13,6 +13,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import com.vi5hnu.curvykids.audio.packs.VoicePack
+import com.vi5hnu.curvykids.billing.Access
 import com.vi5hnu.curvykids.billing.FakeProRepository
 import com.vi5hnu.curvykids.billing.PlayProRepository
 import com.vi5hnu.curvykids.billing.ProRepository
@@ -50,6 +51,9 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
             verifier = PurchaseVerifier(BuildConfig.PLAY_LICENSE_KEY, allowWithoutKey = BuildConfig.DEBUG),
         )
     }
+
+    /** What is locked right now (Pro, and the free/Pro split); what screens ask. */
+    val access: Access by lazy { Access(pro, appScope) }
 
     /** Where recordings are looked for: built into the app first, then downloaded packs. */
     val clipSources: List<ClipSource> by lazy { listOf(BundledClipSource(assets), PackClipSource(voicePacks)) }

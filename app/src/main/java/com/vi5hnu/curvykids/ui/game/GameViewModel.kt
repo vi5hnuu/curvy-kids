@@ -370,22 +370,33 @@ class GameViewModel(
     }
 
     /**
+     * Whether a level may be opened (it may be part of Pro). Set by the navigation graph, which
+     * knows what is unlocked; everything is open until then.
+     */
+    var isLevelOpen: (Level) -> Boolean = { true }
+
+    /**
      * Advances to the next level, cycling within the same script so the English and Hindi tracks
-     * stay separate: A→a→1→A for Latin, स्वर→व्यंजन→स्वर for Devanagari.
+     * stay separate: A→a→1→A for Latin, स्वर→व्यंजन→स्वर for Devanagari. Locked levels are
+     * skipped, which can mean starting the current level over.
      */
     private fun nextLevel() {
-        val next = when (_uiState.value.level) {
-            Level.UPPERCASE -> Level.LOWERCASE
-            Level.LOWERCASE -> Level.NUMBERS
-            Level.NUMBERS -> Level.UPPERCASE
-            Level.HINDI_VOWELS -> Level.HINDI_CONSONANTS
-            Level.HINDI_CONSONANTS -> Level.HINDI_VOWELS
-        }
+        val current = _uiState.value.level
+        val next = generateSequence(following(current), ::following).first { it == current || isLevelOpen(it) }
         viewModelScope.launch { recognizer.ensure(next.languageTag) }
         viewModelScope.launch {
             val mastered = progress.masteredSet(next)
             goTo(next, progress.loadIndex(next), mastered)
         }
+    }
+
+    /** The level after [level] in its own script's cycle. */
+    private fun following(level: Level): Level = when (level) {
+        Level.UPPERCASE -> Level.LOWERCASE
+        Level.LOWERCASE -> Level.NUMBERS
+        Level.NUMBERS -> Level.UPPERCASE
+        Level.HINDI_VOWELS -> Level.HINDI_CONSONANTS
+        Level.HINDI_CONSONANTS -> Level.HINDI_VOWELS
     }
 
     override fun onCleared() {

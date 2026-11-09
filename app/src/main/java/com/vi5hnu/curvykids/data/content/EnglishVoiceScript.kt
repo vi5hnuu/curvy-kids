@@ -53,6 +53,9 @@ object EnglishVoiceScript {
     const val GET_VOICES = "Let's get the voices! Ask a grown-up to help."
     const val GETTING_VOICES = "Getting your voices ready!"
 
+    /** A tap on something that is part of Pro (the locked sheet). */
+    const val FOR_PRO = "This one is for Pro! Ask a grown-up."
+
     /** Tracing (GameViewModel). */
     val TRACE_PRAISE = listOf("Yay! Great job!", "Awesome!", "Well done!", "Perfect!", "You did it!")
     const val DRAW_FIRST = "Draw it first, then tap check."
@@ -158,7 +161,7 @@ object EnglishVoiceScript {
         val seen = mutableSetOf<String>()
         fun List<String>.fresh() = map(::line).filter { seen.add(it.clip.relativePath) }
         buildList {
-            add("App and worlds" to (listOf(GREETING, MY_STICKERS, GET_VOICES, GETTING_VOICES) +
+            add("App and worlds" to (listOf(GREETING, MY_STICKERS, GET_VOICES, GETTING_VOICES, FOR_PRO) +
                 World.entries.map { it.title } + TOPICS.map { it.title }).fresh())
             add("Tracing" to (TRACE_PRAISE + DRAW_FIRST + HINDI_GIVE_UP + KEEP_PRACTICING + MOVING_ON + COULD_NOT_SEE +
                 ALMOST + letters.map { "Draw the letter $it." } + digits.map { "Draw the number $it." } +

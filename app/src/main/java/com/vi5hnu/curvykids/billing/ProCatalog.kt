@@ -14,7 +14,7 @@ object ProCatalog {
     /** The one-time product in the Play Console (Monetization > Products > One-time products). */
     const val PRODUCT_ID = "curvykids_pro"
 
-    /** Activities open to everyone, by Topic.id. */
+    /** Activities open to everyone, by Topic.id. Barakhadi and Stories open, but only in part. */
     private val FREE_TOPIC_IDS = setOf(
         // Letters
         "upper", "lower",
@@ -36,9 +36,10 @@ object ProCatalog {
     /** Stories open without Pro, from the top of the list. */
     const val FREE_STORIES = 1
 
-    fun topicLocked(topicId: String, owned: Boolean): Boolean = !owned && topicId !in FREE_TOPIC_IDS
-
-    fun consonantLocked(index: Int, owned: Boolean): Boolean = !owned && index >= FREE_BARAKHADI_CONSONANTS
-
-    fun storyLocked(index: Int, owned: Boolean): Boolean = !owned && index >= FREE_STORIES
+    /** Whether [item] is open to everyone, Pro or not. */
+    fun isFree(item: Lockable): Boolean = when (item) {
+        is Lockable.Activity -> item.topicId in FREE_TOPIC_IDS
+        is Lockable.BarakhadiLetter -> item.index < FREE_BARAKHADI_CONSONANTS
+        is Lockable.Story -> item.index < FREE_STORIES
+    }
 }

@@ -44,10 +44,15 @@ import com.vi5hnu.curvykids.ui.kit.TopicArtView
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.KidDimens
 import com.vi5hnu.curvykids.ui.theme.KidInk
+import com.vi5hnu.curvykids.billing.ContentLocks
+import com.vi5hnu.curvykids.billing.Lockable
+import com.vi5hnu.curvykids.ui.pro.LockBadge
+import androidx.compose.ui.draw.alpha
 
 /**
  * One world's activities as big picture tiles, two per row. The world's name is said on arrival
  * and each tile says its own name as it opens (see the caller), so no reading is needed.
+ * Activities that are part of Pro carry a padlock; the caller decides what a tap on one does.
  */
 @Composable
 fun WorldScreen(
@@ -55,6 +60,7 @@ fun WorldScreen(
     onBack: () -> Unit,
     onOpenTopic: (Topic) -> Unit,
     onSpeak: (String) -> Unit,
+    locks: ContentLocks = ContentLocks.NONE,
 ) {
     LaunchedEffect(world) { onSpeak(world.title) }
 
@@ -81,7 +87,9 @@ fun WorldScreen(
                 modifier = Modifier.fillMaxSize(),
             ) {
                 items(world.topics, key = { it.id }) { topic ->
-                    ActivityTile(topic, world.color) { onOpenTopic(topic) }
+                    ActivityTile(topic, world.color, locked = locks.isLocked(Lockable.Activity(topic.id))) {
+                        onOpenTopic(topic)
+                    }
                 }
             }
         }
@@ -91,7 +99,7 @@ fun WorldScreen(
 
 /** A white card with the activity's picture and name, edged in the world's colour. */
 @Composable
-private fun ActivityTile(topic: Topic, color: Color, onClick: () -> Unit) {
+private fun ActivityTile(topic: Topic, color: Color, locked: Boolean, onClick: () -> Unit) {
     CandyCard(color = Color.White, onClick = onClick, label = topic.title,
         modifier = Modifier.fillMaxWidth().aspectRatio(0.9f)) {
         Column(
@@ -103,7 +111,8 @@ private fun ActivityTile(topic: Topic, color: Color, onClick: () -> Unit) {
                     .background(color.copy(alpha = 0.16f)).padding(12.dp),
                 contentAlignment = Alignment.Center,
             ) {
-                TopicArtView(topic.art(), color, Modifier.fillMaxSize())
+                TopicArtView(topic.art(), color, Modifier.fillMaxSize().alpha(if (locked) 0.55f else 1f))
+                if (locked) LockBadge(Modifier.align(Alignment.TopEnd))
             }
             Spacer(Modifier.height(8.dp))
             Text(topic.title, fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,

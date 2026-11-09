@@ -21,6 +21,10 @@ import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.data.content.HindiLetter
 import com.vi5hnu.curvykids.ui.kit.CandyCard
 import com.vi5hnu.curvykids.ui.theme.KidDimens
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
+import com.vi5hnu.curvykids.ui.pro.LockBadge
 
 /**
  * The strip of 36 consonants to choose from. The picked letter is a solid candy block, the rest
@@ -28,6 +32,7 @@ import com.vi5hnu.curvykids.ui.theme.KidDimens
  * view when it changes (including after rotation).
  *
  * @param vertical a column down the side instead of a row, for landscape where height is short.
+ * @param isLocked whether the letter at an index is part of Pro (shown faded, with a padlock).
  */
 @Composable
 fun ConsonantPicker(
@@ -38,6 +43,7 @@ fun ConsonantPicker(
     onPick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     vertical: Boolean = false,
+    isLocked: (Int) -> Boolean = { false },
 ) {
     val state = rememberLazyListState(initialFirstVisibleItemIndex = (selected - 2).coerceAtLeast(0))
     LaunchedEffect(selected) {
@@ -49,6 +55,8 @@ fun ConsonantPicker(
     val items: LazyListScope.() -> Unit = {
         itemsIndexed(consonants, key = { _, c -> c.char }) { i, c ->
             val picked = i == selected
+            val locked = isLocked(i)
+            Box {
             CandyCard(
                 color = if (picked) color else tint,
                 onClick = { onPick(i) },
@@ -61,7 +69,10 @@ fun ConsonantPicker(
                     fontWeight = FontWeight.ExtraBold,
                     fontSize = 30.sp,
                     color = if (picked) Color.White else color,
+                    modifier = Modifier.alpha(if (locked) 0.45f else 1f),
                 )
+            }
+            if (locked) LockBadge(Modifier.align(Alignment.TopEnd), size = 22.dp)
             }
         }
     }

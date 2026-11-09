@@ -82,6 +82,10 @@ import com.vi5hnu.curvykids.ui.trace.TraceScreen
 import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 import androidx.activity.compose.LocalActivity
 import com.vi5hnu.curvykids.billing.ProRepository
+import com.vi5hnu.curvykids.billing.Access
+import com.vi5hnu.curvykids.billing.ContentLocks
+import com.vi5hnu.curvykids.billing.Lockable
+import com.vi5hnu.curvykids.ui.pro.LockedSheet
 import com.vi5hnu.curvykids.ui.pro.ProScreen
 
 /**
@@ -91,6 +95,7 @@ import com.vi5hnu.curvykids.ui.pro.ProScreen
  * - Home → world → topic. Rewards is reached from Home; grown-ups from the lock on Home.
  * - A topic whose voice packs aren't downloaded shows [VoicePackGate] until they are.
  * - Pro's purchase screen is reached only from behind the parent gate (Parent Zone, locked items).
+ * - Anything locked ([Access]) opens [LockedSheet] instead, wherever it was tapped from.
  */
 @Composable
 fun AppNavGraph(
@@ -98,10 +103,12 @@ fun AppNavGraph(
     gameViewModel: GameViewModel,
     voicePacks: VoicePackRepository,
     pro: ProRepository,
+    access: Access,
 ) {
     val navController = rememberNavController()
     val proState by pro.state.collectAsState()
     val activity = LocalActivity.current
+    val accessState by access.state.collectAsState()
     val appState by appViewModel.uiState.collectAsState()
     val appSettings by appViewModel.settings.collectAsState()
 
@@ -123,12 +130,26 @@ fun AppNavGraph(
     var showGate by rememberSaveable { mutableStateOf(false) }
     var showZone by rememberSaveable { mutableStateOf(false) }
 
+    // A tap on something locked: "This one is for Pro!" and the sheet with the ways in.
+    var lockedItem by remember { mutableStateOf<Lockable?>(null) }
+    var showProGate by rememberSaveable { mutableStateOf(false) }
+    val locks = ContentLocks(accessState) { item ->
+        gameViewModel.speaker.say(EnglishVoiceScript.say(EnglishVoiceScript.FOR_PRO))
+        lockedItem = item
+    }
+
+    // Tracing moves on to the next level by itself; it must not walk into a locked one.
+    LaunchedEffect(accessState) {
+        gameViewModel.isLevelOpen = { level -> !accessState.isLocked(Lockable.Activity(level.progressKey)) }
+    }
+
     // Say the name aloud as an activity opens: the child this app is for can't read the label.
-    val openTopic: (Topic) -> Unit = { topic ->
+    // Every way into an activity comes through here (tiles, "play again"), so the lock is too.
+    val openTopic: (Topic) -> Unit = { topic -> locks.open(Lockable.Activity(topic.id)) {
         gameViewModel.speaker.say(EnglishVoiceScript.say(topic.title))
         appViewModel.setLastTopic(topic.id)
         navController.navigate(Screen.Topic.createRoute(topic.id))
-    }
+    } }
 
     CompositionLocalProvider(LocalDifficulty provides appSettings.difficulty) {
         Box(
@@ -175,6 +196,7 @@ fun AppNavGraph(
                         onOpenTopic = openTopic,
                         // Queued, so it follows the name said as the world was tapped.
                         onSpeak = { },
+                        locks = locks,
                     )
                 }
 
@@ -440,6 +462,7 @@ fun AppNavGraph(
                             onReward = appViewModel::reward,
                             feedback = gameViewModel.feedback,
                             readsAs = gameViewModel::readsAs,
+                            locks = locks,
                         )
 
                         TopicKind.STORIES -> StoriesScreen(
@@ -447,9 +470,32 @@ fun AppNavGraph(
                             onBack = { navController.popBackStack() },
                             onReward = appViewModel::reward,
                             feedback = gameViewModel.feedback,
+                            locks = locks,
                         )
                     }
                 }
+            }
+
+            if (lockedItem != null) {
+                LockedSheet(
+                    onWatchAd = null,
+                    onAskGrownUp = {
+                        lockedItem = null
+                        showProGate = true
+                    },
+                    onDismiss = { lockedItem = null },
+                )
+            }
+
+            // The purchase screen sits behind the parent gate (Play Families policy).
+            if (showProGate) {
+                ParentGate(
+                    onPass = {
+                        showProGate = false
+                        navController.navigate(Screen.Pro.route)
+                    },
+                    onDismiss = { showProGate = false },
+                )
             }
 
             if (showGate) {
