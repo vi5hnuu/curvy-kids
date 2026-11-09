@@ -13,7 +13,13 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import com.vi5hnu.curvykids.audio.packs.VoicePack
+import com.vi5hnu.curvykids.ads.AdMobRewardedAds
+import com.vi5hnu.curvykids.ads.AdUnlocks
+import com.vi5hnu.curvykids.ads.RewardedAds
 import com.vi5hnu.curvykids.billing.Access
+import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.launch
 import com.vi5hnu.curvykids.billing.FakeProRepository
 import com.vi5hnu.curvykids.billing.PlayProRepository
 import com.vi5hnu.curvykids.billing.ProRepository
@@ -28,7 +34,8 @@ import com.vi5hnu.curvykids.billing.PurchaseVerifier
  * cache, so a badge that appears on many screens is decoded once.
  *
  * Also owns the app-wide voice pack state ([voicePacks]), shared by the speaker that plays the
- * clips and the screens that wait for them to download, and CurvyKids Pro ([pro]).
+ * clips and the screens that wait for them to download, CurvyKids Pro ([pro]) and the rewarded
+ * videos free users may choose to watch ([ads]).
  */
 class CurvyKidsApp : Application(), ImageLoaderFactory {
 
@@ -41,8 +48,10 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
      * CurvyKids Pro: sold through Play, or through a stand-in store in debug builds (see
      * [FakeProRepository]) since Play billing only answers apps installed from a test track.
      */
+    private val proStore by lazy { ProStore(this) }
+
     val pro: ProRepository by lazy {
-        val store = ProStore(this)
+        val store = proStore
         if (BuildConfig.FAKE_BILLING) FakeProRepository(appScope, store)
         else PlayProRepository(
             context = this,
@@ -52,8 +61,14 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
         )
     }
 
-    /** What is locked right now (Pro, and the free/Pro split); what screens ask. */
-    val access: Access by lazy { Access(pro, appScope) }
+    /** What a watched video opened for today. */
+    val adUnlocks: AdUnlocks by lazy { AdUnlocks(this) }
+
+    /** Rewarded videos (Google's test unit in debug builds). Running only for free users. */
+    val ads: RewardedAds by lazy { AdMobRewardedAds(this, appScope, BuildConfig.REWARDED_AD_UNIT) }
+
+    /** What is locked right now (Pro, the free/Pro split, videos watched today); what screens ask. */
+    val access: Access by lazy { Access(pro, appScope, adUnlocks.openedToday) }
 
     /** Where recordings are looked for: built into the app first, then downloaded packs. */
     val clipSources: List<ClipSource> by lazy { listOf(BundledClipSource(assets), PackClipSource(voicePacks)) }
@@ -68,6 +83,20 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
         voicePacks.download(VoicePack.entries)
         // Connects to Play: loads the offers and restores (or revokes) Pro before a screen asks.
         pro.refresh()
+        keepAdsForFreeUsers()
+    }
+
+    /**
+     * Loads videos only while Pro isn't owned, and stops for good once it is. Both the live state
+     * and the saved one must say "not owned", so a Pro user starting offline (Play not answering
+     * yet) never has the ads SDK started.
+     */
+    private fun keepAdsForFreeUsers() {
+        appScope.launch {
+            combine(pro.state, proStore.owned) { state, saved -> state.owned || saved }
+                .distinctUntilChanged()
+                .collect { owned -> if (owned) ads.stop() else ads.start() }
+        }
     }
 
     override fun newImageLoader(): ImageLoader =

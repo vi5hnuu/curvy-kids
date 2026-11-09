@@ -35,6 +35,8 @@ class MainActivity : ComponentActivity() {
                     voicePacks = (application as CurvyKidsApp).voicePacks,
                     pro = (application as CurvyKidsApp).pro,
                     access = (application as CurvyKidsApp).access,
+                    ads = (application as CurvyKidsApp).ads,
+                    adUnlocks = (application as CurvyKidsApp).adUnlocks,
                 )
             }
         }

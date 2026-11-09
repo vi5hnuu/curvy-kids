@@ -20,9 +20,20 @@ val bundleVoiceInDebug = (findProperty("voice.bundled") as String?)?.toBoolean()
  * Play licence key (Play Console > Monetization setup > Licensing), used to check that a Pro
  * purchase really came from Play. Kept in local.properties as play.licenseKey, out of git.
  */
-val playLicenseKey: String = rootProject.file("local.properties").takeIf { it.isFile }
-    ?.let { f -> Properties().apply { f.inputStream().use { load(it) } }.getProperty("play.licenseKey") }
-    .orEmpty()
+val localProperties = Properties().apply {
+    rootProject.file("local.properties").takeIf { it.isFile }?.inputStream()?.use { load(it) }
+}
+val playLicenseKey: String = localProperties.getProperty("play.licenseKey").orEmpty()
+
+/**
+ * AdMob app id (AdMob > Apps > App settings; the one with "~"), kept in local.properties as
+ * admob.appId. Debug builds use Google's sample app id and test ad unit, so no real ad is ever
+ * shown (or clicked) while developing.
+ */
+val admobAppId: String = localProperties.getProperty("admob.appId").orEmpty()
+val admobSampleAppId = "ca-app-pub-3940256099942544~3347511713"
+val rewardedUnitId = "ca-app-pub-4715945578201106/8253929843"
+val rewardedTestUnitId = "ca-app-pub-3940256099942544/5224354917"
 
 /**
  * Debug builds sell Pro through a stand-in store (see billing/FakeProRepository) because real Play
@@ -48,6 +59,8 @@ android {
     buildTypes {
         debug {
             buildConfigField("boolean", "FAKE_BILLING", "${!realBillingInDebug}")
+            buildConfigField("String", "REWARDED_AD_UNIT", "\"$rewardedTestUnitId\"")
+            manifestPlaceholders["admobAppId"] = admobSampleAppId
         }
         release {
             // R8 shrinking + resource shrinking. The app ships a 4.7 MB hand-drawn SVG asset
@@ -55,6 +68,8 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             buildConfigField("boolean", "FAKE_BILLING", "false")
+            buildConfigField("String", "REWARDED_AD_UNIT", "\"$rewardedUnitId\"")
+            manifestPlaceholders["admobAppId"] = admobAppId
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -86,6 +101,18 @@ android {
             // boundaries — required for Android 15+ 16 KB page-size support (mandatory at API 36).
             useLegacyPackaging = false
         }
+    }
+}
+
+/**
+ * A release without these would ship broken: no ads (the SDK refuses a missing app id) and no Pro
+ * (purchases can't be verified, so none is granted). Fail the release build instead.
+ */
+tasks.matching { it.name.matches(Regex("(assemble|bundle)Release")) }.configureEach {
+    doFirst {
+        val missing = listOf("admob.appId" to admobAppId, "play.licenseKey" to playLicenseKey)
+            .filter { it.second.isBlank() }.map { it.first }
+        if (missing.isNotEmpty()) throw GradleException("Set ${missing.joinToString()} in local.properties for a release build")
     }
 }
 
@@ -131,4 +158,7 @@ dependencies {
 
     // Play Billing: the one-time CurvyKids Pro unlock and its offers
     implementation(libs.play.billing)
+
+    // AdMob: rewarded videos that open a Pro item for the day (free users only, child-directed)
+    implementation(libs.play.services.ads)
 }

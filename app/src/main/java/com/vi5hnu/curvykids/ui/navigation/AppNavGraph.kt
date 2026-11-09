@@ -86,6 +86,11 @@ import com.vi5hnu.curvykids.billing.Access
 import com.vi5hnu.curvykids.billing.ContentLocks
 import com.vi5hnu.curvykids.billing.Lockable
 import com.vi5hnu.curvykids.ui.pro.LockedSheet
+import com.vi5hnu.curvykids.ads.AdUnlocks
+import com.vi5hnu.curvykids.ads.RewardedAds
+import androidx.compose.runtime.rememberCoroutineScope
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import com.vi5hnu.curvykids.ui.pro.ProScreen
 
 /**
@@ -95,7 +100,8 @@ import com.vi5hnu.curvykids.ui.pro.ProScreen
  * - Home → world → topic. Rewards is reached from Home; grown-ups from the lock on Home.
  * - A topic whose voice packs aren't downloaded shows [VoicePackGate] until they are.
  * - Pro's purchase screen is reached only from behind the parent gate (Parent Zone, locked items).
- * - Anything locked ([Access]) opens [LockedSheet] instead, wherever it was tapped from.
+ * - Anything locked ([Access]) opens [LockedSheet] instead, wherever it was tapped from. A free
+ *   user may watch a video there ([RewardedAds]) to open that one item for today ([AdUnlocks]).
  */
 @Composable
 fun AppNavGraph(
@@ -104,11 +110,15 @@ fun AppNavGraph(
     voicePacks: VoicePackRepository,
     pro: ProRepository,
     access: Access,
+    ads: RewardedAds,
+    adUnlocks: AdUnlocks,
 ) {
     val navController = rememberNavController()
     val proState by pro.state.collectAsState()
     val activity = LocalActivity.current
     val accessState by access.state.collectAsState()
+    val adReady by ads.ready.collectAsState()
+    val scope = rememberCoroutineScope()
     val appState by appViewModel.uiState.collectAsState()
     val appSettings by appViewModel.settings.collectAsState()
 
@@ -134,7 +144,8 @@ fun AppNavGraph(
     var lockedItem by remember { mutableStateOf<Lockable?>(null) }
     var showProGate by rememberSaveable { mutableStateOf(false) }
     val locks = ContentLocks(accessState) { item ->
-        gameViewModel.speaker.say(EnglishVoiceScript.say(EnglishVoiceScript.FOR_PRO))
+        val line = if (adReady) EnglishVoiceScript.FOR_PRO_OR_VIDEO else EnglishVoiceScript.FOR_PRO
+        gameViewModel.speaker.say(EnglishVoiceScript.say(line))
         lockedItem = item
     }
 
@@ -145,11 +156,17 @@ fun AppNavGraph(
 
     // Say the name aloud as an activity opens: the child this app is for can't read the label.
     // Every way into an activity comes through here (tiles, "play again"), so the lock is too.
-    val openTopic: (Topic) -> Unit = { topic -> locks.open(Lockable.Activity(topic.id)) {
-        gameViewModel.speaker.say(EnglishVoiceScript.say(topic.title))
-        appViewModel.setLastTopic(topic.id)
-        navController.navigate(Screen.Topic.createRoute(topic.id))
-    } }
+    // Reads the live state, as it also runs after a video, before this screen has recomposed.
+    val openTopic: (Topic) -> Unit = { topic ->
+        val item = Lockable.Activity(topic.id)
+        if (access.state.value.isLocked(item)) {
+            locks.onLocked(item)
+        } else {
+            gameViewModel.speaker.say(EnglishVoiceScript.say(topic.title))
+            appViewModel.setLastTopic(topic.id)
+            navController.navigate(Screen.Topic.createRoute(topic.id))
+        }
+    }
 
     CompositionLocalProvider(LocalDifficulty provides appSettings.difficulty) {
         Box(
@@ -476,9 +493,26 @@ fun AppNavGraph(
                 }
             }
 
-            if (lockedItem != null) {
+            lockedItem?.let { item ->
                 LockedSheet(
-                    onWatchAd = null,
+                    // Only offered when a video is already loaded: the child never waits on one.
+                    onWatchAd = activity?.takeIf { adReady }?.let { host ->
+                        {
+                            lockedItem = null
+                            gameViewModel.speaker.stop()
+                            ads.show(host) {
+                                scope.launch {
+                                    adUnlocks.open(item)
+                                    // An activity opens straight away; a letter or story is now
+                                    // open where the child is, marked as open for today.
+                                    if (item is Lockable.Activity) {
+                                        access.state.first { !it.isLocked(item) }
+                                        TOPICS.find { it.id == item.topicId }?.let(openTopic)
+                                    }
+                                }
+                            }
+                        }
+                    },
                     onAskGrownUp = {
                         lockedItem = null
                         showProGate = true

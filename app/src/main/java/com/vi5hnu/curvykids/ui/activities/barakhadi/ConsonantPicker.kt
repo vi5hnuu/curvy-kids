@@ -25,6 +25,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
 import com.vi5hnu.curvykids.ui.pro.LockBadge
+import com.vi5hnu.curvykids.ui.pro.TodayBadge
 
 /**
  * The strip of 36 consonants to choose from. The picked letter is a solid candy block, the rest
@@ -33,6 +34,7 @@ import com.vi5hnu.curvykids.ui.pro.LockBadge
  *
  * @param vertical a column down the side instead of a row, for landscape where height is short.
  * @param isLocked whether the letter at an index is part of Pro (shown faded, with a padlock).
+ * @param isOpenToday whether a Pro letter was opened for today by a video (marked as such).
  */
 @Composable
 fun ConsonantPicker(
@@ -44,6 +46,7 @@ fun ConsonantPicker(
     modifier: Modifier = Modifier,
     vertical: Boolean = false,
     isLocked: (Int) -> Boolean = { false },
+    isOpenToday: (Int) -> Boolean = { false },
 ) {
     val state = rememberLazyListState(initialFirstVisibleItemIndex = (selected - 2).coerceAtLeast(0))
     LaunchedEffect(selected) {
@@ -73,6 +76,7 @@ fun ConsonantPicker(
                 )
             }
             if (locked) LockBadge(Modifier.align(Alignment.TopEnd), size = 22.dp)
+            if (isOpenToday(i)) TodayBadge(Modifier.align(Alignment.TopEnd), size = 22.dp)
             }
         }
     }

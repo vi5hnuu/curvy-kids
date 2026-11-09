@@ -238,6 +238,7 @@ fun BarakhadiScreen(
                 vertical = vertical,
                 modifier = modifier,
                 isLocked = { locks.isLocked(Lockable.BarakhadiLetter(it)) },
+                isOpenToday = { locks.isOpenForToday(Lockable.BarakhadiLetter(it)) },
                 onPick = { i -> locks.open(Lockable.BarakhadiLetter(i)) {
                     stopRecite() // switching letters cancels any running recitation
                     selected = i

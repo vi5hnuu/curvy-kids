@@ -37,6 +37,7 @@ import com.vi5hnu.curvykids.data.content.STORIES
 import com.vi5hnu.curvykids.billing.ContentLocks
 import com.vi5hnu.curvykids.billing.Lockable
 import com.vi5hnu.curvykids.ui.pro.LockBadge
+import com.vi5hnu.curvykids.ui.pro.TodayBadge
 import com.vi5hnu.curvykids.data.content.Story
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
@@ -137,7 +138,11 @@ private fun StoryList(topic: Topic, locks: ContentLocks, onBack: () -> Unit, onP
                             color = InkSoft,
                         )
                     }
-                    if (locked) LockBadge() else Text("▶", fontSize = 18.sp, color = story.color)
+                    when {
+                        locked -> LockBadge()
+                        locks.isOpenForToday(item) -> TodayBadge()
+                        else -> Text("▶", fontSize = 18.sp, color = story.color)
+                    }
                 }
             }
         }

@@ -35,6 +35,7 @@ import com.vi5hnu.curvykids.ui.components.CurvyMood
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.KidGrape
 import com.vi5hnu.curvykids.ui.theme.KidInk
+import com.vi5hnu.curvykids.ui.theme.KidSun
 
 /** The small padlock on a locked tile, letter or story. */
 @Composable
@@ -44,6 +45,17 @@ fun LockBadge(modifier: Modifier = Modifier, size: Dp = 30.dp) {
         contentAlignment = Alignment.Center,
     ) {
         Icon(Icons.Rounded.Lock, contentDescription = "Locked", tint = Color.White, modifier = Modifier.size(size * 0.6f))
+    }
+}
+
+/** On an item a watched video opened for today: a play mark, where the padlock was. */
+@Composable
+fun TodayBadge(modifier: Modifier = Modifier, size: Dp = 30.dp) {
+    Box(
+        modifier.size(size).clip(CircleShape).background(KidSun),
+        contentAlignment = Alignment.Center,
+    ) {
+        Text("▶", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = (size.value * 0.45f).sp)
     }
 }
 
