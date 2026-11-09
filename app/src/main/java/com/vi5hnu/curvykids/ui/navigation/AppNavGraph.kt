@@ -80,6 +80,9 @@ import com.vi5hnu.curvykids.ui.theme.BgBottom
 import com.vi5hnu.curvykids.ui.theme.BgTop
 import com.vi5hnu.curvykids.ui.trace.TraceScreen
 import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
+import androidx.activity.compose.LocalActivity
+import com.vi5hnu.curvykids.billing.ProRepository
+import com.vi5hnu.curvykids.ui.pro.ProScreen
 
 /**
  * Root navigation graph. Hosts the 4 bottom tabs and topic full-screens.
@@ -87,14 +90,18 @@ import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
  * - GameViewModel is activity-scoped too; selectLevel() is called on trace topic open.
  * - Home → world → topic. Rewards is reached from Home; grown-ups from the lock on Home.
  * - A topic whose voice packs aren't downloaded shows [VoicePackGate] until they are.
+ * - Pro's purchase screen is reached only from behind the parent gate (Parent Zone, locked items).
  */
 @Composable
 fun AppNavGraph(
     appViewModel: AppViewModel,
     gameViewModel: GameViewModel,
     voicePacks: VoicePackRepository,
+    pro: ProRepository,
 ) {
     val navController = rememberNavController()
+    val proState by pro.state.collectAsState()
+    val activity = LocalActivity.current
     val appState by appViewModel.uiState.collectAsState()
     val appSettings by appViewModel.settings.collectAsState()
 
@@ -168,6 +175,19 @@ fun AppNavGraph(
                         onOpenTopic = openTopic,
                         // Queued, so it follows the name said as the world was tapped.
                         onSpeak = { },
+                    )
+                }
+
+                // ── CurvyKids Pro (grown-ups only) ─────────────────────────────
+                composable(Screen.Pro.route) {
+                    // Play may have changed its mind (new offer, a purchase on another device).
+                    LaunchedEffect(Unit) { pro.refresh() }
+                    ProScreen(
+                        state = proState,
+                        onBuy = { offer -> activity?.let { pro.buy(it, offer) } },
+                        onRetry = pro::refresh,
+                        onDismissFailure = pro::clearFailure,
+                        onBack = { navController.popBackStack() },
                     )
                 }
 
@@ -449,6 +469,11 @@ fun AppNavGraph(
                     onSoundEffects = appViewModel::setSoundEffects,
                     onDifficulty = appViewModel::setDifficulty,
                     voicePacks = voicePacks,
+                    proState = proState,
+                    onOpenPro = {
+                        showZone = false
+                        navController.navigate(Screen.Pro.route)
+                    },
                     onResetProgress = {
                         // Stars/badges and tracing progress live in separate stores.
                         appViewModel.resetProgress()

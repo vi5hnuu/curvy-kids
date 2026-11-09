@@ -33,6 +33,7 @@ class MainActivity : ComponentActivity() {
                     appViewModel = appViewModel,
                     gameViewModel = gameViewModel,
                     voicePacks = (application as CurvyKidsApp).voicePacks,
+                    pro = (application as CurvyKidsApp).pro,
                 )
             }
         }

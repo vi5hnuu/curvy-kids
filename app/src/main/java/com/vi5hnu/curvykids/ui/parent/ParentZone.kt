@@ -44,12 +44,16 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import com.vi5hnu.curvykids.ui.theme.InkFaint
+import com.vi5hnu.curvykids.billing.ProState
+import com.vi5hnu.curvykids.billing.StoreState
+import com.vi5hnu.curvykids.ui.theme.KidBerry
+import com.vi5hnu.curvykids.ui.theme.KidGrape
 import com.vi5hnu.curvykids.ui.theme.Teal
 import com.vi5hnu.curvykids.ui.theme.TintSun
 import com.vi5hnu.curvykids.ui.theme.TintTeal
 
 /**
- * ParentZone bottom sheet — shows stars earned, items mastered, and the sound toggle.
+ * ParentZone bottom sheet — shows stars earned, items mastered, the sound toggle, and CurvyKids Pro.
  * The toggle state is persisted via [settings] / [onSoundEffects] so it survives sheet
  * dismissals and app restarts.
  */
@@ -61,6 +65,8 @@ fun ParentZone(
     onSoundEffects: (Boolean) -> Unit,
     onDifficulty: (Difficulty) -> Unit,
     voicePacks: VoicePackRepository,
+    proState: ProState,
+    onOpenPro: () -> Unit,
     onResetProgress: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -111,6 +117,11 @@ fun ParentZone(
             }
 
             Spacer(Modifier.height(18.dp))
+
+            // ── CurvyKids Pro ─────────────────────────────────────────────
+            // Already past the parent gate here, so this opens the purchase screen directly.
+            ProRow(proState, onOpenPro)
+            Spacer(Modifier.height(14.dp))
 
             // ── Toggle ────────────────────────────────────────────────────
             ToggleRow(label = "Sound effects & voice", checked = settings.soundEffects, onChange = onSoundEffects)
@@ -317,5 +328,47 @@ private fun ToggleRow(label: String, checked: Boolean, onChange: (Boolean) -> Un
                 uncheckedTrackColor = InkFaint,
             ),
         )
+    }
+}
+
+/**
+ * "Pro unlocked" once bought; otherwise the current price (and the saving, when a Play Console
+ * offer is live), tapping through to the purchase screen.
+ */
+@Composable
+private fun ProRow(state: ProState, onOpen: () -> Unit) {
+    val offer = (state.store as? StoreState.Ready)?.offer
+    Surface(
+        onClick = onOpen,
+        enabled = !state.owned,
+        shape = RoundedCornerShape(18.dp),
+        color = KidGrape.copy(alpha = 0.12f),
+        modifier = Modifier.fillMaxWidth(),
+    ) {
+        Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.padding(16.dp)) {
+            Column(Modifier.weight(1f)) {
+                Text("CurvyKids Pro", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,
+                    fontSize = 16.sp, color = KidGrape)
+                Text(
+                    when {
+                        state.owned -> "Unlocked. Thank you!"
+                        state.pending -> "Payment pending"
+                        else -> "Every activity, no ads. One-time payment."
+                    },
+                    fontWeight = FontWeight.Bold, fontSize = 12.5.sp, color = Ink.copy(alpha = 0.6f),
+                )
+            }
+            if (!state.owned && offer != null) {
+                Column(horizontalAlignment = Alignment.End) {
+                    offer.percentOff?.takeIf { offer.isDiscount }?.let {
+                        Text("$it% OFF", fontWeight = FontWeight.ExtraBold, fontSize = 12.sp, color = KidBerry)
+                    }
+                    Text(offer.price, fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,
+                        fontSize = 18.sp, color = Ink)
+                }
+            } else if (state.owned) {
+                Text("✓", fontWeight = FontWeight.ExtraBold, fontSize = 22.sp, color = KidGrape)
+            }
+        }
     }
 }
