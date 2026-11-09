@@ -13,6 +13,11 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import com.vi5hnu.curvykids.audio.packs.VoicePack
+import com.vi5hnu.curvykids.billing.FakeProRepository
+import com.vi5hnu.curvykids.billing.PlayProRepository
+import com.vi5hnu.curvykids.billing.ProRepository
+import com.vi5hnu.curvykids.billing.ProStore
+import com.vi5hnu.curvykids.billing.PurchaseVerifier
 
 /**
  * Application entry point. Provides the singleton Coil [ImageLoader] used by every [coil.compose.AsyncImage]
@@ -22,7 +27,7 @@ import com.vi5hnu.curvykids.audio.packs.VoicePack
  * cache, so a badge that appears on many screens is decoded once.
  *
  * Also owns the app-wide voice pack state ([voicePacks]), shared by the speaker that plays the
- * clips and the screens that wait for them to download.
+ * clips and the screens that wait for them to download, and CurvyKids Pro ([pro]).
  */
 class CurvyKidsApp : Application(), ImageLoaderFactory {
 
@@ -30,6 +35,21 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
     private val appScope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
     val voicePacks: VoicePackRepository by lazy { PlayVoicePackRepository(this, appScope) }
+
+    /**
+     * CurvyKids Pro: sold through Play, or through a stand-in store in debug builds (see
+     * [FakeProRepository]) since Play billing only answers apps installed from a test track.
+     */
+    val pro: ProRepository by lazy {
+        val store = ProStore(this)
+        if (BuildConfig.FAKE_BILLING) FakeProRepository(appScope, store)
+        else PlayProRepository(
+            context = this,
+            scope = appScope,
+            store = store,
+            verifier = PurchaseVerifier(BuildConfig.PLAY_LICENSE_KEY, allowWithoutKey = BuildConfig.DEBUG),
+        )
+    }
 
     /** Where recordings are looked for: built into the app first, then downloaded packs. */
     val clipSources: List<ClipSource> by lazy { listOf(BundledClipSource(assets), PackClipSource(voicePacks)) }
@@ -42,6 +62,8 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
     override fun onCreate() {
         super.onCreate()
         voicePacks.download(VoicePack.entries)
+        // Connects to Play: loads the offers and restores (or revokes) Pro before a screen asks.
+        pro.refresh()
     }
 
     override fun newImageLoader(): ImageLoader =

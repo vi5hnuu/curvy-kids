@@ -1,3 +1,5 @@
+import java.util.Properties
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
@@ -14,6 +16,20 @@ val voicePacks = listOf(":voice_hi_letters", ":voice_hi_barakhadi")
  */
 val bundleVoiceInDebug = (findProperty("voice.bundled") as String?)?.toBoolean() ?: true
 
+/**
+ * Play licence key (Play Console > Monetization setup > Licensing), used to check that a Pro
+ * purchase really came from Play. Kept in local.properties as play.licenseKey, out of git.
+ */
+val playLicenseKey: String = rootProject.file("local.properties").takeIf { it.isFile }
+    ?.let { f -> Properties().apply { f.inputStream().use { load(it) } }.getProperty("play.licenseKey") }
+    .orEmpty()
+
+/**
+ * Debug builds sell Pro through a stand-in store (see billing/FakeProRepository) because real Play
+ * billing only answers apps installed from a Play test track. Build with -PrealBilling to use Play.
+ */
+val realBillingInDebug = (findProperty("realBilling") as String?)?.toBoolean() ?: false
+
 android {
     namespace = "com.vi5hnu.curvykids"
     compileSdk = 36
@@ -26,14 +42,19 @@ android {
         versionName = "2.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+        buildConfigField("String", "PLAY_LICENSE_KEY", "\"$playLicenseKey\"")
     }
 
     buildTypes {
+        debug {
+            buildConfigField("boolean", "FAKE_BILLING", "${!realBillingInDebug}")
+        }
         release {
             // R8 shrinking + resource shrinking. The app ships a 4.7 MB hand-drawn SVG asset
             // set, so keeping the code and unused resources trimmed matters for install size.
             isMinifyEnabled = true
             isShrinkResources = true
+            buildConfigField("boolean", "FAKE_BILLING", "false")
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
@@ -49,6 +70,7 @@ android {
     }
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 
     assetPacks += voicePacks
@@ -106,4 +128,7 @@ dependencies {
 
     // Play Asset Delivery: downloads the on-demand voice packs
     implementation(libs.play.asset.delivery.ktx)
+
+    // Play Billing: the one-time CurvyKids Pro unlock and its offers
+    implementation(libs.play.billing)
 }
