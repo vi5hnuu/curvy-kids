@@ -36,7 +36,7 @@ class FakeProRepository(private val scope: CoroutineScope, private val store: Pr
     override fun refresh() {
         scope.launch {
             val owned = store.owned.first()
-            _state.update { it.copy(owned = owned) }
+            _state.update { it.copy(owned = owned, known = true) }
         }
     }
 

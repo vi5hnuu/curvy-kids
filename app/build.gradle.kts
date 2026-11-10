@@ -108,12 +108,20 @@ android {
  * A release without these would ship broken: no ads (the SDK refuses a missing app id) and no Pro
  * (purchases can't be verified, so none is granted). Fail the release build instead.
  */
-tasks.matching { it.name.matches(Regex("(assemble|bundle)Release")) }.configureEach {
+tasks.matching { it.name.matches(Regex("(assemble|bundle|install)Release")) }.configureEach {
     doFirst {
         val missing = listOf("admob.appId" to admobAppId, "play.licenseKey" to playLicenseKey)
             .filter { it.second.isBlank() }.map { it.first }
         if (missing.isNotEmpty()) throw GradleException("Set ${missing.joinToString()} in local.properties for a release build")
     }
+}
+
+/**
+ * Classes the Compose compiler can't see are stable on its own (they hold a Set, or a lambda);
+ * declaring them lets screens that receive one skip redrawing when it hasn't changed.
+ */
+composeCompiler {
+    stabilityConfigurationFile = rootProject.layout.projectDirectory.file("app/compose_stability.conf")
 }
 
 dependencies {

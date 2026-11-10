@@ -143,11 +143,15 @@ fun AppNavGraph(
     // A tap on something locked: "This one is for Pro!" and the sheet with the ways in.
     var lockedItem by remember { mutableStateOf<Lockable?>(null) }
     var showProGate by rememberSaveable { mutableStateOf(false) }
-    val locks = ContentLocks(accessState) { item ->
-        val line = if (adReady) EnglishVoiceScript.FOR_PRO_OR_VIDEO else EnglishVoiceScript.FOR_PRO
-        gameViewModel.speaker.say(EnglishVoiceScript.say(line))
-        lockedItem = item
+    val onLocked: (Lockable) -> Unit = remember {
+        { item ->
+            val line = if (adReady) EnglishVoiceScript.FOR_PRO_OR_VIDEO else EnglishVoiceScript.FOR_PRO
+            gameViewModel.speaker.say(EnglishVoiceScript.say(line))
+            lockedItem = item
+        }
     }
+    // Remembered, so the screens it is passed to only redraw when what is locked changes.
+    val locks = remember(accessState) { ContentLocks(accessState, onLocked) }
 
     // Tracing moves on to the next level by itself; it must not walk into a locked one.
     LaunchedEffect(accessState) {
@@ -158,10 +162,7 @@ fun AppNavGraph(
     // Every way into an activity comes through here (tiles, "play again"), so the lock is too.
     // Reads the live state, as it also runs after a video, before this screen has recomposed.
     val openTopic: (Topic) -> Unit = { topic ->
-        val item = Lockable.Activity(topic.id)
-        if (access.state.value.isLocked(item)) {
-            locks.onLocked(item)
-        } else {
+        ContentLocks(access.state.value, onLocked).open(Lockable.Activity(topic.id)) {
             gameViewModel.speaker.say(EnglishVoiceScript.say(topic.title))
             appViewModel.setLastTopic(topic.id)
             navController.navigate(Screen.Topic.createRoute(topic.id))

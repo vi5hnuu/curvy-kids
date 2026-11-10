@@ -51,12 +51,15 @@ sealed interface StoreState {
  *
  * @param owned   Pro is unlocked: a verified purchase, or the saved record of one while Play
  *                can't be asked (offline).
+ * @param known   [owned] has been read (from the device's record or from Play). Until then
+ *                nothing should be shown as locked or unlocked.
  * @param pending A purchase is waiting on payment (cash or slow card); not unlocked until it clears.
  * @param store   What Play is offering, for the purchase screen.
  * @param failure Why the last purchase attempt failed, until the screen shows it.
  */
 data class ProState(
     val owned: Boolean = false,
+    val known: Boolean = false,
     val pending: Boolean = false,
     val store: StoreState = StoreState.Loading,
     val failure: StoreProblem? = null,

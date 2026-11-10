@@ -66,7 +66,7 @@ class PlayProRepository(
         // Start from what this device remembers, so an offline launch keeps Pro.
         scope.launch {
             val owned = store.owned.first()
-            _state.update { it.copy(owned = it.owned || owned) }
+            _state.update { it.copy(owned = it.owned || owned, known = true) }
         }
     }
 
@@ -174,6 +174,11 @@ class PlayProRepository(
             it.purchaseState == Purchase.PurchaseState.PURCHASED && verifier.isValid(it.originalJson, it.signature)
         }
         val pending = pro.any { it.purchaseState == Purchase.PurchaseState.PENDING }
+        if (bought.size < pro.count { it.purchaseState == Purchase.PurchaseState.PURCHASED }) {
+            // Not granted and not acknowledged, so Play refunds it in three days. Either a forged
+            // purchase, or play.licenseKey isn't this app's key, which would refund every buyer.
+            Log.e(TAG, "A completed Pro purchase failed the signature check; check play.licenseKey")
+        }
         bought.filterNot { it.isAcknowledged }.forEach(::acknowledge)
 
         val owned = when {
@@ -181,7 +186,7 @@ class PlayProRepository(
             complete -> false
             else -> _state.value.owned
         }
-        _state.update { it.copy(owned = owned, pending = pending && !owned) }
+        _state.update { it.copy(owned = owned, known = true, pending = pending && !owned) }
         if (bought.isNotEmpty() || complete) scope.launch { store.setOwned(owned) }
     }
 
