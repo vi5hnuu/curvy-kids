@@ -23,7 +23,7 @@ import kotlinx.coroutines.withContext
 
 /**
  * [RewardedAds] through Google AdMob, set up for an app made for children:
- * - every request is tagged child-directed and under the age of consent, so no personalised ads,
+ * - every request is tagged child-directed (COPPA), so no personalised ads,
  *   no remarketing and no advertising id (Play Families policy; the AD_ID permission is also
  *   removed in the manifest);
  * - the highest content rating allowed is G (general audiences).
@@ -59,7 +59,6 @@ class AdMobRewardedAds(
                 MobileAds.setRequestConfiguration(
                     RequestConfiguration.Builder()
                         .setTagForChildDirectedTreatment(RequestConfiguration.TAG_FOR_CHILD_DIRECTED_TREATMENT_TRUE)
-                        .setTagForUnderAgeOfConsent(RequestConfiguration.TAG_FOR_UNDER_AGE_OF_CONSENT_TRUE)
                         .setMaxAdContentRating(RequestConfiguration.MAX_AD_CONTENT_RATING_G)
                         .build()
                 )
