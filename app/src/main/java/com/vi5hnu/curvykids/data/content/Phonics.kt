@@ -1,8 +1,8 @@
 package com.vi5hnu.curvykids.data.content
 
 /**
- * The phrase spoken for a letter or digit on the trace screen ("A for Apple", "1 is One") and the
- * picture beside it.
+ * The phrase spoken for a letter or digit on the trace screen ("A for Apple", "One, two, three")
+ * and the picture beside it.
  *
  * Letters come from [letterExample] (that is, [PHONICS_DATA]), the same list the Phonics game and
  * the letter pictures use, so what the child sees is always what the voice says.
@@ -32,12 +32,15 @@ object Phonics {
     }
 
     /**
-     * Builds the spoken phrase for [character]: "1 is One", "A for Apple", or "X, as in Fox" for
-     * a letter taught by its ending sound. Just the character if unmapped.
+     * Builds the spoken phrase for [character]: "A for Apple", or "X, as in Fox" for a letter
+     * taught by its ending sound. Just the character if unmapped.
+     *
+     * A digit counts up to itself ("One, two, three"). Not "3 is Three": read aloud that is
+     * "three is three", which says nothing; counting shows what the number means.
      */
     fun phraseFor(character: String): String {
         val c = character.singleOrNull() ?: return character
-        if (c.isDigit()) return numberWords[c]?.let { "$character is ${it.first}" } ?: character
+        if (c.isDigit()) return numberPhrase(c.digitToInt())
         val ex = letterExample(character)?.takeIf { c.isLatin() } ?: return character
         return if (ex.position == SoundPosition.END) "$character, as in ${ex.word}" else "$character for ${ex.word}"
     }
@@ -47,6 +50,14 @@ object Phonics {
 
     /** Asset path of the picture for [character]'s example word, or null if unmapped. */
     fun assetFor(character: String): AssetPath? = entryFor(character)?.second
+
+    /** "Zero means none", "Just one", then counting: "One, two, three". No end mark; callers add it. */
+    private fun numberPhrase(n: Int): String = when (n) {
+        0 -> "Zero means none"
+        1 -> "Just one"
+        else -> (1..n).joinToString(", ") { numberWords.getValue('0' + it).first.lowercase() }
+            .replaceFirstChar { it.uppercase() }
+    }
 
     /** Hindi letters have their own spoken line (HindiVoiceScript), never an English phrase. */
     private fun Char.isLatin() = this in 'a'..'z' || this in 'A'..'Z'
