@@ -46,6 +46,7 @@ class MainActivity : ComponentActivity() {
                     access = (application as CurvyKidsApp).access,
                     ads = (application as CurvyKidsApp).ads,
                     adUnlocks = (application as CurvyKidsApp).adUnlocks,
+                    offerNotice = (application as CurvyKidsApp).offerNotice,
                 )
             }
         }

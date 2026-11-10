@@ -16,6 +16,8 @@ import com.android.billingclient.api.Purchase
 import com.android.billingclient.api.QueryProductDetailsParams
 import com.android.billingclient.api.QueryPurchasesParams
 import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -24,6 +26,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
 import java.util.Currency
+import java.util.concurrent.TimeUnit
 
 /**
  * [ProRepository] backed by Google Play Billing (library 9, one-time product with offers).
@@ -36,6 +39,10 @@ import java.util.Currency
  *   for three days. One that failed to acknowledge is retried on the next [refresh].
  * - Refunds: whenever Play can be asked and reports no purchase, Pro is taken back; offline, the
  *   saved state in [ProStore] stands.
+ * - Offer ends: when the shown offer has an end date, Play is asked again just after it, so the
+ *   screen moves to the next offer or the full price instead of selling an offer that is gone.
+ * - Promo codes: a code entered in Play's purchase sheet arrives as a normal purchase; one
+ *   redeemed in the Play Store app is found by the [refresh] made when the app comes back.
  *
  * Lives as long as the app; [scope] should be application-wide.
  */
@@ -51,6 +58,9 @@ class PlayProRepository(
 
     /** The product as Play last described it; needed to start a purchase. */
     private var product: ProductDetails? = null
+
+    /** Asks Play again when the shown offer ends. */
+    private var offerExpiry: Job? = null
 
     /** A connection attempt is under way; a second [refresh] meanwhile waits for it. */
     @Volatile private var connecting = false
@@ -119,6 +129,8 @@ class PlayProRepository(
 
     override fun clearFailure() = _state.update { it.copy(failure = null) }
 
+    override fun clearUnlocked() = _state.update { it.copy(unlockedJustNow = false) }
+
     // ── Play's answers ──────────────────────────────────────────────────────────
 
     private fun queryProduct() {
@@ -141,6 +153,20 @@ class PlayProRepository(
             product = found
             val offer = found?.let { pickOffer(offersOf(it)) }
             setStore(offer?.let { StoreState.Ready(it) } ?: StoreState.Unavailable(StoreProblem.NOT_FOUND))
+            watchExpiry(offer?.endsAtMillis)
+        }
+    }
+
+    /** Asks Play for the product again just after [endsAtMillis], replacing any earlier wait. */
+    private fun watchExpiry(endsAtMillis: Long?) {
+        offerExpiry?.cancel()
+        val wait = (endsAtMillis ?: return) - System.currentTimeMillis()
+        // Further off than a day: the refresh on every return to the app gets there first. Already
+        // past: Play still lists it (clocks differ), so don't ask in a loop; the next refresh will.
+        if (wait > TimeUnit.DAYS.toMillis(1) || wait < 0) return
+        offerExpiry = scope.launch {
+            delay(wait + EXPIRY_GRACE_MS)
+            queryProduct()
         }
     }
 
@@ -186,7 +212,14 @@ class PlayProRepository(
             complete -> false
             else -> _state.value.owned
         }
-        _state.update { it.copy(owned = owned, known = true, pending = pending && !owned) }
+        _state.update {
+            it.copy(
+                owned = owned,
+                known = true,
+                pending = pending && !owned,
+                unlockedJustNow = it.unlockedJustNow || (owned && !it.owned && it.known),
+            )
+        }
         if (bought.isNotEmpty() || complete) scope.launch { store.setOwned(owned) }
     }
 
@@ -201,15 +234,23 @@ class PlayProRepository(
 
     private fun handleFailure(result: BillingResult) {
         Log.w(TAG, "Purchase failed: ${result.responseCode} ${result.debugMessage}")
-        // The offer may have ended or run out between showing it and tapping buy: ask again.
-        if (result.responseCode == BillingResponseCode.ITEM_UNAVAILABLE) queryProduct()
-        _state.update { it.copy(failure = problemOf(result.responseCode)) }
+        // The offer may have ended or run out between showing it and tapping buy: ask again, and
+        // say so rather than "not found", since the full price is still for sale.
+        val problem = if (result.responseCode == BillingResponseCode.ITEM_UNAVAILABLE) {
+            queryProduct()
+            StoreProblem.OFFER_ENDED
+        } else {
+            problemOf(result.responseCode)
+        }
+        _state.update { it.copy(failure = problem) }
     }
 
     private fun setStore(store: StoreState) = _state.update { it.copy(store = store) }
 
     private companion object {
         const val TAG = "PRO_BILLING"
+        /** Play may still list an offer for a moment after its end time. */
+        const val EXPIRY_GRACE_MS = 2_000L
 
         fun problemOf(code: Int): StoreProblem = when (code) {
             BillingResponseCode.BILLING_UNAVAILABLE, BillingResponseCode.FEATURE_NOT_SUPPORTED -> StoreProblem.NO_PLAY

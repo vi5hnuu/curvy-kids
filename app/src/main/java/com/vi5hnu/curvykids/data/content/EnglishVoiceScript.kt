@@ -59,6 +59,9 @@ object EnglishVoiceScript {
     /** The same, when a video can open it for today. */
     const val FOR_PRO_OR_VIDEO = "This one is for Pro! Watch a video, or ask a grown-up."
 
+    /** Pro was unlocked while the app was open (a purchase, a promo code, a payment that cleared). */
+    const val PRO_UNLOCKED = "Hooray! Everything is open now."
+
     /** Tracing (GameViewModel). */
     val TRACE_PRAISE = listOf("Yay! Great job!", "Awesome!", "Well done!", "Perfect!", "You did it!")
     const val DRAW_FIRST = "Draw it first, then tap check."
@@ -164,7 +167,7 @@ object EnglishVoiceScript {
         val seen = mutableSetOf<String>()
         fun List<String>.fresh() = map(::line).filter { seen.add(it.clip.relativePath) }
         buildList {
-            add("App and worlds" to (listOf(GREETING, MY_STICKERS, GET_VOICES, GETTING_VOICES, FOR_PRO, FOR_PRO_OR_VIDEO) +
+            add("App and worlds" to (listOf(GREETING, MY_STICKERS, GET_VOICES, GETTING_VOICES, FOR_PRO, FOR_PRO_OR_VIDEO, PRO_UNLOCKED) +
                 World.entries.map { it.title } + TOPICS.map { it.title }).fresh())
             add("Tracing" to (TRACE_PRAISE + DRAW_FIRST + HINDI_GIVE_UP + KEEP_PRACTICING + MOVING_ON + COULD_NOT_SEE +
                 ALMOST + letters.map { "Draw the letter $it." } + digits.map { "Draw the number $it." } +

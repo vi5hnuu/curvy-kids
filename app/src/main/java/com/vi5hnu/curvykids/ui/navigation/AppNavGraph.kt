@@ -81,11 +81,14 @@ import com.vi5hnu.curvykids.ui.theme.BgTop
 import com.vi5hnu.curvykids.ui.trace.TraceScreen
 import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 import androidx.activity.compose.LocalActivity
+import com.vi5hnu.curvykids.billing.OfferNotice
 import com.vi5hnu.curvykids.billing.ProRepository
 import com.vi5hnu.curvykids.billing.Access
 import com.vi5hnu.curvykids.billing.ContentLocks
 import com.vi5hnu.curvykids.billing.Lockable
 import com.vi5hnu.curvykids.ui.pro.LockedSheet
+import com.vi5hnu.curvykids.ui.pro.UnlockedSheet
+import com.vi5hnu.curvykids.ui.pro.openPlayRedeem
 import com.vi5hnu.curvykids.ads.AdUnlocks
 import com.vi5hnu.curvykids.ads.RewardedAds
 import androidx.compose.runtime.rememberCoroutineScope
@@ -112,11 +115,13 @@ fun AppNavGraph(
     access: Access,
     ads: RewardedAds,
     adUnlocks: AdUnlocks,
+    offerNotice: OfferNotice,
 ) {
     val navController = rememberNavController()
     val proState by pro.state.collectAsState()
     val activity = LocalActivity.current
     val accessState by access.state.collectAsState()
+    val bannerOffer by offerNotice.offer.collectAsState()
     val adReady by ads.ready.collectAsState()
     val scope = rememberCoroutineScope()
     val appState by appViewModel.uiState.collectAsState()
@@ -143,6 +148,8 @@ fun AppNavGraph(
     // A tap on something locked: "This one is for Pro!" and the sheet with the ways in.
     var lockedItem by remember { mutableStateOf<Lockable?>(null) }
     var showProGate by rememberSaveable { mutableStateOf(false) }
+    // Closing the Home offer banner is for grown-ups too, so a child can't hide it unseen.
+    var showHideOfferGate by rememberSaveable { mutableStateOf(false) }
     val onLocked: (Lockable) -> Unit = remember {
         { item ->
             val line = if (adReady) EnglishVoiceScript.FOR_PRO_OR_VIDEO else EnglishVoiceScript.FOR_PRO
@@ -152,6 +159,16 @@ fun AppNavGraph(
     }
     // Remembered, so the screens it is passed to only redraw when what is locked changes.
     val locks = remember(accessState) { ContentLocks(accessState, onLocked) }
+
+    // Pro arrived while the app was open (promo code, delayed payment). The purchase screen
+    // celebrates on its own; anywhere else a sheet does, once.
+    val route = navController.currentBackStackEntryAsState().value?.destination?.route
+    val celebrateUnlock = proState.unlockedJustNow && route != null && route != Screen.Pro.route
+    LaunchedEffect(proState.unlockedJustNow, route) {
+        if (!proState.unlockedJustNow || route == null) return@LaunchedEffect
+        if (route == Screen.Pro.route) pro.clearUnlocked()
+        else gameViewModel.speaker.say(EnglishVoiceScript.say(EnglishVoiceScript.PRO_UNLOCKED))
+    }
 
     // Tracing moves on to the next level by itself; it must not walk into a locked one.
     LaunchedEffect(accessState) {
@@ -199,6 +216,9 @@ fun AppNavGraph(
                         },
                         onOpenGrownUps = { showGate = true },
                         onSpeak = { gameViewModel.speaker.say(EnglishVoiceScript.say(it), flush = false) },
+                        offer = bannerOffer,
+                        onOpenOffer = { showProGate = true },
+                        onHideOffer = { showHideOfferGate = true },
                     )
                 }
 
@@ -227,6 +247,7 @@ fun AppNavGraph(
                         onBuy = { offer -> activity?.let { pro.buy(it, offer) } },
                         onRetry = pro::refresh,
                         onDismissFailure = pro::clearFailure,
+                        onRedeem = { activity?.openPlayRedeem() },
                         onBack = { navController.popBackStack() },
                     )
                 }
@@ -522,6 +543,8 @@ fun AppNavGraph(
                 )
             }
 
+            if (celebrateUnlock) UnlockedSheet(onDismiss = pro::clearUnlocked)
+
             // The purchase screen sits behind the parent gate (Play Families policy).
             if (showProGate) {
                 ParentGate(
@@ -530,6 +553,16 @@ fun AppNavGraph(
                         navController.navigate(Screen.Pro.route)
                     },
                     onDismiss = { showProGate = false },
+                )
+            }
+
+            if (showHideOfferGate) {
+                ParentGate(
+                    onPass = {
+                        showHideOfferGate = false
+                        bannerOffer?.let(offerNotice::hide)
+                    },
+                    onDismiss = { showHideOfferGate = false },
                 )
             }
 
@@ -555,6 +588,7 @@ fun AppNavGraph(
                         showZone = false
                         navController.navigate(Screen.Pro.route)
                     },
+                    onRedeemCode = { activity?.openPlayRedeem() },
                     onResetProgress = {
                         // Stars/badges and tracing progress live in separate stores.
                         appViewModel.resetProgress()

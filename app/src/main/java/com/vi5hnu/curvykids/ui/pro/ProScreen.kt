@@ -66,6 +66,7 @@ private val PRO_BENEFITS = listOf(
  *
  * @param onBuy   Starts Play's purchase sheet for the offer shown.
  * @param onRetry Asks Play again (also restores a purchase made before, on any device).
+ * @param onRedeem Opens the Play Store's "Redeem code" screen for a promo code.
  */
 @Composable
 fun ProScreen(
@@ -73,6 +74,7 @@ fun ProScreen(
     onBuy: (ProOffer) -> Unit,
     onRetry: () -> Unit,
     onDismissFailure: () -> Unit,
+    onRedeem: () -> Unit,
     onBack: () -> Unit,
 ) {
     Box(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
@@ -108,6 +110,9 @@ fun ProScreen(
                     Spacer(Modifier.height(8.dp))
                     TextButton(onClick = onRetry) {
                         Text("Already bought? Restore purchase", color = InkSoft, fontWeight = FontWeight.Bold)
+                    }
+                    TextButton(onClick = onRedeem) {
+                        Text("Have a promo code?", color = InkSoft, fontWeight = FontWeight.Bold)
                     }
                 }
             }
@@ -195,6 +200,7 @@ private fun problemText(problem: StoreProblem): String = when (problem) {
     StoreProblem.NO_PLAY -> "Google Play isn't available. Check that you're signed in to Play and purchases are allowed on this device."
     StoreProblem.OFFLINE -> "Check the internet connection and try again."
     StoreProblem.NOT_FOUND -> "Pro isn't available right now. Install CurvyKids from Google Play and try again."
+    StoreProblem.OFFER_ENDED -> "That offer has just ended. Here is the price now."
     StoreProblem.OTHER -> "Something went wrong with the purchase. Please try again."
 }
 

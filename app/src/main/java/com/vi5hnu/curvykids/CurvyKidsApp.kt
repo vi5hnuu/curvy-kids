@@ -23,6 +23,7 @@ import kotlinx.coroutines.launch
 import com.vi5hnu.curvykids.billing.FakeProRepository
 import com.vi5hnu.curvykids.billing.PlayProRepository
 import com.vi5hnu.curvykids.billing.ProRepository
+import com.vi5hnu.curvykids.billing.OfferNotice
 import com.vi5hnu.curvykids.billing.ProStore
 import com.vi5hnu.curvykids.billing.PurchaseVerifier
 
@@ -52,7 +53,7 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
 
     val pro: ProRepository by lazy {
         val store = proStore
-        if (BuildConfig.FAKE_BILLING) FakeProRepository(appScope, store)
+        if (BuildConfig.FAKE_BILLING) FakeProRepository(appScope, store, BuildConfig.FAKE_OFFER_SECONDS)
         else PlayProRepository(
             context = this,
             scope = appScope,
@@ -60,6 +61,9 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
             verifier = PurchaseVerifier(BuildConfig.PLAY_LICENSE_KEY, allowWithoutKey = BuildConfig.DEBUG),
         )
     }
+
+    /** The Pro discount, if any, to tell grown-ups about on Home. */
+    val offerNotice: OfferNotice by lazy { OfferNotice(pro, proStore, appScope) }
 
     /** What a watched video opened for today. */
     val adUnlocks: AdUnlocks by lazy { AdUnlocks(this) }

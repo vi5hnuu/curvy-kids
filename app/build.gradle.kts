@@ -41,6 +41,9 @@ val rewardedTestUnitId = "ca-app-pub-3940256099942544/5224354917"
  */
 val realBillingInDebug = (findProperty("realBilling") as String?)?.toBoolean() ?: false
 
+/** How long the stand-in store's launch offer lasts; -PfakeOfferEnds=60 to watch one end. */
+val fakeOfferSeconds = (findProperty("fakeOfferEnds") as String?)?.toLongOrNull() ?: (3 * 24 * 3600L)
+
 android {
     namespace = "com.vi5hnu.curvykids"
     compileSdk = 36
@@ -59,6 +62,7 @@ android {
     buildTypes {
         debug {
             buildConfigField("boolean", "FAKE_BILLING", "${!realBillingInDebug}")
+            buildConfigField("long", "FAKE_OFFER_SECONDS", "${fakeOfferSeconds}L")
             buildConfigField("String", "REWARDED_AD_UNIT", "\"$rewardedTestUnitId\"")
             manifestPlaceholders["admobAppId"] = admobSampleAppId
         }
@@ -68,6 +72,7 @@ android {
             isMinifyEnabled = true
             isShrinkResources = true
             buildConfigField("boolean", "FAKE_BILLING", "false")
+            buildConfigField("long", "FAKE_OFFER_SECONDS", "0L")
             buildConfigField("String", "REWARDED_AD_UNIT", "\"$rewardedUnitId\"")
             manifestPlaceholders["admobAppId"] = admobAppId
             proguardFiles(

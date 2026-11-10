@@ -33,7 +33,9 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vi5hnu.curvykids.billing.ProOffer
 import com.vi5hnu.curvykids.data.content.Topic
+import com.vi5hnu.curvykids.ui.pro.OfferBanner
 import com.vi5hnu.curvykids.data.content.World
 import com.vi5hnu.curvykids.data.content.art
 import com.vi5hnu.curvykids.data.content.dailyPicks
@@ -65,6 +67,9 @@ import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
  * "play again" bubble, which reopens the last activity (or suggests today's pick before there
  * is one). Grown-ups get in through the lock in the corner, which needs a press and hold.
  *
+ * When Pro is on discount, a quiet line for grown-ups sits under the counters ([OfferBanner]);
+ * which offer, if any, is decided outside ([offer]), so Home knows nothing of billing.
+ *
  * In landscape (tablet or phone on its side) the worlds take the right side and the rest a column
  * on the left; on any other short window the screen scrolls instead of squeezing the worlds.
  */
@@ -76,7 +81,13 @@ fun HomeScreen(
     onOpenStickers: () -> Unit,
     onOpenGrownUps: () -> Unit,
     onSpeak: (String) -> Unit,
+    offer: ProOffer? = null,
+    onOpenOffer: () -> Unit = {},
+    onHideOffer: () -> Unit = {},
 ) {
+    val banner: @Composable () -> Unit = {
+        offer?.let { OfferBanner(it, onOpenOffer, onHideOffer, Modifier.padding(top = 10.dp)) }
+    }
     // Greet once per visit to the app, not on every return from an activity.
     var greeted = rememberSaveable { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -109,6 +120,7 @@ fun HomeScreen(
                             val mascot = if (maxHeight < 380.dp) 64.dp else 96.dp
                             Column(Modifier.fillMaxSize()) {
                                 TopBar(appState, onOpenGrownUps)
+                                banner()
                                 Spacer(Modifier.weight(1f))
                                 CurvyMascot(size = mascot, mood = CurvyMood.Happy, floating = true,
                                     modifier = Modifier.align(Alignment.CenterHorizontally))
@@ -122,6 +134,7 @@ fun HomeScreen(
                     }
                 } else {
                     TopBar(appState, onOpenGrownUps)
+                    banner()
                     Spacer(Modifier.height(8.dp))
                     Greeting(playAgain, isReturn, onOpenTopic)
                     Spacer(Modifier.height(KidDimens.Gap))

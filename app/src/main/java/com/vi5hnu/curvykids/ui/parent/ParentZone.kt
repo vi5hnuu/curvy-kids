@@ -17,6 +17,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Switch
 import androidx.compose.material3.SwitchDefaults
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -67,6 +68,7 @@ fun ParentZone(
     voicePacks: VoicePackRepository,
     proState: ProState,
     onOpenPro: () -> Unit,
+    onRedeemCode: () -> Unit,
     onResetProgress: () -> Unit,
     onDismiss: () -> Unit,
 ) {
@@ -121,6 +123,13 @@ fun ParentZone(
             // ── CurvyKids Pro ─────────────────────────────────────────────
             // Already past the parent gate here, so this opens the purchase screen directly.
             ProRow(proState, onOpenPro)
+            if (!proState.owned) {
+                // A promo code from the Play Console unlocks Pro without the purchase screen.
+                TextButton(onClick = onRedeemCode, modifier = Modifier.align(Alignment.End)) {
+                    Text("Have a promo code? Redeem it", fontWeight = FontWeight.Bold, fontSize = 13.sp,
+                        color = KidGrape)
+                }
+            }
             Spacer(Modifier.height(14.dp))
 
             // ── Toggle ────────────────────────────────────────────────────

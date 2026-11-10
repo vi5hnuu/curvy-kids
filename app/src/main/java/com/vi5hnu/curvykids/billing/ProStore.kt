@@ -25,6 +25,13 @@ class ProStore(context: Context) {
         store.edit { it[OWNED] = owned }
     }
 
+    /** [ProOffer.noticeKey] of the offer whose Home banner a grown-up closed, if any. */
+    val hiddenOffer = store.data.map { it[HIDDEN_OFFER] }
+
+    suspend fun hideOffer(key: String) {
+        store.edit { it[HIDDEN_OFFER] = key }
+    }
+
     /**
      * A random id for this install, sent with purchases (as Play's obfuscated account id) so Play
      * can spot one account buying on many devices in a short time. Says nothing about the child.
@@ -39,5 +46,6 @@ class ProStore(context: Context) {
     private companion object {
         val OWNED = booleanPreferencesKey("owned")
         val ACCOUNT_ID = stringPreferencesKey("account_id")
+        val HIDDEN_OFFER = stringPreferencesKey("hidden_offer")
     }
 }

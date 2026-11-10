@@ -30,12 +30,50 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.ui.components.CandyButton
+import com.vi5hnu.curvykids.ui.components.ConfettiOverlay
 import com.vi5hnu.curvykids.ui.components.CurvyMascot
 import com.vi5hnu.curvykids.ui.components.CurvyMood
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.KidGrape
 import com.vi5hnu.curvykids.ui.theme.KidInk
 import com.vi5hnu.curvykids.ui.theme.KidSun
+
+/**
+ * Celebrates Pro arriving while the app is open but away from the purchase screen (which has its
+ * own celebration): a promo code redeemed in the Play Store, or a payment that cleared later.
+ * The caller says [com.vi5hnu.curvykids.data.content.EnglishVoiceScript.PRO_UNLOCKED] as it opens.
+ */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun UnlockedSheet(onDismiss: () -> Unit) {
+    ModalBottomSheet(
+        onDismissRequest = onDismiss,
+        sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
+        shape = RoundedCornerShape(topStart = 34.dp, topEnd = 34.dp),
+        containerColor = Color.White,
+    ) {
+        Box {
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                modifier = Modifier.fillMaxWidth().padding(horizontal = 24.dp).padding(bottom = 32.dp),
+            ) {
+                CurvyMascot(size = 110.dp, mood = CurvyMood.Cheer, floating = true)
+                Spacer(Modifier.height(12.dp))
+                Text("Pro unlocked!", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,
+                    fontSize = 26.sp, color = KidGrape, textAlign = TextAlign.Center)
+                Spacer(Modifier.height(4.dp))
+                Text("Everything is open now.", fontWeight = FontWeight.Bold, fontSize = 16.sp,
+                    color = KidInk.copy(alpha = 0.7f), textAlign = TextAlign.Center)
+                Spacer(Modifier.height(20.dp))
+                CandyButton(onClick = onDismiss, containerColor = KidGrape,
+                    modifier = Modifier.fillMaxWidth().height(64.dp)) {
+                    Text("Let's play!", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 22.sp)
+                }
+            }
+            ConfettiOverlay(modifier = Modifier.matchParentSize())
+        }
+    }
+}
 
 /** The small padlock on a locked tile, letter or story. */
 @Composable

@@ -20,4 +20,7 @@ interface ProRepository {
 
     /** Clears [ProState.failure] once the screen has shown it. */
     fun clearFailure()
+
+    /** Clears [ProState.unlockedJustNow] once the unlock has been celebrated. */
+    fun clearUnlocked()
 }

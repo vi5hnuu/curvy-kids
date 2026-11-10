@@ -27,6 +27,25 @@ data class ProOffer(
 /** The offer to show: the cheapest one Play allows this user. */
 fun pickOffer(offers: List<ProOffer>): ProOffer? = offers.minByOrNull { it.priceMicros }
 
+/**
+ * Identifies one run of an offer, for remembering that a grown-up closed its banner: the same
+ * offer extended, or a new one, gets a new key and shows again.
+ */
+val ProOffer.noticeKey: String get() = "${offerId.orEmpty()}@${endsAtMillis ?: 0}"
+
+/**
+ * The offer to announce on Home, or null: only a live discount, only to a free user once
+ * ownership is known, and not one whose banner was closed ([hiddenKey]). The plain price is
+ * never advertised there, so free users don't live with a permanent sales pitch.
+ */
+fun bannerOffer(state: ProState, hiddenKey: String?, now: Long = System.currentTimeMillis()): ProOffer? {
+    if (!state.known || state.owned || state.pending) return null
+    val offer = (state.store as? StoreState.Ready)?.offer ?: return null
+    if (!offer.isDiscount || offer.noticeKey == hiddenKey) return null
+    if (offer.endsAtMillis != null && offer.endsAtMillis <= now) return null
+    return offer
+}
+
 /** Why Play can't sell Pro right now, in terms a parent can act on. */
 enum class StoreProblem {
     /** No Play Store, or it is blocked (some kids' modes) or signed out. */
@@ -35,6 +54,11 @@ enum class StoreProblem {
     OFFLINE,
     /** Play doesn't know the product: an app not installed from Play, or not set up yet. */
     NOT_FOUND,
+    /**
+     * The offer shown is no longer there (it ended, its limit was reached, or the user's Play
+     * country changed); the price is asked for again.
+     */
+    OFFER_ENDED,
     /** Play refused the purchase for another reason. */
     OTHER,
 }
@@ -56,6 +80,9 @@ sealed interface StoreState {
  * @param pending A purchase is waiting on payment (cash or slow card); not unlocked until it clears.
  * @param store   What Play is offering, for the purchase screen.
  * @param failure Why the last purchase attempt failed, until the screen shows it.
+ * @param unlockedJustNow Pro was just unlocked while the app was in use (a purchase, a promo
+ *                code redeemed in the Play Store, a payment that cleared), until it is celebrated.
+ *                Never set by the first read of what the user owns.
  */
 data class ProState(
     val owned: Boolean = false,
@@ -63,4 +90,5 @@ data class ProState(
     val pending: Boolean = false,
     val store: StoreState = StoreState.Loading,
     val failure: StoreProblem? = null,
+    val unlockedJustNow: Boolean = false,
 )
