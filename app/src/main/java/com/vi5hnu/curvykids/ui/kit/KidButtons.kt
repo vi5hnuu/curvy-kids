@@ -1,5 +1,10 @@
 package com.vi5hnu.curvykids.ui.kit
 
+import androidx.compose.foundation.border
+import androidx.compose.ui.window.Popup
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.animation.core.MutableTransitionState
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -7,7 +12,6 @@ import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
@@ -72,7 +76,7 @@ fun HoldToOpenLock(onOpen: () -> Unit, modifier: Modifier = Modifier) {
     Box(modifier, contentAlignment = Alignment.Center) {
         Box(
             Modifier
-                .size(52.dp)
+                .size(LOCK_SIZE)
                 .pressScale(interaction)
                 .clip(CircleShape)
                 .background(Color.White.copy(alpha = 0.85f))
@@ -89,12 +93,24 @@ fun HoldToOpenLock(onOpen: () -> Unit, modifier: Modifier = Modifier) {
             Icon(Icons.Rounded.Lock, contentDescription = null, tint = KidInk.copy(alpha = 0.55f),
                 modifier = Modifier.size(24.dp))
         }
-        AnimatedVisibility(hinting, enter = fadeIn(), exit = fadeOut(),
-            modifier = Modifier.align(Alignment.BottomCenter).offset(y = 34.dp)) {
-            Text("Hold", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp,
-                color = KidInk,
-                modifier = Modifier.clip(RoundedCornerShape(10.dp)).background(Color.White)
-                    .padding(horizontal = 10.dp, vertical = 2.dp))
+        // In a popup, so it sits above whatever is laid out below the lock (the "play again"
+        // card on Home) instead of being drawn under it. Kept until it has faded out.
+        val shown = remember { MutableTransitionState(false) }
+        shown.targetState = hinting
+        if (shown.currentState || shown.targetState) {
+            val below = with(LocalDensity.current) { (LOCK_SIZE + 6.dp).roundToPx() }
+            Popup(alignment = Alignment.TopCenter, offset = IntOffset(0, below)) {
+                AnimatedVisibility(shown, enter = fadeIn(), exit = fadeOut()) {
+                    Text("Hold", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold, fontSize = 15.sp,
+                        color = KidInk,
+                        // Outlined, as it can sit on a white card.
+                        modifier = Modifier.clip(RoundedCornerShape(10.dp)).background(Color.White)
+                            .border(1.5.dp, KidInk.copy(alpha = 0.2f), RoundedCornerShape(10.dp))
+                            .padding(horizontal = 10.dp, vertical = 2.dp))
+                }
+            }
         }
     }
 }
+
+private val LOCK_SIZE = 52.dp
