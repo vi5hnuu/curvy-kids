@@ -37,12 +37,11 @@ object RecordingSheet {
         }
 
         appendLine("== ENGLISH LETTER SOUNDS ==")
-        appendLine("Say only the pure sound, short and crisp. No added \"uh\" (\"b\", not \"buh\").")
-        appendLine("Hold sounds that can be held (mmm, sss, fff) for about one second.")
+        appendLine("Each line is a letter's sound, spelled out; say it as that one short sound, crisp,")
+        appendLine("and nothing else. Hold sounds that can be held (mmm, sss, fff) for about one second.")
         appendLine()
         PHONICS_DATA.filterNot { isRecorded(it.clip) }.forEach { p ->
-            val where = if (p.position == SoundPosition.END) "at the end of" else "at the start of"
-            appendLine("${n++}. The sound of ${p.letter}, as $where \"${p.example}\"  ->  ${p.clip.relativePath}.m4a")
+            appendLine("${n++}. ${p.sound}  ->  ${p.clip.relativePath}.m4a")
         }
 
         appendLine()

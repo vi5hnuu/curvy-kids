@@ -388,8 +388,11 @@ val OPPOSITES = listOf(
 /**
  * A letter, the sound it makes, and a word that starts (or, for X, ends) with that sound.
  *
- * @param sound      How text-to-speech should try to say the sound when no recording exists.
- *                   Never shown to the child; the quiz is "hear the sound, tap the letter".
+ * @param sound      The sound spelled out ("buh", "sss"): what the recording sheet asks to be said
+ *                   (the voice script sends exactly this; any instruction around it was read
+ *                   aloud), and what text-to-speech says while there is no recording. A and O
+ *                   are spelled away from their letter names ("aah", "aw"), which a bare "a" or
+ *                   "o" is read as. Never shown to the child; the quiz is "hear the sound, tap the letter".
  * @param soundGroup Letters that make the same sound share a group (C and K both say /k/), so a
  *                   question never offers two letters that are both right.
  * @param position   Where the sound sits in [example], for the spoken hint ("like Fox" vs "like Moon").
@@ -415,21 +418,21 @@ enum class SoundPosition { START, END }
  * starts with /ks/ ("X-ray" starts with the letter's name, not its sound).
  */
 val PHONICS_DATA = listOf(
-    LetterPhonic("A", "a",    "Apple",     KidAssets.fruit("apple")),
+    LetterPhonic("A", "aah",  "Apple",     KidAssets.fruit("apple")),
     LetterPhonic("B", "buh",  "Ball",      KidAssets.sport("soccer")),
     LetterPhonic("C", "kuh",  "Cat",       KidAssets.animal("cat"), soundGroup = "k"),
     LetterPhonic("D", "duh",  "Dog",       KidAssets.animal("dog")),
     LetterPhonic("E", "eh",   "Egg",       KidAssets.food("egg")),
     LetterPhonic("F", "fff",  "Fish",      KidAssets.seaAnimal("fish")),
     LetterPhonic("G", "guh",  "Goat",      KidAssets.animal("goat")),
-    LetterPhonic("H", "hhh",  "Hat",       KidAssets.clothes("top-hat")),
+    LetterPhonic("H", "huh",  "Hat",       KidAssets.clothes("top-hat")),
     LetterPhonic("I", "ih",   "Insect",    KidAssets.insect("ladybug")),
     LetterPhonic("J", "juh",  "Jellyfish", KidAssets.seaAnimal("jellyfish")),
     LetterPhonic("K", "kuh",  "Kite",      KidAssets.toy("kite"), soundGroup = "k"),
     LetterPhonic("L", "lll",  "Lion",      KidAssets.animal("lion")),
     LetterPhonic("M", "mmm",  "Moon",      KidAssets.weather("moon")),
     LetterPhonic("N", "nnn",  "Nose",      KidAssets.body("nose")),
-    LetterPhonic("O", "o",    "Octopus",   KidAssets.seaAnimal("octopus")),
+    LetterPhonic("O", "aw",   "Octopus",   KidAssets.seaAnimal("octopus")),
     LetterPhonic("P", "puh",  "Pig",       KidAssets.animal("pig")),
     LetterPhonic("Q", "kwuh", "Queen",     KidAssets.clothes("crown")),
     LetterPhonic("R", "rrr",  "Rainbow",   KidAssets.weather("rainbow")),
