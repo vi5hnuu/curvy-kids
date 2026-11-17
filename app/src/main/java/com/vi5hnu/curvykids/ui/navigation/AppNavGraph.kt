@@ -227,6 +227,7 @@ fun AppNavGraph(
                         onOpenOffer = { showProGate = true },
                         onHideOffer = { showHideOfferGate = true },
                         showOffline = !online && proState.known && !proState.owned,
+                        markOf = { topic -> locks.markOf(Lockable.Activity(topic.id)) },
                     )
                 }
 

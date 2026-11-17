@@ -39,6 +39,8 @@ import com.vi5hnu.curvykids.billing.ProOffer
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.pro.OfferBanner
 import com.vi5hnu.curvykids.ui.pro.OfflineNotice
+import com.vi5hnu.curvykids.ui.pro.LockMarkBadge
+import com.vi5hnu.curvykids.billing.LockMark
 import com.vi5hnu.curvykids.data.content.World
 import com.vi5hnu.curvykids.data.content.art
 import com.vi5hnu.curvykids.data.content.dailyPicks
@@ -75,6 +77,8 @@ import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
  * same place, a free user who is offline gets [OfflineNotice] ([showOffline]); the offer wins
  * when both apply. The offline one closes for this visit only.
  *
+ * [markOf] gives the play-again bubble its lock mark, decided outside like the offer.
+ *
  * In landscape (tablet or phone on its side) the worlds take the right side and the rest a column
  * on the left; on any other short window the screen scrolls instead of squeezing the worlds.
  */
@@ -90,6 +94,7 @@ fun HomeScreen(
     onOpenOffer: () -> Unit = {},
     onHideOffer: () -> Unit = {},
     showOffline: Boolean = false,
+    markOf: (Topic) -> LockMark = { LockMark.NONE },
 ) {
     var offlineHidden by rememberSaveable { mutableStateOf(false) }
     val banner: @Composable () -> Unit = {
@@ -111,6 +116,7 @@ fun HomeScreen(
         ?: remember(today) { dailyPicks(lastTopicId = null, seed = today).firstOrNull() }
 
     val isReturn = appState.lastTopic != null
+    val playAgainMark = playAgain?.let(markOf) ?: LockMark.NONE
     SceneBackground {
         BoxWithConstraints(Modifier.fillMaxSize(), contentAlignment = Alignment.TopCenter) {
             val twoPane = Responsive.isTwoPane(maxWidth, maxHeight)
@@ -137,7 +143,7 @@ fun HomeScreen(
                                 CurvyMascot(size = mascot, mood = CurvyMood.Happy, floating = true,
                                     modifier = Modifier.align(Alignment.CenterHorizontally))
                                 Spacer(Modifier.weight(1f))
-                                PlayAgainCard(playAgain, isReturn, onOpenTopic, Modifier.fillMaxWidth())
+                                PlayAgainCard(playAgain, isReturn, playAgainMark, onOpenTopic, Modifier.fillMaxWidth())
                                 Spacer(Modifier.height(KidDimens.Gap))
                                 StickerBookButton(onOpenStickers)
                             }
@@ -148,7 +154,7 @@ fun HomeScreen(
                     TopBar(appState, onOpenGrownUps)
                     banner()
                     Spacer(Modifier.height(8.dp))
-                    Greeting(playAgain, isReturn, onOpenTopic)
+                    Greeting(playAgain, isReturn, playAgainMark, onOpenTopic)
                     Spacer(Modifier.height(KidDimens.Gap))
                     WorldGrid(
                         onOpenWorld = onOpenWorld,
@@ -193,17 +199,27 @@ private fun Counter(icon: KidIcon, tint: Color, value: String, label: String) {
 
 /** The mascot, and next to it a bubble that jumps straight back into an activity. */
 @Composable
-private fun Greeting(playAgain: Topic?, isReturn: Boolean, onOpenTopic: (Topic) -> Unit) {
+private fun Greeting(playAgain: Topic?, isReturn: Boolean, mark: LockMark, onOpenTopic: (Topic) -> Unit) {
     Row(verticalAlignment = Alignment.CenterVertically, modifier = Modifier.fillMaxWidth()) {
         CurvyMascot(size = 104.dp, mood = CurvyMood.Happy, floating = true)
         Spacer(Modifier.width(12.dp))
-        PlayAgainCard(playAgain, isReturn, onOpenTopic, Modifier.weight(1f))
+        PlayAgainCard(playAgain, isReturn, mark, onOpenTopic, Modifier.weight(1f))
     }
 }
 
-/** The "play again" bubble: the last activity, or today's pick before there is one. */
+/**
+ * The "play again" bubble: the last activity, or today's pick before there is one. A Pro one
+ * shows its [mark] (a padlock for a free user) in place of the arrow, so the child isn't promised
+ * a game that then opens the locked sheet.
+ */
 @Composable
-private fun PlayAgainCard(playAgain: Topic?, isReturn: Boolean, onOpenTopic: (Topic) -> Unit, modifier: Modifier) {
+private fun PlayAgainCard(
+    playAgain: Topic?,
+    isReturn: Boolean,
+    mark: LockMark,
+    onOpenTopic: (Topic) -> Unit,
+    modifier: Modifier,
+) {
     if (playAgain == null) return
     val world = World.of(playAgain)
     CandyCard(
@@ -222,7 +238,8 @@ private fun PlayAgainCard(playAgain: Topic?, isReturn: Boolean, onOpenTopic: (To
                 color = KidInk, maxLines = 2, overflow = TextOverflow.Ellipsis,
                 modifier = Modifier.weight(1f),
             )
-            KidIconImage(KidIcon.ArrowForward, Modifier.size(30.dp), color = world.color)
+            if (mark == LockMark.NONE) KidIconImage(KidIcon.ArrowForward, Modifier.size(30.dp), color = world.color)
+            else LockMarkBadge(mark, size = 30.dp)
         }
     }
 }

@@ -36,6 +36,21 @@ val rewardedUnitId = "ca-app-pub-4715945578201106/8253929843"
 val rewardedTestUnitId = "ca-app-pub-3940256099942544/5224354917"
 
 /**
+ * A release build without the Play licence key would grant Pro to no one (every purchase fails
+ * the signature check and is refunded), and without the AdMob app id the ads SDK crashes on
+ * start. Both live only in local.properties, so a fresh checkout must fail loudly, not ship.
+ * Checked only when a release task is about to run; debug builds don't need them.
+ */
+gradle.taskGraph.whenReady {
+    val releasing = allTasks.any { it.project == project && it.name.contains("Release") }
+    val missing = listOf("play.licenseKey" to playLicenseKey, "admob.appId" to admobAppId)
+        .filter { it.second.isBlank() }.map { it.first }
+    if (releasing && missing.isNotEmpty()) {
+        throw GradleException("Release build needs ${missing.joinToString()} in local.properties")
+    }
+}
+
+/**
  * Debug builds sell Pro through a stand-in store (see billing/FakeProRepository) because real Play
  * billing only answers apps installed from a Play test track. Build with -PrealBilling to use Play.
  */
