@@ -43,3 +43,7 @@
 
 # Kotlin coroutines' internal service loader entries.
 -keepclassmembers class kotlinx.coroutines.** { volatile <fields>; }
+
+# Play Core's Kotlin extensions (asset packs) reference this compile-time-only annotation from
+# Play services, which isn't shipped at runtime; nothing uses it, so R8 may ignore it.
+-dontwarn com.google.android.gms.common.annotation.NoNullnessRewrite

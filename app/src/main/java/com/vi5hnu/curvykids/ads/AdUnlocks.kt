@@ -17,7 +17,6 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.flow
 import java.time.Instant
-import java.time.LocalDate
 import java.time.ZoneId
 import java.util.concurrent.TimeUnit
 
@@ -91,7 +90,7 @@ class AdUnlocks(context: Context) {
     private fun bootCount(): Int = Settings.Global.getInt(app.contentResolver, Settings.Global.BOOT_COUNT, -1)
 
     private fun dateOf(millis: Long): String =
-        LocalDate.ofInstant(Instant.ofEpochMilli(millis), ZoneId.systemDefault()).toString()
+        Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate().toString() // API 26+
 
     private companion object {
         val DAY = stringPreferencesKey("day")
