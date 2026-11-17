@@ -1,5 +1,6 @@
 package com.vi5hnu.curvykids.ui.navigation
 
+import com.vi5hnu.curvykids.net.Connectivity
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.WindowInsets
@@ -116,6 +117,7 @@ fun AppNavGraph(
     ads: RewardedAds,
     adUnlocks: AdUnlocks,
     offerNotice: OfferNotice,
+    connectivity: Connectivity,
 ) {
     val navController = rememberNavController()
     val proState by pro.state.collectAsState()
@@ -123,6 +125,7 @@ fun AppNavGraph(
     val accessState by access.state.collectAsState()
     val bannerOffer by offerNotice.offer.collectAsState()
     val adReady by ads.ready.collectAsState()
+    val online by connectivity.online.collectAsState()
     val scope = rememberCoroutineScope()
     val appState by appViewModel.uiState.collectAsState()
     val appSettings by appViewModel.settings.collectAsState()
@@ -152,7 +155,11 @@ fun AppNavGraph(
     var showHideOfferGate by rememberSaveable { mutableStateOf(false) }
     val onLocked: (Lockable) -> Unit = remember {
         { item ->
-            val line = if (adReady) EnglishVoiceScript.FOR_PRO_OR_VIDEO else EnglishVoiceScript.FOR_PRO
+            val line = when {
+                adReady -> EnglishVoiceScript.FOR_PRO_OR_VIDEO
+                !online -> EnglishVoiceScript.FOR_PRO_OFFLINE
+                else -> EnglishVoiceScript.FOR_PRO
+            }
             gameViewModel.speaker.say(EnglishVoiceScript.say(line))
             lockedItem = item
         }
@@ -219,6 +226,7 @@ fun AppNavGraph(
                         offer = bannerOffer,
                         onOpenOffer = { showProGate = true },
                         onHideOffer = { showHideOfferGate = true },
+                        showOffline = !online && proState.known && !proState.owned,
                     )
                 }
 
@@ -540,6 +548,7 @@ fun AppNavGraph(
                         showProGate = true
                     },
                     onDismiss = { lockedItem = null },
+                    offline = !online,
                 )
             }
 

@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.home
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -36,6 +38,7 @@ import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.billing.ProOffer
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.pro.OfferBanner
+import com.vi5hnu.curvykids.ui.pro.OfflineNotice
 import com.vi5hnu.curvykids.data.content.World
 import com.vi5hnu.curvykids.data.content.art
 import com.vi5hnu.curvykids.data.content.dailyPicks
@@ -68,7 +71,9 @@ import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
  * is one). Grown-ups get in through the lock in the corner, which needs a press and hold.
  *
  * When Pro is on discount, a quiet line for grown-ups sits under the counters ([OfferBanner]);
- * which offer, if any, is decided outside ([offer]), so Home knows nothing of billing.
+ * which offer, if any, is decided outside ([offer]), so Home knows nothing of billing. In the
+ * same place, a free user who is offline gets [OfflineNotice] ([showOffline]); the offer wins
+ * when both apply. The offline one closes for this visit only.
  *
  * In landscape (tablet or phone on its side) the worlds take the right side and the rest a column
  * on the left; on any other short window the screen scrolls instead of squeezing the worlds.
@@ -84,9 +89,16 @@ fun HomeScreen(
     offer: ProOffer? = null,
     onOpenOffer: () -> Unit = {},
     onHideOffer: () -> Unit = {},
+    showOffline: Boolean = false,
 ) {
+    var offlineHidden by rememberSaveable { mutableStateOf(false) }
     val banner: @Composable () -> Unit = {
-        offer?.let { OfferBanner(it, onOpenOffer, onHideOffer, Modifier.padding(top = 10.dp)) }
+        when {
+            offer != null -> OfferBanner(offer, onOpenOffer, onHideOffer, Modifier.padding(top = 10.dp))
+            // Opens the purchase screen through the same parent gate as the offer.
+            showOffline && !offlineHidden ->
+                OfflineNotice(onOpen = onOpenOffer, onHide = { offlineHidden = true }, Modifier.padding(top = 10.dp))
+        }
     }
     // Greet once per visit to the app, not on every return from an activity.
     var greeted = rememberSaveable { mutableStateOf(false) }

@@ -120,6 +120,8 @@ fun LockMarkBadge(mark: LockMark, modifier: Modifier = Modifier, size: Dp = 30.d
  * @param onWatchAd plays a short video that opens the item for today; null hides the button
  *   (Pro owners never get here; no video loaded, offline, or ads not offered).
  * @param onAskGrownUp goes on to the parent gate and then the purchase screen.
+ * @param offline the internet can't be reached: says why there is no video, rather than leave
+ *   the child (or grown-up) wondering where the button went.
  */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -127,6 +129,7 @@ fun LockedSheet(
     onWatchAd: (() -> Unit)?,
     onAskGrownUp: () -> Unit,
     onDismiss: () -> Unit,
+    offline: Boolean = false,
 ) {
     ModalBottomSheet(
         onDismissRequest = onDismiss,
@@ -146,6 +149,11 @@ fun LockedSheet(
             Text("This one is for Pro!", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,
                 fontSize = 26.sp, color = KidGrape, textAlign = TextAlign.Center)
             Spacer(Modifier.height(20.dp))
+            if (onWatchAd == null && offline) {
+                Text("Videos need the internet. Ask a grown-up to connect.", fontWeight = FontWeight.Bold,
+                    fontSize = 15.sp, color = KidInk.copy(alpha = 0.65f), textAlign = TextAlign.Center)
+                Spacer(Modifier.height(14.dp))
+            }
             if (onWatchAd != null) {
                 CandyButton(onClick = onWatchAd, containerColor = KidGrape,
                     modifier = Modifier.fillMaxWidth().height(76.dp)) {

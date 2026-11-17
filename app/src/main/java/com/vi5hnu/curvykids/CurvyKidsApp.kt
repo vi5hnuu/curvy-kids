@@ -1,5 +1,6 @@
 package com.vi5hnu.curvykids
 
+import com.vi5hnu.curvykids.net.Connectivity
 import android.app.Application
 import coil.ImageLoader
 import coil.ImageLoaderFactory
@@ -73,6 +74,9 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
     val ads: RewardedAds by lazy { AdMobRewardedAds(this, appScope, BuildConfig.REWARDED_AD_UNIT) }
 
     /** What is locked right now (Pro, the free/Pro split, videos watched today); what screens ask. */
+    /** Whether the internet can be reached, for the offline notice and the locked sheet. */
+    val connectivity: Connectivity by lazy { Connectivity(this) }
+
     val access: Access by lazy { Access(pro, appScope, adUnlocks.openedToday) }
 
     /** Where recordings are looked for: built into the app first, then downloaded packs. */
