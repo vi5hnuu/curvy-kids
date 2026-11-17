@@ -180,11 +180,6 @@ private fun StoryReader(
     // so a recorded story plays without the line highlight.
     val recording = remember(story.id) { HindiVoiceScript.story(story).clip }
 
-    /** Speaks one segment on its own (a tapped line or the moral), in the device voice. */
-    fun speakSegment(i: Int) {
-        speaker?.speak(segments[i], langTag = "hi-IN", utteranceId = "tap-$i")
-    }
-
     fun resetVoice() {
         speaker?.setPitch(1f)
         speaker?.setSpeechRate(PhonicsSpeaker.DEFAULT_RATE)
@@ -289,30 +284,20 @@ private fun StoryReader(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(if (active) story.tint else Color.Transparent)
-                    .clickable {
-                        stopReading()
-                        speaker?.setPitch(STORY_PITCH)
-                        speaker?.setSpeechRate(STORY_RATE)
-                        current = i
-                        speakSegment(i)
-                    }
+                    // A tap reads the whole story from the top, in the recorded voice: single
+                    // lines have no recording, and a lone line in the device voice sounded off.
+                    .clickable { startReading() }
                     .padding(horizontal = 12.dp, vertical = 8.dp),
             )
         }
 
         Spacer(Modifier.height(16.dp))
 
-        // Moral — lights up while it's being read; tap to hear just the moral.
+        // Moral — lights up while it's being read; a tap reads the whole story, like a line.
         val moralActive = current == moralIndex
         CardSurface(
             modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                stopReading()
-                speaker?.setPitch(STORY_PITCH)
-                speaker?.setSpeechRate(STORY_RATE)
-                current = moralIndex
-                speakSegment(moralIndex)
-            },
+            onClick = { startReading() },
         ) {
             Column(
                 modifier = Modifier
