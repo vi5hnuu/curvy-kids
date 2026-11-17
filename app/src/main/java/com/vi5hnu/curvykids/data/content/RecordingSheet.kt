@@ -37,11 +37,12 @@ object RecordingSheet {
         }
 
         appendLine("== ENGLISH LETTER SOUNDS ==")
-        appendLine("Each line is a letter's sound, spelled out; say it as that one short sound, crisp,")
-        appendLine("and nothing else. Hold sounds that can be held (mmm, sss, fff) for about one second.")
+        appendLine("Each line is a letter's sound said twice, then its word (\"buh, buh, Ball!\"), like a")
+        appendLine("playful phonics teacher: the sound short and crisp (held a moment for mmm, sss, fff),")
+        appendLine("never the letter's name, and the word bright and clear.")
         appendLine()
         PHONICS_DATA.filterNot { isRecorded(it.clip) }.forEach { p ->
-            appendLine("${n++}. ${p.sound}  ->  ${p.clip.relativePath}.m4a")
+            appendLine("${n++}. ${p.call}  ->  ${p.clip.relativePath}.m4a")
         }
 
         appendLine()

@@ -388,9 +388,8 @@ val OPPOSITES = listOf(
 /**
  * A letter, the sound it makes, and a word that starts (or, for X, ends) with that sound.
  *
- * @param sound      The sound spelled out ("buh", "sss"): what the recording sheet asks to be said
- *                   (the voice script sends exactly this; any instruction around it was read
- *                   aloud), and what text-to-speech says while there is no recording. A and O
+ * @param sound      The sound spelled out ("buh", "sss"), said inside [call] (the line recorded and,
+ *                   while there is no recording, what text-to-speech says). A and O
  *                   are spelled away from their letter names ("aah", "aw"), which a bare "a" or
  *                   "o" is read as. Never shown to the child; the quiz is "hear the sound, tap the letter".
  * @param soundGroup Letters that make the same sound share a group (C and K both say /k/), so a
@@ -405,7 +404,17 @@ data class LetterPhonic(
     val soundGroup: String = letter,
     val position: SoundPosition = SoundPosition.START,
 ) {
-    /** Recording of the pure sound, e.g. `assets/voice/en/phonemes/phoneme-m.m4a`. */
+    /**
+     * What the quiz plays for the letter: the sound twice, then the word it belongs to, the
+     * "b, b, ball" way phonics teachers say it ("buh, buh, Ball!"; for an ending sound the word
+     * comes first: "Fox, ks, ks!"). A bare "buh" came out of speech engines distorted or as a
+     * letter name; inside a short phrase with a real word it is said cleanly, and the word tells
+     * the child which sound to listen for.
+     */
+    val call: String
+        get() = if (position == SoundPosition.END) "$example, $sound, $sound!" else "$sound, $sound, $example!"
+
+    /** Recording of [call], e.g. `assets/voice/en/phonemes/phoneme-m.m4a`. */
     val clip: VoiceClip get() = VoiceClip.english("phonemes", "phoneme-${letter.lowercase()}")
 }
 

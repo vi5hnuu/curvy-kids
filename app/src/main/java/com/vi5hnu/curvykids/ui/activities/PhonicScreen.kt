@@ -52,7 +52,6 @@ fun PhonicScreen(
         buildPhonicSpec(asked).also { asked.add(it.target.letter) }
     }
     val target = spec.target
-    val hint = EnglishVoiceScript.soundHint(target)
 
     QuizScaffold(
         topic = topic,
@@ -66,8 +65,8 @@ fun PhonicScreen(
         speakPrompt = { flush ->
             val sp = feedback?.speaker
             sp?.say(EnglishVoiceScript.say("Which letter makes this sound?"), flush = flush)
-            sp?.speak(target.sound, flush = false, utteranceId = "phoneme", clip = target.clip)
-            sp?.say(EnglishVoiceScript.say(hint), flush = false)
+            // The call already ends on the example word ("buh, buh, Ball!"), so no separate hint.
+            sp?.speak(target.call, flush = false, utteranceId = "phoneme", clip = target.clip)
         },
         celebrateTitle = "Sound Expert!",
         promptLabel = "WHICH LETTER MAKES THIS SOUND?",
