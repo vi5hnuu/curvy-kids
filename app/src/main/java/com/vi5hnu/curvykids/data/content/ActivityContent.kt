@@ -73,12 +73,13 @@ data class WordEntry(val word: String, val svg: AssetPath)
  * Short words (3–5 letters) spanning A–Z, each with a hand-drawn illustration.
  *
  * Every entry is picture-backed on purpose: a word tile with no image teaches nothing to a child
- * who cannot yet read it. Words whose subject has no artwork were swapped for ones that do
- * rather than shipping a blank tile.
+ * who cannot yet read it. The word must name what the picture shows, since it is also what the
+ * child hears ("APPLE" under an apple, never "APE" under a monkey); words whose subject has no
+ * artwork were swapped for ones that do rather than shipping a blank tile or a near match.
  */
 val WORD_LIST = listOf(
     // A
-    WordEntry("ANT", KidAssets.insect("ant")), WordEntry("APE", KidAssets.animal("monkey")),
+    WordEntry("ANT", KidAssets.insect("ant")), WordEntry("APPLE", KidAssets.fruit("apple")),
     WordEntry("ARM", KidAssets.body("arm")),
     // B
     WordEntry("BAT", KidAssets.animal("bat")), WordEntry("BEE", KidAssets.insect("bee")),
@@ -89,7 +90,7 @@ val WORD_LIST = listOf(
     WordEntry("CAT", KidAssets.animal("cat")), WordEntry("COW", KidAssets.animal("cow")),
     WordEntry("CAR", KidAssets.transport("car")), WordEntry("CAKE", KidAssets.food("cake")),
     WordEntry("CORN", KidAssets.vegetable("corn")), WordEntry("CRAB", KidAssets.seaAnimal("crab")),
-    WordEntry("CHAIR", KidAssets.home("chair")),
+    WordEntry("CHAIR", KidAssets.home("chair")), WordEntry("CHICK", KidAssets.bird("hatching-chick")),
     // D
     WordEntry("DOG", KidAssets.animal("dog")), WordEntry("DUCK", KidAssets.bird("duck")),
     WordEntry("DOOR", KidAssets.home("door")), WordEntry("DRUM", KidAssets.instrument("drum")),
@@ -111,7 +112,7 @@ val WORD_LIST = listOf(
     // I
     WordEntry("ICE", KidAssets.weather("snowflake")),
     // J
-    WordEntry("JET", KidAssets.transport("airplane")), WordEntry("JEANS", KidAssets.clothes("jeans")),
+    WordEntry("JUICE", KidAssets.food("juice")), WordEntry("JEANS", KidAssets.clothes("jeans")),
     // K
     WordEntry("KEY", KidAssets.home("key")), WordEntry("KITE", KidAssets.toy("kite")),
     WordEntry("KOALA", KidAssets.animal("koala")), WordEntry("KIWI", KidAssets.fruit("kiwi")),
@@ -122,7 +123,7 @@ val WORD_LIST = listOf(
     WordEntry("MOON", KidAssets.weather("moon")), WordEntry("MILK", KidAssets.food("milk")),
     WordEntry("MOUSE", KidAssets.animal("mouse")), WordEntry("MANGO", KidAssets.fruit("mango")),
     // N
-    WordEntry("NOSE", KidAssets.body("nose")), WordEntry("NEST", KidAssets.bird("hatching-chick")),
+    WordEntry("NOSE", KidAssets.body("nose")),
     // O
     WordEntry("OWL", KidAssets.bird("owl")), WordEntry("OX", KidAssets.animal("ox")),
     WordEntry("ONION", KidAssets.vegetable("onion")),
@@ -153,7 +154,7 @@ val WORD_LIST = listOf(
     // X / extra
     WordEntry("BOX", KidAssets.toy("gift")), WordEntry("SIX", KidAssets.number(6)),
     // Y
-    WordEntry("YAK", KidAssets.animal("buffalo")), WordEntry("YOYO", KidAssets.toy("yo-yo")),
+    WordEntry("YOYO", KidAssets.toy("yo-yo")),
     // Z
     WordEntry("ZEBRA", KidAssets.animal("zebra")),
 )
