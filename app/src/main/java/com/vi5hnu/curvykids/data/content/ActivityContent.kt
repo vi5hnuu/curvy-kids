@@ -154,7 +154,7 @@ val WORD_LIST = listOf(
     // X / extra
     WordEntry("BOX", KidAssets.toy("gift")), WordEntry("SIX", KidAssets.number(6)),
     // Y
-    WordEntry("YOYO", KidAssets.toy("yo-yo")),
+    WordEntry("YAK", KidAssets.hindiWord("yak")), WordEntry("YOYO", KidAssets.toy("yo-yo")),
     // Z
     WordEntry("ZEBRA", KidAssets.animal("zebra")),
 )

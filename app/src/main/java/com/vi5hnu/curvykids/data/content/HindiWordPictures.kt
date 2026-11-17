@@ -251,6 +251,9 @@ val HINDI_WORD_PICTURES: Map<String, AssetPath> = mapOf(
     "भूरा" to KidAssets.color("brown"),
     "चौकोर" to KidAssets.shape("square"),
     "षट्कोण" to KidAssets.shape("hexagon"),
+    // A ring (घेरा) is a circle; "small" (छोटा) is the ant, as in the Opposites activity.
+    "घेरा" to KidAssets.shape("circle"),
+    "छोटा" to KidAssets.insect("ant"),
     "फिसलपट्टी" to KidAssets.toy("slide"),
     "तैरना" to KidAssets.sport("swimming"),
     "फौजी" to KidAssets.job("guard"),
