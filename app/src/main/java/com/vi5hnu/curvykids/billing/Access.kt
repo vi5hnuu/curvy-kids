@@ -28,6 +28,21 @@ sealed interface Lockable {
     }
 }
 
+/** The mark a screen draws on a Pro item, from [AccessState.markOf]. */
+enum class LockMark {
+    /** Free, or Pro is owned: no mark. */
+    NONE,
+
+    /** Whether Pro is owned isn't known yet: a shimmer where the mark will go, never a guess. */
+    LOADING,
+
+    /** Part of Pro and not opened: a padlock. */
+    LOCKED,
+
+    /** Opened for today by a video: a play mark. */
+    OPEN_TODAY,
+}
+
 /**
  * What is open right now, as one value screens can read without knowing why.
  *
@@ -44,11 +59,16 @@ data class AccessState(
 ) {
     fun isLocked(item: Lockable): Boolean = !owned && !ProCatalog.isFree(item) && item.key !in openedToday
 
-    /** Show a padlock: locked, and known to be. */
-    fun showsLock(item: Lockable): Boolean = ready && isLocked(item)
-
-    /** Opened only for today, so a screen can mark it as such. */
-    fun isOpenForToday(item: Lockable): Boolean = !owned && !ProCatalog.isFree(item) && item.key in openedToday
+    /**
+     * The one rule for what to draw on [item]. Until [ready], a Pro item shows [LockMark.LOADING],
+     * so a Pro owner never sees a padlock (or a "today" mark) flash before ownership is read.
+     */
+    fun markOf(item: Lockable): LockMark = when {
+        owned || ProCatalog.isFree(item) -> LockMark.NONE
+        !ready -> LockMark.LOADING
+        item.key in openedToday -> LockMark.OPEN_TODAY
+        else -> LockMark.LOCKED
+    }
 }
 
 /**
@@ -79,9 +99,8 @@ class ContentLocks(
     val access: AccessState,
     val onLocked: (Lockable) -> Unit,
 ) {
-    /** Shown with a padlock (see [AccessState.showsLock]). */
-    fun isLocked(item: Lockable) = access.showsLock(item)
-    fun isOpenForToday(item: Lockable) = access.isOpenForToday(item)
+    /** What to draw on [item] (see [AccessState.markOf]). */
+    fun markOf(item: Lockable) = access.markOf(item)
 
     /**
      * Runs [open] when [item] is open, otherwise reports it as locked. While ownership is still

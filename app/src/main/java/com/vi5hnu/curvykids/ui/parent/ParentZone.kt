@@ -1,5 +1,6 @@
 package com.vi5hnu.curvykids.ui.parent
 
+import com.vi5hnu.curvykids.ui.kit.ShimmerBox
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -123,7 +124,7 @@ fun ParentZone(
             // ── CurvyKids Pro ─────────────────────────────────────────────
             // Already past the parent gate here, so this opens the purchase screen directly.
             ProRow(proState, onOpenPro)
-            if (!proState.owned) {
+            if (proState.known && !proState.owned) {
                 // A promo code from the Play Console unlocks Pro without the purchase screen.
                 TextButton(onClick = onRedeemCode, modifier = Modifier.align(Alignment.End)) {
                     Text("Have a promo code? Redeem it", fontWeight = FontWeight.Bold, fontSize = 13.sp,
@@ -349,7 +350,7 @@ private fun ProRow(state: ProState, onOpen: () -> Unit) {
     val offer = (state.store as? StoreState.Ready)?.offer
     Surface(
         onClick = onOpen,
-        enabled = !state.owned,
+        enabled = state.known && !state.owned,
         shape = RoundedCornerShape(18.dp),
         color = KidGrape.copy(alpha = 0.12f),
         modifier = Modifier.fillMaxWidth(),
@@ -358,7 +359,10 @@ private fun ProRow(state: ProState, onOpen: () -> Unit) {
             Column(Modifier.weight(1f)) {
                 Text("CurvyKids Pro", fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,
                     fontSize = 16.sp, color = KidGrape)
-                Text(
+                if (!state.known) {
+                    // Still reading whether Pro is owned: no "buy" that turns into "unlocked".
+                    ShimmerBox(180.dp, 13.dp, Modifier.padding(top = 4.dp))
+                } else Text(
                     when {
                         state.owned -> "Unlocked. Thank you!"
                         state.pending -> "Payment pending"
@@ -367,7 +371,9 @@ private fun ProRow(state: ProState, onOpen: () -> Unit) {
                     fontWeight = FontWeight.Bold, fontSize = 12.5.sp, color = Ink.copy(alpha = 0.6f),
                 )
             }
-            if (!state.owned && offer != null) {
+            if (!state.known) {
+                ShimmerBox(52.dp, 20.dp)
+            } else if (!state.owned && offer != null) {
                 Column(horizontalAlignment = Alignment.End) {
                     offer.percentOff?.takeIf { offer.isDiscount }?.let {
                         Text("$it% OFF", fontWeight = FontWeight.ExtraBold, fontSize = 12.sp, color = KidBerry)

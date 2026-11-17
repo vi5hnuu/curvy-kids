@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import com.vi5hnu.curvykids.billing.LockMark
+import com.vi5hnu.curvykids.ui.pro.LockMarkBadge
 import androidx.compose.runtime.setValue
 import androidx.compose.runtime.getValue
 import androidx.compose.foundation.background
@@ -36,8 +38,6 @@ import com.vi5hnu.curvykids.data.content.HindiVoiceScript
 import com.vi5hnu.curvykids.data.content.STORIES
 import com.vi5hnu.curvykids.billing.ContentLocks
 import com.vi5hnu.curvykids.billing.Lockable
-import com.vi5hnu.curvykids.ui.pro.LockBadge
-import com.vi5hnu.curvykids.ui.pro.TodayBadge
 import com.vi5hnu.curvykids.data.content.Story
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
@@ -102,7 +102,7 @@ private fun StoryList(topic: Topic, locks: ContentLocks, onBack: () -> Unit, onP
 
         STORIES.forEachIndexed { index, story ->
             val item = Lockable.Story(index)
-            val locked = locks.isLocked(item)
+            val mark = locks.markOf(item)
             CardSurface(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -138,11 +138,8 @@ private fun StoryList(topic: Topic, locks: ContentLocks, onBack: () -> Unit, onP
                             color = InkSoft,
                         )
                     }
-                    when {
-                        locked -> LockBadge()
-                        locks.isOpenForToday(item) -> TodayBadge()
-                        else -> Text("▶", fontSize = 18.sp, color = story.color)
-                    }
+                    if (mark == LockMark.NONE) Text("▶", fontSize = 18.sp, color = story.color)
+                    else LockMarkBadge(mark)
                 }
             }
         }

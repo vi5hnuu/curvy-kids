@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities.barakhadi
 
+import com.vi5hnu.curvykids.billing.LockMark
+import com.vi5hnu.curvykids.ui.pro.LockMarkBadge
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -24,8 +26,6 @@ import com.vi5hnu.curvykids.ui.theme.KidDimens
 import androidx.compose.foundation.layout.Box
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.draw.alpha
-import com.vi5hnu.curvykids.ui.pro.LockBadge
-import com.vi5hnu.curvykids.ui.pro.TodayBadge
 
 /**
  * The strip of 36 consonants to choose from. The picked letter is a solid candy block, the rest
@@ -33,8 +33,7 @@ import com.vi5hnu.curvykids.ui.pro.TodayBadge
  * view when it changes (including after rotation).
  *
  * @param vertical a column down the side instead of a row, for landscape where height is short.
- * @param isLocked whether the letter at an index is part of Pro (shown faded, with a padlock).
- * @param isOpenToday whether a Pro letter was opened for today by a video (marked as such).
+ * @param markOf the mark for the letter at an index ([LockMark]): a locked one is also shown faded.
  */
 @Composable
 fun ConsonantPicker(
@@ -45,8 +44,7 @@ fun ConsonantPicker(
     onPick: (Int) -> Unit,
     modifier: Modifier = Modifier,
     vertical: Boolean = false,
-    isLocked: (Int) -> Boolean = { false },
-    isOpenToday: (Int) -> Boolean = { false },
+    markOf: (Int) -> LockMark = { LockMark.NONE },
 ) {
     val state = rememberLazyListState(initialFirstVisibleItemIndex = (selected - 2).coerceAtLeast(0))
     LaunchedEffect(selected) {
@@ -58,7 +56,8 @@ fun ConsonantPicker(
     val items: LazyListScope.() -> Unit = {
         itemsIndexed(consonants, key = { _, c -> c.char }) { i, c ->
             val picked = i == selected
-            val locked = isLocked(i)
+            val mark = markOf(i)
+            val locked = mark == LockMark.LOCKED
             Box {
             CandyCard(
                 color = if (picked) color else tint,
@@ -75,8 +74,7 @@ fun ConsonantPicker(
                     modifier = Modifier.alpha(if (locked) 0.45f else 1f),
                 )
             }
-            if (locked) LockBadge(Modifier.align(Alignment.TopEnd), size = 22.dp)
-            if (isOpenToday(i)) TodayBadge(Modifier.align(Alignment.TopEnd), size = 22.dp)
+            LockMarkBadge(mark, Modifier.align(Alignment.TopEnd), size = 22.dp)
             }
         }
     }

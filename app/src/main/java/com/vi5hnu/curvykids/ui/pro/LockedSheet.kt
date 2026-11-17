@@ -29,10 +29,12 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.vi5hnu.curvykids.billing.LockMark
 import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.components.ConfettiOverlay
 import com.vi5hnu.curvykids.ui.components.CurvyMascot
 import com.vi5hnu.curvykids.ui.components.CurvyMood
+import com.vi5hnu.curvykids.ui.kit.ShimmerBox
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.KidGrape
 import com.vi5hnu.curvykids.ui.theme.KidInk
@@ -94,6 +96,20 @@ fun TodayBadge(modifier: Modifier = Modifier, size: Dp = 30.dp) {
         contentAlignment = Alignment.Center,
     ) {
         Text("▶", color = Color.White, fontWeight = FontWeight.ExtraBold, fontSize = (size.value * 0.45f).sp)
+    }
+}
+
+/**
+ * The mark on a Pro tile, letter or story, from [LockMark]: a padlock, a "today" mark, a
+ * shimmering dot while ownership is still being read, or nothing.
+ */
+@Composable
+fun LockMarkBadge(mark: LockMark, modifier: Modifier = Modifier, size: Dp = 30.dp) {
+    when (mark) {
+        LockMark.NONE -> Unit
+        LockMark.LOADING -> ShimmerBox(size, size, modifier, CircleShape)
+        LockMark.LOCKED -> LockBadge(modifier, size)
+        LockMark.OPEN_TODAY -> TodayBadge(modifier, size)
     }
 }
 

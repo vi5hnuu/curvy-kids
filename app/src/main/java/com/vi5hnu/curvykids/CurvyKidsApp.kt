@@ -19,6 +19,7 @@ import com.vi5hnu.curvykids.ads.RewardedAds
 import com.vi5hnu.curvykids.billing.Access
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.launch
 import com.vi5hnu.curvykids.billing.FakeProRepository
 import com.vi5hnu.curvykids.billing.PlayProRepository
@@ -91,15 +92,23 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
     }
 
     /**
-     * Loads videos only while Pro isn't owned, and stops for good once it is. Both the live state
-     * and the saved one must say "not owned", so a Pro user starting offline (Play not answering
-     * yet) never has the ads SDK started.
+     * Loads videos only for a free user, and stops for good once Pro is owned. Nothing starts
+     * until ownership is settled ([com.vi5hnu.curvykids.billing.ProState.known]) and the saved
+     * record also says "not owned", so a Pro owner (even one who just reinstalled) never has the
+     * ads SDK started.
      */
     private fun keepAdsForFreeUsers() {
         appScope.launch {
-            combine(pro.state, proStore.owned) { state, saved -> state.owned || saved }
+            combine(pro.state, proStore.owned) { state, saved ->
+                when {
+                    state.owned || saved -> false
+                    state.known -> true
+                    else -> null // still being read
+                }
+            }
+                .filterNotNull()
                 .distinctUntilChanged()
-                .collect { owned -> if (owned) ads.stop() else ads.start() }
+                .collect { free -> if (free) ads.start() else ads.stop() }
         }
     }
 

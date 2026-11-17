@@ -40,6 +40,8 @@ import com.vi5hnu.curvykids.ui.components.CurvyMood
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.kit.kidContentWidth
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.ui.kit.ShimmerBox
+import com.vi5hnu.curvykids.ui.kit.shimmer
 import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.theme.KidBerry
@@ -88,6 +90,8 @@ fun ProScreen(
             Spacer(Modifier.height(14.dp))
 
             when {
+                // Not "buy" and then "unlocked": hold the screen's shape until Play has said.
+                !state.known -> Loading()
                 state.owned -> Unlocked()
                 state.pending -> Message(
                     title = "Payment pending",
@@ -119,6 +123,19 @@ fun ProScreen(
         }
         if (state.owned) ConfettiOverlay(modifier = Modifier.fillMaxSize())
     }
+}
+
+/** Stands in for the benefits and the price while ownership is read. */
+@Composable
+private fun Loading() {
+    Column(
+        verticalArrangement = Arrangement.spacedBy(14.dp),
+        modifier = Modifier.fillMaxWidth().clip(RoundedCornerShape(22.dp)).background(Color.White).padding(18.dp),
+    ) {
+        repeat(PRO_BENEFITS.size) { ShimmerBox(220.dp, 16.dp) }
+    }
+    Spacer(Modifier.height(18.dp))
+    Box(Modifier.fillMaxWidth().height(120.dp).shimmer(RoundedCornerShape(22.dp)))
 }
 
 @Composable

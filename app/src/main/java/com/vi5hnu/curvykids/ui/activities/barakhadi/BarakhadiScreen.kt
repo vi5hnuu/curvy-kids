@@ -237,8 +237,7 @@ fun BarakhadiScreen(
                 tint = topic.tint,
                 vertical = vertical,
                 modifier = modifier,
-                isLocked = { locks.isLocked(Lockable.BarakhadiLetter(it)) },
-                isOpenToday = { locks.isOpenForToday(Lockable.BarakhadiLetter(it)) },
+                markOf = { locks.markOf(Lockable.BarakhadiLetter(it)) },
                 onPick = { i -> locks.open(Lockable.BarakhadiLetter(i)) {
                     stopRecite() // switching letters cancels any running recitation
                     selected = i

@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.world
 
+import com.vi5hnu.curvykids.billing.LockMark
+import com.vi5hnu.curvykids.ui.pro.LockMarkBadge
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -46,8 +48,6 @@ import com.vi5hnu.curvykids.ui.theme.KidDimens
 import com.vi5hnu.curvykids.ui.theme.KidInk
 import com.vi5hnu.curvykids.billing.ContentLocks
 import com.vi5hnu.curvykids.billing.Lockable
-import com.vi5hnu.curvykids.ui.pro.LockBadge
-import com.vi5hnu.curvykids.ui.pro.TodayBadge
 import androidx.compose.ui.draw.alpha
 
 /**
@@ -89,7 +89,7 @@ fun WorldScreen(
             ) {
                 items(world.topics, key = { it.id }) { topic ->
                     val item = Lockable.Activity(topic.id)
-                    ActivityTile(topic, world.color, locked = locks.isLocked(item), openToday = locks.isOpenForToday(item)) {
+                    ActivityTile(topic, world.color, mark = locks.markOf(item)) {
                         onOpenTopic(topic)
                     }
                 }
@@ -101,7 +101,8 @@ fun WorldScreen(
 
 /** A white card with the activity's picture and name, edged in the world's colour. */
 @Composable
-private fun ActivityTile(topic: Topic, color: Color, locked: Boolean, openToday: Boolean, onClick: () -> Unit) {
+private fun ActivityTile(topic: Topic, color: Color, mark: LockMark, onClick: () -> Unit) {
+    val locked = mark == LockMark.LOCKED
     CandyCard(color = Color.White, onClick = onClick, label = topic.title,
         modifier = Modifier.fillMaxWidth().aspectRatio(0.9f)) {
         Column(
@@ -114,8 +115,7 @@ private fun ActivityTile(topic: Topic, color: Color, locked: Boolean, openToday:
                 contentAlignment = Alignment.Center,
             ) {
                 TopicArtView(topic.art(), color, Modifier.fillMaxSize().alpha(if (locked) 0.55f else 1f))
-                if (locked) LockBadge(Modifier.align(Alignment.TopEnd))
-                if (openToday) TodayBadge(Modifier.align(Alignment.TopEnd))
+                LockMarkBadge(mark, Modifier.align(Alignment.TopEnd))
             }
             Spacer(Modifier.height(8.dp))
             Text(topic.title, fontFamily = FontDisplay, fontWeight = FontWeight.ExtraBold,

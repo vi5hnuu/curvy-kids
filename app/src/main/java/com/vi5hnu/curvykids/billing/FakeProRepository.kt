@@ -63,6 +63,9 @@ class FakeProRepository(
     override fun refresh() {
         scope.launch {
             val owned = store.owned.first()
+            // Like Play's first answer: a saved purchase counts at once, "not owned" takes a
+            // moment, so the shimmer shown meanwhile can be seen on an emulator.
+            if (!owned && !_state.value.known) delay(FIRST_ANSWER_MS)
             _state.update {
                 it.copy(
                     owned = owned,
@@ -95,4 +98,8 @@ class FakeProRepository(
     override fun clearFailure() = _state.update { it.copy(failure = null) }
 
     override fun clearUnlocked() = _state.update { it.copy(unlockedJustNow = false) }
+
+    private companion object {
+        const val FIRST_ANSWER_MS = 1_500L
+    }
 }

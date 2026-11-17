@@ -62,6 +62,12 @@ class PlayProRepository(
     /** Asks Play again when the shown offer ends. */
     private var offerExpiry: Job? = null
 
+    /**
+     * Play has answered a full purchase query at least once. Only after that is a newly owned Pro
+     * a real unlock to celebrate; before it, it is just Pro being restored.
+     */
+    @Volatile private var answered = false
+
     /** A connection attempt is under way; a second [refresh] meanwhile waits for it. */
     @Volatile private var connecting = false
 
@@ -73,10 +79,24 @@ class PlayProRepository(
         .build()
 
     init {
-        // Start from what this device remembers, so an offline launch keeps Pro.
+        // A saved purchase is trusted at once, so an offline launch keeps Pro with no wait. A saved
+        // "not owned" is not: after a reinstall or cleared data a Pro owner would see padlocks
+        // until Play answered, so screens shimmer until Play does (or can't, see [settle]).
         scope.launch {
-            val owned = store.owned.first()
-            _state.update { it.copy(owned = it.owned || owned, known = true) }
+            if (store.owned.first()) _state.update { it.copy(owned = true, known = true) }
+        }
+        scope.launch {
+            delay(PLAY_ANSWER_TIMEOUT_MS)
+            settle()
+        }
+    }
+
+    /** Play can't say (offline, no Play, an error): go on with what this device remembers. */
+    private fun settle() {
+        if (_state.value.known) return
+        scope.launch {
+            val saved = store.owned.first()
+            _state.update { if (it.known) it else it.copy(owned = it.owned || saved, known = true) }
         }
     }
 
@@ -98,6 +118,7 @@ class PlayProRepository(
                 } else {
                     Log.w(TAG, "Billing setup failed: ${result.responseCode} ${result.debugMessage}")
                     setStore(StoreState.Unavailable(problemOf(result.responseCode)))
+                    settle()
                 }
             }
 
@@ -175,6 +196,7 @@ class PlayProRepository(
         client.queryPurchasesAsync(params) { result, purchases ->
             // Only a real answer from Play may take Pro away; a failed query keeps what we know.
             if (result.responseCode == BillingResponseCode.OK) handlePurchases(purchases, complete = true)
+            else settle()
         }
     }
 
@@ -212,12 +234,14 @@ class PlayProRepository(
             complete -> false
             else -> _state.value.owned
         }
+        val celebrate = answered
+        if (complete) answered = true
         _state.update {
             it.copy(
                 owned = owned,
                 known = true,
                 pending = pending && !owned,
-                unlockedJustNow = it.unlockedJustNow || (owned && !it.owned && it.known),
+                unlockedJustNow = it.unlockedJustNow || (owned && !it.owned && celebrate),
             )
         }
         if (bought.isNotEmpty() || complete) scope.launch { store.setOwned(owned) }
@@ -249,6 +273,9 @@ class PlayProRepository(
 
     private companion object {
         const val TAG = "PRO_BILLING"
+        /** How long screens wait (shimmering) for Play to say whether Pro is owned. */
+        const val PLAY_ANSWER_TIMEOUT_MS = 4_000L
+
         /** Play may still list an offer for a moment after its end time. */
         const val EXPIRY_GRACE_MS = 2_000L
 
