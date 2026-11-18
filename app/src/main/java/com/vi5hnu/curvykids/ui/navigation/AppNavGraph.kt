@@ -23,6 +23,7 @@ import com.vi5hnu.curvykids.data.content.World
 import com.vi5hnu.curvykids.data.content.Topic
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import com.vi5hnu.curvykids.ui.kit.LocalSpeaker
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -193,7 +194,10 @@ fun AppNavGraph(
         }
     }
 
-    CompositionLocalProvider(LocalDifficulty provides appSettings.difficulty) {
+    CompositionLocalProvider(
+        LocalDifficulty provides appSettings.difficulty,
+        LocalSpeaker provides gameViewModel.speaker,
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

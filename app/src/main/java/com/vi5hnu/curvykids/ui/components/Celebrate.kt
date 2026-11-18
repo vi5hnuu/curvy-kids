@@ -29,6 +29,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.kit.LocalSpeaker
 import kotlinx.coroutines.delay
 
 /**
@@ -48,8 +49,11 @@ fun Celebrate(
     stars: Int = 3,
     onDone: () -> Unit = {},
 ) {
+    val speaker = LocalSpeaker.current
     LaunchedEffect(Unit) {
-        delay(2200)
+        // Stays up while the praise that came with it is still being said, so what follows (the
+        // next question) never appears under it. A tap still closes it straight away.
+        speaker?.awaitQuiet(minMs = 2200) ?: delay(2200)
         onDone()
     }
 

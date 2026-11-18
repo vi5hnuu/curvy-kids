@@ -115,7 +115,8 @@ fun CountCatchScreen(
 
     LaunchedEffect(solved) {
         if (solved) {
-            delay(900)
+            // "Yes! Five!" is heard to the end before the next picture.
+            feedback?.speaker?.awaitQuiet(minMs = 900) ?: delay(900)
             if (score > 0 && score % 5 == 0) showCelebrate = true else round++
         }
     }

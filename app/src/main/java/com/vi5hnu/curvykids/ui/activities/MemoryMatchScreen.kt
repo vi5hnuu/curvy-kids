@@ -94,8 +94,13 @@ fun MemoryMatchScreen(
                 feedback?.correct()
                 feedback?.speaker?.say(EnglishVoiceScript.say("Match!"))
                 onReward(3)
+                if (matched.size == board.size) {
+                    // "Match!" is heard to the end before the board gives way to the celebration.
+                    // Waited before clearing the pair: clearing it restarts this effect.
+                    feedback?.speaker?.awaitQuiet()
+                    showCelebrate = true
+                }
                 first = null; second = null
-                if (matched.size == board.size) showCelebrate = true
             } else {
                 kotlinx.coroutines.delay(850)
                 feedback?.wrong()

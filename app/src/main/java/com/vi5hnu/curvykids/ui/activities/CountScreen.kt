@@ -216,7 +216,8 @@ fun CountScreen(
 
         LaunchedEffect(answer) {
             if (answer != null) {
-                delay(800)
+                // A right answer moves on only once its praise has been heard to the end.
+                if (answer?.second == true) speaker?.awaitQuiet(minMs = 800) ?: delay(800) else delay(800)
                 if (answer?.second == true) {
                     if (score > 0 && score % 4 == 0) {
                         showCelebrate = true

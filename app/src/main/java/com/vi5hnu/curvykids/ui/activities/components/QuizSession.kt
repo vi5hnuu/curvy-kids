@@ -97,16 +97,21 @@ class QuizSession internal constructor(
         }
     }
 
-    /** Waits while the last tap is shown, then moves on. Call from a LaunchedEffect on [pendingKey]. */
+    /**
+     * Waits while the last tap is shown, then moves on. Call from a LaunchedEffect on [pendingKey].
+     * The beat below is the least it waits; a right answer or a shown one also waits for its line
+     * ("Yes! buh, buh, Ball!") to end, so the next question never appears under it.
+     */
     suspend fun settle() {
         val p = pending ?: return
-        delay(
-            when (p.outcome) {
-                QuizOutcome.CORRECT -> 1000L
-                QuizOutcome.TRY_AGAIN -> 700L
-                QuizOutcome.REVEAL -> 2200L // long enough to look at the right answer
-            }
-        )
+        val beat = when (p.outcome) {
+            QuizOutcome.CORRECT -> 1000L
+            QuizOutcome.TRY_AGAIN -> 700L
+            QuizOutcome.REVEAL -> 2200L // long enough to look at the right answer
+        }
+        // "Try again" keeps the same question, so its tiles free up on the beat as before.
+        if (p.outcome == QuizOutcome.TRY_AGAIN) delay(beat)
+        else feedback?.speaker?.awaitQuiet(minMs = beat) ?: delay(beat)
         if (p.outcome != QuizOutcome.TRY_AGAIN) {
             if (progress.celebrates(p.outcome, rules)) celebrating = true
             else if (!progress.isFinished(rules)) round++

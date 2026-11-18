@@ -173,7 +173,8 @@ fun ColorsScreen(
         // Handle flash auto-clear + round advance
         LaunchedEffect(flash) {
             if (flash != null) {
-                delay(700)
+                // A right answer moves on only once its praise has been heard to the end.
+                if (flash?.second == true) speaker?.awaitQuiet(minMs = 700) ?: delay(700) else delay(700)
                 if (flash?.second == true) {
                     if (score > 0 && score % 5 == 0) {
                         showCelebrate = true

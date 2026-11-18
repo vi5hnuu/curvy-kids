@@ -23,7 +23,6 @@ import com.vi5hnu.curvykids.recognition.MlKitInkRecognizer
 import com.vi5hnu.curvykids.recognition.Recognizer
 import com.vi5hnu.curvykids.recognition.Stroke
 import com.vi5hnu.curvykids.recognition.WritingArea
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -157,9 +156,9 @@ class GameViewModel(
                     )
                 }
                 if (!levelComplete) {
-                    delay(CORRECT_ADVANCE_DELAY_MS)
-                    // Queue the next prompt so the praise line finishes instead of being cut off.
-                    next(queueSpeech = true)
+                    // The praise is heard to the end before the next letter appears.
+                    phonics.awaitQuiet(minMs = CORRECT_ADVANCE_DELAY_MS)
+                    if (stillOn(state)) next(queueSpeech = true)
                 }
                 // If levelComplete, the overlay handles navigation via dismissLevelComplete().
             } else {
@@ -171,15 +170,23 @@ class GameViewModel(
                 }
                 if (newAttempts >= maxWrongAttempts) {
                     speakGiveUp()
-                    delay(GIVE_UP_DELAY_MS)
-                    // Queue so the "keep practicing" line finishes before the next prompt.
-                    next(queueSpeech = true)
+                    // The "keep practicing" line is heard to the end before the next letter.
+                    phonics.awaitQuiet(minMs = GIVE_UP_DELAY_MS)
+                    if (stillOn(state)) next(queueSpeech = true)
                 } else {
                     speakTryAgain(sawNothing = candidates.isEmpty())
                 }
             }
         }
     }
+
+    /**
+     * Whether the screen still shows the letter of [state]. Waiting for a line to end can take a
+     * few seconds, during which the child may tap Next or Previous themselves; moving on again
+     * after that would skip a letter.
+     */
+    private fun stillOn(state: GameUiState): Boolean =
+        _uiState.value.let { it.level == state.level && it.index == state.index }
 
     fun next(queueSpeech: Boolean = false) {
         val state = _uiState.value
