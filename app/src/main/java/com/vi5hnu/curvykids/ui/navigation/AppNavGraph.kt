@@ -188,7 +188,7 @@ fun AppNavGraph(
     // Reads the live state, as it also runs after a video, before this screen has recomposed.
     val openTopic: (Topic) -> Unit = { topic ->
         ContentLocks(access.state.value, onLocked).open(Lockable.Activity(topic.id)) {
-            gameViewModel.speaker.say(EnglishVoiceScript.say(topic.title))
+            gameViewModel.speaker.announce(EnglishVoiceScript.say(topic.title))
             appViewModel.setLastTopic(topic.id)
             navController.navigate(Screen.Topic.createRoute(topic.id))
         }
@@ -217,12 +217,12 @@ fun AppNavGraph(
                     HomeScreen(
                         appState = appState,
                         onOpenWorld = { world ->
-                            gameViewModel.speaker.say(EnglishVoiceScript.say(world.title))
+                            gameViewModel.speaker.announce(EnglishVoiceScript.say(world.title))
                             navController.navigate(Screen.World.createRoute(world.id))
                         },
                         onOpenTopic = openTopic,
                         onOpenStickers = {
-                            gameViewModel.speaker.say(EnglishVoiceScript.say(EnglishVoiceScript.MY_STICKERS))
+                            gameViewModel.speaker.announce(EnglishVoiceScript.say(EnglishVoiceScript.MY_STICKERS))
                             navController.navigate(Screen.Rewards.route)
                         },
                         onOpenGrownUps = { showGate = true },

@@ -83,7 +83,8 @@ fun <T> QuizScaffold(
     columns: Int = if (choices.size <= 3) choices.size else 2,
     belowHeader: (@Composable () -> Unit)? = null,
 ) {
-    // The first question cuts in; later ones wait for the praise before them to finish.
+    // The first question cuts in on anything left over, but follows the activity's name said as
+    // it opened (PhonicsSpeaker.announce); later ones wait for the praise before them to finish.
     val firstRound = remember { session.round }
     LaunchedEffect(session.round) { speakPrompt(session.round == firstRound) }
     LaunchedEffect(session.pendingKey) { session.settle() }

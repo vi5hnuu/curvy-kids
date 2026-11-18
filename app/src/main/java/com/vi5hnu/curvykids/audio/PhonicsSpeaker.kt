@@ -132,7 +132,7 @@ class PhonicsSpeaker(context: Context, clipSources: List<ClipSource>) {
 
     init {
         clips.onStart = { id -> onUtteranceStart?.invoke(id) }
-        clips.onDone = { id -> onUtteranceDone?.invoke(id) }
+        clips.onDone = { id -> lineDone(id) }
         clips.onIdle = { releaseWaiting() }
     }
 
@@ -150,7 +150,7 @@ class PhonicsSpeaker(context: Context, clipSources: List<ClipSource>) {
                     val id = utteranceId ?: return
                     mainHandler.post {
                         if (id == ttsTail) ttsTail = null
-                        onUtteranceDone?.invoke(id)
+                        lineDone(id)
                         releaseWaiting()
                     }
                 }
@@ -159,7 +159,7 @@ class PhonicsSpeaker(context: Context, clipSources: List<ClipSource>) {
                     val id = utteranceId ?: return
                     mainHandler.post {
                         if (id == ttsTail) ttsTail = null
-                        onUtteranceDone?.invoke(id)
+                        lineDone(id)
                         releaseWaiting()
                     }
                 }
@@ -206,9 +206,11 @@ class PhonicsSpeaker(context: Context, clipSources: List<ClipSource>) {
         clip: VoiceClip? = null,
     ) {
         if (text.isBlank() || muted) return
-        if (flush) generation++
+        // A screen's first words wait for the name it was opened with, instead of cutting it.
+        val interrupts = flush && !(announcing != null && _speaking.value)
+        if (interrupts) { generation++; announcing = null }
         try {
-            speakNow(text, langTag, flush, utteranceId, romanized, clip)
+            speakNow(text, langTag, interrupts, utteranceId, romanized, clip)
         } finally {
             refreshSpeaking()
         }
@@ -277,6 +279,25 @@ class PhonicsSpeaker(context: Context, clipSources: List<ClipSource>) {
     }
 
     /**
+     * Says the name of the screen being opened ("Letter Sounds"). Until it ends, lines that would
+     * interrupt are queued behind it instead, so the new screen's first prompt follows the name
+     * rather than cutting it off. [stop] still silences it.
+     */
+    fun announce(speech: Speech) {
+        say(speech)
+        if (_speaking.value) announcing = speech.text
+    }
+
+    /** Utterance id of an [announce]d name still being said, else null. */
+    private var announcing: String? = null
+
+    /** A line ended (or failed): tells the listener, and ends an announcement that was this line. */
+    private fun lineDone(id: String) {
+        if (id == announcing) announcing = null
+        onUtteranceDone?.invoke(id)
+    }
+
+    /**
      * Whether the engine has a usable voice for [langTag]. Optimistic before init (returns true);
      * used to decide between speaking Devanagari directly vs a romanized English fallback.
      */
@@ -340,6 +361,7 @@ class PhonicsSpeaker(context: Context, clipSources: List<ClipSource>) {
         pendingText = null
         pendingLangTag = null
         pendingRomanized = null
+        announcing = null
         waiting.clear()
         clips.stop()
         ttsTail = null
