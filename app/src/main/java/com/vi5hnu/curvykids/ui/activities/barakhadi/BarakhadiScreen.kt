@@ -184,6 +184,11 @@ fun BarakhadiScreen(
         }
     }
 
+    // Leaving stops a recitation first: the child chose to go, and it would otherwise hold the
+    // back tap for all twelve lines (see LeaveState).
+    val leave = { if (recitingIndex >= 0) stopRecite(); onBack() }
+    BackHandler(enabled = recitingIndex >= 0) { leave() }
+
     fun openForm(i: Int) {
         stopRecite()
         active = i
@@ -256,7 +261,7 @@ fun BarakhadiScreen(
             if (twoPane) {
                 // Height is what's short here, so the letters run down the side, the letter's own
                 // word moves up beside the title, and all twelve forms fit without scrolling.
-                ScreenHeader(title = topic.title, color = topic.color, onBack = onBack) {
+                ScreenHeader(title = topic.title, color = topic.color, onBack = leave) {
                     LetterIntro(consonant, topic.color, speakLetter, Modifier.widthIn(max = 380.dp))
                     Spacer(Modifier.width(KidDimens.Gap))
                     recite()
@@ -290,7 +295,7 @@ fun BarakhadiScreen(
                     )
                 }
             } else {
-                ScreenHeader(title = topic.title, color = topic.color, onBack = onBack, trailing = recite)
+                ScreenHeader(title = topic.title, color = topic.color, onBack = leave, trailing = recite)
                 picker(Modifier, false)
                 Column(
                     Modifier

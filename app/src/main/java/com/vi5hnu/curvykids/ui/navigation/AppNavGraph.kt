@@ -23,6 +23,7 @@ import com.vi5hnu.curvykids.data.content.World
 import com.vi5hnu.curvykids.data.content.Topic
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import com.vi5hnu.curvykids.ui.kit.LocalLeavePending
 import com.vi5hnu.curvykids.ui.kit.LocalSpeaker
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
@@ -82,6 +83,7 @@ import com.vi5hnu.curvykids.ui.theme.BgBottom
 import com.vi5hnu.curvykids.ui.theme.BgTop
 import com.vi5hnu.curvykids.ui.trace.TraceScreen
 import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
+import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
 import com.vi5hnu.curvykids.billing.OfferNotice
 import com.vi5hnu.curvykids.billing.ProRepository
@@ -281,249 +283,259 @@ fun AppNavGraph(
                     val topicId = entry.arguments?.getString("topicId") ?: return@composable
                     val topic = TOPICS.find { it.id == topicId } ?: return@composable
 
+                    // Back (the header's or the system's) waits for the line being said, so it is
+                    // heard in full and doesn't spill onto the screen behind; see LeaveState.
+                    val leave = rememberLeave(gameViewModel.speaker) { navController.popBackStack() }
+                    BackHandler { leave.request() }
+
                     // Silence the shared voice when leaving ANY topic screen, so a prompt that was
-                    // mid-sentence ("Find the red…") doesn't keep talking on the tab screens.
+                    // mid-sentence ("Find the red…") doesn't keep talking on the tab screens. Only
+                    // this screen's speech, though: teardown runs after the exit animation, by
+                    // which time the next screen may be saying its name.
                     DisposableEffect(topicId) {
-                        onDispose { gameViewModel.speaker.stop() }
+                        onDispose { leave.silence() }
                     }
 
-                    // Topics that speak recorded voices wait for their packs, which download by
-                    // themselves (a grown-up is asked only if Play needs them). When they arrive
-                    // this recomposes straight into the topic.
-                    val requiredPacks = remember(topic) { VoicePack.requiredFor(topic) }
-                    val packStates by voicePacks.states.collectAsState()
-                    if (!packStates.allReady(requiredPacks)) {
-                        VoicePackGate(
-                            topic = topic,
-                            packs = requiredPacks,
-                            repository = voicePacks,
-                            onBack = { navController.popBackStack() },
-                            speak = { gameViewModel.speaker.say(EnglishVoiceScript.say(it)) },
-                        )
-                        return@composable
-                    }
-
-                    when (topic.kind) {
-                        TopicKind.TRACE -> {
-                            // Schedule the level switch; GameViewModel.selectLevel is async
-                            // (loads masteredSet from DataStore before calling goTo).
-                            LaunchedEffect(topicId) { gameViewModel.selectLevel(topic.set!!) }
-
-                            val gameState by gameViewModel.uiState.collectAsState()
-
-                            // Don't render TraceScreen until the correct level is loaded —
-                            // prevents one or more frames of wrong-character content being shown
-                            // or recognised against the previous level's character.
-                            if (gameState.level == topic.set) {
-                                TraceScreen(
-                                    viewModel = gameViewModel,
-                                    onBack = { navController.popBackStack() },
-                                    onReward = appViewModel::reward,
-                                    onMarkMastered = appViewModel::markMastered,
-                                )
-                            } else {
-                                Box(
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentAlignment = Alignment.Center,
-                                ) {
-                                    CircularProgressIndicator(color = topic.color)
-                                }
-                            }
+                    // The back button pulses while a back tap waits for the voice.
+                    CompositionLocalProvider(LocalLeavePending provides leave.waiting) {
+                        // Topics that speak recorded voices wait for their packs, which download by
+                        // themselves (a grown-up is asked only if Play needs them). When they arrive
+                        // this recomposes straight into the topic.
+                        val requiredPacks = remember(topic) { VoicePack.requiredFor(topic) }
+                        val packStates by voicePacks.states.collectAsState()
+                        if (!packStates.allReady(requiredPacks)) {
+                            VoicePackGate(
+                                topic = topic,
+                                packs = requiredPacks,
+                                repository = voicePacks,
+                                onBack = leave::request,
+                                speak = { gameViewModel.speaker.say(EnglishVoiceScript.say(it)) },
+                            )
+                            return@CompositionLocalProvider
                         }
 
-                        TopicKind.SHAPES -> ShapesScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                        when (topic.kind) {
+                            TopicKind.TRACE -> {
+                                // Schedule the level switch; GameViewModel.selectLevel is async
+                                // (loads masteredSet from DataStore before calling goTo).
+                                LaunchedEffect(topicId) { gameViewModel.selectLevel(topic.set!!) }
 
-                        TopicKind.COLORS -> ColorsScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            onAddBadge = appViewModel::addBadge,
-                            speaker = gameViewModel.speaker,
-                        )
+                                val gameState by gameViewModel.uiState.collectAsState()
 
-                        TopicKind.COUNT -> CountScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            speaker = gameViewModel.speaker,
-                        )
+                                // Don't render TraceScreen until the correct level is loaded —
+                                // prevents one or more frames of wrong-character content being shown
+                                // or recognised against the previous level's character.
+                                if (gameState.level == topic.set) {
+                                    TraceScreen(
+                                        viewModel = gameViewModel,
+                                        onBack = leave::request,
+                                        onReward = appViewModel::reward,
+                                        onMarkMastered = appViewModel::markMastered,
+                                    )
+                                } else {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center,
+                                    ) {
+                                        CircularProgressIndicator(color = topic.color)
+                                    }
+                                }
+                            }
 
-                        TopicKind.WORDS -> WordsScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            speaker = gameViewModel.speaker,
-                        )
+                            TopicKind.SHAPES -> ShapesScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        TopicKind.ANIMALS -> AnimalsScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.COLORS -> ColorsScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                onAddBadge = appViewModel::addBadge,
+                                speaker = gameViewModel.speaker,
+                            )
 
-                        TopicKind.BODY -> BodyScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.COUNT -> CountScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                speaker = gameViewModel.speaker,
+                            )
 
-                        TopicKind.DAYS -> DaysScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.WORDS -> WordsScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                speaker = gameViewModel.speaker,
+                            )
 
-                        TopicKind.DRAW -> DrawScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onAddBadge = appViewModel::addBadge,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.ANIMALS -> AnimalsScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        TopicKind.MEMORY -> MemoryMatchScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.BODY -> BodyScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        TopicKind.BIGSMALL -> BigSmallScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.DAYS -> DaysScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        TopicKind.ODDONE -> OddOneOutScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.DRAW -> DrawScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onAddBadge = appViewModel::addBadge,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        TopicKind.CATCH -> CountCatchScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.MEMORY -> MemoryMatchScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        // ── World ──────────────────────────────────────────────────
-                        TopicKind.MONTHS -> MonthsScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.SEASONS -> SeasonsScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.EMOTIONS -> EmotionsScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.VEHICLES -> VehiclesScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.FRUITSVEGGIES -> FruitsVeggiesScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.BIGSMALL -> BigSmallScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        // ── Math ───────────────────────────────────────────────────
-                        TopicKind.ADDITION -> AdditionScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.SUBTRACTION -> SubtractionScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.PATTERNS -> PatternsScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.TIME -> TimeScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.FRACTIONS -> FractionsScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.ODDONE -> OddOneOutScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        // ── Language ───────────────────────────────────────────────
-                        TopicKind.PHONICS -> PhonicScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.OPPOSITES -> OppositeScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
-                        TopicKind.RHYMING -> RhymingScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            TopicKind.CATCH -> CountCatchScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        // ── Generic picture topics (Food, Clothes, Jobs, Birds, …) ──
-                        TopicKind.PICTURE -> PictureDiscoverScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                        )
+                            // ── World ──────────────────────────────────────────────────
+                            TopicKind.MONTHS -> MonthsScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.SEASONS -> SeasonsScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.EMOTIONS -> EmotionsScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.VEHICLES -> VehiclesScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.FRUITSVEGGIES -> FruitsVeggiesScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        TopicKind.BARAKHADI -> BarakhadiScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                            readsAs = gameViewModel::readsAs,
-                            locks = locks,
-                        )
+                            // ── Math ───────────────────────────────────────────────────
+                            TopicKind.ADDITION -> AdditionScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.SUBTRACTION -> SubtractionScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.PATTERNS -> PatternsScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.TIME -> TimeScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.FRACTIONS -> FractionsScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
 
-                        TopicKind.STORIES -> StoriesScreen(
-                            topic = topic,
-                            onBack = { navController.popBackStack() },
-                            onReward = appViewModel::reward,
-                            feedback = gameViewModel.feedback,
-                            locks = locks,
-                        )
+                            // ── Language ───────────────────────────────────────────────
+                            TopicKind.PHONICS -> PhonicScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.OPPOSITES -> OppositeScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+                            TopicKind.RHYMING -> RhymingScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+
+                            // ── Generic picture topics (Food, Clothes, Jobs, Birds, …) ──
+                            TopicKind.PICTURE -> PictureDiscoverScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                            )
+
+                            TopicKind.BARAKHADI -> BarakhadiScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                                readsAs = gameViewModel::readsAs,
+                                locks = locks,
+                            )
+
+                            TopicKind.STORIES -> StoriesScreen(
+                                topic = topic,
+                                onBack = leave::request,
+                                onReward = appViewModel::reward,
+                                feedback = gameViewModel.feedback,
+                                locks = locks,
+                            )
+                        }
                     }
                 }
             }

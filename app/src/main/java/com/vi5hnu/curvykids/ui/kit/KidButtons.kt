@@ -1,6 +1,13 @@
 package com.vi5hnu.curvykids.ui.kit
 
+import androidx.compose.animation.core.RepeatMode
+import androidx.compose.animation.core.animateFloat
+import androidx.compose.animation.core.infiniteRepeatable
+import androidx.compose.animation.core.rememberInfiniteTransition
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.border
+import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.window.Popup
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.platform.LocalDensity
@@ -44,16 +51,31 @@ import com.vi5hnu.curvykids.ui.theme.KidDimens
 import com.vi5hnu.curvykids.ui.theme.KidInk
 import kotlinx.coroutines.delay
 
+/**
+ * True while a back tap is held for the voice to finish its line (provided by the screen's
+ * navigation, see `LeaveState`); [KidBackButton] pulses meanwhile so the child sees it was heard.
+ */
+val LocalLeavePending = compositionLocalOf { false }
+
 /** The big round back button every child screen starts with. */
 @Composable
 fun KidBackButton(onClick: () -> Unit, color: Color, modifier: Modifier = Modifier) {
+    val pending = LocalLeavePending.current
+    val pulse = if (pending) {
+        rememberInfiniteTransition(label = "leave").animateFloat(
+            initialValue = 1f,
+            targetValue = 0.86f,
+            animationSpec = infiniteRepeatable(tween(420), RepeatMode.Reverse),
+            label = "pulse",
+        ).value
+    } else 1f
     CandyCard(
         color = Color.White,
         onClick = onClick,
         label = "Back",
         radius = KidDimens.HeaderButton / 2,
         edge = 4.dp,
-        modifier = modifier.size(KidDimens.HeaderButton),
+        modifier = modifier.size(KidDimens.HeaderButton).scale(pulse),
     ) {
         Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = null, tint = color,
             modifier = Modifier.size(34.dp))

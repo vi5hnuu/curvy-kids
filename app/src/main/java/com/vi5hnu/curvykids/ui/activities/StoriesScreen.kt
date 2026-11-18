@@ -21,6 +21,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
@@ -66,6 +67,10 @@ fun StoriesScreen(
     locks: ContentLocks = ContentLocks.NONE,
 ) {
     var selected by remember { mutableStateOf<Story?>(null) }
+
+    // System back on a story returns to the list, like the story's own back button (the reader
+    // stops its reading as it closes), rather than waiting on a minutes-long reading to leave.
+    BackHandler(enabled = selected != null) { selected = null }
 
     val story = selected
     if (story == null) {
