@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.billing
 
+import com.vi5hnu.curvykids.audio.packs.PackState
+import com.vi5hnu.curvykids.audio.packs.VoiceReadiness
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.SharingStarted
@@ -28,19 +30,25 @@ sealed interface Lockable {
     }
 }
 
-/** The mark a screen draws on a Pro item, from [AccessState.markOf]. */
-enum class LockMark {
-    /** Free, or Pro is owned: no mark. */
-    NONE,
+/** The mark a screen draws on an item, from [ContentLocks.markOf]. */
+sealed interface LockMark {
+    /** Free, or Pro is owned, and its voices are here: no mark. */
+    data object NONE : LockMark
 
     /** Whether Pro is owned isn't known yet: a shimmer where the mark will go, never a guess. */
-    LOADING,
+    data object LOADING : LockMark
 
     /** Part of Pro and not opened: a padlock. */
-    LOCKED,
+    data object LOCKED : LockMark
 
     /** Opened for today by a video: a play mark. */
-    OPEN_TODAY,
+    data object OPEN_TODAY : LockMark
+
+    /** Open, and its voices are downloading: a ring filling up ([progress] 0–1, 0 until known). */
+    data class GettingReady(val progress: Float) : LockMark
+
+    /** Open, but its voices can't download without a grown-up (offline, Play asks, it failed). */
+    data object NEEDS_GROWN_UP : LockMark
 }
 
 /**
@@ -89,27 +97,46 @@ class Access(
 }
 
 /**
- * Locks as a screen sees them: whether to show an item as locked, and what to do when a locked
- * one is tapped (the caller shows the "this one is for Pro" sheet). [NONE] leaves everything open.
+ * Items as a screen sees them: whether one is locked, whether its voices are here, and what to do
+ * on a tap. A locked item goes to [onLocked] (the caller shows the "this one is for Pro" sheet);
+ * an open one whose voices aren't downloaded yet goes to [onNeedsVoices], which fetches them in
+ * the background and runs the item's opening once they're in. So Pro recordings are only ever
+ * fetched for an item the child may open. [NONE] leaves everything open and ready.
  *
- * Kept for as long as [access] doesn't change (the caller remembers it), so screens given the
- * same one skip redrawing.
+ * Kept for as long as [access] and [voices] don't change (the caller remembers it), so screens
+ * given the same one skip redrawing.
  */
 class ContentLocks(
     val access: AccessState,
+    val voices: VoiceReadiness = VoiceReadiness.ALL_READY,
+    val onNeedsVoices: (item: Lockable, open: () -> Unit) -> Unit = { _, open -> open() },
     val onLocked: (Lockable) -> Unit,
 ) {
-    /** What to draw on [item] (see [AccessState.markOf]). */
-    fun markOf(item: Lockable) = access.markOf(item)
+    /**
+     * What to draw on [item]: the lock's mark ([AccessState.markOf]); for an item the child may
+     * open, a download in progress or one needing a grown-up shows instead. An item whose voices
+     * simply haven't been fetched yet looks as usual until it is tapped.
+     */
+    fun markOf(item: Lockable): LockMark {
+        val lock = access.markOf(item)
+        if (lock != LockMark.NONE && lock != LockMark.OPEN_TODAY) return lock
+        return when (val v = voices.stateOf(item)) {
+            is PackState.Downloading -> LockMark.GettingReady(v.progress)
+            is PackState.Failed, PackState.NeedsConfirmation -> LockMark.NEEDS_GROWN_UP
+            else -> lock
+        }
+    }
 
     /**
-     * Runs [open] when [item] is open, otherwise reports it as locked. While ownership is still
-     * being read, a tap on a Pro item does nothing rather than guess.
+     * Runs [open] when [item] is open and its voices are here; fetches them first when they
+     * aren't ([onNeedsVoices]); reports a locked one. While ownership is still being read, a tap
+     * on a Pro item does nothing rather than guess.
      */
-    inline fun open(item: Lockable, open: () -> Unit) {
+    fun open(item: Lockable, open: () -> Unit) {
         when {
-            !access.isLocked(item) -> open()
-            access.ready -> onLocked(item)
+            access.isLocked(item) -> if (access.ready) onLocked(item)
+            !voices.isReady(item) -> onNeedsVoices(item, open)
+            else -> open()
         }
     }
 

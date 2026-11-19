@@ -23,6 +23,7 @@ import com.vi5hnu.curvykids.data.content.World
 import com.vi5hnu.curvykids.data.content.Topic
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
+import com.vi5hnu.curvykids.audio.packs.VoiceReadiness
 import com.vi5hnu.curvykids.ui.kit.LocalLeavePending
 import com.vi5hnu.curvykids.ui.kit.LocalSpeaker
 import androidx.compose.runtime.LaunchedEffect
@@ -167,12 +168,20 @@ fun AppNavGraph(
             lockedItem = item
         }
     }
-    // Remembered, so the screens it is passed to only redraw when what is locked changes.
-    val locks = remember(accessState) { ContentLocks(accessState, onLocked) }
+    val route = navController.currentBackStackEntryAsState().value?.destination?.route
+
+    // An open item whose voices aren't here yet downloads them in the background (see
+    // rememberVoicesOnTap); Pro voices therefore only ever download for items the child may open.
+    val packStates by voicePacks.states.collectAsState()
+    val onNeedsVoices = rememberVoicesOnTap(voicePacks, gameViewModel.speaker, online, route)
+
+    // Remembered, so the screens it is passed to only redraw when what is locked (or ready) changes.
+    val locks = remember(accessState, packStates) {
+        ContentLocks(accessState, VoiceReadiness(packStates), onNeedsVoices, onLocked)
+    }
 
     // Pro arrived while the app was open (promo code, delayed payment). The purchase screen
     // celebrates on its own; anywhere else a sheet does, once.
-    val route = navController.currentBackStackEntryAsState().value?.destination?.route
     val celebrateUnlock = proState.unlockedJustNow && route != null && route != Screen.Pro.route
     LaunchedEffect(proState.unlockedJustNow, route) {
         if (!proState.unlockedJustNow || route == null) return@LaunchedEffect
@@ -189,7 +198,8 @@ fun AppNavGraph(
     // Every way into an activity comes through here (tiles, "play again"), so the lock is too.
     // Reads the live state, as it also runs after a video, before this screen has recomposed.
     val openTopic: (Topic) -> Unit = { topic ->
-        ContentLocks(access.state.value, onLocked).open(Lockable.Activity(topic.id)) {
+        ContentLocks(access.state.value, VoiceReadiness(voicePacks.states.value), onNeedsVoices, onLocked)
+            .open(Lockable.Activity(topic.id)) {
             gameViewModel.speaker.announce(EnglishVoiceScript.say(topic.title))
             appViewModel.setLastTopic(topic.id)
             navController.navigate(Screen.Topic.createRoute(topic.id))
@@ -302,7 +312,6 @@ fun AppNavGraph(
                         // themselves (a grown-up is asked only if Play needs them). When they arrive
                         // this recomposes straight into the topic.
                         val requiredPacks = remember(topic) { VoicePack.requiredFor(topic) }
-                        val packStates by voicePacks.states.collectAsState()
                         if (!packStates.allReady(requiredPacks)) {
                             VoicePackGate(
                                 topic = topic,

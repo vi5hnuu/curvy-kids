@@ -14,6 +14,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Lock
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.ModalBottomSheet
@@ -30,6 +31,8 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.billing.LockMark
+import com.vi5hnu.curvykids.data.content.KidAssets
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.components.ConfettiOverlay
 import com.vi5hnu.curvykids.ui.components.CurvyMascot
@@ -100,8 +103,9 @@ fun TodayBadge(modifier: Modifier = Modifier, size: Dp = 30.dp) {
 }
 
 /**
- * The mark on a Pro tile, letter or story, from [LockMark]: a padlock, a "today" mark, a
- * shimmering dot while ownership is still being read, or nothing.
+ * The mark on a tile, letter or story, from [LockMark]: a padlock, a "today" mark, a shimmering
+ * dot while ownership is still being read, a ring filling up while its voices download, a cloud
+ * when that needs a grown-up, or nothing.
  */
 @Composable
 fun LockMarkBadge(mark: LockMark, modifier: Modifier = Modifier, size: Dp = 30.dp) {
@@ -110,6 +114,40 @@ fun LockMarkBadge(mark: LockMark, modifier: Modifier = Modifier, size: Dp = 30.d
         LockMark.LOADING -> ShimmerBox(size, size, modifier, CircleShape)
         LockMark.LOCKED -> LockBadge(modifier, size)
         LockMark.OPEN_TODAY -> TodayBadge(modifier, size)
+        is LockMark.GettingReady -> GettingReadyBadge(mark.progress, modifier, size)
+        LockMark.NEEDS_GROWN_UP -> NeedsGrownUpBadge(modifier, size)
+    }
+}
+
+/**
+ * On an open item whose voices are downloading: a ring that fills up, so a child who tapped it
+ * sees something happening and can come back to it. Spins until Play reports a size.
+ */
+@Composable
+fun GettingReadyBadge(progress: Float, modifier: Modifier = Modifier, size: Dp = 30.dp) {
+    Box(
+        modifier.size(size).clip(CircleShape).background(Color.White),
+        contentAlignment = Alignment.Center,
+    ) {
+        val ring = Modifier.size(size * 0.78f)
+        val stroke = size * 0.14f
+        if (progress > 0f) {
+            CircularProgressIndicator(progress = { progress }, modifier = ring, color = KidGrape,
+                strokeWidth = stroke, trackColor = KidGrape.copy(alpha = 0.18f))
+        } else {
+            CircularProgressIndicator(modifier = ring, color = KidGrape, strokeWidth = stroke)
+        }
+    }
+}
+
+/** On an open item whose voices can't download without a grown-up: our cloud, the internet. */
+@Composable
+fun NeedsGrownUpBadge(modifier: Modifier = Modifier, size: Dp = 30.dp) {
+    Box(
+        modifier.size(size).clip(CircleShape).background(KidSun),
+        contentAlignment = Alignment.Center,
+    ) {
+        SvgArt(KidAssets.weather("cloud"), modifier = Modifier.size(size * 0.7f), contentDescription = "Needs a grown-up")
     }
 }
 

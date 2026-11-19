@@ -70,15 +70,22 @@ enum class VoicePack(
         /**
          * The packs a topic can't be used without, Pro or not. Hindi tracing speaks the letter
          * clips; barakhadi speaks syllables and, when a consonant is tapped, the letter clip too.
-         * A Pro activity also needs its world's Pro pack.
+         * A Pro activity also needs its world's Pro pack, when any of its own recordings are in it
+         * (Hindi letter tracing, say, has none there, so it never waits on the Barakhadi pack).
          */
-        fun requiredFor(topic: Topic): Set<VoicePack> = buildSet {
+        fun requiredFor(topic: Topic): Set<VoicePack> = topicNeeds[topic.id] ?: packsFor(topic)
+
+        /** [requiredFor] of every topic, worked out once: tiles ask it on every redraw. */
+        private val topicNeeds: Map<String, Set<VoicePack>> by lazy { TOPICS.associate { it.id to packsFor(it) } }
+
+        private fun packsFor(topic: Topic): Set<VoicePack> = buildSet {
             when {
                 topic.kind == TopicKind.BARAKHADI -> addAll(listOf(HINDI_LETTERS, HINDI_BARAKHADI))
                 topic.kind == TopicKind.TRACE && topic.set?.script == Script.DEVANAGARI -> add(HINDI_LETTERS)
             }
             if (!ProCatalog.isFree(Lockable.Activity(topic.id))) {
-                World.entries.firstOrNull { topic.id in it.topicIds }?.let(::proPackOf)?.let(::add)
+                val pack = World.entries.firstOrNull { topic.id in it.topicIds }?.let(::proPackOf)
+                if (pack != null && TopicVoices.clipsFor(topic).any { homeOf(it) == pack }) add(pack)
             }
         }
 
