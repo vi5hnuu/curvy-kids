@@ -47,14 +47,18 @@ class BundledClipSource(private val assets: AssetManager) : ClipSource {
     }
 }
 
-/** Clips inside a [VoicePack] that Play has downloaded to the device. */
+/**
+ * Clips inside the [VoicePack]s Play has downloaded to the device. Several packs can share a
+ * folder (English lines are spread over the world packs), so each downloaded pack that may hold
+ * the clip is looked in.
+ */
 class PackClipSource(private val packs: VoicePackRepository) : ClipSource {
 
     override fun find(clip: VoiceClip): ClipFile? {
-        val pack = VoicePack.forClip(clip) ?: return null
-        val dir = packs.assetsDir(pack) ?: return null
-        val file = ClipSource.EXTENSIONS
-            .map { File(dir, "${clip.basePath}.$it") }
+        val file = VoicePack.entries.asSequence()
+            .filter { it.mayHold(clip) }
+            .mapNotNull(packs::assetsDir)
+            .flatMap { dir -> ClipSource.EXTENSIONS.asSequence().map { File(dir, "${clip.basePath}.$it") } }
             .firstOrNull { it.isFile } ?: return null
         return ClipFile { player -> player.setDataSource(file.path) }
     }

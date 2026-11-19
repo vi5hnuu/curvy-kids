@@ -7,7 +7,10 @@ plugins {
 }
 
 /** Voice packs delivered on demand by Play; see audio/packs/VoicePack.kt. */
-val voicePacks = listOf(":voice_hi_letters", ":voice_hi_barakhadi")
+val voicePacks = listOf(
+    ":voice_hi_letters", ":voice_hi_barakhadi",
+    ":voice_pro_letters", ":voice_pro_numbers", ":voice_pro_nature", ":voice_pro_my_world", ":voice_pro_hindi",
+)
 
 /**
  * Plain debug APKs can't receive Play asset packs, so by default debug builds carry the packs'

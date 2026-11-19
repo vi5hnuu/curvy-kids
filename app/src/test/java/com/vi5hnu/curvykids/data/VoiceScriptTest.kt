@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.data
 
+import com.vi5hnu.curvykids.audio.packs.VoicePack
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 import com.vi5hnu.curvykids.data.content.HindiVoiceScript
 import com.vi5hnu.curvykids.data.content.PHONICS_DATA
 import com.vi5hnu.curvykids.data.content.RecordingSheet
@@ -62,7 +64,7 @@ class VoiceScriptTest {
      */
     @Test
     fun `local recording list holds only the lines still to record`() {
-        val voiceRoots = listOf("../app", "../voice_hi_letters", "../voice_hi_barakhadi")
+        val voiceRoots = (listOf("../app") + VoicePack.entries.map { "../${it.packName}" })
             .map { File(it, "src/main/assets/voice") }
         fun recorded(clip: com.vi5hnu.curvykids.audio.VoiceClip) =
             voiceRoots.any { root -> listOf("m4a", "mp3").any { File(root, "${clip.relativePath}.$it").exists() } }
@@ -71,5 +73,28 @@ class VoiceScriptTest {
         file.parentFile?.mkdirs()
         file.writeText(RecordingSheet.render(::recorded))
         assertTrue(file.readText().startsWith("CurvyKids"))
+    }
+
+    /**
+     * Every recording sits in the module [VoicePack.homeOf] names: the app itself, or the pack that
+     * Play delivers it in. New recordings are written into the app; when one belongs in a pack,
+     * this fails and writes the moves to the local tools/voice/pack_moves.txt (git mv lines, run
+     * from the project root).
+     */
+    @Test
+    fun `every recording is in the module it belongs to`() {
+        val modules = listOf("app") + VoicePack.entries.map { it.packName }
+        val clips = (HindiVoiceScript.all + EnglishVoiceScript.all).map { it.clip } + PHONICS_DATA.map { it.clip }
+        val moves = clips.distinctBy { it.relativePath }.mapNotNull { clip ->
+            val home = VoicePack.homeOf(clip)?.packName ?: "app"
+            val found = modules.flatMap { m ->
+                listOf("m4a", "mp3").map { ext -> m to "$m/src/main/assets/voice/${clip.relativePath}.$ext" }
+            }.firstOrNull { File("..", it.second).isFile } ?: return@mapNotNull null
+            if (found.first == home) null
+            else "mkdir -p ${home}/src/main/assets/voice/${clip.relativePath.substringBeforeLast('/')} && " +
+                "git mv ${found.second} ${home}/src/main/assets/voice/${clip.relativePath}.${found.second.substringAfterLast('.')}"
+        }
+        File("../tools/voice/pack_moves.txt").apply { parentFile?.mkdirs() }.writeText(moves.joinToString("\n", postfix = "\n"))
+        assertTrue("${moves.size} recording(s) are not in their module, see tools/voice/pack_moves.txt", moves.isEmpty())
     }
 }

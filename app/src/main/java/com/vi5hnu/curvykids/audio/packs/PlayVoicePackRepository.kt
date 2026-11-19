@@ -21,8 +21,9 @@ import java.io.File
 /**
  * [VoicePackRepository] backed by Play Asset Delivery.
  *
- * A pack whose folders are already inside the app's own assets (debug builds, see
- * app/build.gradle.kts) counts as [PackState.Ready] and is never fetched.
+ * A pack built into the app (debug builds bundle every pack, see app/build.gradle.kts) counts as
+ * [PackState.Ready] and is never fetched; it is recognised by its marker file `packs/<packName>`,
+ * since its folders alone can't tell (every English pack shares `en/lines` with the app).
  * Lives as long as the app; [scope] should be application-wide.
  */
 class PlayVoicePackRepository(
@@ -33,9 +34,8 @@ class PlayVoicePackRepository(
     private val manager = AssetPackManagerFactory.getInstance(context.applicationContext)
     private val assets = context.applicationContext.assets
 
-    private val builtIn: Set<VoicePack> = VoicePack.entries.filter { pack ->
-        pack.folders.all { folder -> runCatching { assets.list("voice/$folder") }.getOrNull()?.isNotEmpty() == true }
-    }.toSet()
+    private val builtIn: Set<VoicePack> = runCatching { assets.list("packs")?.toSet() }.getOrNull().orEmpty()
+        .let { markers -> VoicePack.entries.filter { it.packName in markers }.toSet() }
 
     private val remote: List<VoicePack> = VoicePack.entries - builtIn
 

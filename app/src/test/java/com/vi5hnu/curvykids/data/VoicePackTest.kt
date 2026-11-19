@@ -2,16 +2,21 @@ package com.vi5hnu.curvykids.data
 
 import com.google.android.play.core.assetpacks.model.AssetPackErrorCode
 import com.google.android.play.core.assetpacks.model.AssetPackStatus
+import com.vi5hnu.curvykids.audio.packs.Delivery
 import com.vi5hnu.curvykids.audio.packs.FailReason
 import com.vi5hnu.curvykids.audio.packs.PackState
 import com.vi5hnu.curvykids.audio.packs.VoicePack
 import com.vi5hnu.curvykids.audio.packs.allReady
+import com.vi5hnu.curvykids.billing.Lockable
+import com.vi5hnu.curvykids.billing.ProCatalog
 import com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS
 import com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS
 import com.vi5hnu.curvykids.data.content.HINDI_VOWELS
 import com.vi5hnu.curvykids.data.content.HindiVoiceScript
+import com.vi5hnu.curvykids.data.content.STORIES
 import com.vi5hnu.curvykids.data.content.TOPICS
 import com.vi5hnu.curvykids.data.content.TopicKind
+import com.vi5hnu.curvykids.data.content.TopicVoices
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
 import org.junit.Assert.assertTrue
@@ -20,28 +25,41 @@ import org.junit.Test
 class VoicePackTest {
 
     @Test
-    fun `every letter and barakhadi clip belongs to a pack`() {
+    fun `letters, free barakhadi and pro barakhadi go to their packs`() {
         (HINDI_VOWELS + HINDI_CONSONANTS).forEach {
-            assertEquals(VoicePack.HINDI_LETTERS, VoicePack.forClip(HindiVoiceScript.letter(it).clip))
+            assertEquals(VoicePack.HINDI_LETTERS, VoicePack.homeOf(HindiVoiceScript.letter(it).clip))
         }
-        HINDI_CONSONANTS.forEach { c ->
-            BARAKHADI_MATRAS.forEach { m ->
-                assertEquals(VoicePack.HINDI_BARAKHADI, VoicePack.forClip(HindiVoiceScript.syllable(c, m).clip))
+        HINDI_CONSONANTS.forEachIndexed { i, c ->
+            val expected = if (ProCatalog.isFree(Lockable.BarakhadiLetter(i))) VoicePack.HINDI_BARAKHADI else VoicePack.PRO_HINDI
+            BARAKHADI_MATRAS.forEach { m -> assertEquals(expected, VoicePack.homeOf(HindiVoiceScript.syllable(c, m).clip)) }
+        }
+        STORIES.forEachIndexed { i, story ->
+            val expected = if (ProCatalog.isFree(Lockable.Story(i))) null else VoicePack.PRO_HINDI
+            assertEquals(expected, VoicePack.homeOf(HindiVoiceScript.story(story).clip))
+        }
+    }
+
+    @Test
+    fun `free activities need only the free packs, pro ones their world's pack`() {
+        TOPICS.forEach { topic ->
+            val packs = VoicePack.requiredFor(topic)
+            if (ProCatalog.isFree(Lockable.Activity(topic.id))) {
+                assertTrue("${topic.id} must not need a Pro pack", packs.none { it.delivery == Delivery.ON_DEMAND })
+            }
+            if (topic.kind == TopicKind.BARAKHADI) {
+                assertTrue(packs.containsAll(setOf(VoicePack.HINDI_LETTERS, VoicePack.HINDI_BARAKHADI)))
             }
         }
     }
 
     @Test
-    fun `only Hindi topics need a pack`() {
-        TOPICS.forEach { topic ->
-            val packs = VoicePack.requiredFor(topic)
-            when {
-                topic.kind == TopicKind.BARAKHADI ->
-                    assertEquals(setOf(VoicePack.HINDI_LETTERS, VoicePack.HINDI_BARAKHADI), packs)
-                topic.id.startsWith("hindi") -> assertEquals(setOf(VoicePack.HINDI_LETTERS), packs)
-                else -> assertTrue("${topic.id} should need no pack", packs.isEmpty())
+    fun `nothing a free activity says leaves the app`() {
+        TOPICS.filter { ProCatalog.isFree(Lockable.Activity(it.id)) }.forEach { topic ->
+            TopicVoices.clipsFor(topic).forEach { clip ->
+                assertEquals("${topic.id}: ${clip.relativePath}", null, VoicePack.homeOf(clip))
             }
         }
+        TopicVoices.shared.forEach { assertEquals(it.relativePath, null, VoicePack.homeOf(it)) }
     }
 
     @Test

@@ -13,6 +13,7 @@ import com.vi5hnu.curvykids.audio.packs.VoicePackRepository
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import com.vi5hnu.curvykids.audio.packs.Delivery
 import com.vi5hnu.curvykids.audio.packs.VoicePack
 import com.vi5hnu.curvykids.ads.AdMobRewardedAds
 import com.vi5hnu.curvykids.ads.AdUnlocks
@@ -83,13 +84,14 @@ class CurvyKidsApp : Application(), ImageLoaderFactory {
     val clipSources: List<ClipSource> by lazy { listOf(BundledClipSource(assets), PackClipSource(voicePacks)) }
 
     /**
-     * Makes sure the voice packs are coming. Play starts them after install by itself, but that
-     * download can still be running, have failed, or never have happened (a sideloaded app), so
-     * the app asks again each start. Packs already here or on their way are left alone.
+     * Makes sure the free voice packs are coming. Play starts them after install by itself, but
+     * that download can still be running, have failed, or never have happened (a sideloaded app),
+     * so the app asks again each start. Packs already here or on their way are left alone. The
+     * Pro packs are fetched only when an open Pro item is tapped, or from the Parent Zone.
      */
     override fun onCreate() {
         super.onCreate()
-        voicePacks.download(VoicePack.entries)
+        voicePacks.download(VoicePack.entries.filter { it.delivery == Delivery.FAST_FOLLOW })
         // Connects to Play: loads the offers and restores (or revokes) Pro before a screen asks.
         pro.refresh()
         keepAdsForFreeUsers()
