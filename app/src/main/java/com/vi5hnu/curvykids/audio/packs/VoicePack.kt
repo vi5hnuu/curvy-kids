@@ -50,11 +50,11 @@ enum class VoicePack(
 ) {
     HINDI_LETTERS("voice_hi_letters", "Hindi letters", listOf("hi/hindi_vowels", "hi/hindi_consonants"), Delivery.FAST_FOLLOW),
     HINDI_BARAKHADI("voice_hi_barakhadi", "Hindi barakhadi", listOf("hi/barakhadi"), Delivery.FAST_FOLLOW),
-    PRO_LETTERS("voice_pro_letters", "Letters", listOf("en/lines", "en/phonemes"), Delivery.ON_DEMAND, World.LETTERS),
-    PRO_NUMBERS("voice_pro_numbers", "Numbers", listOf("en/lines"), Delivery.ON_DEMAND, World.NUMBERS),
-    PRO_NATURE("voice_pro_nature", "Animals", listOf("en/lines"), Delivery.ON_DEMAND, World.NATURE),
-    PRO_MY_WORLD("voice_pro_my_world", "My World", listOf("en/lines"), Delivery.ON_DEMAND, World.MY_WORLD),
-    PRO_HINDI("voice_pro_hindi", "Hindi", listOf("hi/barakhadi", "hi/stories"), Delivery.ON_DEMAND, World.HINDI);
+    PRO_LETTERS("voice_pro_letters", "Letters (Pro)", listOf("en/lines", "en/phonemes"), Delivery.ON_DEMAND, World.LETTERS),
+    PRO_NUMBERS("voice_pro_numbers", "Numbers (Pro)", listOf("en/lines"), Delivery.ON_DEMAND, World.NUMBERS),
+    PRO_NATURE("voice_pro_nature", "Animals (Pro)", listOf("en/lines"), Delivery.ON_DEMAND, World.NATURE),
+    PRO_MY_WORLD("voice_pro_my_world", "My World (Pro)", listOf("en/lines"), Delivery.ON_DEMAND, World.MY_WORLD),
+    PRO_HINDI("voice_pro_hindi", "Hindi (Pro)", listOf("hi/barakhadi", "hi/stories"), Delivery.ON_DEMAND, World.HINDI);
 
     /** Whether a clip of [clip]'s folder could be in this pack (see [folders]). */
     fun mayHold(clip: VoiceClip): Boolean = folders.any { clip.relativePath.startsWith("$it/") }

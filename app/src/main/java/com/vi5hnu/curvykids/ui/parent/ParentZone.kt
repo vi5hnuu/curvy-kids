@@ -38,6 +38,7 @@ import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.theme.Coral
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
+import com.vi5hnu.curvykids.audio.packs.Delivery
 import com.vi5hnu.curvykids.audio.packs.VoicePack
 import com.vi5hnu.curvykids.audio.packs.VoicePackRepository
 import com.vi5hnu.curvykids.ui.voice.VoicePackPanel
@@ -184,7 +185,8 @@ fun ParentZone(
 
             // ── Voice packs ───────────────────────────────────────────────
             // Recorded voices download per category; fetching them here means a child never
-            // meets the "ask a grown-up" screen.
+            // waits on a download. The Pro packs are listed (and downloaded) only once Pro is
+            // known to be owned: nobody else may open what they voice.
             Text(
                 text = "Voice packs",
                 fontFamily = FontDisplay,
@@ -193,8 +195,15 @@ fun ParentZone(
                 color = Ink,
             )
             Spacer(Modifier.height(2.dp))
+            val proVoices = proState.known && proState.owned
             Text(
-                text = "Recorded voices for the Hindi activities. Download once, then they work offline.",
+                text = if (proVoices) {
+                    "Recorded voices for every activity. Each downloads by itself the first time it's " +
+                        "opened, or get them all now. Once here, they work offline."
+                } else {
+                    "Recorded voices for the Hindi activities. Download once, then they work offline. " +
+                        "Pro's voices download once Pro is unlocked."
+                },
                 fontWeight = FontWeight.Bold,
                 fontSize = 13.sp,
                 color = Ink.copy(alpha = 0.6f),
@@ -202,7 +211,8 @@ fun ParentZone(
             Spacer(Modifier.height(10.dp))
             val packStates by voicePacks.states.collectAsState()
             LaunchedEffect(Unit) { voicePacks.refresh() }
-            VoicePackPanel(VoicePack.entries, packStates, voicePacks)
+            val shownPacks = VoicePack.entries.filter { proVoices || it.delivery == Delivery.FAST_FOLLOW }
+            VoicePackPanel(shownPacks, packStates, voicePacks)
 
             Spacer(Modifier.height(16.dp))
             HorizontalDivider(color = InkFaint.copy(alpha = 0.35f))
