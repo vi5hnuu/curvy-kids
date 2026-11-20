@@ -5,7 +5,15 @@ import android.os.Handler
 import android.os.Looper
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
+import android.os.SystemClock
 import android.util.Log
+import com.vi5hnu.curvykids.data.content.Speech
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.withTimeoutOrNull
 import java.util.Locale
 
 /**
@@ -15,12 +23,64 @@ import java.util.Locale
  * Initialisation is asynchronous; requests made before the engine is ready are dropped
  * (the child can tap again), which keeps the wrapper simple and stateless.
  */
-class PhonicsSpeaker(context: Context) {
+class PhonicsSpeaker(context: Context, clipSources: List<ClipSource>) {
+
+    /** Human recordings, preferred over the synthetic voice whenever one exists for a line. */
+    private val clips = ClipPlayer(clipSources)
+
+    /**
+     * Lines queued behind audio from the *other* engine (a TTS line behind a clip, or a clip
+     * behind a TTS line). Each engine queues its own lines natively, but they can't see each
+     * other, so cross-engine order is kept here and released when both have gone quiet.
+     */
+    private val waiting = ArrayDeque<() -> Unit>()
+
+    /**
+     * Id of the last line handed to TTS while it is still playing, else null. Tracked here because
+     * `TextToSpeech.isSpeaking` can still read true inside the onDone callback of that same line.
+     */
+    @Volatile
+    private var ttsTail: String? = null
+
+    private fun releaseWaiting() {
+        while (waiting.isNotEmpty() && !clips.isBusy && ttsTail == null) {
+            waiting.removeFirst().invoke()
+        }
+        refreshSpeaking()
+    }
+
+    private val _speaking = MutableStateFlow(false)
+
+    /**
+     * True while anything is being said or is still to be said: a recording playing or queued, a
+     * synthetic line in progress, a line held for the other engine, or one waiting for TTS to start.
+     * Screens wait on it ([awaitQuiet]) so a line is heard to the end before the picture changes.
+     */
+    val speaking: StateFlow<Boolean> = _speaking.asStateFlow()
+
+    /** Re-reads [speaking] after anything that starts, queues, finishes or drops a line. */
+    private fun refreshSpeaking() {
+        _speaking.value = clips.isBusy || ttsTail != null || waiting.isNotEmpty() || pendingText != null
+    }
+
+    /**
+     * Bumped whenever a line interrupts what came before (a flush), so a stop that arrives late
+     * (a screen being torn down after its exit animation) can tell whether a newer screen has
+     * started talking since; see [stopIfStill].
+     */
+    @Volatile
+    var generation: Long = 0L
+        private set
 
     companion object {
         private const val TAG = "PHONICS"
         /** Default kids' speaking rate (a little slower than normal). */
         const val DEFAULT_RATE = 0.85f
+        /**
+         * Longest [awaitQuiet] waits for a line to end: longer than any prompt or praise, and a
+         * safety net for a TTS engine that never reports "done", so a screen can't get stuck.
+         */
+        const val QUIET_CAP_MS = 6_000L
     }
 
     @Volatile
@@ -63,9 +123,18 @@ class PhonicsSpeaker(context: Context) {
     @Volatile
     private var pendingLangTag: String? = null
 
+    @Volatile
+    private var pendingRomanized: String? = null
+
     /** Currently-applied TTS language, so we only switch locale when it actually changes. */
     @Volatile
     private var currentLangTag: String = Locale.US.toLanguageTag()
+
+    init {
+        clips.onStart = { id -> onUtteranceStart?.invoke(id) }
+        clips.onDone = { id -> lineDone(id) }
+        clips.onIdle = { releaseWaiting() }
+    }
 
     private val tts: TextToSpeech = TextToSpeech(context.applicationContext) { status ->
         if (status == TextToSpeech.SUCCESS) {
@@ -79,12 +148,20 @@ class PhonicsSpeaker(context: Context) {
                 }
                 override fun onDone(utteranceId: String?) {
                     val id = utteranceId ?: return
-                    mainHandler.post { onUtteranceDone?.invoke(id) }
+                    mainHandler.post {
+                        if (id == ttsTail) ttsTail = null
+                        lineDone(id)
+                        releaseWaiting()
+                    }
                 }
                 @Deprecated("Deprecated in Java")
                 override fun onError(utteranceId: String?) {
                     val id = utteranceId ?: return
-                    mainHandler.post { onUtteranceDone?.invoke(id) }
+                    mainHandler.post {
+                        if (id == ttsTail) ttsTail = null
+                        lineDone(id)
+                        releaseWaiting()
+                    }
                 }
                 override fun onRangeStart(utteranceId: String?, start: Int, end: Int, frame: Int) {
                     val id = utteranceId ?: return
@@ -92,11 +169,15 @@ class PhonicsSpeaker(context: Context) {
                 }
             })
             ready = true
-            pendingText?.let { speak(it, pendingLangTag) }
+            pendingText?.let { speak(it, pendingLangTag, romanized = pendingRomanized) }
             pendingText = null
             pendingLangTag = null
+            pendingRomanized = null
         } else {
             Log.e(TAG, "TextToSpeech init failed: $status")
+            // Nothing will ever say the held line, so don't report it as still to come.
+            pendingText = null
+            mainHandler.post { refreshSpeaking() }
         }
     }
 
@@ -109,17 +190,111 @@ class PhonicsSpeaker(context: Context) {
      * @param flush when true (default) interrupts any current speech; when false the phrase is
      *        QUEUED after whatever is playing — used so a praise/feedback line finishes before the
      *        next prompt speaks, instead of being cut off mid-word.
+     * @param romanized what to say instead when the device has no voice for [langTag]. Whether a
+     *        voice exists can only be known once the engine has started, which is after the first
+     *        tap, so the choice is made here rather than by the caller: asking beforehand returned
+     *        an optimistic yes and sent Devanagari to an English voice, which reads as nonsense.
+     * @param clip a recording of this exact line. When it is bundled it is played instead of the
+     *        synthetic voice; when it isn't, everything above applies unchanged.
      */
-    fun speak(text: String, langTag: String? = null, flush: Boolean = true, utteranceId: String = text) {
+    fun speak(
+        text: String,
+        langTag: String? = null,
+        flush: Boolean = true,
+        utteranceId: String = text,
+        romanized: String? = null,
+        clip: VoiceClip? = null,
+    ) {
         if (text.isBlank() || muted) return
+        // A screen's first words wait for the name it was opened with, instead of cutting it.
+        val interrupts = flush && !(announcing != null && _speaking.value)
+        if (interrupts) { generation++; announcing = null }
+        try {
+            speakNow(text, langTag, interrupts, utteranceId, romanized, clip)
+        } finally {
+            refreshSpeaking()
+        }
+    }
+
+    /** [speak] without the bookkeeping around it. */
+    private fun speakNow(
+        text: String,
+        langTag: String?,
+        flush: Boolean,
+        utteranceId: String,
+        romanized: String?,
+        clip: VoiceClip?,
+    ) {
+        if (clip != null && clips.has(clip)) {
+            if (flush) { waiting.clear(); ttsTail = null; if (ready) tts.stop() }
+            if (!flush && ttsTail != null) {
+                waiting.addLast { clips.play(clip, utteranceId, flush = false) }
+            } else {
+                clips.play(clip, utteranceId, flush)
+            }
+            return
+        }
+        if (flush) { clips.stop(); waiting.clear() }
+        else if (clips.isBusy) {
+            waiting.addLast { speakNow(text, langTag, flush = false, utteranceId, romanized, clip = null) }
+            return
+        }
         if (!ready) {
             pendingText = text  // will fire once TTS is initialised
             pendingLangTag = langTag
+            pendingRomanized = romanized
             return
         }
-        applyLanguage(langTag)
+        val spoken = if (langTag != null && romanized != null && !supports(langTag)) {
+            applyLanguage(null)
+            romanized
+        } else {
+            applyLanguage(langTag)
+            text
+        }
         val mode = if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
-        tts.speak(text, mode, null, utteranceId)
+        ttsTail = utteranceId
+        tts.speak(spoken, mode, null, utteranceId)
+    }
+
+    /**
+     * Says an English [speech] in our own voice: its recorded parts back to back. If any part is
+     * not recorded yet, the device voice says the whole sentence instead, so a child never hears
+     * a sentence that switches voice halfway. [utteranceId] is reported when the last part ends.
+     */
+    fun say(speech: Speech, flush: Boolean = true, utteranceId: String = speech.text) {
+        if (speech.parts.isEmpty() || muted) return
+        if (speech.fullyRecorded(clips::has)) {
+            speech.parts.forEachIndexed { i, part ->
+                speak(
+                    part.text,
+                    flush = flush && i == 0,
+                    utteranceId = if (i == speech.parts.lastIndex) utteranceId else "$utteranceId#$i",
+                    clip = part.clip,
+                )
+            }
+        } else {
+            speak(speech.text, flush = flush, utteranceId = utteranceId)
+        }
+    }
+
+    /**
+     * Says the name of the screen being opened ("Letter Sounds"). Until it ends, lines that would
+     * interrupt are queued behind it instead, so the new screen's first prompt follows the name
+     * rather than cutting it off. [stop] still silences it.
+     */
+    fun announce(speech: Speech) {
+        say(speech)
+        if (_speaking.value) announcing = speech.text
+    }
+
+    /** Utterance id of an [announce]d name still being said, else null. */
+    private var announcing: String? = null
+
+    /** A line ended (or failed): tells the listener, and ends an announcement that was this line. */
+    private fun lineDone(id: String) {
+        if (id == announcing) announcing = null
+        onUtteranceDone?.invoke(id)
     }
 
     /**
@@ -130,6 +305,20 @@ class PhonicsSpeaker(context: Context) {
         if (!ready) return true
         return tts.isLanguageAvailable(Locale.forLanguageTag(langTag)) >= TextToSpeech.LANG_AVAILABLE
     }
+
+    /** Whether a human recording is bundled for [clip]. */
+    fun hasClip(clip: VoiceClip): Boolean = clips.has(clip)
+
+    /**
+     * Whether [langTag] can be spoken properly: either [clip] is recorded, or the device has a
+     * voice for the language. Callers use it to choose a Hindi line over an English stand-in.
+     */
+    fun canSpeak(langTag: String, clip: VoiceClip?): Boolean =
+        (clip != null && clips.has(clip)) || supports(langTag)
+
+    /** Whether the device has a real voice installed for [langTag], known only after init. */
+    fun hasVoiceFor(langTag: String): Boolean =
+        ready && tts.isLanguageAvailable(Locale.forLanguageTag(langTag)) >= TextToSpeech.LANG_AVAILABLE
 
     /**
      * Sets the speaking pitch (1.0 = normal). Higher values sound younger/"boyish" — used by the
@@ -171,10 +360,39 @@ class PhonicsSpeaker(context: Context) {
     fun stop() {
         pendingText = null
         pendingLangTag = null
+        pendingRomanized = null
+        announcing = null
+        waiting.clear()
+        clips.stop()
+        ttsTail = null
         if (ready) tts.stop()
+        refreshSpeaking()
+    }
+
+    /**
+     * [stop], but only if nothing has interrupted since [generation] was read. Used when leaving a
+     * screen: its teardown runs after the exit animation, by which time the next screen may already
+     * be speaking (an activity's name on a tile tap), and that line must not be cut.
+     */
+    fun stopIfStill(generation: Long) {
+        if (generation == this.generation) stop()
+    }
+
+    /**
+     * Suspends for at least [minMs] (the screen's own beat, so the child sees what happened), then
+     * until nothing is left to say, so the next screen never appears under the last line. Gives up
+     * after [maxMs] in all, should an engine never report the end. Returns at once when muted.
+     */
+    suspend fun awaitQuiet(minMs: Long = 0L, maxMs: Long = QUIET_CAP_MS) {
+        val start = SystemClock.elapsedRealtime()
+        delay(minMs)
+        if (muted) return
+        val left = maxMs - (SystemClock.elapsedRealtime() - start)
+        if (left > 0) withTimeoutOrNull(left) { speaking.first { !it } }
     }
 
     fun release() {
+        clips.release()
         tts.stop()
         tts.shutdown()
     }

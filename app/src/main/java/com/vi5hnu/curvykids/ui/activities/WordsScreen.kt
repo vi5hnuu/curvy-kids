@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -18,11 +20,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -37,9 +38,14 @@ import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Chip
 import com.vi5hnu.curvykids.ui.components.Pill
+import com.vi5hnu.curvykids.ui.components.ProgressTrack
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 private val EXTRA_LETTERS = "ABCDEFGHIJKLMNOPRSTUVWY".toList()
 
@@ -56,7 +62,7 @@ fun WordsScreen(
     var pos by remember { mutableIntStateOf(0) }
     var filled by remember { mutableIntStateOf(0) }
     var wrong by remember { mutableStateOf<Char?>(null) }
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     val word = WORD_LIST[order[pos]]
     val letters = word.word.toList()
@@ -81,7 +87,7 @@ fun WordsScreen(
     LaunchedEffect(pos) {
         filled = 0
         wrong = null   // clear any red-tile state from the previous word
-        speaker?.speak(word.word)
+        speaker?.say(EnglishVoiceScript.say(word.word))
     }
 
     Box {
@@ -99,9 +105,9 @@ fun WordsScreen(
                     Pill {
                         Row(
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
                         ) {
-                            Text("${pos + 1}/${WORD_LIST.size}", fontFamily = FontDisplay, fontSize = 16.sp, color = topic.color)
+                            ProgressTrack(pos + 1, WORD_LIST.size, topic.color)
                         }
                     }
                 },
@@ -114,15 +120,15 @@ fun WordsScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     modifier = Modifier.padding(22.dp),
                 ) {
-                    Text(word.emoji, fontSize = 72.sp, lineHeight = 80.sp)
+                    SvgArt(word.svg, modifier = Modifier.size(104.dp))
                     Spacer(Modifier.height(10.dp))
                     Chip(
-                        onClick = { speaker?.speak(word.word) },
-                        modifier = Modifier.size(46.dp),
+                        onClick = { speaker?.say(EnglishVoiceScript.say(word.word)) },
+                        modifier = Modifier.size(48.dp),
                         containerColor = topic.tint,
                         contentColor = topic.color,
                     ) {
-                        Text("🔊", fontSize = 20.sp)
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }
@@ -178,14 +184,14 @@ fun WordsScreen(
                             if (ch == letters[filled]) {
                                 val nf = filled + 1
                                 filled = nf
-                                speaker?.speak(ch.toString())
+                                speaker?.say(EnglishVoiceScript.say(ch.toString()))
                                 if (nf == letters.size) {
                                     onReward(5)
                                     showCelebrate = true
                                 }
                             } else {
                                 wrong = ch
-                                speaker?.speak("Try again")
+                                speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.TRY_AGAIN))
                             }
                         },
                         modifier = Modifier.size(tileSize),

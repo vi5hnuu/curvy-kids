@@ -1,0 +1,98 @@
+package com.vi5hnu.curvykids.ui.activities.barakhadi
+
+import com.vi5hnu.curvykids.billing.LockMark
+import com.vi5hnu.curvykids.ui.pro.LockMarkBadge
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListScope
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
+import com.vi5hnu.curvykids.data.content.HindiLetter
+import com.vi5hnu.curvykids.ui.kit.CandyCard
+import com.vi5hnu.curvykids.ui.theme.KidDimens
+import androidx.compose.foundation.layout.Box
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.draw.alpha
+
+/**
+ * The strip of 36 consonants to choose from. The picked letter is a solid candy block, the rest
+ * are pale, so where you are is obvious without reading anything. Keeps the picked letter in
+ * view when it changes (including after rotation).
+ *
+ * @param vertical a column down the side instead of a row, for landscape where height is short.
+ * @param markOf the mark for the letter at an index ([LockMark]): a locked one is also shown faded.
+ */
+@Composable
+fun ConsonantPicker(
+    consonants: List<HindiLetter>,
+    selected: Int,
+    color: Color,
+    tint: Color,
+    onPick: (Int) -> Unit,
+    modifier: Modifier = Modifier,
+    vertical: Boolean = false,
+    markOf: (Int) -> LockMark = { LockMark.NONE },
+) {
+    val state = rememberLazyListState(initialFirstVisibleItemIndex = (selected - 2).coerceAtLeast(0))
+    LaunchedEffect(selected) {
+        val visible = state.layoutInfo.visibleItemsInfo
+        if (visible.none { it.index == selected } || visible.first().index == selected || visible.last().index == selected) {
+            state.animateScrollToItem((selected - 2).coerceAtLeast(0))
+        }
+    }
+    val items: LazyListScope.() -> Unit = {
+        itemsIndexed(consonants, key = { _, c -> c.char }) { i, c ->
+            val picked = i == selected
+            val mark = markOf(i)
+            val locked = mark == LockMark.LOCKED
+            Box {
+            CandyCard(
+                color = if (picked) color else tint,
+                onClick = { onPick(i) },
+                label = c.char,
+                radius = 20.dp,
+                modifier = Modifier.size(KidDimens.MinTarget),
+            ) {
+                Text(
+                    text = c.char,
+                    fontWeight = FontWeight.ExtraBold,
+                    fontSize = 30.sp,
+                    color = if (picked) Color.White else color,
+                    modifier = Modifier.alpha(if (locked) 0.45f else 1f),
+                )
+            }
+            LockMarkBadge(mark, Modifier.align(Alignment.TopEnd), size = 22.dp)
+            }
+        }
+    }
+    if (vertical) {
+        LazyColumn(
+            state = state,
+            modifier = modifier.fillMaxHeight(),
+            verticalArrangement = Arrangement.spacedBy(10.dp),
+            contentPadding = PaddingValues(vertical = 2.dp),
+            content = items,
+        )
+    } else {
+        LazyRow(
+            state = state,
+            modifier = modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.spacedBy(10.dp),
+            contentPadding = PaddingValues(horizontal = 2.dp),
+            content = items,
+        )
+    }
+}

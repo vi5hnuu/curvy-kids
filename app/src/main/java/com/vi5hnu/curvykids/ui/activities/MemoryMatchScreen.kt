@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +12,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -17,12 +20,11 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,13 +32,15 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
-import com.vi5hnu.curvykids.data.content.GAME_EMOJIS
+import com.vi5hnu.curvykids.data.content.GAME_PICTURES
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 private const val COLS = 4
 
@@ -51,9 +55,9 @@ private fun pairsForRound(round: Int) = when {
 }
 
 private fun levelLabel(round: Int) = when {
-    round < 3 -> "★ Easy"
-    round < 6 -> "★★ Medium"
-    else -> "★★★ Hard"
+    round < 3 -> "Easy"
+    round < 6 -> "Medium"
+    else -> "Hard"
 }
 
 /** Memory Match — flip cards two at a time to find matching pairs. */
@@ -64,20 +68,20 @@ fun MemoryMatchScreen(
     onReward: (Int) -> Unit,
     feedback: PlayFeedback? = null,
 ) {
-    var round by remember { mutableIntStateOf(0) }
+    var round by rememberSaveable { mutableIntStateOf(0) }
     val pairs = pairsForRound(round)
 
     val board = remember(round) {
-        val picks = GAME_EMOJIS.shuffled().take(pairsForRound(round))
+        val picks = GAME_PICTURES.shuffled().take(pairsForRound(round))
         (picks + picks).shuffled()
     }
     val matched = remember(round) { mutableStateListOf<Int>() }
     var first by remember(round) { mutableStateOf<Int?>(null) }
     var second by remember(round) { mutableStateOf<Int?>(null) }
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     LaunchedEffect(round) {
-        feedback?.speaker?.speak("Find the pairs!")
+        feedback?.speaker?.say(EnglishVoiceScript.say("Find the pairs!"))
     }
 
     // Evaluate a pair once two cards are face-up.
@@ -88,10 +92,15 @@ fun MemoryMatchScreen(
                 kotlinx.coroutines.delay(350)
                 matched.add(a); matched.add(b)
                 feedback?.correct()
-                feedback?.speaker?.speak("Match!")
+                feedback?.speaker?.say(EnglishVoiceScript.say("Match!"))
                 onReward(3)
+                if (matched.size == board.size) {
+                    // "Match!" is heard to the end before the board gives way to the celebration.
+                    // Waited before clearing the pair: clearing it restarts this effect.
+                    feedback?.speaker?.awaitQuiet()
+                    showCelebrate = true
+                }
                 first = null; second = null
-                if (matched.size == board.size) showCelebrate = true
             } else {
                 kotlinx.coroutines.delay(850)
                 feedback?.wrong()
@@ -151,7 +160,7 @@ fun MemoryMatchScreen(
                         .fillMaxWidth()
                         .padding(bottom = 10.dp),
                 ) {
-                    rowCards.forEachIndexed { colIdx, emoji ->
+                    rowCards.forEachIndexed { colIdx, svg ->
                         val i = rowIdx * COLS + colIdx
                         val isUp = matched.contains(i) || i == first || i == second
                         val isMatched = matched.contains(i)
@@ -170,7 +179,7 @@ fun MemoryMatchScreen(
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 if (isUp) {
-                                    Text(emoji, fontSize = if (pairs <= 4) 36.sp else 28.sp)
+                                    SvgArt(svg, modifier = Modifier.size(if (pairs <= 4) 52.dp else 40.dp))
                                 } else {
                                     Text(
                                         "?",

@@ -50,7 +50,7 @@ fun TopicCard(
                 shape = RoundedCornerShape(18.dp),
                 color = topic.color,
                 shadowElevation = 2.dp,
-                modifier = Modifier.size(54.dp),
+                modifier = Modifier.size(60.dp),
             ) {
                 TopicGlyph(
                     topicId = topic.id,
@@ -63,16 +63,16 @@ fun TopicCard(
                 text = topic.title,
                 fontFamily = FontDisplay,
                 fontWeight = FontWeight.ExtraBold,
-                fontSize = 17.sp,
+                fontSize = 19.sp,
                 color = Ink,
-                lineHeight = 18.sp,
+                lineHeight = 21.sp,
                 textAlign = TextAlign.Center,
             )
             Spacer(Modifier.height(2.dp))
             Text(
                 text = topic.sub,
                 fontWeight = FontWeight.Bold,
-                fontSize = 12.5.sp,
+                fontSize = 13.5.sp,
                 color = InkSoft,
                 textAlign = TextAlign.Center,
             )

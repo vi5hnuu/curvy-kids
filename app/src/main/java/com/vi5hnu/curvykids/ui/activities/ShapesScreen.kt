@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,14 +12,14 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.CornerRadius
@@ -37,6 +39,10 @@ import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarGold
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Shapes — Learn (tap to hear the name) + Play ("Find the Shape" quiz). */
 @Composable
@@ -52,7 +58,8 @@ fun ShapesScreen(
         quizItems = SHAPES,
         quizPromptLabel = "FIND THE SHAPE",
         keyOf = { it.id },
-        speakFor = { "Find the ${it.name}" },
+        speakFor = { EnglishVoiceScript.findThe(it.name) },
+        nameOf = { it.name },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Shape Star!",
@@ -67,7 +74,7 @@ fun ShapesScreen(
             )
         },
         quizOption = { shape ->
-            Canvas(modifier = Modifier.size(66.dp)) { drawShape(shape.id, shape.color) }
+            Canvas(modifier = Modifier.fillMaxHeight(0.85f).aspectRatio(1f)) { drawShape(shape.id, shape.color) }
         },
     )
 }
@@ -92,7 +99,7 @@ private fun ShapesLearnGrid(
                         shape = shape,
                         seen = seen.contains(shape.id),
                         onTap = {
-                            speaker?.speak(shape.name)
+                            speaker?.say(EnglishVoiceScript.say(shape.name))
                             if (!seen.contains(shape.id)) {
                                 seen = seen + shape.id
                                 onReward(2)
@@ -139,10 +146,11 @@ private fun ShapeCard(
                 )
             }
             if (seen) {
-                Text(
-                    text = "⭐",
-                    fontSize = 16.sp,
-                    modifier = Modifier.align(Alignment.TopEnd),
+                KidIconImage(
+                    icon = KidIcon.Star,
+                    modifier = Modifier.align(Alignment.TopEnd)
+                        .size(16.dp),
+                    color = StarGold,
                 )
             }
         }

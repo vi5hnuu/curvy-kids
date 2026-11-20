@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,10 +17,8 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
@@ -35,7 +35,11 @@ import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Grape
 import com.vi5hnu.curvykids.ui.theme.Ink
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarGold
+import com.vi5hnu.curvykids.ui.components.KidIcon
 import java.util.Calendar
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Day before [day] in the week, wrapping Sunday→Saturday. */
 private fun dayBefore(day: String): String {
@@ -57,7 +61,7 @@ fun DaysScreen(
         quizItems = DAYS,
         quizPromptLabel = "WHAT COMES AFTER…",
         keyOf = { it },
-        speakFor = { "What comes after ${dayBefore(it)}?" },
+        speakFor = { EnglishVoiceScript.say(EnglishVoiceScript.whatComesAfter(dayBefore(it))) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Day Star!",
@@ -136,7 +140,7 @@ private fun DaysLearnList(
 
                 Surface(
                     onClick = {
-                        speaker?.speak(day)
+                        speaker?.say(EnglishVoiceScript.say(day))
                         if (!seen.contains(i)) {
                             seen = seen + i
                             onReward(1)
@@ -183,7 +187,7 @@ private fun DaysLearnList(
                                 color = Color.White,
                             )
                         } else if (seen.contains(i)) {
-                            Text("⭐", fontSize = 15.sp)
+                            KidIconImage(KidIcon.Star, Modifier.size(15.dp), StarGold)
                         }
                     }
                 }

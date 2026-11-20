@@ -1,6 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
-import androidx.compose.foundation.background
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +19,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -39,9 +39,12 @@ import com.vi5hnu.curvykids.ui.components.Chip
 import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
-import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
 import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** "Find the Color" matching game. */
 @Composable
@@ -52,20 +55,20 @@ fun ColorsScreen(
     onAddBadge: (String) -> Unit = {},
     speaker: PhonicsSpeaker? = null,
 ) {
-    var score by remember { mutableIntStateOf(0) }
+    var score by rememberSaveable { mutableIntStateOf(0) }
     var target by remember { mutableStateOf(COLOR_ITEMS.random()) }
     var options by remember { mutableStateOf(buildOptions(target)) }
     var flash by remember { mutableStateOf<Pair<String, Boolean>?>(null) } // name → correct?
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     fun newRound() {
         val t = COLOR_ITEMS.random()
         target = t
         options = buildOptions(t)
-        speaker?.speak("Find ${t.name}")
+        speaker?.say(EnglishVoiceScript.find(t.name))
     }
 
-    LaunchedEffect(Unit) { speaker?.speak("Find ${target.name}") }
+    LaunchedEffect(Unit) { speaker?.say(EnglishVoiceScript.find(target.name)) }
 
     Box {
         Column(
@@ -84,7 +87,7 @@ fun ColorsScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("⭐ $score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                            StarCount(score)
                         }
                     }
                 },
@@ -113,10 +116,10 @@ fun ColorsScreen(
                     )
                     Spacer(Modifier.height(10.dp))
                     Chip(
-                        onClick = { speaker?.speak("Find ${target.name}") },
+                        onClick = { speaker?.say(EnglishVoiceScript.find(target.name)) },
                         modifier = Modifier.size(48.dp),
                     ) {
-                        Text("🔊", fontSize = 20.sp)
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }
@@ -143,10 +146,10 @@ fun ColorsScreen(
                                         score = newScore
                                         onReward(3)
                                         if (newScore == 1) onAddBadge("colors")
-                                        speaker?.speak("Yes! ${item.name}")
+                                        speaker?.say(EnglishVoiceScript.yes(item.name))
                                     } else {
                                         flash = item.name to false
-                                        speaker?.speak("Try again")
+                                        speaker?.say(EnglishVoiceScript.say(EnglishVoiceScript.TRY_AGAIN))
                                     }
                                 },
                                 modifier = Modifier
@@ -157,7 +160,7 @@ fun ColorsScreen(
                                 shadowElevation = 6.dp,
                             ) {
                                 Box(contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize()) {
-                                    if (isFlash && flashOk) Text("✓", fontSize = 40.sp, color = Color.White)
+                                    if (isFlash && flashOk) KidIconImage(KidIcon.Check, Modifier.size(40.dp), Color.White)
                                 }
                             }
                         }
@@ -170,7 +173,8 @@ fun ColorsScreen(
         // Handle flash auto-clear + round advance
         LaunchedEffect(flash) {
             if (flash != null) {
-                delay(700)
+                // A right answer moves on only once its praise has been heard to the end.
+                if (flash?.second == true) speaker?.awaitQuiet(minMs = 700) ?: delay(700) else delay(700)
                 if (flash?.second == true) {
                     if (score > 0 && score % 5 == 0) {
                         showCelebrate = true

@@ -3,6 +3,26 @@
     xmlns:tools="http://schemas.android.com/tools">
     <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
+    <!-- To tell a grown-up when the app is offline (videos need the internet; see net/Connectivity). -->
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+
+    <!--
+        The ads SDK adds the advertising-ID permission; an app made for children must not hold it
+        (Play Families policy), and child-directed ad requests never use it.
+    -->
+    <uses-permission android:name="com.google.android.gms.permission.AD_ID" tools:node="remove" />
+
+    <!--
+        Android 11 hides other packages unless they are declared here, and a text-to-speech
+        engine is another package. Without this the engine is invisible, TextToSpeech never
+        binds, and every spoken prompt in the app is silently dropped - which is exactly what a
+        reviewer on a device whose speech engine is not the default would have found.
+    -->
+    <queries>
+        <intent>
+            <action android:name="android.intent.action.TTS_SERVICE" />
+        </intent>
+    </queries>
 
     <application
         android:name=".CurvyKidsApp"
@@ -16,6 +36,10 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.CurvyKids"
         tools:targetApi="31">
+        <!-- AdMob app id: Google's sample id in debug, ours (local.properties) in release. -->
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="${admobAppId}" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

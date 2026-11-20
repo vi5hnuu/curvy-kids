@@ -8,7 +8,7 @@
 /.idea/navEditor.xml
 /.idea/assetWizardSettings.xml
 .DS_Store
-/build
+build/
 /captures
 .externalNativeBuild
 .cxx
@@ -22,3 +22,10 @@ key.properties
 # Release build outputs (signed APK/AAB)
 /release
 /app/release
+
+# Kotlin compiler scratch output
+.kotlin/
+.idea/appInsightsSettings.xml
+
+# Local generation scripts (art drawing, voice lists): kept on disk, never committed
+/tools/

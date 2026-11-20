@@ -1,5 +1,6 @@
 package com.vi5hnu.curvykids.ui.game
 
+import com.vi5hnu.curvykids.CurvyKidsApp
 import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
@@ -8,9 +9,11 @@ import androidx.lifecycle.viewModelScope
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
 import com.vi5hnu.curvykids.audio.PlayFeedback
 import com.vi5hnu.curvykids.audio.SoundEffects
+import com.vi5hnu.curvykids.data.app.Difficulty
 import com.vi5hnu.curvykids.data.content.HINDI_BY_CHAR
+import com.vi5hnu.curvykids.data.content.HindiVoiceScript
+import com.vi5hnu.curvykids.data.content.VoiceLine
 import com.vi5hnu.curvykids.data.content.Level
-import com.vi5hnu.curvykids.data.content.Phonics
 import com.vi5hnu.curvykids.data.content.Script
 import com.vi5hnu.curvykids.data.progress.ProgressRepository
 import com.vi5hnu.curvykids.haptics.Haptics
@@ -20,13 +23,16 @@ import com.vi5hnu.curvykids.recognition.MlKitInkRecognizer
 import com.vi5hnu.curvykids.recognition.Recognizer
 import com.vi5hnu.curvykids.recognition.Stroke
 import com.vi5hnu.curvykids.recognition.WritingArea
-import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withTimeoutOrNull
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Owns the game loop and state. Depends on the [Recognizer] abstraction plus small platform
@@ -45,6 +51,17 @@ class GameViewModel(
     private val _uiState = MutableStateFlow(GameUiState())
     val uiState: StateFlow<GameUiState> = _uiState.asStateFlow()
 
+    private val _correctAnswers = MutableSharedFlow<CorrectAnswer>(extraBufferCapacity = 4)
+
+    /**
+     * Emitted exactly once each time a drawing is accepted.
+     *
+     * Rewards must not be driven off [uiState].lastResult: that is state, so it is replayed to
+     * every new collector — a screen rotation re-delivered a still-CORRECT result and the child
+     * was paid twice for one letter. An event stream is consumed once and never replayed.
+     */
+    val correctAnswers: SharedFlow<CorrectAnswer> = _correctAnswers.asSharedFlow()
+
     /** Recognizer readiness, surfaced for the loading/error overlay. */
     val recognizerReady: StateFlow<HttpState?> = recognizer.ready
 
@@ -61,6 +78,16 @@ class GameViewModel(
     fun setAudioEnabled(enabled: Boolean) {
         phonics.muted = !enabled
         sound.muted = !enabled
+    }
+
+    /** Attempts allowed on a character before the app moves on; Easy is more forgiving. */
+    private var maxWrongAttempts: Int = MAX_WRONG_ATTEMPTS_NORMAL
+
+    fun setDifficulty(difficulty: Difficulty) {
+        maxWrongAttempts = when (difficulty) {
+            Difficulty.EASY -> MAX_WRONG_ATTEMPTS_EASY
+            Difficulty.NORMAL -> MAX_WRONG_ATTEMPTS_NORMAL
+        }
     }
 
     init {
@@ -90,11 +117,30 @@ class GameViewModel(
             Log.d(TAG, "check level=${state.level} expected=${state.character} " +
                 "candidates=$candidates matched=$matched")
 
+            // The child may have tapped Next/Previous during the up-to-8s recognition. Scoring
+            // the stale character would credit (and advance past) the wrong letter, so drop a
+            // result that no longer describes what is on screen.
+            val currentState = _uiState.value
+            if (currentState.level != state.level || currentState.index != state.index) {
+                _uiState.update { it.copy(isChecking = false) }
+                return@launch
+            }
+
             if (matched) {
                 sound.playCorrect()
                 speakPraise()
+                // Then the letter's own line again ("A for Apple"), so the shape just written is
+                // heard with its sound at the moment it is praised.
+                speakLetterLine(state.character)
                 viewModelScope.launch { progress.markMastered(state.level, state.character) }
                 val newMastered = state.masteredCharacters + state.character
+                _correctAnswers.tryEmit(
+                    CorrectAnswer(
+                        topicId = state.level.progressKey,
+                        character = state.character,
+                        alreadyMastered = state.character in state.masteredCharacters,
+                    )
+                )
                 // Only trigger the completion overlay when the level is mastered for the first
                 // time — not on repeat correct answers after full completion.
                 val levelComplete = state.masteredCharacters.size < state.level.characters.size &&
@@ -106,12 +152,13 @@ class GameViewModel(
                         score = it.score + 1,
                         masteredCharacters = newMastered,
                         levelJustCompleted = levelComplete,
+                        lastWasPractice = state.character in state.masteredCharacters,
                     )
                 }
                 if (!levelComplete) {
-                    delay(CORRECT_ADVANCE_DELAY_MS)
-                    // Queue the next prompt so the praise line finishes instead of being cut off.
-                    next(queueSpeech = true)
+                    // The praise is heard to the end before the next letter appears.
+                    phonics.awaitQuiet(minMs = CORRECT_ADVANCE_DELAY_MS)
+                    if (stillOn(state)) next(queueSpeech = true)
                 }
                 // If levelComplete, the overlay handles navigation via dismissLevelComplete().
             } else {
@@ -121,17 +168,25 @@ class GameViewModel(
                 _uiState.update {
                     it.copy(isChecking = false, lastResult = AnswerResult.WRONG, wrongAttempts = newAttempts)
                 }
-                if (newAttempts >= MAX_WRONG_ATTEMPTS) {
+                if (newAttempts >= maxWrongAttempts) {
                     speakGiveUp()
-                    delay(GIVE_UP_DELAY_MS)
-                    // Queue so the "keep practicing" line finishes before the next prompt.
-                    next(queueSpeech = true)
+                    // The "keep practicing" line is heard to the end before the next letter.
+                    phonics.awaitQuiet(minMs = GIVE_UP_DELAY_MS)
+                    if (stillOn(state)) next(queueSpeech = true)
                 } else {
                     speakTryAgain(sawNothing = candidates.isEmpty())
                 }
             }
         }
     }
+
+    /**
+     * Whether the screen still shows the letter of [state]. Waiting for a line to end can take a
+     * few seconds, during which the child may tap Next or Previous themselves; moving on again
+     * after that would skip a letter.
+     */
+    private fun stillOn(state: GameUiState): Boolean =
+        _uiState.value.let { it.level == state.level && it.index == state.index }
 
     fun next(queueSpeech: Boolean = false) {
         val state = _uiState.value
@@ -164,6 +219,30 @@ class GameViewModel(
         goTo(state.level, index.coerceIn(0, state.level.characters.lastIndex))
     }
 
+    /**
+     * Spoken when the child taps Check with nothing drawn. The button stays enabled so the tap
+     * always does something; this is what it does.
+     */
+    fun promptToDraw() {
+        val state = _uiState.value
+        if (state.level.script == Script.DEVANAGARI && speakHindi(HindiVoiceScript.WRITE_FIRST)) return
+        phonics.say(EnglishVoiceScript.say(EnglishVoiceScript.DRAW_FIRST))
+    }
+
+    /**
+     * Clears all tracing progress and returns to the first character of the first level.
+     *
+     * Paired with AppViewModel.resetProgress by the navigation graph: the two ViewModels own
+     * different DataStore files, so a full reset has to go through both.
+     */
+    fun resetProgress() {
+        viewModelScope.launch {
+            progress.clear()
+            _uiState.value = GameUiState()
+            recognizer.ensure(Level.UPPERCASE.languageTag)
+        }
+    }
+
     /** Clears the last answer result so the feedback badge disappears (e.g. after erasing). */
     fun clearFeedback() {
         _uiState.update { it.copy(lastResult = null) }
@@ -181,7 +260,15 @@ class GameViewModel(
         if (state.level.script == Script.DEVANAGARI) {
             speakHindiLetter(state.character); return
         }
-        phonics.speak(Phonics.phraseFor(state.character))
+        phonics.say(EnglishVoiceScript.letterPhrase(state.character))
+    }
+
+    /** Queues [char]'s spoken line after whatever is playing ("A for Apple", "क से कबूतर"). */
+    private fun speakLetterLine(char: String) {
+        if (_uiState.value.level.script == Script.DEVANAGARI) {
+            speakHindiLetter(char, queue = true); return
+        }
+        phonics.say(EnglishVoiceScript.letterPhrase(char), flush = false)
     }
 
     /** Guides the child on what to draw, e.g. "Draw the letter A. A for Apple." */
@@ -190,63 +277,82 @@ class GameViewModel(
         if (state.level.script == Script.DEVANAGARI) {
             speakHindiLetter(state.character, queue); return
         }
-        val noun = if (state.level == Level.NUMBERS) "number" else "letter"
-        val word = Phonics.wordFor(state.character)
-        val suffix = word?.let { " ${Phonics.phraseFor(state.character)}." } ?: ""
-        phonics.speak("Draw the $noun ${state.character}.$suffix", flush = !queue)
+        phonics.say(EnglishVoiceScript.drawThe(state.character, isNumber = state.level == Level.NUMBERS), flush = !queue)
     }
 
     /**
-     * Speaks a Hindi letter naturally ("अ से अनानास" — "A as in Pineapple") in the Hindi voice.
-     * If the device has no Hindi voice, reads the romanized name with the English voice so the
-     * child always hears something instead of silence/garble.
+     * Whether the drawn [strokes] read as [expected] in Devanagari.
+     *
+     * A narrower door onto the recogniser than [check], for screens that mark a single piece of
+     * writing without owning a whole tracing session - the barakhadi writing page. Keeping it
+     * here means those screens never have to know that a recogniser exists, let alone which one.
+     *
+     * Returns null when the model is not available, so the caller can leave the check out
+     * rather than tell the child their writing is wrong when nothing actually read it.
+     */
+    suspend fun readsAs(strokes: List<Stroke>, expected: String): Boolean? {
+        if (strokes.isEmpty()) return null
+        recognizer.ensure(Level.HINDI_CONSONANTS.languageTag)
+        if (recognizer.ready.value?.success != true) return null
+        val candidates = withTimeoutOrNull(RECOGNIZE_TIMEOUT_MS) {
+            recognizer.recognize(strokes, null, preContext = null)
+        } ?: return null
+        val matched = CharacterMatcher.matches(expected, candidates, Level.HINDI_CONSONANTS)
+        Log.d(TAG, "readsAs expected=$expected candidates=$candidates matched=$matched")
+        return matched
+    }
+
+    /**
+     * Speaks a Hindi letter naturally ("अ, अ से अनार"): the recording if bundled, else the Hindi
+     * voice, else the romanized name in English so the child always hears something.
      */
     private fun speakHindiLetter(char: String, queue: Boolean = false) {
         val letter = HINDI_BY_CHAR[char]
-        if (phonics.supports(HINDI_TTS_TAG)) {
-            val text = if (letter != null && letter.example.isNotEmpty())
-                "$char, $char से ${letter.example}"
-            else char
-            phonics.speak(text, langTag = HINDI_TTS_TAG, flush = !queue)
-        } else {
-            phonics.speak(letter?.romanized ?: char, flush = !queue)
+        if (letter == null) {
+            phonics.speak(char, langTag = HINDI_TTS_TAG, flush = !queue, romanized = char); return
         }
+        val line = HindiVoiceScript.letter(letter)
+        phonics.speak(
+            line.text,
+            langTag = HINDI_TTS_TAG,
+            flush = !queue,
+            romanized = letter.romanized,
+            clip = line.clip,
+        )
+    }
+
+    /**
+     * Speaks a fixed Hindi phrase if it can be said properly (a recording, or a Hindi voice).
+     * Returns false so the caller can say its English line instead of a garbled one.
+     */
+    private fun speakHindi(line: VoiceLine): Boolean {
+        if (!phonics.canSpeak(HINDI_TTS_TAG, line.clip)) return false
+        phonics.speak(line.text, langTag = HINDI_TTS_TAG, clip = line.clip)
+        return true
     }
 
     private fun speakPraise() {
-        if (_uiState.value.level.script == Script.DEVANAGARI && phonics.supports(HINDI_TTS_TAG)) {
-            phonics.speak(HINDI_PRAISE.random(), langTag = HINDI_TTS_TAG); return
-        }
-        phonics.speak(PRAISE.random())
+        if (_uiState.value.level.script == Script.DEVANAGARI &&
+            speakHindi(HindiVoiceScript.PRAISE.random())) return
+        phonics.say(EnglishVoiceScript.say(EnglishVoiceScript.TRACE_PRAISE.random()))
     }
 
     /** Spoken when the child has used all attempts — gentle, not discouraging. */
     private fun speakGiveUp() {
         val state = _uiState.value
-        if (state.level.script == Script.DEVANAGARI && phonics.supports(HINDI_TTS_TAG)) {
-            phonics.speak("कोई बात नहीं! फिर कोशिश करते हैं।", langTag = HINDI_TTS_TAG); return
-        }
-        if (state.level.script == Script.DEVANAGARI) { phonics.speak("That's okay! Let's try the next one."); return }
-        phonics.speak("That's OK! Keep practicing. ${Phonics.phraseFor(state.character)}. Moving on!")
+        if (state.level.script == Script.DEVANAGARI && speakHindi(HindiVoiceScript.GIVE_UP)) return
+        if (state.level.script == Script.DEVANAGARI) { phonics.say(EnglishVoiceScript.say(EnglishVoiceScript.HINDI_GIVE_UP)); return }
+        phonics.say(EnglishVoiceScript.traceGiveUp(state.character))
     }
 
     /** Encourages another attempt; gives a clearer hint when nothing was recognised. */
     private fun speakTryAgain(sawNothing: Boolean) {
         val state = _uiState.value
         if (state.level.script == Script.DEVANAGARI) {
-            if (phonics.supports(HINDI_TTS_TAG))
-                phonics.speak("फिर से कोशिश करो।", langTag = HINDI_TTS_TAG)
-            else
-                phonics.speak("Try again!")
+            if (!speakHindi(HindiVoiceScript.TRY_AGAIN)) phonics.say(EnglishVoiceScript.say(EnglishVoiceScript.TRY_AGAIN))
             return
         }
-        val noun = if (state.level == Level.NUMBERS) "number" else "letter"
-        val lead = if (sawNothing) "Hmm, I couldn't see it. Try drawing a bit bigger."
-        else "Almost! Let's try again."
-        val word = Phonics.wordFor(state.character)
-        val hint = word?.let { " This is ${state.character}. ${Phonics.phraseFor(state.character)}." }
-            ?: " This is ${state.character}."
-        phonics.speak("$lead$hint")
+        phonics.say(EnglishVoiceScript.traceTryAgain(state.character, sawNothing))
     }
 
     private fun goTo(
@@ -271,17 +377,19 @@ class GameViewModel(
     }
 
     /**
+     * Whether a level may be opened (it may be part of Pro). Set by the navigation graph, which
+     * knows what is unlocked; everything is open until then.
+     */
+    var isLevelOpen: (Level) -> Boolean = { true }
+
+    /**
      * Advances to the next level, cycling within the same script so the English and Hindi tracks
-     * stay separate: A→a→1→A for Latin, स्वर→व्यंजन→स्वर for Devanagari.
+     * stay separate: A→a→1→A for Latin, स्वर→व्यंजन→स्वर for Devanagari. Locked levels are
+     * skipped, which can mean starting the current level over.
      */
     private fun nextLevel() {
-        val next = when (_uiState.value.level) {
-            Level.UPPERCASE -> Level.LOWERCASE
-            Level.LOWERCASE -> Level.NUMBERS
-            Level.NUMBERS -> Level.UPPERCASE
-            Level.HINDI_VOWELS -> Level.HINDI_CONSONANTS
-            Level.HINDI_CONSONANTS -> Level.HINDI_VOWELS
-        }
+        val current = _uiState.value.level
+        val next = generateSequence(following(current), ::following).first { it == current || isLevelOpen(it) }
         viewModelScope.launch { recognizer.ensure(next.languageTag) }
         viewModelScope.launch {
             val mastered = progress.masteredSet(next)
@@ -289,7 +397,17 @@ class GameViewModel(
         }
     }
 
+    /** The level after [level] in its own script's cycle. */
+    private fun following(level: Level): Level = when (level) {
+        Level.UPPERCASE -> Level.LOWERCASE
+        Level.LOWERCASE -> Level.NUMBERS
+        Level.NUMBERS -> Level.UPPERCASE
+        Level.HINDI_VOWELS -> Level.HINDI_CONSONANTS
+        Level.HINDI_CONSONANTS -> Level.HINDI_VOWELS
+    }
+
     override fun onCleared() {
+        super.onCleared()
         recognizer.release()
         sound.release()
         phonics.release()
@@ -299,10 +417,9 @@ class GameViewModel(
         private const val TAG = "CurvyKidsVM"
         private const val CORRECT_ADVANCE_DELAY_MS = 1200L
         private const val RECOGNIZE_TIMEOUT_MS = 8000L
-        private const val MAX_WRONG_ATTEMPTS = 3
+        private const val MAX_WRONG_ATTEMPTS_NORMAL = 3
+        private const val MAX_WRONG_ATTEMPTS_EASY = 5
         private const val GIVE_UP_DELAY_MS = 2000L
-        private val PRAISE = listOf("Yay! Great job!", "Awesome!", "Well done!", "Perfect!", "You did it!")
-        private val HINDI_PRAISE = listOf("शाबाश!", "बहुत बढ़िया!", "वाह! कमाल कर दिया!", "बिलकुल सही!")
 
         /** BCP-47 tag for the Hindi TTS voice (India), distinct from the recognizer's "hi" model tag. */
         private const val HINDI_TTS_TAG = "hi-IN"
@@ -316,7 +433,7 @@ class GameViewModel(
                     return GameViewModel(
                         recognizer = MlKitInkRecognizer(),
                         sound = SoundEffects(app),
-                        phonics = PhonicsSpeaker(app),
+                        phonics = PhonicsSpeaker(app, (app as CurvyKidsApp).clipSources),
                         haptics = Haptics(app),
                         progress = ProgressRepository(app),
                     ) as T

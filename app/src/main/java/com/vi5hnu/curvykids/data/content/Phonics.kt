@@ -1,58 +1,64 @@
 package com.vi5hnu.curvykids.data.content
 
 /**
- * Maps each character to a child-friendly example word + emoji, used to build the phonics phrase
- * spoken via Text-To-Speech (e.g. "A for Apple", "1 is One"). Kept as a simple static
- * dictionary so no audio assets are required.
+ * The phrase spoken for a letter or digit on the trace screen ("A for Apple", "One, two, three")
+ * and the picture beside it.
+ *
+ * Letters come from [letterExample] (that is, [PHONICS_DATA]), the same list the Phonics game and
+ * the letter pictures use, so what the child sees is always what the voice says.
  */
 object Phonics {
 
-    private val letterWords = mapOf(
-        'a' to ("Apple" to "🍎"), 'b' to ("Ball" to "⚽"), 'c' to ("Cat" to "🐱"),
-        'd' to ("Dog" to "🐶"), 'e' to ("Egg" to "🥚"), 'f' to ("Fish" to "🐟"),
-        'g' to ("Goat" to "🐐"), 'h' to ("Hat" to "🎩"), 'i' to ("Ice" to "🧊"),
-        'j' to ("Jug" to "🫙"), 'k' to ("Kite" to "🪁"), 'l' to ("Lion" to "🦁"),
-        'm' to ("Moon" to "🌙"), 'n' to ("Nest" to "🪺"), 'o' to ("Orange" to "🍊"),
-        'p' to ("Parrot" to "🦜"), 'q' to ("Queen" to "👑"), 'r' to ("Rabbit" to "🐰"),
-        's' to ("Sun" to "☀️"), 't' to ("Tiger" to "🐯"), 'u' to ("Umbrella" to "☂️"),
-        'v' to ("Van" to "🚐"), 'w' to ("Watch" to "⌚"), 'x' to ("Xylophone" to "🎹"),
-        'y' to ("Yak" to "🐂"), 'z' to ("Zebra" to "🦓"),
-    )
-
     private val numberWords = mapOf(
-        '0' to ("Zero" to "⭕"), '1' to ("One" to "☝️"), '2' to ("Two" to "✌️"),
-        '3' to ("Three" to "🐦"), '4' to ("Four" to "🍀"), '5' to ("Five" to "🖐️"),
-        '6' to ("Six" to "🎲"), '7' to ("Seven" to "🌈"), '8' to ("Eight" to "🐙"),
-        '9' to ("Nine" to "🎈"),
+        '0' to ("Zero" to KidAssets.number(0)),
+        '1' to ("One" to KidAssets.number(1)),
+        '2' to ("Two" to KidAssets.number(2)),
+        '3' to ("Three" to KidAssets.number(3)),
+        '4' to ("Four" to KidAssets.number(4)),
+        '5' to ("Five" to KidAssets.number(5)),
+        '6' to ("Six" to KidAssets.number(6)),
+        '7' to ("Seven" to KidAssets.number(7)),
+        '8' to ("Eight" to KidAssets.number(8)),
+        '9' to ("Nine" to KidAssets.number(9)),
     )
 
-    /** Builds the spoken phrase for [character], or just the character if unmapped. */
+    private fun entryFor(character: String): Pair<String, AssetPath>? {
+        val c = character.singleOrNull() ?: return null
+        return when {
+            c.isDigit() -> numberWords[c]
+            c.isLatin() -> letterExample(character)?.let { it.word to it.picture }
+            else -> null
+        }
+    }
+
+    /**
+     * Builds the spoken phrase for [character]: "A for Apple", or "X, as in Fox" for a letter
+     * taught by its ending sound. Just the character if unmapped.
+     *
+     * A digit counts up to itself ("One, two, three"). Not "3 is Three": read aloud that is
+     * "three is three", which says nothing; counting shows what the number means.
+     */
     fun phraseFor(character: String): String {
         val c = character.singleOrNull() ?: return character
-        return when {
-            c.isLetter() -> letterWords[c.lowercaseChar()]?.first?.let { "$character for $it" } ?: character
-            c.isDigit() -> numberWords[c]?.first?.let { "$character is $it" } ?: character
-            else -> character
-        }
+        if (c.isDigit()) return numberPhrase(c.digitToInt())
+        val ex = letterExample(character)?.takeIf { c.isLatin() } ?: return character
+        return if (ex.position == SoundPosition.END) "$character, as in ${ex.word}" else "$character for ${ex.word}"
     }
 
     /** The example/spoken word alone (e.g. "Apple", "Five"), or null if unmapped. */
-    fun wordFor(character: String): String? {
-        val c = character.singleOrNull() ?: return null
-        return when {
-            c.isLetter() -> letterWords[c.lowercaseChar()]?.first
-            c.isDigit() -> numberWords[c]?.first
-            else -> null
-        }
+    fun wordFor(character: String): String? = entryFor(character)?.first
+
+    /** Asset path of the picture for [character]'s example word, or null if unmapped. */
+    fun assetFor(character: String): AssetPath? = entryFor(character)?.second
+
+    /** "Zero means none", "Just one", then counting: "One, two, three". No end mark; callers add it. */
+    private fun numberPhrase(n: Int): String = when (n) {
+        0 -> "Zero means none"
+        1 -> "Just one"
+        else -> (1..n).joinToString(", ") { numberWords.getValue('0' + it).first.lowercase() }
+            .replaceFirstChar { it.uppercase() }
     }
 
-    /** The emoji for [character]'s example word (e.g. "🍎" for A), or null if unmapped. */
-    fun emojiFor(character: String): String? {
-        val c = character.singleOrNull() ?: return null
-        return when {
-            c.isLetter() -> letterWords[c.lowercaseChar()]?.second
-            c.isDigit() -> numberWords[c]?.second
-            else -> null
-        }
-    }
+    /** Hindi letters have their own spoken line (HindiVoiceScript), never an English phrase. */
+    private fun Char.isLatin() = this in 'a'..'z' || this in 'A'..'Z'
 }

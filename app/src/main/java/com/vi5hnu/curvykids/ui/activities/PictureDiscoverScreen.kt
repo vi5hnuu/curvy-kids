@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,18 +11,17 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
@@ -31,6 +32,11 @@ import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarGold
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * One reusable screen for every "tap-to-learn + find-it" picture topic (Food, Clothes, Jobs,
@@ -55,7 +61,7 @@ fun PictureDiscoverScreen(
         quizItems = spec.items,
         quizPromptLabel = spec.promptLabel,
         keyOf = { it.name },
-        speakFor = { "Find the ${it.name}" },
+        speakFor = { EnglishVoiceScript.findThe(it.name) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = spec.celebrateTitle,
@@ -70,8 +76,8 @@ fun PictureDiscoverScreen(
             )
         },
         quizOption = { item ->
-            // Emoji only in the quiz — the SVG bakes the name in, which would reveal the answer.
-            Text(item.emoji, fontSize = 48.sp, textAlign = TextAlign.Center)
+            // The badge caption is the answer, so quiz options render the art only.
+            SvgArt(item.svg, modifier = Modifier.fillMaxSize())
         },
     )
 }
@@ -93,22 +99,21 @@ private fun PictureLearnGrid(
                 modifier = Modifier.fillMaxWidth(),
             ) {
                 row.forEach { item ->
-                    // The SVG badge already carries its own rounded border, emoji and name, so we
+                    // The SVG badge already carries its own rounded border, svg and name, so we
                     // render it on its own — no surrounding card — to avoid a box-inside-a-box look.
                     // The badge itself is the tap target.
-                    // Outer Box is not clipped, so the ⭐ marker is never cut off at the corner;
+                    // Outer Box is not clipped, so the star marker is never cut off at the corner;
                     // the clip + tap target live on the badge itself.
                     Box(modifier = Modifier.weight(1f), contentAlignment = Alignment.Center) {
-                        SvgBadge(
+                        SvgBadge(color = topic.color, 
                             asset = item.svg,
-                            fallbackEmoji = item.emoji,
                             contentDescription = item.name,
                             modifier = Modifier
                                 .fillMaxWidth()
                                 .aspectRatio(1f)
                                 .clip(RoundedCornerShape(22.dp))
                                 .clickable {
-                                    speaker?.speak(item.name)
+                                    speaker?.say(EnglishVoiceScript.say(item.name))
                                     if (!seen.contains(item.name)) {
                                         seen = seen + item.name
                                         onReward(2)
@@ -116,7 +121,7 @@ private fun PictureLearnGrid(
                                 },
                         )
                         if (seen.contains(item.name)) {
-                            Text("⭐", fontSize = 13.sp, modifier = Modifier.align(Alignment.TopEnd).padding(6.dp))
+                            KidIconImage(KidIcon.Star, Modifier.align(Alignment.TopEnd).padding(6.dp).size(13.dp), StarGold)
                         }
                     }
                 }

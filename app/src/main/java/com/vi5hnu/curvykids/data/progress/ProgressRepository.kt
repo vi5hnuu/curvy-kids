@@ -55,6 +55,17 @@ class ProgressRepository(context: Context) {
         }
     }
 
+    /**
+     * Wipes every level's mastered set and resume index.
+     *
+     * Trace progress lives in its own DataStore file, separate from stars and badges, so the
+     * parent zone's "Reset progress" has to clear both — clearing only the other one left the
+     * child's letters still marked as learned.
+     */
+    suspend fun clear() {
+        store.edit { it.clear() }
+    }
+
     /** Returns the set of characters the child has mastered at least once for [level]. */
     suspend fun masteredSet(level: Level): Set<String> =
         store.data.first()[masteredKey(level)] ?: emptySet()

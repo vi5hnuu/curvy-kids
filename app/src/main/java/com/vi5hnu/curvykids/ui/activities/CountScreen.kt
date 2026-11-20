@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -9,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -16,11 +19,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -32,14 +34,18 @@ import com.vi5hnu.curvykids.data.content.COUNT_ITEMS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.components.CardSurface
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.KidIconImage
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Pill
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Teal
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
-/** Counting activity — tap each emoji then pick the number. */
+/** Counting activity — tap each svg then pick the number. */
 @Composable
 fun CountScreen(
     topic: Topic,
@@ -51,8 +57,9 @@ fun CountScreen(
     var item by remember { mutableStateOf(COUNT_ITEMS.random()) }
     var tapped by remember { mutableStateOf(listOf<Int>()) }
     var answer by remember { mutableStateOf<Pair<Int, Boolean>?>(null) } // value → correct?
-    var streak by remember { mutableIntStateOf(0) }
-    var showCelebrate by remember { mutableStateOf(false) }
+    // Correct answers this session. Saveable so a rotation does not wipe the child's run.
+    var score by rememberSaveable { mutableIntStateOf(0) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     val options = remember(n) {
         val set = mutableSetOf(n)
@@ -75,7 +82,7 @@ fun CountScreen(
                 .padding(bottom = 120.dp),
         ) {
             ScreenHeader(
-                title = "Counting",
+                title = topic.title,
                 color = topic.color,
                 onBack = onBack,
                 trailing = {
@@ -84,7 +91,13 @@ fun CountScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text("⭐ $streak", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
+                            KidIconImage(
+                                icon = KidIcon.Star,
+                                modifier = Modifier.size(17.dp),
+                                color = Color(0xFFF2A93B),
+                            )
+                            Spacer(Modifier.width(6.dp))
+                            Text("$score", fontFamily = FontDisplay, fontSize = 16.sp, color = Color(0xFFF2A93B))
                         }
                     }
                 },
@@ -121,14 +134,14 @@ fun CountScreen(
                                         if (!isTapped && answer == null) {
                                             val newList = tapped + i
                                             tapped = newList
-                                            speaker?.speak(newList.size.toString())
+                                            speaker?.say(EnglishVoiceScript.say(newList.size.toString()))
                                         }
                                     },
                                     color = Color.Transparent,
                                     modifier = Modifier.size(56.dp),
                                 ) {
                                     Box(contentAlignment = Alignment.Center) {
-                                        Text(item, fontSize = 40.sp)
+                                        SvgArt(item, modifier = Modifier.size(56.dp))
                                     }
                                 }
                                 if (isTapped) {
@@ -172,12 +185,12 @@ fun CountScreen(
                             if (answer != null) return@CandyButton
                             if (v == n) {
                                 answer = v to true
-                                val ns = streak + 1; streak = ns
+                                score += 1
                                 onReward(4)
-                                speaker?.speak("Yes! $n")
+                                speaker?.say(EnglishVoiceScript.yes(n.toString()))
                             } else {
                                 answer = v to false
-                                speaker?.speak("Count again")
+                                speaker?.say(EnglishVoiceScript.say("Count again"))
                             }
                         },
                         modifier = Modifier
@@ -203,16 +216,17 @@ fun CountScreen(
 
         LaunchedEffect(answer) {
             if (answer != null) {
-                delay(800)
+                // A right answer moves on only once its praise has been heard to the end.
+                if (answer?.second == true) speaker?.awaitQuiet(minMs = 800) ?: delay(800) else delay(800)
                 if (answer?.second == true) {
-                    if (streak > 0 && streak % 4 == 0) {
+                    if (score > 0 && score % 4 == 0) {
                         showCelebrate = true
                     } else {
                         newRound()
                     }
                 } else {
                     // Reset both answer and tapped so the child can re-count from scratch.
-                    // Without this, all emoji stay locked (isTapped=true) while answer==null.
+                    // Without this, all svg stay locked (isTapped=true) while answer==null.
                     tapped = listOf()
                     answer = null
                 }
@@ -222,7 +236,7 @@ fun CountScreen(
         if (showCelebrate) {
             Celebrate(
                 title = "Number Whiz!",
-                sub = "$streak in a row!",
+                sub = "$score in a row!",
                 stars = 3,
                 onDone = { showCelebrate = false; newRound() },
             )

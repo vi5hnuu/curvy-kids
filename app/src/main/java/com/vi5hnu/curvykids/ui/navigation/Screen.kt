@@ -1,26 +1,20 @@
 package com.vi5hnu.curvykids.ui.navigation
 
-/** Navigation destinations within the app. */
+/** Navigation destinations within the app: Home → World → Topic, plus the sticker book and Pro. */
 sealed class Screen(val route: String) {
-    // Bottom tabs
     data object Home    : Screen("home")
-    data object Play    : Screen("play")
     data object Rewards : Screen("rewards")
-    data object Parent  : Screen("parent")
 
-    // Topic full-screens (overlaid on top of tab content)
+    /** Buying CurvyKids Pro; only ever navigated to after the parent gate. */
+    data object Pro     : Screen("pro")
+
+    /** One world's activities (see [com.vi5hnu.curvykids.data.content.World]). */
+    data object World   : Screen("world/{worldId}") {
+        fun createRoute(worldId: String) = "world/$worldId"
+    }
+
+    /** An activity, full-screen. */
     data object Topic   : Screen("topic/{topicId}") {
         fun createRoute(topicId: String) = "topic/$topicId"
     }
 }
-
-/** Items shown in the bottom tab bar. */
-enum class AppTab(val route: String, val label: String, val icon: TabIcon) {
-    HOME("home", "Home", TabIcon.Home),
-    PLAY("play", "Play", TabIcon.Play),
-    REWARDS("rewards", "Rewards", TabIcon.Star),
-    PARENT("parent", "Grown-ups", TabIcon.Kid),
-}
-
-/** Lightweight icon descriptor (avoids importing the icon in the enum). */
-enum class TabIcon { Home, Play, Star, Kid }

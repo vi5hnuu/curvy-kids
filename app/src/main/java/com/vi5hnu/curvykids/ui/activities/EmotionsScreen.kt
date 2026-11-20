@@ -7,23 +7,25 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
-import com.vi5hnu.curvykids.data.content.Emotion
 import com.vi5hnu.curvykids.data.content.EMOTIONS
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Feelings — learn emotion names and faces, then identify them in a quiz. */
 @Composable
@@ -39,11 +41,11 @@ fun EmotionsScreen(
         quizItems = EMOTIONS,
         quizPromptLabel = "FIND THE FEELING",
         keyOf = { it.name },
-        speakFor = { "Find ${it.name}" },
+        speakFor = { EnglishVoiceScript.find(it.name) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Feelings Star!",
-        learnContent = { EmotionsLearnGrid() },
+        learnContent = { EmotionsLearnGrid(topic.color) },
         quizPrompt = { emotion ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -58,14 +60,14 @@ fun EmotionsScreen(
             }
         },
         quizOption = { emotion ->
-            // Emoji only in the quiz — the SVG bakes the feeling's name in, which would reveal the answer.
-            Text(emotion.emoji, fontSize = 44.sp, textAlign = TextAlign.Center)
+            // The badge caption is the answer, so quiz options render the art only.
+            SvgArt(emotion.svg, modifier = Modifier.fillMaxSize())
         },
     )
 }
 
 @Composable
-private fun EmotionsLearnGrid() {
+private fun EmotionsLearnGrid(color: Color) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         EMOTIONS.chunked(2).forEach { pair ->
             Row(
@@ -79,9 +81,8 @@ private fun EmotionsLearnGrid() {
                         horizontalAlignment = Alignment.CenterHorizontally,
                         modifier = Modifier.weight(1f),
                     ) {
-                        SvgBadge(
+                        SvgBadge(color = color, 
                             asset = emotion.svg,
-                            fallbackEmoji = emotion.emoji,
                             contentDescription = emotion.name,
                             modifier = Modifier
                                 .fillMaxWidth()

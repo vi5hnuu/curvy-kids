@@ -1,8 +1,11 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import com.vi5hnu.curvykids.billing.LockMark
+import com.vi5hnu.curvykids.ui.pro.LockMarkBadge
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
@@ -18,12 +21,11 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.activity.compose.BackHandler
 import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -33,7 +35,10 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
 import com.vi5hnu.curvykids.audio.PlayFeedback
+import com.vi5hnu.curvykids.data.content.HindiVoiceScript
 import com.vi5hnu.curvykids.data.content.STORIES
+import com.vi5hnu.curvykids.billing.ContentLocks
+import com.vi5hnu.curvykids.billing.Lockable
 import com.vi5hnu.curvykids.data.content.Story
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
@@ -41,6 +46,7 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgArt
 
 /** A touch higher than normal so it sounds like a young child reading — but still natural. */
 private const val STORY_PITCH = 1.12f
@@ -57,12 +63,18 @@ fun StoriesScreen(
     onBack: () -> Unit,
     onReward: (Int) -> Unit,
     feedback: PlayFeedback? = null,
+    /** Stories past the free ones are part of Pro; a tap on a locked one goes to [ContentLocks.onLocked]. */
+    locks: ContentLocks = ContentLocks.NONE,
 ) {
     var selected by remember { mutableStateOf<Story?>(null) }
 
+    // System back on a story returns to the list, like the story's own back button (the reader
+    // stops its reading as it closes), rather than waiting on a minutes-long reading to leave.
+    BackHandler(enabled = selected != null) { selected = null }
+
     val story = selected
     if (story == null) {
-        StoryList(topic = topic, onBack = onBack, onPick = { selected = it })
+        StoryList(topic = topic, locks = locks, onBack = onBack, onPick = { selected = it })
     } else {
         StoryReader(
             story = story,
@@ -75,7 +87,7 @@ fun StoriesScreen(
 
 /** The list of available stories as tappable cards. */
 @Composable
-private fun StoryList(topic: Topic, onBack: () -> Unit, onPick: (Story) -> Unit) {
+private fun StoryList(topic: Topic, locks: ContentLocks, onBack: () -> Unit, onPick: (Story) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -93,12 +105,14 @@ private fun StoryList(topic: Topic, onBack: () -> Unit, onPick: (Story) -> Unit)
         )
         Spacer(Modifier.height(16.dp))
 
-        STORIES.forEach { story ->
+        STORIES.forEachIndexed { index, story ->
+            val item = Lockable.Story(index)
+            val mark = locks.markOf(item)
             CardSurface(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(bottom = 12.dp),
-                onClick = { onPick(story) },
+                onClick = { locks.open(item) { onPick(story) } },
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
@@ -110,7 +124,7 @@ private fun StoryList(topic: Topic, onBack: () -> Unit, onPick: (Story) -> Unit)
                         modifier = Modifier.size(56.dp),
                     ) {
                         Box(contentAlignment = Alignment.Center) {
-                            Text(story.emoji, fontSize = 30.sp)
+                            SvgArt(story.svg, modifier = Modifier.size(34.dp))
                         }
                     }
                     Spacer(Modifier.size(14.dp))
@@ -129,14 +143,18 @@ private fun StoryList(topic: Topic, onBack: () -> Unit, onPick: (Story) -> Unit)
                             color = InkSoft,
                         )
                     }
-                    Text("▶", fontSize = 18.sp, color = story.color)
+                    if (mark == LockMark.NONE) Text("▶", fontSize = 18.sp, color = story.color)
+                    else LockMarkBadge(mark)
                 }
             }
         }
     }
 }
 
-/** Reads a single story aloud, highlighting each line as it's spoken. */
+/**
+ * Reads a single story aloud. A recorded story plays as one clip straight through; otherwise the
+ * device voice reads it and the line being spoken is highlighted.
+ */
 @Composable
 private fun StoryReader(
     story: Story,
@@ -154,11 +172,15 @@ private fun StoryReader(
     // callbacks can light up the segment being read.
     val moralIndex = story.lines.size
     val segments = remember(story.id) { story.lines + story.moral }
-    val fullText = remember(story.id) { segments.joinToString(" ") }
+    val fullText = remember(story.id) { HindiVoiceScript.storyText(story) }
     val ranges = remember(story.id) {
         var idx = 0
         segments.map { seg -> val start = idx; idx += seg.length + 1; start until (start + seg.length) }
     }
+
+    // The story's recording: the whole story in one clip. A clip reports no reading position,
+    // so a recorded story plays without the line highlight.
+    val recording = remember(story.id) { HindiVoiceScript.story(story).clip }
 
     fun resetVoice() {
         speaker?.setPitch(1f)
@@ -180,7 +202,9 @@ private fun StoryReader(
         sp.setSpeechRate(STORY_RATE)
         reading = true
         current = -1
-        sp.speak(fullText, langTag = "hi-IN", flush = true, utteranceId = "story")
+        // One utterance either way: the recording when there is one, else the device voice
+        // (whose range callbacks drive the highlight).
+        sp.speak(fullText, langTag = "hi-IN", flush = true, utteranceId = "story", clip = recording)
     }
 
     // Highlight follows the spoken character range; clean up (and stop audio) on leave / story change.
@@ -192,10 +216,13 @@ private fun StoryReader(
             }
         }
         speaker?.onUtteranceDone = { id ->
-            current = -1
-            reading = false
-            resetVoice()
-            if (id == "story") onReward(3) // reward for listening to a whole story
+            val finishedStory = id == "story"
+            if (finishedStory || id.startsWith("tap-")) {
+                current = -1
+                reading = false
+                resetVoice()
+            }
+            if (finishedStory) onReward(3) // reward for listening to a whole story
         }
         onDispose {
             speaker?.onUtteranceRange = null
@@ -223,7 +250,7 @@ private fun StoryReader(
                 .padding(vertical = 20.dp),
             contentAlignment = Alignment.Center,
         ) {
-            Text(story.emoji, fontSize = 72.sp)
+            SvgArt(story.svg, modifier = Modifier.size(84.dp))
         }
         Spacer(Modifier.height(16.dp))
 
@@ -259,30 +286,20 @@ private fun StoryReader(
                     .fillMaxWidth()
                     .clip(RoundedCornerShape(12.dp))
                     .background(if (active) story.tint else Color.Transparent)
-                    .clickable {
-                        stopReading()
-                        speaker?.setPitch(STORY_PITCH)
-                        speaker?.setSpeechRate(STORY_RATE)
-                        current = i
-                        speaker?.speak(line, langTag = "hi-IN", utteranceId = "tap-$i")
-                    }
+                    // A tap reads the whole story from the top, in the recorded voice: single
+                    // lines have no recording, and a lone line in the device voice sounded off.
+                    .clickable { startReading() }
                     .padding(horizontal = 12.dp, vertical = 8.dp),
             )
         }
 
         Spacer(Modifier.height(16.dp))
 
-        // Moral — lights up while it's being read; tap to hear just the moral.
+        // Moral — lights up while it's being read; a tap reads the whole story, like a line.
         val moralActive = current == moralIndex
         CardSurface(
             modifier = Modifier.fillMaxWidth(),
-            onClick = {
-                stopReading()
-                speaker?.setPitch(STORY_PITCH)
-                speaker?.setSpeechRate(STORY_RATE)
-                current = moralIndex
-                speaker?.speak(story.moral, langTag = "hi-IN", utteranceId = "tap-moral")
-            },
+            onClick = { startReading() },
         ) {
             Column(
                 modifier = Modifier

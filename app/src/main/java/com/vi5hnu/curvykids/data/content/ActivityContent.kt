@@ -1,6 +1,24 @@
 package com.vi5hnu.curvykids.data.content
 
+import com.vi5hnu.curvykids.audio.VoiceClip
+
 import androidx.compose.ui.graphics.Color
+import com.vi5hnu.curvykids.ui.theme.Teal
+import com.vi5hnu.curvykids.ui.theme.Coral
+import com.vi5hnu.curvykids.ui.theme.Grape
+import com.vi5hnu.curvykids.ui.theme.Blue
+import com.vi5hnu.curvykids.ui.theme.Pink
+import com.vi5hnu.curvykids.ui.theme.Green
+import com.vi5hnu.curvykids.ui.theme.Sun
+import com.vi5hnu.curvykids.ui.theme.Aqua
+import com.vi5hnu.curvykids.ui.theme.TintTeal
+import com.vi5hnu.curvykids.ui.theme.TintCoral
+import com.vi5hnu.curvykids.ui.theme.TintGrape
+import com.vi5hnu.curvykids.ui.theme.TintBlue
+import com.vi5hnu.curvykids.ui.theme.TintPink
+import com.vi5hnu.curvykids.ui.theme.TintGreen
+import com.vi5hnu.curvykids.ui.theme.TintSun
+import com.vi5hnu.curvykids.ui.theme.TintAqua
 
 // ── Shapes ────────────────────────────────────────────────────────────────────
 
@@ -24,13 +42,13 @@ val SHAPES = listOf(
 data class ColorItem(val name: String, val hex: Long)
 
 val COLOR_ITEMS = listOf(
-    ColorItem("Red",    0xFFFF5A52),
+    ColorItem("Red",    0xFFE53935), // true red and orange, so the two never look alike
     ColorItem("Blue",   0xFF46A6F0),
     ColorItem("Green",  0xFF4FCB94),
     ColorItem("Yellow", 0xFFFFC24A),
     ColorItem("Purple", 0xFFA88BF6),
     ColorItem("Pink",   0xFFFF8FB6),
-    ColorItem("Orange", 0xFFFF8B6B),
+    ColorItem("Orange", 0xFFFB8C00),
     ColorItem("Teal",   0xFF1FC2AE),
     ColorItem("Brown",  0xFF8B5E3C),
     ColorItem("Gray",   0xFF9AA7B2),
@@ -39,109 +57,143 @@ val COLOR_ITEMS = listOf(
 
 // ── Counting ──────────────────────────────────────────────────────────────────
 
-val COUNT_ITEMS = listOf("🍎", "🐥", "🎈", "⭐", "🐠", "🍓", "🦋", "🌸", "🚗", "🐸")
+/** Things to count. Illustrated, so the child counts pictures rather than font glyphs. */
+val COUNT_ITEMS: List<AssetPath> = listOf(
+    KidAssets.fruit("apple"), KidAssets.bird("chick"), KidAssets.toy("balloon"),
+    KidAssets.weather("star"), KidAssets.seaAnimal("tropical-fish"), KidAssets.fruit("strawberry"),
+    KidAssets.insect("butterfly"), KidAssets.nature("blossom"), KidAssets.transport("car"),
+    KidAssets.animal("frog"),
+)
 
 // ── First Words ───────────────────────────────────────────────────────────────
 
-data class WordEntry(val word: String, val emoji: String)
+data class WordEntry(val word: String, val svg: AssetPath)
 
 /**
- * 100+ short words (3–5 letters) covering A–Z, several per letter where possible, each with an
- * emoji. Kept short so the spell-it tiles stay tappable. Grouped by first letter for easy upkeep.
+ * Short words (3–5 letters) spanning A–Z, each with a hand-drawn illustration.
+ *
+ * Every entry is picture-backed on purpose: a word tile with no image teaches nothing to a child
+ * who cannot yet read it. The word must name what the picture shows, since it is also what the
+ * child hears ("APPLE" under an apple, never "APE" under a monkey); words whose subject has no
+ * artwork were swapped for ones that do rather than shipping a blank tile or a near match.
  */
 val WORD_LIST = listOf(
     // A
-    WordEntry("ANT", "🐜"), WordEntry("APE", "🦍"), WordEntry("ARM", "💪"),
+    WordEntry("ANT", KidAssets.insect("ant")), WordEntry("APPLE", KidAssets.fruit("apple")),
+    WordEntry("ARM", KidAssets.body("arm")),
     // B
-    WordEntry("BAT", "🦇"), WordEntry("BEE", "🐝"), WordEntry("BUS", "🚌"),
-    WordEntry("BED", "🛏️"), WordEntry("BOW", "🎀"), WordEntry("BALL", "⚽"),
-    WordEntry("BIRD", "🐦"), WordEntry("BOOK", "📚"), WordEntry("BEAR", "🐻"),
+    WordEntry("BAT", KidAssets.animal("bat")), WordEntry("BEE", KidAssets.insect("bee")),
+    WordEntry("BUS", KidAssets.transport("bus")), WordEntry("BED", KidAssets.home("bed")),
+    WordEntry("BOW", KidAssets.toy("bow")), WordEntry("BIRD", KidAssets.bird("bird")),
+    WordEntry("BEAR", KidAssets.animal("bear")), WordEntry("BOOT", KidAssets.clothes("boot")),
     // C
-    WordEntry("CAT", "🐱"), WordEntry("COW", "🐮"), WordEntry("CAR", "🚗"),
-    WordEntry("CUP", "🥤"), WordEntry("CAKE", "🍰"), WordEntry("CORN", "🌽"),
-    WordEntry("CRAB", "🦀"),
+    WordEntry("CAT", KidAssets.animal("cat")), WordEntry("COW", KidAssets.animal("cow")),
+    WordEntry("CAR", KidAssets.transport("car")), WordEntry("CAKE", KidAssets.food("cake")),
+    WordEntry("CORN", KidAssets.vegetable("corn")), WordEntry("CRAB", KidAssets.seaAnimal("crab")),
+    WordEntry("CHAIR", KidAssets.home("chair")), WordEntry("CHICK", KidAssets.bird("hatching-chick")),
     // D
-    WordEntry("DOG", "🐶"), WordEntry("DUCK", "🦆"), WordEntry("DOOR", "🚪"),
-    WordEntry("DRUM", "🥁"),
+    WordEntry("DOG", KidAssets.animal("dog")), WordEntry("DUCK", KidAssets.bird("duck")),
+    WordEntry("DOOR", KidAssets.home("door")), WordEntry("DRUM", KidAssets.instrument("drum")),
+    WordEntry("DEER", KidAssets.animal("deer")),
     // E
-    WordEntry("EGG", "🥚"), WordEntry("EAR", "👂"), WordEntry("EYE", "👁️"),
+    WordEntry("EGG", KidAssets.food("egg")), WordEntry("EAR", KidAssets.body("ear")),
+    WordEntry("EYE", KidAssets.body("eye")), WordEntry("EAGLE", KidAssets.bird("eagle")),
     // F
-    WordEntry("FOX", "🦊"), WordEntry("FISH", "🐟"), WordEntry("FROG", "🐸"),
-    WordEntry("FAN", "🪭"), WordEntry("FIRE", "🔥"), WordEntry("FOOT", "🦶"),
+    WordEntry("FOX", KidAssets.animal("fox")), WordEntry("FISH", KidAssets.seaAnimal("fish")),
+    WordEntry("FROG", KidAssets.animal("frog")), WordEntry("FOOT", KidAssets.body("foot")),
+    WordEntry("FIRE", KidAssets.weather("fire")),
     // G
-    WordEntry("GOAT", "🐐"), WordEntry("GIFT", "🎁"), WordEntry("GRAPE", "🍇"),
+    WordEntry("GOAT", KidAssets.animal("goat")), WordEntry("GIFT", KidAssets.toy("gift")),
+    WordEntry("GRAPE", KidAssets.fruit("grapes")), WordEntry("GOOSE", KidAssets.bird("goose")),
     // H
-    WordEntry("HAT", "🎩"), WordEntry("HEN", "🐔"), WordEntry("HAND", "✋"),
-    WordEntry("HOME", "🏠"), WordEntry("HOOK", "🪝"),
+    WordEntry("HAT", KidAssets.clothes("top-hat")), WordEntry("HEN", KidAssets.bird("hen")),
+    WordEntry("HAND", KidAssets.body("hand")), WordEntry("HOUSE", KidAssets.place("house")),
+    WordEntry("HORSE", KidAssets.animal("horse")),
     // I
-    WordEntry("ICE", "🧊"), WordEntry("INK", "🖋️"),
+    WordEntry("ICE", KidAssets.weather("snowflake")),
     // J
-    WordEntry("JAM", "🍯"), WordEntry("JET", "✈️"), WordEntry("JAR", "🫙"),
+    WordEntry("JUICE", KidAssets.food("juice")), WordEntry("JEANS", KidAssets.clothes("jeans")),
     // K
-    WordEntry("KEY", "🔑"), WordEntry("KITE", "🪁"), WordEntry("KING", "🤴"),
-    WordEntry("KOALA", "🐨"),
+    WordEntry("KEY", KidAssets.home("key")), WordEntry("KITE", KidAssets.toy("kite")),
+    WordEntry("KOALA", KidAssets.animal("koala")), WordEntry("KIWI", KidAssets.fruit("kiwi")),
     // L
-    WordEntry("LION", "🦁"), WordEntry("LEAF", "🍃"), WordEntry("LEG", "🦵"),
-    WordEntry("LAMP", "💡"), WordEntry("LOCK", "🔒"),
+    WordEntry("LION", KidAssets.animal("lion")), WordEntry("LEG", KidAssets.body("leg")),
+    WordEntry("LEAF", KidAssets.nature("maple-leaf")), WordEntry("LEMON", KidAssets.fruit("lemon")),
     // M
-    WordEntry("MAP", "🗺️"), WordEntry("MOON", "🌙"), WordEntry("MILK", "🥛"),
-    WordEntry("MASK", "🎭"), WordEntry("MOUSE", "🐭"),
+    WordEntry("MOON", KidAssets.weather("moon")), WordEntry("MILK", KidAssets.food("milk")),
+    WordEntry("MOUSE", KidAssets.animal("mouse")), WordEntry("MANGO", KidAssets.fruit("mango")),
     // N
-    WordEntry("NET", "🥅"), WordEntry("NOSE", "👃"), WordEntry("NUT", "🥜"),
+    WordEntry("NOSE", KidAssets.body("nose")),
     // O
-    WordEntry("OWL", "🦉"), WordEntry("OX", "🐂"), WordEntry("ONE", "1️⃣"),
+    WordEntry("OWL", KidAssets.bird("owl")), WordEntry("OX", KidAssets.animal("ox")),
+    WordEntry("ONION", KidAssets.vegetable("onion")),
     // P
-    WordEntry("PIG", "🐷"), WordEntry("PEN", "🖊️"), WordEntry("PIE", "🥧"),
-    WordEntry("PEAR", "🍐"), WordEntry("PLANE", "✈️"),
+    WordEntry("PIG", KidAssets.animal("pig")), WordEntry("PEAR", KidAssets.fruit("pear")),
+    WordEntry("PLANE", KidAssets.transport("small-plane")), WordEntry("PANDA", KidAssets.animal("panda")),
+    WordEntry("PIZZA", KidAssets.food("pizza")),
     // Q
-    WordEntry("QUEEN", "👑"),
+    WordEntry("QUEEN", KidAssets.clothes("crown")),
     // R
-    WordEntry("RAT", "🐀"), WordEntry("RING", "💍"), WordEntry("ROSE", "🌹"),
-    WordEntry("RAIN", "🌧️"), WordEntry("RICE", "🍚"),
+    WordEntry("RAT", KidAssets.animal("rat")), WordEntry("ROSE", KidAssets.nature("rose")),
+    WordEntry("RAIN", KidAssets.weather("rain")), WordEntry("ROCK", KidAssets.nature("rock")),
     // S
-    WordEntry("SUN", "☀️"), WordEntry("STAR", "⭐"), WordEntry("SOCK", "🧦"),
-    WordEntry("SHIP", "🚢"), WordEntry("SNAKE", "🐍"), WordEntry("SHOE", "👟"),
+    WordEntry("SUN", KidAssets.weather("sun")), WordEntry("STAR", KidAssets.weather("star")),
+    WordEntry("SOCK", KidAssets.clothes("socks")), WordEntry("SHIP", KidAssets.transport("ship")),
+    WordEntry("SNAKE", KidAssets.animal("snake")), WordEntry("SHOE", KidAssets.clothes("shoe")),
     // T
-    WordEntry("TREE", "🌳"), WordEntry("TENT", "⛺"), WordEntry("TAXI", "🚕"),
-    WordEntry("TRAIN", "🚂"),
+    WordEntry("TREE", KidAssets.nature("tree")), WordEntry("TENT", KidAssets.place("tent")),
+    WordEntry("TAXI", KidAssets.transport("taxi")), WordEntry("TRAIN", KidAssets.transport("train")),
+    WordEntry("TIGER", KidAssets.animal("tiger")),
     // U
-    WordEntry("UFO", "🛸"), WordEntry("UP", "⬆️"),
+    WordEntry("UFO", KidAssets.transport("flying-saucer")),
     // V
-    WordEntry("VAN", "🚐"), WordEntry("VASE", "🏺"),
+    WordEntry("VAN", KidAssets.transport("minibus")), WordEntry("VIOLIN", KidAssets.instrument("violin")),
     // W
-    WordEntry("WEB", "🕸️"), WordEntry("WOLF", "🐺"), WordEntry("WAVE", "🌊"),
-    WordEntry("WHALE", "🐳"),
+    WordEntry("WOLF", KidAssets.animal("wolf")), WordEntry("WAVE", KidAssets.weather("wave")),
+    WordEntry("WHALE", KidAssets.seaAnimal("whale")), WordEntry("WORM", KidAssets.insect("worm")),
     // X / extra
-    WordEntry("BOX", "📦"), WordEntry("SIX", "6️⃣"),
+    WordEntry("BOX", KidAssets.toy("gift")), WordEntry("SIX", KidAssets.number(6)),
     // Y
-    WordEntry("YAK", "🐃"), WordEntry("YARN", "🧶"),
+    WordEntry("YAK", KidAssets.hindiWord("yak")), WordEntry("YOYO", KidAssets.toy("yo-yo")),
     // Z
-    WordEntry("ZIP", "🤐"), WordEntry("ZEBRA", "🦓"),
+    WordEntry("ZEBRA", KidAssets.animal("zebra")),
 )
 
 // ── Animals ───────────────────────────────────────────────────────────────────
 
-data class Animal(val name: String, val emoji: String, val sound: String, val svg: String? = null)
+data class Animal(val name: String, val sound: String, val svg: AssetPath)
 
 val ANIMALS = listOf(
-    Animal("Lion",     "🦁", "Roar!",   "kids/animals/animal-lion.svg"),     Animal("Dog",   "🐶", "Woof!",   "kids/animals/animal-dog.svg"),
-    Animal("Cat",      "🐱", "Meow!",   "kids/animals/animal-cat.svg"),      Animal("Cow",   "🐮", "Moo!",    "kids/animals/animal-cow.svg"),
-    Animal("Duck",     "🦆", "Quack!",  "kids/birds/bird-duck.svg"),         Animal("Frog",  "🐸", "Ribbit!", "kids/animals/animal-frog.svg"),
-    Animal("Sheep",    "🐑", "Baa!",    "kids/animals/animal-sheep.svg"),    Animal("Horse", "🐴", "Neigh!",  "kids/animals/animal-horse.svg"),
-    Animal("Pig",      "🐷", "Oink!",   "kids/animals/animal-pig.svg"),      Animal("Bee",   "🐝", "Buzz!",   "kids/insects/insect-bee.svg"),
-    Animal("Bird",     "🐦", "Tweet!",  "kids/birds/bird-bird.svg"),         Animal("Elephant", "🐘", "Trumpet!", "kids/animals/animal-elephant.svg"),
+    Animal("Lion",  "Roar!",   KidAssets.animal("lion")),
+    Animal("Dog",   "Woof!",   KidAssets.animal("dog")),
+    Animal("Cat",   "Meow!",   KidAssets.animal("cat")),
+    Animal("Cow",   "Moo!",    KidAssets.animal("cow")),
+    Animal("Duck",  "Quack!",  KidAssets.bird("duck")),
+    Animal("Frog",  "Ribbit!", KidAssets.animal("frog")),
+    Animal("Sheep", "Baa!",    KidAssets.animal("sheep")),
+    Animal("Horse", "Neigh!",  KidAssets.animal("horse")),
+    Animal("Pig",   "Oink!",   KidAssets.animal("pig")),
+    Animal("Bee",   "Buzz!",   KidAssets.insect("bee")),
+    Animal("Bird",  "Tweet!",  KidAssets.bird("bird")),
+    Animal("Elephant", "Trumpet!", KidAssets.animal("elephant")),
 )
 
 // ── Body Parts ────────────────────────────────────────────────────────────────
 
-data class BodyPart(val name: String, val emoji: String, val svg: String? = null)
+data class BodyPart(val name: String, val svg: AssetPath)
 
 val BODY_PARTS = listOf(
-    BodyPart("Hand",  "✋",  "kids/body/body-hand.svg"),  BodyPart("Eye",   "👁️", "kids/body/body-eye.svg"),
-    BodyPart("Ear",   "👂",  "kids/body/body-ear.svg"),   BodyPart("Nose",  "👃", "kids/body/body-nose.svg"),
-    BodyPart("Foot",  "🦶",  "kids/body/body-foot.svg"),  BodyPart("Mouth", "👄", "kids/body/body-mouth.svg"),
-    BodyPart("Hair",  "💇"),                              BodyPart("Tooth", "🦷", "kids/body/body-tooth.svg"),
-    BodyPart("Leg",   "🦵",  "kids/body/body-leg.svg"),   BodyPart("Tongue","👅", "kids/body/body-tongue.svg"),
+    BodyPart("Hand",  KidAssets.body("hand")),
+    BodyPart("Eye",   KidAssets.body("eye")),
+    BodyPart("Ear",   KidAssets.body("ear")),
+    BodyPart("Nose",  KidAssets.body("nose")),
+    BodyPart("Foot",  KidAssets.body("foot")),
+    BodyPart("Mouth", KidAssets.body("mouth")),
+    // "Hair" was here but has no illustration; "Heart" does, and is just as familiar.
+    BodyPart("Heart", KidAssets.body("heart")),
+    BodyPart("Tooth", KidAssets.body("tooth")),
+    BodyPart("Leg",   KidAssets.body("leg")),
+    BodyPart("Tongue", KidAssets.body("tongue")),
 )
 
 // ── Days of the Week ──────────────────────────────────────────────────────────
@@ -160,180 +212,297 @@ val DAY_COLORS = listOf(
 
 // ── Shared emoji pool for the brain games (Memory, Odd-One-Out, Big/Small, Catch) ───────
 
-val GAME_EMOJIS = listOf(
+val GAME_PICTURES: List<AssetPath> = listOf(
     // animals
-    "🐶", "🐱", "🦁", "🐮", "🐸", "🦆", "🐷", "🐝", "🦋", "🐠",
-    "🐢", "🦄", "🐙", "🦀", "🦉", "🐧", "🐬", "🦊", "🐼", "🐨",
+    KidAssets.animal("dog"), KidAssets.animal("cat"), KidAssets.animal("lion"),
+    KidAssets.animal("cow"), KidAssets.animal("frog"), KidAssets.bird("duck"),
+    KidAssets.animal("pig"), KidAssets.insect("bee"), KidAssets.insect("butterfly"),
+    KidAssets.seaAnimal("tropical-fish"), KidAssets.animal("turtle"), KidAssets.animal("unicorn"),
+    KidAssets.seaAnimal("octopus"), KidAssets.seaAnimal("crab"), KidAssets.bird("owl"),
+    KidAssets.bird("penguin"), KidAssets.seaAnimal("dolphin"), KidAssets.animal("fox"),
+    KidAssets.animal("panda"), KidAssets.animal("koala"),
     // food
-    "🍎", "🍓", "🍌", "🍇", "🍉", "🍊", "🍒", "🥕", "🌽", "🍩",
+    KidAssets.fruit("apple"), KidAssets.fruit("strawberry"), KidAssets.fruit("banana"),
+    KidAssets.fruit("grapes"), KidAssets.fruit("watermelon"), KidAssets.fruit("orange"),
+    KidAssets.fruit("cherries"), KidAssets.vegetable("carrot"), KidAssets.vegetable("corn"),
+    KidAssets.food("donut"),
     // things & nature
-    "⭐", "🌸", "🌈", "🚗", "🎈", "🌙", "🌻", "🚀", "⚽", "🎵",
-    "🚂", "✈️", "🏀", "🎁", "🪁", "🌼", "🍄", "🌵",
+    KidAssets.weather("star"), KidAssets.nature("blossom"), KidAssets.weather("rainbow"),
+    KidAssets.transport("car"), KidAssets.toy("balloon"), KidAssets.weather("moon"),
+    KidAssets.nature("sunflower"), KidAssets.transport("rocket"), KidAssets.sport("soccer"),
+    KidAssets.instrument("guitar"), KidAssets.transport("steam-train"), KidAssets.transport("airplane"),
+    KidAssets.sport("basketball"), KidAssets.toy("gift"), KidAssets.toy("kite"),
+    KidAssets.nature("tulip"), KidAssets.nature("cactus"), KidAssets.toy("teddy-bear"),
 )
 
-// ── Crayon colors for the drawing canvas ─────────────────────────────────────
+// ── Crayons for the drawing canvas ───────────────────────────────────────────
 
-val CRAYON_COLORS = listOf(
-    Color(0xFF4F6BED), // indigo (default)
-    Color(0xFFFF5A52), // red
-    Color(0xFF4FCB94), // green
-    Color(0xFFFF9F1C), // orange
-    Color(0xFFA855F7), // purple
-    Color(0xFF1FC2AE), // teal
+/**
+ * A crayon: its ink [color], the colour [name] said aloud when the child picks it, and its
+ * picture ([art], assets/art/drawing-tools/tool-crayon-<name>.svg, drawn in the same colour).
+ */
+data class Crayon(val color: Color, val name: String) {
+    val art: AssetPath get() = KidAssets.tool("crayon-${name.lowercase()}")
+}
+
+/** Every crayon in the box, in rainbow order; Free Draw offers them all. */
+val CRAYON_BOX = listOf(
+    Crayon(Color(0xFFFF5A52), "Red"),
+    Crayon(Color(0xFFFF9F1C), "Orange"),
+    Crayon(Color(0xFFFFC24A), "Yellow"),
+    Crayon(Color(0xFF4FCB94), "Green"),
+    Crayon(Color(0xFF1FC2AE), "Teal"),
+    Crayon(Color(0xFF4F6BED), "Blue"),
+    Crayon(Color(0xFFA855F7), "Purple"),
+    Crayon(Color(0xFFFF8FB6), "Pink"),
+    Crayon(Color(0xFF2B3A4A), "Black"),
+    Crayon(Color(0xFF8B5E3C), "Brown"),
 )
+
+/** The tracing crayons, blue (the default ink) first: dark enough to show on the faint letter. */
+val CRAYONS: List<Crayon> = listOf("Blue", "Red", "Green", "Orange", "Purple", "Teal")
+    .map { n -> CRAYON_BOX.first { it.name == n } }
 
 // ── Months of the Year ────────────────────────────────────────────────────────
 
-data class Month(val name: String, val emoji: String, val color: Color, val svg: String? = null)
+data class Month(val name: String, val color: Color, val svg: AssetPath)
 
 val MONTHS = listOf(
-    Month("January",   "❄️", Color(0xFF46A6F0), "kids/days-months/month-january.svg"),
-    Month("February",  "💝", Color(0xFFFF8FB6), "kids/days-months/month-february.svg"),
-    Month("March",     "🌱", Color(0xFF4FCB94), "kids/days-months/month-march.svg"),
-    Month("April",     "🌸", Color(0xFFFF8FB6), "kids/days-months/month-april.svg"),
-    Month("May",       "🌻", Color(0xFFFFC24A), "kids/days-months/month-may.svg"),
-    Month("June",      "☀️", Color(0xFFFF8B6B), "kids/days-months/month-june.svg"),
-    Month("July",      "🏖️", Color(0xFFFF5A52), "kids/days-months/month-july.svg"),
-    Month("August",    "🍦", Color(0xFFFFC24A), "kids/days-months/month-august.svg"),
-    Month("September", "🍂", Color(0xFFFF9F1C), "kids/days-months/month-september.svg"),
-    Month("October",   "🎃", Color(0xFFFF8B6B), "kids/days-months/month-october.svg"),
-    Month("November",  "🍁", Color(0xFF8B5E3C), "kids/days-months/month-november.svg"),
-    Month("December",  "🎄", Color(0xFF4FCB94), "kids/days-months/month-december.svg"),
+    Month("January",   Color(0xFF46A6F0), KidAssets.month("january")),
+    Month("February",  Color(0xFFFF8FB6), KidAssets.month("february")),
+    Month("March",     Color(0xFF4FCB94), KidAssets.month("march")),
+    Month("April",     Color(0xFFFF8FB6), KidAssets.month("april")),
+    Month("May",       Color(0xFFFFC24A), KidAssets.month("may")),
+    Month("June",      Color(0xFFFF8B6B), KidAssets.month("june")),
+    Month("July",      Color(0xFFFF5A52), KidAssets.month("july")),
+    Month("August",    Color(0xFFFFC24A), KidAssets.month("august")),
+    Month("September", Color(0xFFFF9F1C), KidAssets.month("september")),
+    Month("October",   Color(0xFFFF8B6B), KidAssets.month("october")),
+    Month("November",  Color(0xFF8B5E3C), KidAssets.month("november")),
+    Month("December",  Color(0xFF46A6F0), KidAssets.month("december")),
 )
 
 // ── Seasons & Weather ─────────────────────────────────────────────────────────
 
-data class SeasonItem(val name: String, val emoji: String, val weather: String, val weatherEmojis: List<String>, val color: Color)
+data class SeasonItem(
+    val name: String,
+    val svg: AssetPath,
+    val weather: String,
+    /** Picture clues the quiz shows instead of naming the season outright. */
+    val weatherSvgs: List<AssetPath>,
+    val color: Color,
+)
 
 val SEASONS_LIST = listOf(
-    SeasonItem("Spring", "🌸", "warm and rainy",  listOf("🌧️", "🌈", "🌱"), Color(0xFF4FCB94)),
-    SeasonItem("Summer", "☀️", "hot and sunny",   listOf("☀️", "🏖️", "🍦"), Color(0xFFFF8B6B)),
-    SeasonItem("Autumn", "🍂", "cool and windy",  listOf("🍂", "🍁", "🌬️"), Color(0xFFFF9F1C)),
-    SeasonItem("Winter", "❄️", "cold and snowy",  listOf("❄️", "⛄", "🧣"), Color(0xFF46A6F0)),
+    SeasonItem("Spring", KidAssets.nature("blossom"), "warm and rainy",
+        listOf(KidAssets.weather("rain"), KidAssets.weather("rainbow"), KidAssets.nature("seedling")),
+        Color(0xFF4FCB94)),
+    SeasonItem("Summer", KidAssets.weather("sun"), "hot and sunny",
+        listOf(KidAssets.weather("sun"), KidAssets.weather("thermometer"), KidAssets.food("ice-cream")),
+        Color(0xFFFF8B6B)),
+    SeasonItem("Autumn", KidAssets.nature("fallen-leaves"), "cool and windy",
+        listOf(KidAssets.nature("fallen-leaves"), KidAssets.nature("maple-leaf"), KidAssets.weather("windy")),
+        Color(0xFFFF9F1C)),
+    SeasonItem("Winter", KidAssets.weather("snowflake"), "cold and snowy",
+        listOf(KidAssets.weather("snowflake"), KidAssets.weather("snowman"), KidAssets.clothes("scarf")),
+        Color(0xFF46A6F0)),
 )
 
 // ── Emotions / Feelings ───────────────────────────────────────────────────────
 
-data class Emotion(val name: String, val emoji: String, val description: String, val svg: String? = null)
+data class Emotion(val name: String, val description: String, val svg: AssetPath)
 
 val EMOTIONS = listOf(
-    Emotion("Happy",     "😊", "I feel great!", "kids/feelings/feeling-happy.svg"),
-    Emotion("Sad",       "😢", "I feel upset",  "kids/feelings/feeling-sad.svg"),
-    Emotion("Angry",     "😠", "I feel mad",    "kids/feelings/feeling-angry.svg"),
-    Emotion("Surprised", "😲", "Wow!",          "kids/feelings/feeling-surprised.svg"),
-    Emotion("Scared",    "😨", "I feel afraid", "kids/feelings/feeling-scared.svg"),
-    Emotion("Tired",     "😴", "I need sleep",  "kids/feelings/feeling-sleepy.svg"),
-    Emotion("Silly",     "😜", "Hehe!",         "kids/feelings/feeling-silly.svg"),
-    Emotion("Excited",   "🤩", "Yay!",          "kids/feelings/feeling-excited.svg"),
+    Emotion("Happy",     "I feel great!", KidAssets.feeling("happy")),
+    Emotion("Sad",       "I feel upset",  KidAssets.feeling("sad")),
+    Emotion("Angry",     "I feel mad",    KidAssets.feeling("angry")),
+    Emotion("Surprised", "Wow!",          KidAssets.feeling("surprised")),
+    Emotion("Scared",    "I feel afraid", KidAssets.feeling("scared")),
+    Emotion("Sleepy",    "I need sleep",  KidAssets.feeling("sleepy")),
+    Emotion("Silly",     "Hehe!",         KidAssets.feeling("silly")),
+    Emotion("Excited",   "Yay!",          KidAssets.feeling("excited")),
 )
 
 // ── Vehicles / Transport ──────────────────────────────────────────────────────
 
-data class Vehicle(val name: String, val emoji: String, val sound: String, val svg: String? = null)
+data class Vehicle(val name: String, val sound: String, val svg: AssetPath)
 
 val VEHICLES = listOf(
-    Vehicle("Car",        "🚗", "Vroom!",     "kids/transport/transport-car.svg"),
-    Vehicle("Bus",        "🚌", "Honk!",      "kids/transport/transport-bus.svg"),
-    Vehicle("Train",      "🚂", "Choo choo!", "kids/transport/transport-steam-train.svg"),
-    Vehicle("Airplane",   "✈️", "Whoosh!",    "kids/transport/transport-airplane.svg"),
-    Vehicle("Rocket",     "🚀", "Blast off!", "kids/transport/transport-rocket.svg"),
-    Vehicle("Ship",       "🚢", "Splash!",    "kids/transport/transport-ship.svg"),
-    Vehicle("Bicycle",    "🚲", "Ring ring!", "kids/transport/transport-bicycle.svg"),
-    Vehicle("Helicopter", "🚁", "Whirr!",     "kids/transport/transport-helicopter.svg"),
-    Vehicle("Boat",       "⛵", "Sail away!", "kids/transport/transport-sailboat.svg"),
-    Vehicle("Ambulance",  "🚑", "Wee woo!",   "kids/transport/transport-ambulance.svg"),
+    Vehicle("Car",        "Vroom!",     KidAssets.transport("car")),
+    Vehicle("Bus",        "Honk!",      KidAssets.transport("bus")),
+    Vehicle("Train",      "Choo choo!", KidAssets.transport("steam-train")),
+    Vehicle("Airplane",   "Whoosh!",    KidAssets.transport("airplane")),
+    Vehicle("Rocket",     "Blast off!", KidAssets.transport("rocket")),
+    Vehicle("Ship",       "Splash!",    KidAssets.transport("ship")),
+    Vehicle("Bicycle",    "Ring ring!", KidAssets.transport("bicycle")),
+    Vehicle("Helicopter", "Whirr!",     KidAssets.transport("helicopter")),
+    Vehicle("Boat",       "Sail away!", KidAssets.transport("sailboat")),
+    Vehicle("Ambulance",  "Wee woo!",   KidAssets.transport("ambulance")),
 )
 
 // ── Fruits & Vegetables ───────────────────────────────────────────────────────
 
-data class FruitItem(val name: String, val emoji: String, val isFruit: Boolean, val svg: String? = null)
+data class FruitItem(val name: String, val isFruit: Boolean, val svg: AssetPath)
 
 val FRUITS_VEGGIES = listOf(
-    FruitItem("Apple",      "🍎", true,  "kids/fruits/fruit-apple.svg"),
-    FruitItem("Banana",     "🍌", true,  "kids/fruits/fruit-banana.svg"),
-    FruitItem("Grapes",     "🍇", true,  "kids/fruits/fruit-grapes.svg"),
-    FruitItem("Strawberry", "🍓", true,  "kids/fruits/fruit-strawberry.svg"),
-    FruitItem("Watermelon", "🍉", true,  "kids/fruits/fruit-watermelon.svg"),
-    FruitItem("Pineapple",  "🍍", true,  "kids/fruits/fruit-pineapple.svg"),
-    FruitItem("Mango",      "🥭", true,  "kids/fruits/fruit-mango.svg"),
-    FruitItem("Orange",     "🍊", true,  "kids/fruits/fruit-orange.svg"),
-    FruitItem("Carrot",     "🥕", false, "kids/vegetables/veg-carrot.svg"),
-    FruitItem("Broccoli",   "🥦", false, "kids/vegetables/veg-broccoli.svg"),
-    FruitItem("Corn",       "🌽", false, "kids/vegetables/veg-corn.svg"),
-    FruitItem("Potato",     "🥔", false, "kids/vegetables/veg-potato.svg"),
-    FruitItem("Tomato",     "🍅", false, "kids/fruits/fruit-tomato.svg"),
-    FruitItem("Cucumber",   "🥒", false, "kids/vegetables/veg-cucumber.svg"),
+    FruitItem("Apple",      true,  KidAssets.fruit("apple")),
+    FruitItem("Banana",     true,  KidAssets.fruit("banana")),
+    FruitItem("Grapes",     true,  KidAssets.fruit("grapes")),
+    FruitItem("Strawberry", true,  KidAssets.fruit("strawberry")),
+    FruitItem("Watermelon", true,  KidAssets.fruit("watermelon")),
+    FruitItem("Pineapple",  true,  KidAssets.fruit("pineapple")),
+    FruitItem("Mango",      true,  KidAssets.fruit("mango")),
+    FruitItem("Orange",     true,  KidAssets.fruit("orange")),
+    FruitItem("Carrot",     false, KidAssets.vegetable("carrot")),
+    FruitItem("Broccoli",   false, KidAssets.vegetable("broccoli")),
+    FruitItem("Corn",       false, KidAssets.vegetable("corn")),
+    FruitItem("Potato",     false, KidAssets.vegetable("potato")),
+    FruitItem("Tomato",     false, KidAssets.fruit("tomato")),
+    FruitItem("Cucumber",   false, KidAssets.vegetable("cucumber")),
 )
 
 // ── Opposites ─────────────────────────────────────────────────────────────────
 
-data class OppositePair(val word1: String, val emoji1: String, val word2: String, val emoji2: String)
+data class OppositePair(val word1: String, val svg1: AssetPath, val word2: String, val svg2: AssetPath)
 
+/**
+ * Opposite pairs, each side illustrated.
+ *
+ * Pairs whose concept has no artwork (up/down, full/empty, open/closed, loud/quiet,
+ * clean/dirty, light/heavy) were replaced with equally concrete pairs that do — an abstract
+ * opposite a four-year-old cannot see is not teaching them the idea anyway.
+ */
 val OPPOSITES = listOf(
-    OppositePair("Big",    "🐘", "Small",  "🐭"),
-    OppositePair("Hot",    "🔥", "Cold",   "🧊"),
-    OppositePair("Up",     "⬆️", "Down",   "⬇️"),
-    OppositePair("Fast",   "🚀", "Slow",   "🐢"),
-    OppositePair("Happy",  "😊", "Sad",    "😢"),
-    OppositePair("Day",    "☀️", "Night",  "🌙"),
-    OppositePair("Full",   "🍽️", "Empty",  "🫙"),
-    OppositePair("Open",   "📖", "Closed", "📕"),
-    OppositePair("Loud",   "📣", "Quiet",  "🤫"),
-    OppositePair("Long",   "🐍", "Short",  "🐛"),
-    OppositePair("Clean",  "🧼", "Dirty",  "🪣"),
-    OppositePair("Light",  "🪶", "Heavy",  "🏋️"),
+    OppositePair("Big",   KidAssets.animal("elephant"),  "Small",  KidAssets.insect("ant")),
+    OppositePair("Hot",   KidAssets.weather("fire"),     "Cold",   KidAssets.weather("snowflake")),
+    OppositePair("Fast",  KidAssets.transport("rocket"), "Slow",   KidAssets.animal("turtle")),
+    OppositePair("Happy", KidAssets.feeling("happy"),    "Sad",    KidAssets.feeling("sad")),
+    OppositePair("Day",   KidAssets.weather("sun"),      "Night",  KidAssets.weather("moon")),
+    OppositePair("Tall",  KidAssets.nature("palm-tree"), "Short",  KidAssets.nature("seedling")),
+    OppositePair("Sweet", KidAssets.food("candy"),       "Sour",   KidAssets.fruit("lemon")),
+    OppositePair("Soft",  KidAssets.toy("teddy-bear"),   "Hard",   KidAssets.nature("rock")),
+    OppositePair("Awake", KidAssets.feeling("excited"),  "Asleep", KidAssets.feeling("sleepy")),
 )
 
 // ── Phonics — Letter Sounds ───────────────────────────────────────────────────
 
-/** Each letter paired with its primary phonetic sound, a starter word, and an emoji. */
-data class LetterPhonic(val letter: String, val sound: String, val example: String, val emoji: String)
+/**
+ * A letter, the sound it makes, and a word that starts (or, for X, ends) with that sound.
+ *
+ * @param sound      The sound spelled out ("buh", "sss"), said inside [call] (the line recorded and,
+ *                   while there is no recording, what text-to-speech says). A and O
+ *                   are spelled away from their letter names ("aah", "aw"), which a bare "a" or
+ *                   "o" is read as. Never shown to the child; the quiz is "hear the sound, tap the letter".
+ * @param soundGroup Letters that make the same sound share a group (C and K both say /k/), so a
+ *                   question never offers two letters that are both right.
+ * @param position   Where the sound sits in [example], for the spoken hint ("like Fox" vs "like Moon").
+ */
+data class LetterPhonic(
+    val letter: String,
+    val sound: String,
+    val example: String,
+    val svg: AssetPath,
+    val soundGroup: String = letter,
+    val position: SoundPosition = SoundPosition.START,
+) {
+    /**
+     * What the quiz plays for the letter: the sound twice, then the word it belongs to, the
+     * "b, b, ball" way phonics teachers say it ("buh, buh, Ball!"; for an ending sound the word
+     * comes first: "Fox, ks, ks!"). A bare "buh" came out of speech engines distorted or as a
+     * letter name; inside a short phrase with a real word it is said cleanly, and the word tells
+     * the child which sound to listen for.
+     */
+    val call: String
+        get() = if (position == SoundPosition.END) "$example, $sound, $sound!" else "$sound, $sound, $example!"
 
+    /** Recording of [call], e.g. `assets/voice/en/phonemes/phoneme-m.m4a`. */
+    val clip: VoiceClip get() = VoiceClip.english("phonemes", "phoneme-${letter.lowercase()}")
+}
+
+enum class SoundPosition { START, END }
+
+/**
+ * Starter words are chosen so every one has artwork and the picture is what a child would call it
+ * (no "Jet" drawn as an airplane). Short vowels use the classic primer words (Apple, Egg,
+ * Octopus, Umbrella). X is taught by its ending sound, as in Fox, because almost no early word
+ * starts with /ks/ ("X-ray" starts with the letter's name, not its sound).
+ */
 val PHONICS_DATA = listOf(
-    LetterPhonic("A", "ahh",  "Apple",     "🍎"),
-    LetterPhonic("B", "buh",  "Ball",      "⚽"),
-    LetterPhonic("C", "kuh",  "Cat",       "🐱"),
-    LetterPhonic("D", "duh",  "Dog",       "🐶"),
-    LetterPhonic("E", "ehh",  "Egg",       "🥚"),
-    LetterPhonic("F", "fuh",  "Fish",      "🐟"),
-    LetterPhonic("G", "guh",  "Goat",      "🐐"),
-    LetterPhonic("H", "huh",  "Hat",       "🎩"),
-    LetterPhonic("I", "ih",   "Igloo",     "🧊"),
-    LetterPhonic("J", "juh",  "Jam",       "🍯"),
-    LetterPhonic("K", "kuh",  "Kite",      "🪁"),
-    LetterPhonic("L", "luh",  "Lion",      "🦁"),
-    LetterPhonic("M", "muh",  "Moon",      "🌙"),
-    LetterPhonic("N", "nuh",  "Nest",      "🪺"),
-    LetterPhonic("O", "ohh",  "Orange",    "🍊"),
-    LetterPhonic("P", "puh",  "Pig",       "🐷"),
-    LetterPhonic("Q", "kwuh", "Queen",     "👑"),
-    LetterPhonic("R", "ruh",  "Rainbow",   "🌈"),
-    LetterPhonic("S", "suh",  "Sun",       "☀️"),
-    LetterPhonic("T", "tuh",  "Tree",      "🌳"),
-    LetterPhonic("U", "uhh",  "Umbrella",  "☂️"),
-    LetterPhonic("V", "vuh",  "Van",       "🚐"),
-    LetterPhonic("W", "wuh",  "Wolf",      "🐺"),
-    LetterPhonic("X", "ksss", "X-ray",     "🦴"),
-    LetterPhonic("Y", "yuh",  "Yarn",      "🧶"),
-    LetterPhonic("Z", "zuh",  "Zebra",     "🦓"),
+    LetterPhonic("A", "aah",  "Apple",     KidAssets.fruit("apple")),
+    LetterPhonic("B", "buh",  "Ball",      KidAssets.sport("soccer")),
+    LetterPhonic("C", "kuh",  "Cat",       KidAssets.animal("cat"), soundGroup = "k"),
+    LetterPhonic("D", "duh",  "Dog",       KidAssets.animal("dog")),
+    LetterPhonic("E", "eh",   "Egg",       KidAssets.food("egg")),
+    LetterPhonic("F", "fff",  "Fish",      KidAssets.seaAnimal("fish")),
+    LetterPhonic("G", "guh",  "Goat",      KidAssets.animal("goat")),
+    LetterPhonic("H", "huh",  "Hat",       KidAssets.clothes("top-hat")),
+    LetterPhonic("I", "ih",   "Insect",    KidAssets.insect("ladybug")),
+    LetterPhonic("J", "juh",  "Jellyfish", KidAssets.seaAnimal("jellyfish")),
+    LetterPhonic("K", "kuh",  "Kite",      KidAssets.toy("kite"), soundGroup = "k"),
+    LetterPhonic("L", "lll",  "Lion",      KidAssets.animal("lion")),
+    LetterPhonic("M", "mmm",  "Moon",      KidAssets.weather("moon")),
+    LetterPhonic("N", "nnn",  "Nose",      KidAssets.body("nose")),
+    LetterPhonic("O", "aw",   "Octopus",   KidAssets.seaAnimal("octopus")),
+    LetterPhonic("P", "puh",  "Pig",       KidAssets.animal("pig")),
+    LetterPhonic("Q", "kwuh", "Queen",     KidAssets.clothes("crown")),
+    LetterPhonic("R", "rrr",  "Rainbow",   KidAssets.weather("rainbow")),
+    LetterPhonic("S", "sss",  "Sun",       KidAssets.weather("sun")),
+    LetterPhonic("T", "tuh",  "Tree",      KidAssets.nature("tree")),
+    LetterPhonic("U", "uh",   "Umbrella",  KidAssets.weather("umbrella")),
+    LetterPhonic("V", "vvv",  "Violin",    KidAssets.instrument("violin")),
+    LetterPhonic("W", "wuh",  "Wolf",      KidAssets.animal("wolf")),
+    LetterPhonic("X", "ks",   "Fox",       KidAssets.animal("fox"), position = SoundPosition.END),
+    LetterPhonic("Y", "yuh",  "Yo-yo",     KidAssets.toy("yo-yo")),
+    LetterPhonic("Z", "zzz",  "Zebra",     KidAssets.animal("zebra")),
 )
 
 // ── Rhyming Word Groups ───────────────────────────────────────────────────────
 
-/** A target word with several rhyming alternatives (word + emoji). */
-data class RhymeGroup(val word: String, val emoji: String, val rhymes: List<Pair<String, String>>)
+/** A target word with several rhyming alternatives, each with its picture. */
+data class RhymeGroup(val word: String, val svg: AssetPath, val rhymes: List<Pair<String, AssetPath>>)
 
+/**
+ * Rhyme families. Every word on both sides is illustrated, so groups built around words with no
+ * artwork (mat, log, lake, dish, wall, ring) were reworked into families that are fully drawable.
+ */
 val RHYME_GROUPS = listOf(
-    RhymeGroup("CAT",  "🐱", listOf("BAT" to "🦇", "HAT" to "🎩", "MAT" to "🧹", "RAT" to "🐀")),
-    RhymeGroup("DOG",  "🐶", listOf("LOG" to "🪵", "FROG" to "🐸", "HOG" to "🐷")),
-    RhymeGroup("SUN",  "☀️", listOf("RUN" to "🏃", "FUN" to "🎉", "BUN" to "🍞")),
-    RhymeGroup("CAKE", "🎂", listOf("LAKE" to "🏞️", "MAKE" to "🔨", "BAKE" to "👨‍🍳")),
-    RhymeGroup("TREE", "🌳", listOf("BEE" to "🐝", "SEE" to "👁️", "KEY" to "🔑")),
-    RhymeGroup("STAR", "⭐", listOf("CAR" to "🚗", "JAR" to "🫙", "FAR" to "🔭")),
-    RhymeGroup("FISH", "🐟", listOf("DISH" to "🍽️", "WISH" to "🌠")),
-    RhymeGroup("BALL", "⚽", listOf("TALL" to "🏀", "WALL" to "🧱", "CALL" to "📞")),
-    RhymeGroup("RING", "💍", listOf("KING" to "🤴", "SING" to "🎵", "WING" to "🪶")),
-    RhymeGroup("BEAR", "🐻", listOf("HAIR" to "💇", "CHAIR" to "🪑", "PEAR" to "🍐")),
+    RhymeGroup("CAT", KidAssets.animal("cat"), listOf(
+        "BAT" to KidAssets.animal("bat"),
+        "HAT" to KidAssets.clothes("top-hat"),
+        "RAT" to KidAssets.animal("rat"),
+    )),
+    RhymeGroup("DOG", KidAssets.animal("dog"), listOf(
+        "FROG" to KidAssets.animal("frog"),
+        "HOG" to KidAssets.animal("pig"),
+    )),
+    RhymeGroup("SUN", KidAssets.weather("sun"), listOf(
+        "BUN" to KidAssets.food("bread"),
+        "ONE" to KidAssets.number(1),
+    )),
+    RhymeGroup("TREE", KidAssets.nature("tree"), listOf(
+        "BEE" to KidAssets.insect("bee"),
+        "KEY" to KidAssets.home("key"),
+    )),
+    RhymeGroup("STAR", KidAssets.weather("star"), listOf(
+        "CAR" to KidAssets.transport("car"),
+        "GUITAR" to KidAssets.instrument("guitar"),
+    )),
+    RhymeGroup("BEAR", KidAssets.animal("bear"), listOf(
+        "PEAR" to KidAssets.fruit("pear"),
+        "CHAIR" to KidAssets.home("chair"),
+    )),
+    RhymeGroup("GOAT", KidAssets.animal("goat"), listOf(
+        "BOAT" to KidAssets.transport("sailboat"),
+        "COAT" to KidAssets.clothes("coat"),
+    )),
+    RhymeGroup("MOUSE", KidAssets.animal("mouse"), listOf(
+        "HOUSE" to KidAssets.place("house"),
+        "BLOUSE" to KidAssets.clothes("blouse"),
+    )),
+    RhymeGroup("SNAKE", KidAssets.animal("snake"), listOf(
+        "CAKE" to KidAssets.food("cake"),
+        "BAKE" to KidAssets.food("cupcake"),
+    )),
 )
 
 // ── Hindi (Devanagari) varnamala ────────────────────────────────────────────────
@@ -341,75 +510,79 @@ val RHYME_GROUPS = listOf(
 /**
  * One Hindi letter for the trace + learn track.
  *
+ * The word and picture follow the letter recordings (generate_1.txt, the narration list the
+ * hindi_vowels / hindi_consonants clips were made from), so what the child sees is what they hear.
+ *
  * @param char       The Devanagari character to draw/recognise (e.g. "अ", "क").
  * @param romanized  ASCII name used for audio fallback and accessibility ("a", "ka").
- * @param example    A starter word beginning with the letter, in Devanagari ("अनानास").
- * @param exampleEmoji Emoji illustrating the example word (may be empty).
- * @param svg        Asset path of the illustrated badge.
+ * @param example    The word the recording pairs the letter with, in Devanagari ("अनार").
+ * @param svg        Picture of [example].
+ * @param inside     The letter only comes inside words, so the recording says "ङ जैसे पङ्खा में"
+ *                   (as in पङ्खा) rather than "क से कबूतर" (क for कबूतर).
  */
 data class HindiLetter(
     val char: String,
     val romanized: String,
     val example: String,
-    val exampleEmoji: String,
-    val svg: String,
+    val svg: AssetPath,
+    val inside: Boolean = false,
 )
 
 /** 13 vowels (स्वर) in traditional order. */
 val HINDI_VOWELS = listOf(
-    HindiLetter("अ",  "a",  "अनानास", "🍍", "kids/hindi-vowels/hindi-swar-a.svg"),
-    HindiLetter("आ",  "aa", "आम",     "🥭", "kids/hindi-vowels/hindi-swar-aa.svg"),
-    HindiLetter("इ",  "i",  "इंजन",   "🚂", "kids/hindi-vowels/hindi-swar-i.svg"),
-    HindiLetter("ई",  "ii", "ईंट",    "🧱", "kids/hindi-vowels/hindi-swar-ii.svg"),
-    HindiLetter("उ",  "u",  "उल्लू",  "🦉", "kids/hindi-vowels/hindi-swar-u.svg"),
-    HindiLetter("ऊ",  "uu", "ऊँट",    "🐪", "kids/hindi-vowels/hindi-swar-uu.svg"),
-    HindiLetter("ऋ",  "ri", "ऋषि",    "🧘", "kids/hindi-vowels/hindi-swar-ri.svg"),
-    HindiLetter("ए",  "e",  "एड़ी",   "🦶", "kids/hindi-vowels/hindi-swar-e.svg"),
-    HindiLetter("ऐ",  "ai", "ऐनक",    "👓", "kids/hindi-vowels/hindi-swar-ai.svg"),
-    HindiLetter("ओ",  "o",  "ओम",     "🕉️", "kids/hindi-vowels/hindi-swar-o.svg"),
-    HindiLetter("औ",  "au", "औज़ार",  "🔧", "kids/hindi-vowels/hindi-swar-au.svg"),
-    HindiLetter("अं", "am", "अंगूर",  "🍇", "kids/hindi-vowels/hindi-swar-am.svg"),
-    HindiLetter("अः", "ah", "",       "",   "kids/hindi-vowels/hindi-swar-ah.svg"),
+    HindiLetter("अ",  "a",  "अनार", KidAssets.hindiWord("pomegranate")),
+    HindiLetter("आ",  "aa", "आम", AssetPath("art/hindi-vowels/hindi-swar-aa.svg")),
+    HindiLetter("इ",  "i",  "इमली", KidAssets.hindiWord("tamarind")),
+    HindiLetter("ई",  "ii", "ईख", KidAssets.hindiWord("sugarcane")),
+    HindiLetter("उ",  "u",  "उल्लू", AssetPath("art/hindi-vowels/hindi-swar-u.svg")),
+    HindiLetter("ऊ",  "uu", "ऊन", KidAssets.hindiWord("wool")),
+    HindiLetter("ऋ",  "ri", "ऋषि", AssetPath("art/hindi-vowels/hindi-swar-ri.svg")),
+    HindiLetter("ए",  "e",  "एड़ी", AssetPath("art/hindi-vowels/hindi-swar-e.svg")),
+    HindiLetter("ऐ",  "ai", "ऐनक", AssetPath("art/hindi-vowels/hindi-swar-ai.svg")),
+    HindiLetter("ओ",  "o",  "ओखली", KidAssets.hindiWord("mortar")),
+    HindiLetter("औ",  "au", "औरत", KidAssets.hindiWord("woman")),
+    HindiLetter("अं", "am", "अंगूर", AssetPath("art/hindi-vowels/hindi-swar-am.svg")),
+    HindiLetter("अः", "ah", "छः", KidAssets.hindiWord("six"), inside = true),
 )
 
 /** 36 consonants (व्यंजन) in traditional order, including the common conjuncts क्ष त्र ज्ञ. */
 val HINDI_CONSONANTS = listOf(
-    HindiLetter("क",   "ka",   "कबूतर",   "🕊️", "kids/hindi-consonants/hindi-vyanjan-ka.svg"),
-    HindiLetter("ख",   "kha",  "खरगोश",   "🐰", "kids/hindi-consonants/hindi-vyanjan-kha.svg"),
-    HindiLetter("ग",   "ga",   "गाय",     "🐄", "kids/hindi-consonants/hindi-vyanjan-ga.svg"),
-    HindiLetter("घ",   "gha",  "घड़ी",    "⏰", "kids/hindi-consonants/hindi-vyanjan-gha.svg"),
-    HindiLetter("ङ",   "nga",  "",        "",   "kids/hindi-consonants/hindi-vyanjan-nga.svg"),
-    HindiLetter("च",   "cha",  "चम्मच",   "🥄", "kids/hindi-consonants/hindi-vyanjan-cha.svg"),
-    HindiLetter("छ",   "chha", "छाता",    "☂️", "kids/hindi-consonants/hindi-vyanjan-chha.svg"),
-    HindiLetter("ज",   "ja",   "जहाज",    "🚢", "kids/hindi-consonants/hindi-vyanjan-ja.svg"),
-    HindiLetter("झ",   "jha",  "झंडा",    "🚩", "kids/hindi-consonants/hindi-vyanjan-jha.svg"),
-    HindiLetter("ञ",   "nya",  "",        "",   "kids/hindi-consonants/hindi-vyanjan-nya.svg"),
-    HindiLetter("ट",   "tta",  "टमाटर",   "🍅", "kids/hindi-consonants/hindi-vyanjan-tta.svg"),
-    HindiLetter("ठ",   "ttha", "ठंडा",    "🧊", "kids/hindi-consonants/hindi-vyanjan-ttha.svg"),
-    HindiLetter("ड",   "dda",  "डमरू",    "🪘", "kids/hindi-consonants/hindi-vyanjan-dda.svg"),
-    HindiLetter("ढ",   "ddha", "ढोल",     "🥁", "kids/hindi-consonants/hindi-vyanjan-ddha.svg"),
-    HindiLetter("ण",   "nna",  "बाण",     "🏹", "kids/hindi-consonants/hindi-vyanjan-nna.svg"),
-    HindiLetter("त",   "ta",   "तरबूज",   "🍉", "kids/hindi-consonants/hindi-vyanjan-ta.svg"),
-    HindiLetter("थ",   "tha",  "थाली",    "🍽️", "kids/hindi-consonants/hindi-vyanjan-tha.svg"),
-    HindiLetter("द",   "da",   "दूध",     "🥛", "kids/hindi-consonants/hindi-vyanjan-da.svg"),
-    HindiLetter("ध",   "dha",  "धनुष",    "🏹", "kids/hindi-consonants/hindi-vyanjan-dha.svg"),
-    HindiLetter("न",   "na",   "नाव",     "⛵", "kids/hindi-consonants/hindi-vyanjan-na.svg"),
-    HindiLetter("प",   "pa",   "पतंग",    "🪁", "kids/hindi-consonants/hindi-vyanjan-pa.svg"),
-    HindiLetter("फ",   "pha",  "फूल",     "🌸", "kids/hindi-consonants/hindi-vyanjan-pha.svg"),
-    HindiLetter("ब",   "ba",   "बकरी",    "🐐", "kids/hindi-consonants/hindi-vyanjan-ba.svg"),
-    HindiLetter("भ",   "bha",  "भालू",    "🐻", "kids/hindi-consonants/hindi-vyanjan-bha.svg"),
-    HindiLetter("म",   "ma",   "मछली",    "🐟", "kids/hindi-consonants/hindi-vyanjan-ma.svg"),
-    HindiLetter("य",   "ya",   "योग",     "🧘", "kids/hindi-consonants/hindi-vyanjan-ya.svg"),
-    HindiLetter("र",   "ra",   "रेल",     "🚆", "kids/hindi-consonants/hindi-vyanjan-ra.svg"),
-    HindiLetter("ल",   "la",   "लोमड़ी",  "🦊", "kids/hindi-consonants/hindi-vyanjan-la.svg"),
-    HindiLetter("व",   "va",   "वर्षा",   "🌧️", "kids/hindi-consonants/hindi-vyanjan-va.svg"),
-    HindiLetter("श",   "sha",  "शेर",     "🦁", "kids/hindi-consonants/hindi-vyanjan-sha.svg"),
-    HindiLetter("ष",   "ssa",  "",        "",   "kids/hindi-consonants/hindi-vyanjan-ssa.svg"),
-    HindiLetter("स",   "sa",   "सेब",     "🍎", "kids/hindi-consonants/hindi-vyanjan-sa.svg"),
-    HindiLetter("ह",   "ha",   "हाथी",    "🐘", "kids/hindi-consonants/hindi-vyanjan-ha.svg"),
-    HindiLetter("क्ष", "ksha", "क्षितिज", "🌅", "kids/hindi-consonants/hindi-vyanjan-ksha.svg"),
-    HindiLetter("त्र", "tra",  "त्रिशूल", "🔱", "kids/hindi-consonants/hindi-vyanjan-tra.svg"),
-    HindiLetter("ज्ञ", "gya",  "ज्ञान",   "🧠", "kids/hindi-consonants/hindi-vyanjan-gya.svg"),
+    HindiLetter("क",   "ka",   "कबूतर", AssetPath("art/hindi-consonants/hindi-vyanjan-ka.svg")),
+    HindiLetter("ख",   "kha",  "खरगोश", AssetPath("art/hindi-consonants/hindi-vyanjan-kha.svg")),
+    HindiLetter("ग",   "ga",   "गमला", KidAssets.nature("seedling")),
+    HindiLetter("घ",   "gha",  "घर", KidAssets.place("house")),
+    HindiLetter("ङ",   "nga",  "पङ्खा", KidAssets.hindiWord("fan"), inside = true),
+    HindiLetter("च",   "cha",  "चम्मच", AssetPath("art/hindi-consonants/hindi-vyanjan-cha.svg")),
+    HindiLetter("छ",   "chha", "छतरी", KidAssets.weather("umbrella")),
+    HindiLetter("ज",   "ja",   "जहाज", AssetPath("art/hindi-consonants/hindi-vyanjan-ja.svg")),
+    HindiLetter("झ",   "jha",  "झरना", KidAssets.hindiWord("waterfall")),
+    HindiLetter("ञ",   "nya",  "चञ्चल", KidAssets.hindiWord("playful"), inside = true),
+    HindiLetter("ट",   "tta",  "टमाटर", AssetPath("art/hindi-consonants/hindi-vyanjan-tta.svg")),
+    HindiLetter("ठ",   "ttha", "ठप्पा", KidAssets.hindiWord("stamp")),
+    HindiLetter("ड",   "dda",  "डमरू", AssetPath("art/hindi-consonants/hindi-vyanjan-dda.svg")),
+    HindiLetter("ढ",   "ddha", "ढक्कन", KidAssets.hindiWord("lid")),
+    HindiLetter("ण",   "nna",  "बाण", AssetPath("art/hindi-consonants/hindi-vyanjan-nna.svg"), inside = true),
+    HindiLetter("त",   "ta",   "तरबूज", AssetPath("art/hindi-consonants/hindi-vyanjan-ta.svg")),
+    HindiLetter("थ",   "tha",  "थकान", KidAssets.feeling("sleepy")),
+    HindiLetter("द",   "da",   "दवाई", KidAssets.hindiWord("medicine")),
+    HindiLetter("ध",   "dha",  "धनुष", AssetPath("art/hindi-consonants/hindi-vyanjan-dha.svg")),
+    HindiLetter("न",   "na",   "नल", KidAssets.hindiWord("tap")),
+    HindiLetter("प",   "pa",   "पतंग", AssetPath("art/hindi-consonants/hindi-vyanjan-pa.svg")),
+    HindiLetter("फ",   "pha",  "फल", KidAssets.hindiWord("fruits")),
+    HindiLetter("ब",   "ba",   "बकरी", AssetPath("art/hindi-consonants/hindi-vyanjan-ba.svg")),
+    HindiLetter("भ",   "bha",  "भवन", KidAssets.hindiWord("building")),
+    HindiLetter("म",   "ma",   "मछली", AssetPath("art/hindi-consonants/hindi-vyanjan-ma.svg")),
+    HindiLetter("य",   "ya",   "यमुना", KidAssets.hindiWord("river")),
+    HindiLetter("र",   "ra",   "रथ", KidAssets.hindiWord("chariot")),
+    HindiLetter("ल",   "la",   "लड्डू", KidAssets.hindiWord("laddoo")),
+    HindiLetter("व",   "va",   "वन", KidAssets.hindiWord("forest")),
+    HindiLetter("श",   "sha",  "शरबत", KidAssets.hindiWord("sherbet")),
+    HindiLetter("ष",   "ssa",  "षट्कोण", KidAssets.shape("hexagon")),
+    HindiLetter("स",   "sa",   "सड़क", KidAssets.hindiWord("road")),
+    HindiLetter("ह",   "ha",   "हवा", KidAssets.weather("wind")),
+    HindiLetter("क्ष", "ksha", "क्षमा", KidAssets.hindiWord("sorry")),
+    HindiLetter("त्र", "tra",  "मित्र", KidAssets.feeling("hug"), inside = true),
+    HindiLetter("ज्ञ", "gya",  "यज्ञ", KidAssets.hindiWord("havan"), inside = true),
 )
 
 /** Fast lookup of a Hindi letter by its Devanagari character (used by the trace prompt/audio). */
@@ -419,22 +592,45 @@ val HINDI_BY_CHAR: Map<String, HindiLetter> =
 // ── Hindi Barakhadi (बारहखड़ी — consonant × the 12 vowel matras) ──────────────────
 
 /**
- * One vowel matra used to form barakhadi: its filename [key] (matches `barakhadi-<cons><key>.svg`)
- * and the combining [sign] appended to a consonant to render the syllable (empty for the base form,
- * which carries the inherent 'a').
+ * One vowel matra used to form barakhadi: its filename [key] (matches `barakhadi-<cons><key>.svg`),
+ * the combining [sign] appended to a consonant to render the syllable (empty for the base form,
+ * which carries the inherent 'a'), and the [vowel] that sign stands for (क + ा is क + आ).
  */
-data class Matra(val key: String, val sign: String)
+data class Matra(val key: String, val sign: String, val vowel: String)
 
 /** The 12 matras in traditional barakhadi order (क का कि की कु कू के कै को कौ कं कः). */
 val BARAKHADI_MATRAS = listOf(
-    Matra("a", ""),  Matra("aa", "ा"), Matra("i", "ि"), Matra("ii", "ी"),
-    Matra("u", "ु"), Matra("uu", "ू"), Matra("e", "े"), Matra("ai", "ै"),
-    Matra("o", "ो"), Matra("au", "ौ"), Matra("am", "ं"), Matra("ah", "ः"),
+    Matra("a", "", "अ"), Matra("aa", "ा", "आ"), Matra("i", "ि", "इ"), Matra("ii", "ी", "ई"),
+    Matra("u", "ु", "उ"), Matra("uu", "ू", "ऊ"), Matra("e", "े", "ए"), Matra("ai", "ै", "ऐ"),
+    Matra("o", "ो", "ओ"), Matra("au", "ौ", "औ"), Matra("am", "ं", "अं"), Matra("ah", "ः", "अः"),
 )
 
 /** Asset path of the barakhadi badge for a consonant (by its romanized name) and a [Matra]. */
-fun barakhadiSvg(consonantRomanized: String, matra: Matra): String =
-    "kids/hindi-barakhadi/barakhadi-${consonantRomanized.dropLast(1)}${matra.key}.svg"
+
+/** Asset path of the illustrated badge for a consonant + matra combination. */
+fun barakhadiSvg(consonantRomanized: String, matra: Matra): AssetPath =
+    AssetPath("art/hindi-barakhadi/barakhadi-${consonantRomanized.dropLast(1)}${matra.key}.svg")
+
+/**
+ * Accent and tint for a consonant's twelve barakhadi forms, as (color, tint).
+ *
+ * The badge assets colour each consonant's set differently, cycling through the palette every
+ * eight consonants, so the grid reads as a sequence rather than a wall of one colour. This
+ * mirrors that rotation so anything drawn alongside or instead of the assets matches them.
+ */
+fun barakhadiPalette(consonantIndex: Int): Pair<Color, Color> =
+    BARAKHADI_PALETTE[consonantIndex.mod(BARAKHADI_PALETTE.size)]
+
+private val BARAKHADI_PALETTE: List<Pair<Color, Color>> = listOf(
+    Teal to TintTeal,
+    Coral to TintCoral,
+    Grape to TintGrape,
+    Blue to TintBlue,
+    Pink to TintPink,
+    Green to TintGreen,
+    Sun to TintSun,
+    Aqua to TintAqua,
+)
 
 /** The Devanagari syllable for a consonant char combined with a [Matra] (e.g. क + ी → की). */
 fun barakhadiSyllable(consonantChar: String, matra: Matra): String = consonantChar + matra.sign
@@ -442,24 +638,24 @@ fun barakhadiSyllable(consonantChar: String, matra: Matra): String = consonantCh
 // ── Telling Time (o'clock) ──────────────────────────────────────────────────────
 
 /** A clock face showing a whole hour ([hour] o'clock). */
-data class TimeItem(val hour: Int, val label: String, val svg: String)
+data class TimeItem(val hour: Int, val label: String, val svg: AssetPath)
 
 val TIMES: List<TimeItem> = (1..12).map {
-    TimeItem(it, "$it o'clock", "kids/telling-time/time-$it.svg")
+    TimeItem(it, "$it o'clock", AssetPath("art/telling-time/time-$it.svg"))
 }
 
 // ── Fractions ───────────────────────────────────────────────────────────────────
 
 /** A shaded pie illustrating a simple fraction (e.g. "1/2"). [spoken] is the read-aloud form. */
-data class FractionItem(val label: String, val spoken: String, val svg: String)
+data class FractionItem(val label: String, val spoken: String, val svg: AssetPath)
 
 val FRACTIONS = listOf(
-    FractionItem("1/2", "one half",       "kids/fractions/fraction-1-2.svg"),
-    FractionItem("1/3", "one third",      "kids/fractions/fraction-1-3.svg"),
-    FractionItem("1/4", "one quarter",    "kids/fractions/fraction-1-4.svg"),
-    FractionItem("1/5", "one fifth",      "kids/fractions/fraction-1-5.svg"),
-    FractionItem("1/6", "one sixth",      "kids/fractions/fraction-1-6.svg"),
-    FractionItem("1/8", "one eighth",     "kids/fractions/fraction-1-8.svg"),
-    FractionItem("2/3", "two thirds",     "kids/fractions/fraction-2-3.svg"),
-    FractionItem("3/4", "three quarters", "kids/fractions/fraction-3-4.svg"),
+    FractionItem("1/2", "one half",       AssetPath("art/fractions/fraction-1-2.svg")),
+    FractionItem("1/3", "one third",      AssetPath("art/fractions/fraction-1-3.svg")),
+    FractionItem("1/4", "one quarter",    AssetPath("art/fractions/fraction-1-4.svg")),
+    FractionItem("1/5", "one fifth",      AssetPath("art/fractions/fraction-1-5.svg")),
+    FractionItem("1/6", "one sixth",      AssetPath("art/fractions/fraction-1-6.svg")),
+    FractionItem("1/8", "one eighth",     AssetPath("art/fractions/fraction-1-8.svg")),
+    FractionItem("2/3", "two thirds",     AssetPath("art/fractions/fraction-2-3.svg")),
+    FractionItem("3/4", "three quarters", AssetPath("art/fractions/fraction-3-4.svg")),
 )

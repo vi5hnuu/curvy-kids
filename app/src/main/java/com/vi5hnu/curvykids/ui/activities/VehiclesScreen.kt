@@ -8,15 +8,16 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
@@ -27,6 +28,8 @@ import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
+import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Vehicles — learn transportation names and sounds, then identify them in a quiz. */
 @Composable
@@ -42,11 +45,11 @@ fun VehiclesScreen(
         quizItems = VEHICLES,
         quizPromptLabel = "FIND THE VEHICLE",
         keyOf = { it.name },
-        speakFor = { "Find the ${it.name}" },
+        speakFor = { EnglishVoiceScript.findThe(it.name) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Road Trip!",
-        learnContent = { VehiclesLearnGrid(onSpeak = { v -> feedback?.speaker?.speak("${v.name}! ${v.sound}") }) },
+        learnContent = { VehiclesLearnGrid(color = topic.color, onSpeak = { v -> feedback?.speaker?.say(EnglishVoiceScript.vehicleCall(v)) }) },
         quizPrompt = { vehicle ->
             Column(horizontalAlignment = Alignment.CenterHorizontally) {
                 Text(
@@ -61,14 +64,14 @@ fun VehiclesScreen(
             }
         },
         quizOption = { vehicle ->
-            // Emoji only in the quiz — the SVG bakes the vehicle's name in, which would reveal the answer.
-            Text(vehicle.emoji, fontSize = 44.sp, textAlign = TextAlign.Center)
+            // The badge caption is the answer, so quiz options render the art only.
+            SvgArt(vehicle.svg, modifier = Modifier.fillMaxSize())
         },
     )
 }
 
 @Composable
-private fun VehiclesLearnGrid(onSpeak: (Vehicle) -> Unit) {
+private fun VehiclesLearnGrid(color: Color, onSpeak: (Vehicle) -> Unit) {
     Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
         VEHICLES.chunked(2).forEach { pair ->
             Row(
@@ -85,9 +88,8 @@ private fun VehiclesLearnGrid(onSpeak: (Vehicle) -> Unit) {
                             .clip(RoundedCornerShape(20.dp))
                             .clickable { onSpeak(vehicle) },
                     ) {
-                        SvgBadge(
+                        SvgBadge(color = color, 
                             asset = vehicle.svg,
-                            fallbackEmoji = vehicle.emoji,
                             contentDescription = vehicle.name,
                             modifier = Modifier
                                 .fillMaxWidth()

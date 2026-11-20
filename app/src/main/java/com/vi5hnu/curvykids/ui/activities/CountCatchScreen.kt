@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,11 +20,10 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -30,7 +31,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PlayFeedback
-import com.vi5hnu.curvykids.data.content.GAME_EMOJIS
+import com.vi5hnu.curvykids.data.content.GAME_PICTURES
 import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.components.CardSurface
 import com.vi5hnu.curvykids.ui.components.Celebrate
@@ -40,7 +41,12 @@ import com.vi5hnu.curvykids.ui.components.ScreenHeader
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.InkSoft
 import com.vi5hnu.curvykids.ui.theme.Teal
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarCount
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import kotlinx.coroutines.delay
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 private const val COLS = 3
 
@@ -70,11 +76,11 @@ fun CountCatchScreen(
     onReward: (Int) -> Unit,
     feedback: PlayFeedback? = null,
 ) {
-    var score by remember { mutableIntStateOf(0) }
-    var round by remember { mutableIntStateOf(0) }
+    var score by rememberSaveable { mutableIntStateOf(0) }
+    var round by rememberSaveable { mutableIntStateOf(0) }
     var tapped by remember(round) { mutableStateOf(setOf<Int>()) }
     var solved by remember(round) { mutableStateOf(false) }
-    var showCelebrate by remember { mutableStateOf(false) }
+    var showCelebrate by rememberSaveable { mutableStateOf(false) }
 
     // Level advances every 5 correct answers, capped at 2.
     val level = (score / 5).coerceAtMost(2)
@@ -82,13 +88,13 @@ fun CountCatchScreen(
         val range = targetRangeForLevel(level)
         val target = range.random()
         val pool = (target + (2..3).random()).coerceAtMost(12)
-        Triple(target, pool, GAME_EMOJIS.random())
+        Triple(target, pool, GAME_PICTURES.random())
     }
     val target = spec.first
     val pool = spec.second
-    val emoji = spec.third
+    val svg = spec.third
 
-    fun speakPrompt() = feedback?.speaker?.speak("Tap $target")
+    fun speakPrompt() = feedback?.speaker?.say(EnglishVoiceScript.tap(target))
 
     LaunchedEffect(round) { speakPrompt() }
 
@@ -97,19 +103,20 @@ fun CountCatchScreen(
         val now = tapped + i
         tapped = now
         if (now.size < target) {
-            feedback?.speaker?.speak(now.size.toString())
+            feedback?.speaker?.say(EnglishVoiceScript.say(now.size.toString()))
         } else {
             solved = true
             score += 1
             onReward(4)
             feedback?.correct()
-            feedback?.speaker?.speak("Yes! ${NUMBER_WORDS[target]}")
+            feedback?.speaker?.say(EnglishVoiceScript.yes(target.toString()))
         }
     }
 
     LaunchedEffect(solved) {
         if (solved) {
-            delay(900)
+            // "Yes! Five!" is heard to the end before the next picture.
+            feedback?.speaker?.awaitQuiet(minMs = 900) ?: delay(900)
             if (score > 0 && score % 5 == 0) showCelebrate = true else round++
         }
     }
@@ -131,12 +138,7 @@ fun CountCatchScreen(
                             verticalAlignment = Alignment.CenterVertically,
                             modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
                         ) {
-                            Text(
-                                "⭐ $score",
-                                fontFamily = FontDisplay,
-                                fontSize = 16.sp,
-                                color = Color(0xFFF2A93B),
-                            )
+                            StarCount(score)
                         }
                     }
                 },
@@ -178,8 +180,8 @@ fun CountCatchScreen(
                         color = InkSoft,
                     )
                     Spacer(Modifier.height(8.dp))
-                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(46.dp)) {
-                        Text("🔊", fontSize = 20.sp)
+                    Chip(onClick = { speakPrompt() }, modifier = Modifier.size(48.dp)) {
+                        KidIconImage(KidIcon.Speaker, Modifier.size(20.dp))
                     }
                 }
             }
@@ -208,7 +210,7 @@ fun CountCatchScreen(
                                 contentAlignment = Alignment.Center,
                                 modifier = Modifier.fillMaxSize(),
                             ) {
-                                Text(emoji, fontSize = 40.sp)
+                                SvgArt(svg, modifier = Modifier.size(56.dp))
                                 if (isTapped) {
                                     Surface(
                                         shape = RoundedCornerShape(999.dp),
@@ -219,11 +221,10 @@ fun CountCatchScreen(
                                             .size(22.dp),
                                     ) {
                                         Box(contentAlignment = Alignment.Center) {
-                                            Text(
-                                                "✓",
-                                                fontSize = 13.sp,
+                                            KidIconImage(
+                                                icon = KidIcon.Check,
+                                                modifier = Modifier.size(13.dp),
                                                 color = Color.White,
-                                                fontWeight = FontWeight.ExtraBold,
                                             )
                                         }
                                     }

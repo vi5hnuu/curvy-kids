@@ -1,7 +1,6 @@
 package com.vi5hnu.curvykids.ui.components
 
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Surface
@@ -13,7 +12,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
 /**
- * Round icon chip — white background, soft shadow, scale on press.
+ * Round icon chip — white background, soft shadow, shrinks on press.
  * Matches the `.chip` CSS class in the design.
  */
 @Composable
@@ -24,9 +23,11 @@ fun Chip(
     contentColor: Color = Color(0xFF758999),
     content: @Composable () -> Unit,
 ) {
+    val interaction = rememberPressInteractionSource()
     Surface(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.pressScale(interaction),
+        interactionSource = interaction,
         shape = CircleShape,
         color = containerColor,
         contentColor = contentColor,
@@ -52,9 +53,11 @@ fun CandyButton(
     cornerRadius: Dp = 22.dp,
     content: @Composable () -> Unit,
 ) {
+    val interaction = rememberPressInteractionSource()
     Surface(
         onClick = onClick,
-        modifier = modifier,
+        modifier = modifier.pressScale(interaction),
+        interactionSource = interaction,
         enabled = enabled,
         shape = RoundedCornerShape(cornerRadius),
         color = containerColor,

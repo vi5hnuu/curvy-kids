@@ -1,0 +1,100 @@
+package com.vi5hnu.curvykids.data
+
+import com.vi5hnu.curvykids.audio.packs.VoicePack
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
+import com.vi5hnu.curvykids.data.content.HindiVoiceScript
+import com.vi5hnu.curvykids.data.content.PHONICS_DATA
+import com.vi5hnu.curvykids.data.content.RecordingSheet
+import org.junit.Assert.assertEquals
+import org.junit.Assert.assertTrue
+import org.junit.Test
+import java.io.File
+
+class VoiceScriptTest {
+
+    private val keyFormat = Regex("^[a-z0-9]+(-[a-z0-9]+)*$")
+
+    @Test
+    fun `every recording key is a safe file name`() {
+        val keys = HindiVoiceScript.all.map { it.clip.key } + PHONICS_DATA.map { it.clip.key }
+        keys.forEach { assertTrue("bad key '$it'", keyFormat.matches(it)) }
+    }
+
+    @Test
+    fun `one key never stands for two different lines`() {
+        // all is de-duplicated by key, so check the raw sources for a key reused with other text.
+        val raw = buildList {
+            com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS.forEach { c ->
+                com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS.forEach { m -> add(HindiVoiceScript.syllable(c, m)) }
+                add(HindiVoiceScript.letter(c))
+            }
+            com.vi5hnu.curvykids.data.content.HINDI_VOWELS.forEach { add(HindiVoiceScript.letter(it)) }
+        }
+        raw.groupBy { it.clip.relativePath }.forEach { (key, lines) ->
+            assertEquals("key $key has different texts", 1, lines.map { it.text }.distinct().size)
+        }
+    }
+
+    @Test
+    fun `letter and barakhadi clips follow the numbered folder layout`() {
+        val vowels = com.vi5hnu.curvykids.data.content.HINDI_VOWELS
+        val consonants = com.vi5hnu.curvykids.data.content.HINDI_CONSONANTS
+        val matras = com.vi5hnu.curvykids.data.content.BARAKHADI_MATRAS
+        assertEquals("hi/hindi_vowels/01-a", HindiVoiceScript.letter(vowels[0]).clip.relativePath)
+        assertEquals("hi/hindi_vowels/13-ah", HindiVoiceScript.letter(vowels[12]).clip.relativePath)
+        assertEquals("hi/hindi_consonants/01-ka", HindiVoiceScript.letter(consonants[0]).clip.relativePath)
+        assertEquals("hi/hindi_consonants/36-gya", HindiVoiceScript.letter(consonants[35]).clip.relativePath)
+        assertEquals("hi/barakhadi/01-ka/01-ka", HindiVoiceScript.syllable(consonants[0], matras[0]).clip.relativePath)
+        assertEquals("hi/barakhadi/01-ka/04-kii", HindiVoiceScript.syllable(consonants[0], matras[3]).clip.relativePath)
+        assertEquals("hi/barakhadi/02-kha/12-khah", HindiVoiceScript.syllable(consonants[1], matras[11]).clip.relativePath)
+        val barakhadi = consonants.flatMap { c -> matras.map { HindiVoiceScript.syllable(c, it).clip } }
+        assertEquals(36 * 12, barakhadi.distinct().size)
+    }
+
+    @Test
+    fun `no two letters in the same sound group are confused`() {
+        val k = PHONICS_DATA.filter { it.soundGroup == "k" }.map { it.letter }.toSet()
+        assertEquals(setOf("C", "K"), k)
+    }
+
+    /**
+     * Writes the local recording list (tools/voice, not in git) with only the lines that have no
+     * recording yet, so the list is always "what's left to record". A clip counts as recorded when
+     * its file is in the app's assets or in the voice pack that owns it.
+     */
+    @Test
+    fun `local recording list holds only the lines still to record`() {
+        val voiceRoots = (listOf("../app") + VoicePack.entries.map { "../${it.packName}" })
+            .map { File(it, "src/main/assets/voice") }
+        fun recorded(clip: com.vi5hnu.curvykids.audio.VoiceClip) =
+            voiceRoots.any { root -> listOf("m4a", "mp3").any { File(root, "${clip.relativePath}.$it").exists() } }
+
+        val file = File("../tools/voice/recording_list.txt")
+        file.parentFile?.mkdirs()
+        file.writeText(RecordingSheet.render(::recorded))
+        assertTrue(file.readText().startsWith("CurvyKids"))
+    }
+
+    /**
+     * Every recording sits in the module [VoicePack.homeOf] names: the app itself, or the pack that
+     * Play delivers it in. New recordings are written into the app; when one belongs in a pack,
+     * this fails and writes the moves to the local tools/voice/pack_moves.txt (git mv lines, run
+     * from the project root).
+     */
+    @Test
+    fun `every recording is in the module it belongs to`() {
+        val modules = listOf("app") + VoicePack.entries.map { it.packName }
+        val clips = (HindiVoiceScript.all + EnglishVoiceScript.all).map { it.clip } + PHONICS_DATA.map { it.clip }
+        val moves = clips.distinctBy { it.relativePath }.mapNotNull { clip ->
+            val home = VoicePack.homeOf(clip)?.packName ?: "app"
+            val found = modules.flatMap { m ->
+                listOf("m4a", "mp3").map { ext -> m to "$m/src/main/assets/voice/${clip.relativePath}.$ext" }
+            }.firstOrNull { File("..", it.second).isFile } ?: return@mapNotNull null
+            if (found.first == home) null
+            else "mkdir -p ${home}/src/main/assets/voice/${clip.relativePath.substringBeforeLast('/')} && " +
+                "git mv ${found.second} ${home}/src/main/assets/voice/${clip.relativePath}.${found.second.substringAfterLast('.')}"
+        }
+        File("../tools/voice/pack_moves.txt").apply { parentFile?.mkdirs() }.writeText(moves.joinToString("\n", postfix = "\n"))
+        assertTrue("${moves.size} recording(s) are not in their module, see tools/voice/pack_moves.txt", moves.isEmpty())
+    }
+}

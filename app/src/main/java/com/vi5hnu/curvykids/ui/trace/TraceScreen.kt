@@ -3,6 +3,8 @@ package com.vi5hnu.curvykids.ui.trace
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -34,6 +36,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.components.LottieViewer
@@ -43,18 +46,27 @@ import com.vi5hnu.curvykids.ui.components.CandyButton
 import com.vi5hnu.curvykids.ui.components.Celebrate
 import com.vi5hnu.curvykids.ui.components.Chip
 import com.vi5hnu.curvykids.ui.components.Pill
+import com.vi5hnu.curvykids.ui.components.ProgressTrack
 import com.vi5hnu.curvykids.ui.components.ScreenHeader
+import com.vi5hnu.curvykids.ui.components.SvgArt
 import com.vi5hnu.curvykids.ui.game.AnswerResult
 import com.vi5hnu.curvykids.ui.game.GameViewModel
 import com.vi5hnu.curvykids.ui.game.components.DrawingCanvas
 import com.vi5hnu.curvykids.ui.game.components.rememberDrawingController
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
 import com.vi5hnu.curvykids.ui.theme.Green
-import com.vi5hnu.curvykids.ui.theme.InkFaint
+import com.vi5hnu.curvykids.ui.theme.Ink
 import com.vi5hnu.curvykids.ui.theme.InkSoft
-import com.vi5hnu.curvykids.data.content.CRAYON_COLORS
+import com.vi5hnu.curvykids.data.content.CRAYONS
+import com.vi5hnu.curvykids.ui.kit.tools.ToolVoice
+import com.vi5hnu.curvykids.ui.kit.tools.DrawingPage
 import com.vi5hnu.curvykids.ui.trace.components.CharStrip
-import com.vi5hnu.curvykids.ui.trace.components.DemoWipe
+import com.vi5hnu.curvykids.ui.trace.components.GhostLetter
+import com.vi5hnu.curvykids.ui.trace.components.LetterReferenceCard
+import com.vi5hnu.curvykids.ui.kit.Responsive
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /**
  * Redesigned tracing screen matching trace.jsx design.
@@ -74,10 +86,14 @@ fun TraceScreen(
 ) {
     val uiState by viewModel.uiState.collectAsState()
     val recognizerState by viewModel.recognizerReady.collectAsState()
+    // The model only marks the child's writing; the lesson itself needs nothing from it.
+    val modelFailed = recognizerState?.error != null
 
     val controller = rememberDrawingController()
-    var demoKey by remember { mutableStateOf(0) }
-    var inkColor by remember { mutableStateOf(CRAYON_COLORS.first()) }
+    var inkColor by remember { mutableStateOf(CRAYONS.first()) }
+    // The letter whose line was last said on the first stroke, so it's said once per letter.
+    var spokenFor by remember { mutableStateOf<String?>(null) }
+    val say: (String) -> Unit = { word -> viewModel.feedback.speaker.say(EnglishVoiceScript.say(word)) }
     var showCharStrip by remember { mutableStateOf(false) }
 
     // Find the topic for this level
@@ -85,13 +101,10 @@ fun TraceScreen(
     val chars = uiState.level.characters
 
     val ch = uiState.character
-    val word = Phonics.wordFor(ch)
-    val emoji = Phonics.emojiFor(ch)
 
-    // Clear canvas + restart DemoWipe on every new character
+    // Clear the canvas on every new character
     LaunchedEffect(uiState.level, uiState.index) {
         controller.clear()
-        demoKey++
     }
 
     // Clear lastResult when leaving so re-entry doesn't double-fire reward.
@@ -101,205 +114,58 @@ fun TraceScreen(
     }
 
     // Give reward + sync mastery when a correct answer is accepted.
-    // Topic id ("upper"/"lower"/"numbers") maps to the set prefix in AppRepository.
-    LaunchedEffect(uiState.lastResult) {
-        if (uiState.lastResult == AnswerResult.CORRECT) {
-            val alreadyMastered = uiState.masteredCharacters.contains(ch)
-            onReward(if (alreadyMastered) 1 else 5)
-            onMarkMastered(topic.id, ch)
+    // Driven by the one-shot event stream rather than uiState.lastResult, so a rotation (which
+    // replays state to the recreated composition) cannot pay the child twice for one letter.
+    LaunchedEffect(viewModel) {
+        viewModel.correctAnswers.collect { answer ->
+            onReward(if (answer.alreadyMastered) 1 else 5)
+            onMarkMastered(answer.topicId, answer.character)
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
-        Column(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(horizontal = 18.dp, vertical = 18.dp)
-                .padding(bottom = 24.dp),
-        ) {
-            // ── Header ────────────────────────────────────────────────────
-            ScreenHeader(
-                title = topic.title,
-                color = topic.color,
-                onBack = onBack,
-                trailing = {
-                    Pill(onClick = { showCharStrip = true }) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp),
-                        ) {
-                            Text(
-                                text = "${uiState.index + 1}/${chars.size}",
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 16.sp,
-                                color = topic.color,
-                            )
-                        }
-                    }
-                },
-            )
-
-            Spacer(Modifier.height(16.dp))
-
-            // ── Reference card ────────────────────────────────────────────
-            Surface(
-                shape = RoundedCornerShape(30.dp),
-                color = Color.White,
-                shadowElevation = 6.dp,
-                modifier = Modifier.fillMaxWidth(),
-            ) {
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    modifier = Modifier.padding(14.dp),
-                ) {
-                    // Character badge
-                    Surface(
-                        shape = RoundedCornerShape(20.dp),
-                        color = topic.tint,
-                        modifier = Modifier.size(74.dp),
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = ch,
-                                fontFamily = FontDisplay,
-                                fontWeight = FontWeight.ExtraBold,
-                                fontSize = 44.sp,
-                                color = topic.color,
-                            )
-                        }
-                    }
-
-                    Spacer(Modifier.width(14.dp))
-
-                    Column(modifier = Modifier.weight(1f)) {
-                        Text(
-                            text = if (word != null) "SAY IT" else "TRACE IT",
-                            fontFamily = FontDisplay,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 13.sp,
-                            color = InkSoft,
-                        )
-                        Text(
-                            text = "${emoji ?: ""} ${word ?: ch}".trim(),
-                            fontFamily = FontDisplay,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 23.sp,
-                        )
-                    }
-
-                    // Listen button (pulsing chip)
-                    Surface(
-                        onClick = { viewModel.speakCurrent() },
-                        shape = CircleShape,
-                        color = topic.tint,
-                        modifier = Modifier.size(50.dp),
-                        shadowElevation = 2.dp,
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text("🔊", fontSize = 22.sp)
-                        }
-                    }
-                }
-            }
-
-            Spacer(Modifier.height(14.dp))
-
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        // Landscape: the reference card and controls in a column beside the writing area, so the
+        // area keeps its height instead of being squeezed to a strip under the card.
+        val twoPane = Responsive.isTwoPane(maxWidth, maxHeight)
+        val drawingCard: @Composable (Modifier) -> Unit = { modifier ->
             // ── Drawing card ──────────────────────────────────────────────
             Surface(
                 shape = RoundedCornerShape(30.dp),
                 color = Color.White,
                 shadowElevation = 6.dp,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .weight(1f),
+                modifier = modifier,
             ) {
-                Box(modifier = Modifier.fillMaxSize()) {
-                    // Ghost letter (background guide)
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center,
-                    ) {
-                        Text(
-                            text = ch,
-                            fontFamily = FontDisplay,
-                            fontWeight = FontWeight.ExtraBold,
-                            fontSize = 230.sp,
-                            lineHeight = 230.sp,
-                            color = Color(0xFFEAF1F6),
-                        )
-                    }
+                DrawingPage(
+                    modifier = Modifier.fillMaxSize(),
+                    crayon = inkColor,
+                    onCrayon = { c -> inkColor = c; say(ToolVoice.crayon(c)) },
+                    onErase = {
+                        controller.undo()
+                        viewModel.clearFeedback()
+                        say(ToolVoice.ERASER)
+                    },
+                    onNewPage = {
+                        controller.clear()
+                        viewModel.clearFeedback()
+                        say(ToolVoice.NEW_PAGE)
+                    },
+                ) {
+                    // The letter to trace, shown plainly underneath the child's ink.
+                    GhostLetter(char = ch, modifier = Modifier.fillMaxSize())
 
-                    // Animated demo wipe overlay
-                    DemoWipe(
-                        char = ch,
-                        color = inkColor,
-                        demoKey = demoKey,
-                    )
-
-                    // Drawing canvas (on top) — pure ink layer, guidance handled by ghost letter + DemoWipe
+                    // Drawing canvas (on top) — pure ink layer over the letter. The first line
+                    // drawn on each letter says it aloud, so the shape is learned with its sound.
                     DrawingCanvas(
                         controller = controller,
-                        inkColor = inkColor,
+                        inkColor = inkColor.color,
                         modifier = Modifier.fillMaxSize(),
-                    )
-
-                    // Erase chip (top-left)
-                    Chip(
-                        onClick = {
-                            controller.clear()
-                            viewModel.clearFeedback()
-                        },
-                        modifier = Modifier
-                            .align(Alignment.TopStart)
-                            .padding(12.dp)
-                            .size(46.dp),
-                        containerColor = Color(0xFFFFE9E4),
-                        contentColor = Color(0xFFFF8B6B),
-                    ) {
-                        Text("🧹", fontSize = 20.sp)
-                    }
-
-                    // Replay "show me" chip (top-right)
-                    Chip(
-                        onClick = { demoKey++ },
-                        modifier = Modifier
-                            .align(Alignment.TopEnd)
-                            .padding(12.dp)
-                            .size(46.dp),
-                        containerColor = Color(0xFFDFF7F2),
-                        contentColor = Color(0xFF1FC2AE),
-                    ) {
-                        Text("👆", fontSize = 20.sp)
-                    }
-
-                    // Crayon tray (bottom-center)
-                    if (!controller.isDrawing) {
-                        Row(
-                            horizontalArrangement = Arrangement.spacedBy(9.dp),
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .align(Alignment.BottomCenter)
-                                .padding(bottom = 12.dp)
-                                .background(
-                                    Color.White.copy(alpha = 0.8f),
-                                    RoundedCornerShape(999.dp),
-                                )
-                                .padding(horizontal = 12.dp, vertical = 8.dp),
-                        ) {
-                            CRAYON_COLORS.forEach { c ->
-                                Surface(
-                                    onClick = { inkColor = c },
-                                    shape = CircleShape,
-                                    color = c,
-                                    modifier = Modifier.size(if (c == inkColor) 30.dp else 26.dp),
-                                    border = if (c == inkColor)
-                                        androidx.compose.foundation.BorderStroke(3.dp, Color.White)
-                                    else null,
-                                ) {}
+                        onDrawStart = {
+                            if (spokenFor != ch) {
+                                spokenFor = ch
+                                viewModel.speakCurrent()
                             }
-                        }
-                    }
+                        },
+                    )
 
                     // Wrong banner
                     if (uiState.lastResult == AnswerResult.WRONG) {
@@ -311,7 +177,7 @@ fun TraceScreen(
                                 .padding(horizontal = 22.dp, vertical = 10.dp),
                         ) {
                             Text(
-                                text = "Keep going! 💪",
+                                text = "Keep going!",
                                 fontFamily = FontDisplay,
                                 fontWeight = FontWeight.ExtraBold,
                                 fontSize = 20.sp,
@@ -324,20 +190,21 @@ fun TraceScreen(
                     // Celebrate overlay on correct answer
                     if (uiState.lastResult == AnswerResult.CORRECT) {
                         Celebrate(
-                            title = "Perfect!",
+                            // A first-time mastery earns full stars; repeating a mastered letter
+                            // is praised as practice so the title and stars agree.
+                            title = if (uiState.lastWasPractice) "Nice practice!" else "Perfect!",
                             sub = Phonics.phraseFor(ch),
-                            stars = if (uiState.masteredCharacters.contains(ch)) 1 else 3,
+                            stars = if (uiState.lastWasPractice) 1 else 3,
                             // For levelComplete, dismissLevelComplete() clears lastResult and
                             // advances to the next level. For normal correct answers, GameViewModel
                             // already calls next() after 1200ms which clears lastResult via goTo().
                             onDone = { if (uiState.levelJustCompleted) viewModel.dismissLevelComplete() },
                         )
                     }
-                }
             }
-
-            Spacer(Modifier.height(14.dp))
-
+            }
+        }
+        val controlsRow: @Composable () -> Unit = {
             // ── Controls row ──────────────────────────────────────────────
             Row(
                 horizontalArrangement = Arrangement.spacedBy(10.dp),
@@ -347,7 +214,7 @@ fun TraceScreen(
                 Chip(
                     onClick = viewModel::previous,
                     modifier = Modifier.size(58.dp),
-                    contentColor = InkFaint,
+                    contentColor = topic.color,
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowBack,
@@ -356,27 +223,48 @@ fun TraceScreen(
                     )
                 }
 
-                val canCheck = controller.hasDrawing && !uiState.isChecking
+                // Deliberately always enabled: a greyed-out button reads as "broken" to a
+                // four-year-old, who has no way to know it is waiting for them to draw. It stays
+                // tappable and says what to do instead.
                 CandyButton(
                     onClick = {
-                        viewModel.check(
-                            strokes = controller.snapshot(),
-                            writingArea = null,
-                        )
+                        when {
+                            modelFailed -> viewModel.next()
+                            !controller.hasDrawing -> viewModel.promptToDraw()
+                            !uiState.isChecking -> viewModel.check(
+                                strokes = controller.snapshot(),
+                                writingArea = null,
+                            )
+                        }
                     },
-                    enabled = canCheck,
+                    enabled = true,
                     modifier = Modifier
                         .weight(1f)
                         .height(62.dp),
-                    containerColor = Green,
+                    containerColor = when {
+                        modelFailed -> topic.color
+                        controller.hasDrawing -> Green
+                        else -> GreenMuted
+                    },
                 ) {
                     Row(
                         horizontalArrangement = Arrangement.spacedBy(8.dp),
                         verticalAlignment = Alignment.CenterVertically,
                     ) {
-                        Text("✓", fontSize = 22.sp, color = Color.White)
+                        // Without the model the app cannot mark the writing, so the button
+                        // carries the child on to the next letter rather than promising a check
+                        // it cannot give.
+                        KidIconImage(
+                            if (modelFailed) KidIcon.ArrowForward else KidIcon.Check,
+                            Modifier.size(22.dp),
+                            Color.White,
+                        )
                         Text(
-                            text = if (uiState.isChecking) "Checking…" else "Check",
+                            text = when {
+                                modelFailed -> "Next"
+                                uiState.isChecking -> "Checking…"
+                                else -> "Check"
+                            },
                             fontFamily = FontDisplay,
                             fontWeight = FontWeight.ExtraBold,
                             fontSize = 23.sp,
@@ -388,7 +276,7 @@ fun TraceScreen(
                 Chip(
                     onClick = viewModel::next,
                     modifier = Modifier.size(58.dp),
-                    contentColor = InkFaint,
+                    contentColor = topic.color,
                 ) {
                     Icon(
                         imageVector = Icons.AutoMirrored.Rounded.ArrowForward,
@@ -398,24 +286,122 @@ fun TraceScreen(
                 }
             }
         }
+        val reference: @Composable (Modifier, Boolean) -> Unit = { modifier, tall ->
+            LetterReferenceCard(
+                ch = ch,
+                color = topic.color,
+                tint = topic.tint,
+                onSpeak = { viewModel.speakCurrent() },
+                tall = tall,
+                modifier = modifier,
+            )
+        }
 
-        // ML Kit model loading overlay
-        if (recognizerState?.success != true) {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(horizontal = 18.dp, vertical = 18.dp)
+                .padding(bottom = if (twoPane) 0.dp else 24.dp),
+        ) {
+            // ── Header ────────────────────────────────────────────────────
+            ScreenHeader(
+                title = topic.title,
+                color = topic.color,
+                onBack = onBack,
+                trailing = {
+                    Pill(onClick = { showCharStrip = true }) {
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            modifier = Modifier.padding(horizontal = 14.dp, vertical = 10.dp),
+                        ) {
+                            ProgressTrack(
+                                current = uiState.index + 1,
+                                total = chars.size,
+                                color = topic.color,
+                            )
+                        }
+                    }
+                },
+            )
+
+            Spacer(Modifier.height(14.dp))
+
+            if (twoPane) {
+                Row(Modifier.weight(1f), horizontalArrangement = Arrangement.spacedBy(14.dp)) {
+                    Column(Modifier.weight(0.42f), verticalArrangement = Arrangement.spacedBy(14.dp)) {
+                        reference(Modifier.fillMaxWidth().weight(1f), true)
+                        controlsRow()
+                    }
+                    drawingCard(Modifier.weight(0.58f).fillMaxHeight())
+                }
+            } else {
+                reference(Modifier.fillMaxWidth(), false)
+                Spacer(Modifier.height(14.dp))
+                drawingCard(Modifier.fillMaxWidth().weight(1f))
+                Spacer(Modifier.height(14.dp))
+                controlsRow()
+            }
+        }
+
+        // Handwriting-model overlay, shown only while the model is still on its way.
+        //
+        // If it cannot be fetched the screen is left alone: the demonstration and the page to
+        // write on are built into the app and need nothing from the network. Only the check does.
+        // Covering the whole screen took the lesson away from any child without a connection,
+        // over a feature that merely marks their work.
+        if (recognizerState?.success != true && !modelFailed) {
+            val failed = false
             Box(
                 modifier = Modifier
                     .fillMaxSize()
+                    // Swallow taps aimed at the canvas underneath, but never trap the child:
+                    // the way out is always on screen (below) and the system back still works.
                     .pointerInput(Unit) { awaitPointerEventScope { while (true) awaitPointerEvent() } }
-                    .background(Color.White.copy(alpha = 0.92f)),
+                    .background(Color.White.copy(alpha = 0.94f)),
                 contentAlignment = Alignment.Center,
             ) {
-                Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    LottieViewer(assetName = if (recognizerState?.error != null) "something-wrong.lottie" else "baby-loading.lottie")
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.padding(horizontal = 28.dp),
+                ) {
+                    LottieViewer(assetName = if (failed) "something-wrong.lottie" else "baby-loading.lottie")
                     Text(
-                        text = if (recognizerState?.error != null) "Oops! Please check your internet." else "Getting ready…",
-                        fontWeight = FontWeight.SemiBold,
-                        fontSize = 16.sp,
-                        color = InkSoft,
+                        text = if (failed) "We need the internet to set up writing." else "Getting ready…",
+                        fontFamily = FontDisplay,
+                        fontWeight = FontWeight.ExtraBold,
+                        fontSize = 20.sp,
+                        color = Ink,
+                        textAlign = TextAlign.Center,
                     )
+                    Spacer(Modifier.height(6.dp))
+                    Text(
+                        text = if (failed) {
+                            "Ask a grown-up to connect, then come back. Everything else still works!"
+                        } else {
+                            "This only happens once."
+                        },
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 14.sp,
+                        color = InkSoft,
+                        textAlign = TextAlign.Center,
+                    )
+                    if (failed) {
+                        Spacer(Modifier.height(20.dp))
+                        CandyButton(
+                            onClick = onBack,
+                            modifier = Modifier.height(56.dp),
+                            containerColor = topic.color,
+                        ) {
+                            Text(
+                                text = "Pick something else",
+                                fontFamily = FontDisplay,
+                                fontWeight = FontWeight.ExtraBold,
+                                fontSize = 18.sp,
+                                color = Color.White,
+                                modifier = Modifier.padding(horizontal = 24.dp),
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -436,3 +422,9 @@ fun TraceScreen(
         )
     }
 }
+
+/**
+ * The Check button before anything is drawn. A solid tint rather than a translucent Green:
+ * a see-through Surface lets its own elevation shadow show through as a pale inner block.
+ */
+private val GreenMuted = Color(0xFFA6E0C4)

@@ -1,5 +1,7 @@
 package com.vi5hnu.curvykids.ui.activities
 
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.getValue
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,18 +12,17 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.vi5hnu.curvykids.audio.PhonicsSpeaker
@@ -31,6 +32,11 @@ import com.vi5hnu.curvykids.data.content.Topic
 import com.vi5hnu.curvykids.ui.activities.components.DiscoverActivity
 import com.vi5hnu.curvykids.ui.components.SvgBadge
 import com.vi5hnu.curvykids.ui.theme.FontDisplay
+import com.vi5hnu.curvykids.ui.components.KidIconImage
+import com.vi5hnu.curvykids.ui.components.StarGold
+import com.vi5hnu.curvykids.ui.components.KidIcon
+import com.vi5hnu.curvykids.ui.components.SvgArt
+import com.vi5hnu.curvykids.data.content.EnglishVoiceScript
 
 /** Animals — Learn (tap to hear name + sound) + Play ("Who says…?" quiz). */
 @Composable
@@ -46,7 +52,7 @@ fun AnimalsScreen(
         quizItems = ANIMALS,
         quizPromptLabel = "WHO SAYS…",
         keyOf = { it.name },
-        speakFor = { "Who says ${it.sound}" },
+        speakFor = { EnglishVoiceScript.say(EnglishVoiceScript.whoSays(it)) },
         onReward = onReward,
         feedback = feedback,
         celebrateTitle = "Animal Star!",
@@ -61,8 +67,8 @@ fun AnimalsScreen(
             )
         },
         quizOption = { animal ->
-            // Emoji only in the quiz — the SVG bakes the animal's name in, which would reveal the answer.
-            Text(animal.emoji, fontSize = 48.sp, textAlign = TextAlign.Center)
+            // The badge caption is the answer, so quiz options render the art only.
+            SvgArt(animal.svg, modifier = Modifier.fillMaxSize())
         },
     )
 }
@@ -93,16 +99,15 @@ private fun AnimalsLearnGrid(
                                 .fillMaxWidth()
                                 .clip(RoundedCornerShape(24.dp))
                                 .clickable {
-                                    speaker?.speak("${animal.name}. ${animal.sound}")
+                                    speaker?.say(EnglishVoiceScript.animalCall(animal))
                                     if (!seen.contains(animal.name)) {
                                         seen = seen + animal.name
                                         onReward(2)
                                     }
                                 },
                         ) {
-                            SvgBadge(
+                            SvgBadge(color = topic.color, 
                                 asset = animal.svg,
-                                fallbackEmoji = animal.emoji,
                                 contentDescription = animal.name,
                                 modifier = Modifier
                                     .fillMaxWidth()
@@ -117,10 +122,11 @@ private fun AnimalsLearnGrid(
                             )
                         }
                         if (seen.contains(animal.name)) {
-                            Text(
-                                text = "⭐",
-                                fontSize = 15.sp,
-                                modifier = Modifier.align(Alignment.TopEnd).padding(6.dp),
+                            KidIconImage(
+                                icon = KidIcon.Star,
+                                modifier = Modifier.align(Alignment.TopEnd).padding(6.dp)
+                                    .size(15.dp),
+                                color = StarGold,
                             )
                         }
                     }

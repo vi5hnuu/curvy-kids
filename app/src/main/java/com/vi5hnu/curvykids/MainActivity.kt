@@ -21,6 +21,15 @@ import com.vi5hnu.curvykids.ui.theme.CurvyKidsTheme
  */
 class MainActivity : ComponentActivity() {
 
+    /**
+     * A payment that was pending (cash, slow card) may have completed while the app was in the
+     * background; Play doesn't tell a closed purchase sheet, so ask again on every return.
+     */
+    override fun onResume() {
+        super.onResume()
+        (application as CurvyKidsApp).pro.refresh()
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -32,6 +41,13 @@ class MainActivity : ComponentActivity() {
                 AppNavGraph(
                     appViewModel = appViewModel,
                     gameViewModel = gameViewModel,
+                    voicePacks = (application as CurvyKidsApp).voicePacks,
+                    pro = (application as CurvyKidsApp).pro,
+                    access = (application as CurvyKidsApp).access,
+                    ads = (application as CurvyKidsApp).ads,
+                    adUnlocks = (application as CurvyKidsApp).adUnlocks,
+                    offerNotice = (application as CurvyKidsApp).offerNotice,
+                    connectivity = (application as CurvyKidsApp).connectivity,
                 )
             }
         }
